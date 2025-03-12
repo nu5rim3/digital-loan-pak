@@ -1,5 +1,7 @@
-import { Button, ConfigProvider, Space } from 'antd';
+import { ConfigProvider, Space } from 'antd';
 import React from 'react';
+// import CButton from '@/components/Button';
+import TestPage from './pages/Test';
 
 const App: React.FC = () => (
   <ConfigProvider
@@ -15,8 +17,7 @@ const App: React.FC = () => (
     }}
   >
     <Space>
-      <Button type="primary">Primary</Button>
-      <Button>Default</Button>
+      <TestPage />
     </Space>
   </ConfigProvider>
 );
