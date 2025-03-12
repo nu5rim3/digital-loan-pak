@@ -10,6 +10,6 @@ export default defineConfig(({ mode }) => {
     server: {
       port: Number(env.VITE_PORT) || 3000, // Use VITE_PORT from .env
     },
-    base: `/${env.VITE_TENET}-${env.VITE_BASE_URL}/`, // pakoman-digital-loan
+    // base: `/${env.VITE_TENET}-${env.VITE_BASE_URL}/`, // pakoman-digital-loan
   };
 });
