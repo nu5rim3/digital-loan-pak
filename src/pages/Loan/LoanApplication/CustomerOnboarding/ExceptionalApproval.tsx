@@ -12,7 +12,7 @@ const schema = yup.object().shape({
 });
 
 const ExceptionalApproval: React.FC = () => {
-    const { control, handleSubmit, formState: { errors }, watch, reset } = useForm({
+    const { control, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(schema),
     });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

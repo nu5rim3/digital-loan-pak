@@ -1,14 +1,8 @@
 import React, { useState } from 'react'
-import { Button, Card, Divider, Layout } from 'antd'
+import { Card, Divider, Layout } from 'antd'
 import SearchBar from '../../../components/common/searchBar/SearchBar'
 import PaginatedTable from '../../../components/common/tables/PaginatedTable'
 import SideDrawer from '../../../components/common/drawer/Drawer'
-import Verification from './CustomerOnboarding/Verification'
-import CRIBDetails from './CustomerOnboarding/CRIBDetails'
-import ExceptionalApproval from './CustomerOnboarding/ExceptionalApproval'
-import OTPModal from '../../../components/common/modal/OTPModal'
-import CustomerDetails from './CustomerOnboarding/CustomerDetails'
-import NADRAModal from '../../../components/common/modal/NADRAModal'
 import CustomerOnboarding from './CustomerOnboarding'
 
 const { Content } = Layout

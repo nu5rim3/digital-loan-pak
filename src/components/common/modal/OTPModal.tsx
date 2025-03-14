@@ -59,7 +59,9 @@ const OTPModal: React.FC<OTPModalProps> = ({ visible, onCancel }) => {
                                 render={({ field }) => (
                                     <Input
                                         {...field}
-                                        ref={(el) => (otpRefs.current[index] = el as unknown as HTMLInputElement)}
+                                        ref={(el) => {
+                                            otpRefs.current[index] = el as unknown as HTMLInputElement;
+                                        }}
                                         maxLength={1}
                                         style={{ width: 40, textAlign: "center", fontSize: "18px", marginRight: 5 }}
                                         onChange={(e) => {
