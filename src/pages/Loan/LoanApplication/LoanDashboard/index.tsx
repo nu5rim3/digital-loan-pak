@@ -7,8 +7,8 @@ const appID = 'APP0935093095'
 
 const statuses = [
     { label: "Customer", color: "green", path: 'customer', status: 'Verified' },
-    { label: "Guarantor", color: "red", path: 'guarantor', status: 'Pending' },
-    { label: "Witness", color: "yellow", path: 'witness', status: 'Failed' },
+    { label: "Guarantor", color: "red", path: 'guarantor', status: 'Failed' },
+    { label: "Witness", color: "yellow", path: 'witness', status: 'Pending' },
 ];
 
 const LoanDaashboard: React.FC = () => {
@@ -28,7 +28,7 @@ const LoanDaashboard: React.FC = () => {
                             onClick={() => navigate(`${status.path}`)}
                         >
                             {/* <span className={`absolute top-3 right-3 w-5 h-5 rounded-full ${status.color}`} /> */}
-                            <Tag color={`${status.color}`} className="absolute w-5 right-3 top-3 left-3">Verfied</Tag>
+                            <Tag color={`${status.color}`} className="absolute w-20 top-3 right-3 text-center">{status.status}</Tag>
 
                             <p className="font-semibold text-xl">{status.label}</p>
                         </Card>

@@ -1,8 +1,10 @@
 import { DownOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined } from '@ant-design/icons';
-import { Avatar, Button, Dropdown, Layout, MenuProps, Space, Tag } from 'antd';
-import React from 'react'
+import { Avatar, Button, Dropdown, Layout, MenuProps, Skeleton, Space, Tag } from 'antd';
+import React, { useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import { mainURL } from '../../../App';
+import { IAuthContext, AuthContext } from 'react-oauth2-code-pkce';
+import useUserStore from '../../../store/userStore';
 const { Header } = Layout;
 
 export interface ICHeaderProps {
@@ -10,6 +12,9 @@ export interface ICHeaderProps {
   setCollapsed: React.Dispatch<React.SetStateAction<boolean>>,
 }
 const CHeader: React.FC<ICHeaderProps> = ({ collapsed, setCollapsed }) => {
+
+  const { logOut } = useContext<IAuthContext>(AuthContext);
+  const { user } = useUserStore()
 
   const navigate = useNavigate();
 
@@ -45,11 +50,12 @@ const CHeader: React.FC<ICHeaderProps> = ({ collapsed, setCollapsed }) => {
       key: '4',
       danger: true,
       label: <a onClick={() => {
-        console.log('Logout')
-        localStorage.removeItem('selectedRole')
-        localStorage.clear()
-        sessionStorage.clear()
-        navigate(`${mainURL}/login`)
+        // console.log('Logout')
+        // localStorage.removeItem('selectedRole')
+        // localStorage.clear()
+        // sessionStorage.clear()
+        logOut();
+        // navigate(`${mainURL}/login`)
       }} >
         Logout
       </a>,
@@ -76,7 +82,11 @@ const CHeader: React.FC<ICHeaderProps> = ({ collapsed, setCollapsed }) => {
             <a onClick={(e) => e.preventDefault()}>
               <Space className='text-white'>
                 <Avatar size={32} icon={<UserOutlined />} className='bg-blue-500' />
-                {'UserName'}
+                {user?.userName ? (
+                  <b>{user?.userName}</b>
+                ) : (
+                  <Skeleton.Input style={{ width: 120 }} active size="small" />
+                )}
                 <DownOutlined />
               </Space>
             </a>

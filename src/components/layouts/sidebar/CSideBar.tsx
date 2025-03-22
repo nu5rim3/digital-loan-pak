@@ -18,10 +18,11 @@ export interface ICSideBarProps {
 
 const { Sider } = Layout;
 
-const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
+const tenet = import.meta.env.VITE_TENET;
+const baseURL = import.meta.env.VITE_BASE_URL;
 
-    const tenet = import.meta.env.VITE_TENET;
-    const baseURL = import.meta.env.VITE_BASE_URL;
+const mainNavigation = `${tenet}-${baseURL}/auth`
+const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
 
     const navigate = useNavigate();
 
@@ -35,7 +36,7 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
             label: 'Dashboard',
             key: '1',
             icon: <ProductOutlined />,
-            onClick: () => navigate(`/${tenet}-${baseURL}/dashboard`),
+            onClick: () => navigate(`/${mainNavigation}/dashboard`),
             roles: ["ADMIN", "EDITOR", "VIEWER"],
         },
         {
@@ -49,19 +50,19 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
                     label: 'Roles',
                     key: '2-1',
                     icon: <UserSwitchOutlined />,
-                    onClick: () => navigate(`/${tenet}-${baseURL}/permission/roles`)
+                    onClick: () => navigate(`/${mainNavigation}/permission/roles`)
                 },
                 {
                     label: 'System Users',
                     key: '2-2',
                     icon: <DeploymentUnitOutlined />,
-                    onClick: () => navigate(`/${tenet}-${baseURL}/permission/accounts`)
+                    onClick: () => navigate(`/${mainNavigation}/permission/accounts`)
                 },
                 {
                     label: 'Business Introducers',
                     key: '2-3',
                     icon: <UsergroupAddOutlined />,
-                    onClick: () => navigate(`/${tenet}-${baseURL}/permission/members`)
+                    onClick: () => navigate(`/${mainNavigation}/permission/members`)
                 }
             ]
         },
@@ -76,19 +77,19 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
                     label: 'Group',
                     key: '4-1',
                     icon: <GroupOutlined />,
-                    onClick: () => navigate(`/${tenet}-${baseURL}/approval/group`)
+                    onClick: () => navigate(`/${mainNavigation}/approval/group`)
                 },
                 {
                     label: 'User',
                     key: '4-2',
                     icon: <UserOutlined />,
-                    onClick: () => navigate(`/${tenet}-${baseURL}/approval/user`)
+                    onClick: () => navigate(`/${mainNavigation}/approval/user`)
                 },
                 {
                     label: 'Workflow',
                     key: '4-3',
                     icon: <ApartmentOutlined />,
-                    onClick: () => navigate(`/${tenet}-${baseURL}/approval/workflow`)
+                    onClick: () => navigate(`/${mainNavigation}/approval/workflow`)
                 }
             ]
         },
@@ -103,7 +104,7 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
                     label: 'Origination',
                     key: '3-1',
                     icon: <ProjectOutlined />,
-                    onClick: () => navigate(`/${tenet}-${baseURL}/gold/goldsmith`)
+                    onClick: () => navigate(`/${mainNavigation}/gold/goldsmith`)
                 },
             ]
         },
@@ -118,7 +119,7 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
                     label: 'Loan Request',
                     key: '5-1',
                     icon: <UngroupOutlined />,
-                    onClick: () => navigate(`/${tenet}-${baseURL}/loan/application`),
+                    onClick: () => navigate(`/${mainNavigation}/loan/application`),
                 },
             ]
         }

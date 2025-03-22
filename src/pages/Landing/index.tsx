@@ -1,6 +1,4 @@
-import React, {
-  // useContext
-} from 'react';
+import React, { useContext } from 'react';
 import { Button, Layout, Typography } from 'antd';
 import Logo1 from '../../assets/full_logo_black.png'
 import Logo from '../../assets/LOLC_CONVENTIONAL.png'
@@ -8,18 +6,19 @@ import CFooter from '../../components/layouts/footer/CFooter';
 // import { IAuthContext, AuthContext } from 'react-oauth2-code-pkce';
 import { useNavigate } from 'react-router-dom';
 import { mainURL } from '../../App';
+import { IAuthContext, AuthContext } from 'react-oauth2-code-pkce';
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
 const Landing: React.FC = () => {
 
-  const navigate = useNavigate();
+  const { token, loginInProgress, logIn, logOut } = useContext<IAuthContext>(AuthContext);
 
   // const { logIn } = useContext<IAuthContext>(AuthContext);
 
   const handleGetStarted = () => {
-    // logIn();
-    navigate(`${mainURL}/login`);
+    logIn();
+    // navigate(`${mainURL}/login`);
   }
 
   return (

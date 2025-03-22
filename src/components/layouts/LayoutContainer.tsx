@@ -13,11 +13,20 @@ const LayoutContainer: React.FC = () => {
     return (
         <Layout style={{ minHeight: '100vh' }}>
             <CSideBar collapsed={collapsed} setCollapsed={setCollapsed} />
-            <Layout>
+            <Layout style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
                 <CHeader collapsed={collapsed} setCollapsed={setCollapsed} />
-                <Content className='p-4'>
-                    <Outlet />
-                </Content>
+                {/* Wrapper to control height and scrolling */}
+                <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                    <Content
+                        className="p-4"
+                        style={{
+                            flex: 1,
+                            overflowY: 'auto',
+                        }}
+                    >
+                        <Outlet />
+                    </Content>
+                </div>
                 <CFooter />
             </Layout>
         </Layout>

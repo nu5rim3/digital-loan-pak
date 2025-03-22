@@ -1,28 +1,58 @@
-import { Button, Card, Form, Tag } from 'antd'
-import React from 'react'
+import { Button, Card, Form, Input, Tag } from 'antd'
+import React, { useEffect } from 'react'
+import useVerificationStore from '../../../../store/verificationStore';
+import { formatName, formatSentence } from '../../../../utils/formatterFunctions';
+import { ReloadOutlined } from "@ant-design/icons";
 
-const Verification: React.FC = () => {
+interface IBlacklistVerification {
+    customerIdx: string;
+    customerCNIC: string;
+}
+
+const Verification: React.FC<IBlacklistVerification> = ({ customerCNIC, customerIdx }) => {
+
+
+    const { blacklistDetails, fetchBlacklistByCnic, blLoading } = useVerificationStore()
+
     const onRefresh = () => {
-        console.log("Refreshed")
+        fetchBlacklistByCnic(customerCNIC)
     }
 
+    useEffect(() => {
+        fetchBlacklistByCnic(customerCNIC)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [customerCNIC])
+
+
     return (
-        <Card title={'Blacklist Verification'}>
+        <Card title={'Blacklist Verification'} loading={blLoading} extra={
+            <Button type="text" icon={<ReloadOutlined />} onClick={onRefresh} />
+        }>
             <Form>
-                <div className="grid grid-cols-3 gap-3">
-                    <Form.Item label="Name">
-                        <b>Shabira</b>
-                    </Form.Item>
-                    <Form.Item label="CNIC">
-                        <b>12103-24-424-424</b>
-                    </Form.Item>
-                    <Form.Item label="MSAS Status">
-                        <Tag color="green">Verfied</Tag>
-                        {/* <Tag color="red">Blacklisted</Tag> */}
-                    </Form.Item>
-                </div>
-                <div>
-                    <Button type="primary" onClick={onRefresh}>Refresh</Button>
+                <div className="grid grid-cols-2 gap-3">
+                    {blacklistDetails?.detail === null ? <Form.Item><b>{blacklistDetails.message}</b></Form.Item> :
+                        <>
+                            <Form.Item label="Name">
+                                <b>{formatName(blacklistDetails?.rejectClientName ?? '-')}</b>
+                            </Form.Item>
+                            <Form.Item label="CNIC">
+                                <b>{customerCNIC}</b>
+                            </Form.Item>
+                            <Form.Item label="Blacklist Status">
+                                {
+                                    blacklistDetails?.blacklistStatus === 'REJECT' &&
+                                    <Tag color='red'><b>Blacklisted</b></Tag>
+                                }
+                                {
+                                    blacklistDetails?.blacklistStatus === 'APPROVE' &&
+                                    <Tag color='green'><b>Not Blacklisted</b></Tag>
+                                }
+                            </Form.Item>
+                            <Form.Item label="Reason">
+                                <b>{formatSentence(blacklistDetails?.blacklistReason ?? '-')}</b>
+                            </Form.Item>
+
+                        </>}
                 </div>
             </Form>
         </Card>

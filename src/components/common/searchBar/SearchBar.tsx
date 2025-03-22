@@ -16,9 +16,10 @@ const options = [
 
 type SearchBarProps = {
     action: () => void;
+    actionLoading?: boolean;
 };
 
-const SearchBar: React.FC<SearchBarProps> = ({ action }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ actionLoading, action }) => {
     const [searchType, setSearchType] = useState('Search By');
     const [searchValue, setSearchValue] = useState('');
     const [isloading, setIsloading] = useState(false);
@@ -71,7 +72,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ action }) => {
             </Space.Compact>
 
             <div className='flex flex-1'></div>
-            <Button type="primary" onClick={handleCreateNew} icon={<PlusOutlined />}>
+            <Button type="primary" onClick={handleCreateNew} icon={<PlusOutlined />} loading={actionLoading}>
                 New Loan
             </Button>
         </div>

@@ -4,6 +4,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import TextArea from 'antd/es/input/TextArea';
+import { CheckSquareOutlined } from '@ant-design/icons';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
@@ -48,7 +49,7 @@ const ExceptionalApproval: React.FC = () => {
                     </Form.Item>
                 </div>
                 <div>
-                    <Button type="primary" htmlType="submit" danger>Exceptional Approval</Button>
+                    <Button type="primary" htmlType="submit" danger icon={<CheckSquareOutlined />}>Exceptional Approval</Button>
                 </div>
             </Form>
         </Card>

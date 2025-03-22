@@ -13,7 +13,7 @@ interface StatusCardProps {
 const StatusCard: React.FC<StatusCardProps> = ({ title, value, hcolor, bcolor, icon, itemKey }) => {
 
     return (
-        <Card bordered={false} className={`mr-1 ${hcolor} ${bcolor}`} onClick={() => console.log('[KEY] - ', itemKey)}>
+        <Card variant='borderless' className={`mr-1 ${hcolor} ${bcolor}`} onClick={() => console.log('[KEY] - ', itemKey)}>
             <div className='flex flex-row justify-between'>
                 <div>
                     <div className='text-2xl'>{title}</div>

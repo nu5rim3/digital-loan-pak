@@ -25,10 +25,9 @@ const dashboards = [
 export default function DashboardSelection() {
     const [selected, setSelected] = useState('');
     const [loading, setLoading] = useState(false);
-    const { token, tokenData, logOut } = useContext<IAuthContext>(AuthContext);
+    const { logOut } = useContext<IAuthContext>(AuthContext);
 
-    console.log('Token:', token);
-    console.log('Token Data:', tokenData);
+
 
     const navigate = useNavigate();
 
