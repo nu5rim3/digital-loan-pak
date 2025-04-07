@@ -1,27 +1,27 @@
-import { Button, Card, Form, Input, Tag } from 'antd'
+import { Button, Card, Form, Tag } from 'antd'
 import React, { useEffect } from 'react'
-import useVerificationStore from '../../../../store/verificationStore';
-import { formatName, formatSentence } from '../../../../utils/formatterFunctions';
 import { ReloadOutlined } from "@ant-design/icons";
+import useVerificationStore from '../../../store/verificationStore';
+import { formatName, formatSentence, dateFormats } from '../../../utils/formatterFunctions';
 
 interface IBlacklistVerification {
-    customerIdx: string;
-    customerCNIC: string;
+    idx: string;
+    cnic: string;
 }
 
-const Verification: React.FC<IBlacklistVerification> = ({ customerCNIC, customerIdx }) => {
+const BlacklistVerification: React.FC<IBlacklistVerification> = ({ cnic }) => {
 
 
     const { blacklistDetails, fetchBlacklistByCnic, blLoading } = useVerificationStore()
 
     const onRefresh = () => {
-        fetchBlacklistByCnic(customerCNIC)
+        fetchBlacklistByCnic(cnic)
     }
 
     useEffect(() => {
-        fetchBlacklistByCnic(customerCNIC)
+        fetchBlacklistByCnic(cnic)
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [customerCNIC])
+    }, [cnic])
 
 
     return (
@@ -36,7 +36,7 @@ const Verification: React.FC<IBlacklistVerification> = ({ customerCNIC, customer
                                 <b>{formatName(blacklistDetails?.rejectClientName ?? '-')}</b>
                             </Form.Item>
                             <Form.Item label="CNIC">
-                                <b>{customerCNIC}</b>
+                                <b>{cnic}</b>
                             </Form.Item>
                             <Form.Item label="Blacklist Status">
                                 {
@@ -51,6 +51,12 @@ const Verification: React.FC<IBlacklistVerification> = ({ customerCNIC, customer
                             <Form.Item label="Reason">
                                 <b>{formatSentence(blacklistDetails?.blacklistReason ?? '-')}</b>
                             </Form.Item>
+                            <Form.Item label="Blacklisted Date">
+                                <b>{dateFormats(blacklistDetails?.blacklistedDate ?? '-', 'YYYY-MM-DD')}</b>
+                            </Form.Item>
+                            <Form.Item label="Blacklisted By">
+                                <b>{blacklistDetails?.blacklistedUser ?? '-'}</b>
+                            </Form.Item>
 
                         </>}
                 </div>
@@ -59,4 +65,4 @@ const Verification: React.FC<IBlacklistVerification> = ({ customerCNIC, customer
     )
 }
 
-export default Verification
+export default BlacklistVerification;

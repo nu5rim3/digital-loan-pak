@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { useForm, Controller } from "react-hook-form";
-import { Input, Form, Button, Card, Select } from "antd";
-import * as yup from "yup";
-import { yupResolver } from '@hookform/resolvers/yup';
-
-import useStakeholderStore from '../../../../../store/stakeholderStore';
-import useCommonStore from '../../../../../store/commonStore';
-import { formatCNIC } from '../../../../../utils/formatterFunctions';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Button, Card, Form, Input, Select } from 'antd';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Controller, useForm } from 'react-hook-form';
+import * as yup from "yup";
+import useStakeholderStore, { IStakeholder } from '../../../../../store/stakeholderStore';
 import useCustomerStore from '../../../../../store/customerStore';
-import { CaretLeftOutlined, EditOutlined, UndoOutlined } from '@ant-design/icons';
+import useCommonStore from '../../../../../store/commonStore';
 import { getStakeholderByType } from '../../../../../utils/stakholderFunction';
+import { formatCNIC } from '../../../../../utils/formatterFunctions';
+import { CaretLeftOutlined, EditOutlined, UndoOutlined } from '@ant-design/icons';
+
+interface IGuarantorDetails {
+    formDetails?: IStakeholder[];
+}
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
@@ -28,33 +31,26 @@ const schema = yup.object().shape({
     stkAge: yup.string().required("Age is required"),
     stkGender: yup.string().required("Gender is required"),
     stkMaritialStatus: yup.string().required("Maritial Status is required"),
-    stkMaritialComment: yup.string().required("Maritial Comment is required"),
     stkTitle: yup.string().required("Title is required"),
     stkFatherOrHusName: yup.string().required("Father or Husband Name is required"),
-    stkEduLevel: yup.string().required("Education Level is required"),
-    stkPhysDisability: yup.string().required("Physical Disability is required"),
-    headOfFamily: yup.string().required("Head of Family is required"),
-    healthCondition: yup.string().required("Health Condition is required"),
-    stkSequence: yup.string(),
-    stkNumOfDependents: yup.string().nullable(),
-    stkNumOfEarners: yup.string().nullable(),
-    stkCusCode: yup.string().nullable(),
-    stkGrpRefNo: yup.string().nullable(),
-    stkPhysDisabilityDesce: yup.string().nullable(),
-    geoLocation: yup.string().required("Geo Location is required"),
+    currentResidences: yup.string().required("Current Residence is required"),
+    relationship: yup.string().required("Relationship is required"),
+    modeOfSecurity: yup.string().required("Mode of Security is required"),
 });
 
-const CustomerDetails: React.FC = () => {
+const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
 
-    const { control, handleSubmit, formState: { errors }, setValue, watch, reset } = useForm({
+    const { control, handleSubmit, formState: { errors }, setValue, reset } = useForm({
         resolver: yupResolver(schema),
     });
-    const { organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, educationLevel, educationLevelLoading, fetchEducationLevel, headOfFamily, headOfFamilyLoading, fetchHeadOfFamily, healthCondition, healthConditionLoading, fetchHealthCondition } = useCommonStore()
+
+    const { organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, fetchEducationLevel, headOfFamily, headOfFamilyLoading, fetchHeadOfFamily, healthCondition, healthConditionLoading, fetchHealthCondition } = useCommonStore()
     const { stakeholderLoading, stakeholders, fetchStackholderByAppId, addStakeholder, updateStakeholder } = useStakeholderStore()
     const { customers, fetchCustomerByAppId } = useCustomerStore()
     const { appId } = useParams()
     const navigate = useNavigate();
     const mode = useLocation().state?.mode ?? 'create';
+    const selectedIndex = useLocation().state?.selectedIndx ?? '0';
 
     const [stakholderId, setStakholderId] = useState('');
 
@@ -81,17 +77,15 @@ const CustomerDetails: React.FC = () => {
 
     useEffect(() => {
         if (mode === 'edit') {
-            const formDetails = getStakeholderByType('C', stakeholders)[0]
+            const formDetails = getStakeholderByType('G', stakeholders)[selectedIndex]
             setStakholderId(formDetails?.idx)
             if (formDetails) {
                 setValue("appraisalID", formDetails?.appraisalID ?? appId ?? '');
-                setValue("stkSequence", formDetails?.stkSequence);
                 setValue("stkOrgType", formDetails?.stkOrgType);
                 setValue("stkCNic", formDetails?.stkCNic);
                 setValue("stkCNicIssuedDate", formDetails?.stkCNicIssuedDate);
                 setValue("stkCNicExpDate", formDetails?.stkCNicExpDate);
                 setValue("stkCNicStatus", formDetails?.stkCNicStatus);
-                setValue("stkCusCode", formDetails?.stkCusCode ?? '');
                 setValue("stkCusName", formDetails?.stkCusName);
                 setValue("stkInitials", formDetails?.stkInitials);
                 setValue("stkSurName", formDetails?.stkSurName);
@@ -100,31 +94,17 @@ const CustomerDetails: React.FC = () => {
                 setValue("stkAge", formDetails?.stkAge);
                 setValue("stkGender", formDetails?.stkGender);
                 setValue("stkMaritialStatus", formDetails?.stkMaritialStatus);
-                setValue("stkMaritialComment", formDetails?.stkMaritialComment);
                 setValue("stkTitle", formDetails?.stkTitle);
                 setValue("stkFatherOrHusName", formDetails?.stkFatherOrHusName);
-                setValue("stkNumOfDependents", formDetails?.stkNumOfDependents);
-                setValue("stkNumOfEarners", formDetails?.stkNumOfEarners);
-                setValue("stkEduLevel", formDetails?.stkEduLevel);
-                setValue("stkPhysDisability", formDetails?.stkPhysDisability);
-                setValue("stkPhysDisabilityDesce", formDetails?.stkPhysDisabilityDesce);
-                setValue("stkGrpRefNo", formDetails?.stkGrpRefNo ?? '');
-                setValue("headOfFamily", formDetails?.headOfFamily);
-                setValue("healthCondition", formDetails?.healthCondition);
-                setValue("geoLocation", formDetails?.geoLocation);
+                setValue("currentResidences", formDetails?.currentResidences);
+                setValue("relationship", formDetails?.relationship);
+                setValue("modeOfSecurity", formDetails?.modeOfSecurity);
             }
-        }
-
-        if (customers.length > 0) {
-            setValue("stkCusName", customers[0]?.fullName);
-            setValue("stkCNic", customers[0]?.identificationNumber);
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [stakeholders, customers])
 
-
-    const physDisability = watch('stkPhysDisability');
 
     console.log('errors : ', errors);
 
@@ -139,7 +119,6 @@ const CustomerDetails: React.FC = () => {
 
     return (
         <div className='flex flex-col gap-3'>
-
             <Card title="Personal Details">
                 <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
                     <div className="grid grid-cols-4 gap-3">
@@ -281,24 +260,6 @@ const CustomerDetails: React.FC = () => {
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="Education Level" validateStatus={errors.stkEduLevel ? "error" : ""} help={errors.stkEduLevel?.message} required>
-                            <Controller
-                                name="stkEduLevel"
-                                control={control}
-                                render={({ field }) =>
-                                    <Select
-                                        {...field}
-                                        allowClear
-                                        options={educationLevel.map((item) => ({
-                                            label: item.description,
-                                            value: item.code
-                                        }))}
-                                        placeholder="Select Education Level"
-                                        loading={educationLevelLoading}
-                                    />
-                                }
-                            />
-                        </Form.Item>
                         <Form.Item label="Maritial Status" validateStatus={errors.stkMaritialStatus ? "error" : ""} help={errors.stkMaritialStatus?.message} required>
                             <Controller
                                 name="stkMaritialStatus"
@@ -318,13 +279,7 @@ const CustomerDetails: React.FC = () => {
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="Maritial Comment" validateStatus={errors.stkMaritialComment ? "error" : ""} help={errors.stkMaritialComment?.message} required>
-                            <Controller
-                                name="stkMaritialComment"
-                                control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Maritial Comment" />}
-                            />
-                        </Form.Item>
+
 
                         <Form.Item label="Father or Husband Name" validateStatus={errors.stkFatherOrHusName ? "error" : ""} help={errors.stkFatherOrHusName?.message} required>
                             <Controller
@@ -333,98 +288,35 @@ const CustomerDetails: React.FC = () => {
                                 render={({ field }) => <Input {...field} placeholder="Enter Father or Husband Name" />}
                             />
                         </Form.Item>
-                        <Form.Item label="Number of Dependents" validateStatus={errors.stkNumOfDependents ? "error" : ""} help={errors.stkNumOfDependents?.message} hidden>
+                        <Form.Item label="Current Residence" validateStatus={errors.currentResidences ? "error" : ""} help={errors.currentResidences?.message} required>
                             <Controller
-                                name="stkNumOfDependents"
+                                name="currentResidences"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Number of Dependents" value={field.value || ''} />}
+                                render={({ field }) => <Input {...field} placeholder="Enter Current Residence" />}
                             />
                         </Form.Item>
-                        <Form.Item label="Number of Earners" validateStatus={errors.stkNumOfEarners ? "error" : ""} help={errors.stkNumOfEarners?.message}>
+                        <Form.Item label="Relationship" validateStatus={errors.relationship ? "error" : ""} help={errors.relationship?.message} required>
                             <Controller
-                                name="stkNumOfEarners"
-                                control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Number of Earners" value={field.value || ''} />}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Customer Code" validateStatus={errors.stkCusCode ? "error" : ""} help={errors.stkCusCode?.message}>
-                            <Controller
-                                name="stkCusCode"
-                                control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Customer Code" value={field.value || ''} />}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Group Reference Number" validateStatus={errors.stkGrpRefNo ? "error" : ""} help={errors.stkGrpRefNo?.message}>
-                            <Controller
-                                name="stkGrpRefNo"
-                                control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Group Reference Number" value={field.value || ''} />}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Head of Family" validateStatus={errors.headOfFamily ? "error" : ""} help={errors.headOfFamily?.message} required>
-                            <Controller
-                                name="headOfFamily"
+                                name="relationship"
                                 control={control}
                                 render={({ field }) =>
-                                    <Select
-                                        {...field}
-                                        allowClear
-                                        options={headOfFamily.map((item) => ({
-                                            label: item.description,
-                                            value: item.code
-                                        }))}
-                                        placeholder="Select Head of Family"
-                                        loading={headOfFamilyLoading}
-                                    />
-                                }
-                            />
-                        </Form.Item>
-                        <Form.Item label="Health Condition" validateStatus={errors.healthCondition ? "error" : ""} help={errors.healthCondition?.message} required>
-                            <Controller
-                                name="healthCondition"
-                                control={control}
-                                render={({ field }) => <Select
-                                    {...field}
-                                    allowClear
-                                    options={healthCondition.map((item) => ({
+                                    <Select {...field} placeholder="Select a Relationship" allowClear loading={headOfFamilyLoading} options={headOfFamily.map((item) => ({
                                         label: item.description,
                                         value: item.code
-                                    }))}
-                                    placeholder="Select Health Condition"
-                                    loading={healthConditionLoading}
-                                />}
+                                    }))}>
+                                    </Select>}
                             />
                         </Form.Item>
-                        <Form.Item label="Physical Disability" validateStatus={errors.stkPhysDisability ? "error" : ""} help={errors.stkPhysDisability?.message} required>
+                        <Form.Item label="Mode of Security" validateStatus={errors.modeOfSecurity ? "error" : ""} help={errors.modeOfSecurity?.message} required>
                             <Controller
-                                name="stkPhysDisability"
+                                name="modeOfSecurity"
                                 control={control}
-                                render={({ field }) => (
-                                    <Select
-                                        {...field}
-                                        value={field.value === undefined ? null : field.value}
-                                        allowClear
-                                        options={[
-                                            { value: 'true', label: 'Yes' },
-                                            { value: 'false', label: 'No' },
-                                        ]}
-                                        placeholder="Select Physical Disability"
-                                    />
-                                )}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Physical Disability Description" validateStatus={errors.stkPhysDisabilityDesce ? "error" : ""} help={errors.stkPhysDisabilityDesce?.message} hidden={physDisability === 'false'}>
-                            <Controller
-                                name="stkPhysDisabilityDesce"
-                                control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Physical Disability Description" value={field.value || ''} />}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Geo Location" validateStatus={errors.geoLocation ? "error" : ""} help={errors.geoLocation?.message} required>
-                            <Controller
-                                name="geoLocation"
-                                control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Geo Location" />}
+                                render={({ field }) =>
+                                    <Select {...field} placeholder="Select a Mode of Security" allowClear loading={healthConditionLoading} options={healthCondition.map((item) => ({
+                                        label: item.description,
+                                        value: item.code
+                                    }))}>
+                                    </Select>}
                             />
                         </Form.Item>
                     </div>
@@ -445,8 +337,8 @@ const CustomerDetails: React.FC = () => {
             <Card title={'Contact Information'}>
 
             </Card>
-        </div>
+        </div >
     )
 }
 
-export default CustomerDetails
+export default GuarantorDetails

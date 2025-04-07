@@ -8,6 +8,7 @@ const API = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL as string,
   headers: {
     "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
   },
 });
 
@@ -15,6 +16,7 @@ const APIAuth = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL as string,
   headers: {
     "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
   },
 });
 
@@ -23,6 +25,7 @@ const APIFileInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL as string,
   headers: {
     "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
   },
 });
 
@@ -33,12 +36,7 @@ const authInterceptor = (config: InternalAxiosRequestConfig) => {
     config.headers.Authorization = `Bearer ${token}`;
     try {
       const decodedToken = jwtDecode(token);
-      if (
-        config.method?.toUpperCase() === "POST" ||
-        config.method?.toUpperCase() === "PUT"
-      ) {
-        config.headers["X-Auth-Token"] = btoa(decodedToken?.sub || "");
-      }
+      config.headers["X-Auth-Token"] = btoa(decodedToken?.sub || "");
     } catch (error) {
       console.error("Invalid token:", error);
     }

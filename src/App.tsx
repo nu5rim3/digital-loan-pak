@@ -8,6 +8,10 @@ import PrivateRoute from './routes/PrivateRoute';
 import { AuthContext, AuthProvider, IAuthContext } from 'react-oauth2-code-pkce';
 import { authConfig2 } from './authorization/authConfig';
 import useUserStore from './store/userStore';
+import Customers from './pages/Users/Customers';
+import Guarantors from './pages/Users/Guarantors';
+import Witnesses from './pages/Users/Witnesses';
+import themeConfig from './utils/themeConfig';
 
 const LoginPage = lazy(() => import('./pages/Login'))
 const LandingPage = lazy(() => import('./pages/Landing'))
@@ -25,10 +29,11 @@ const DashboardSelection = lazy(() => import('./pages/DashboardSelection'))
 const LoanApplication = lazy(() => import('./pages/Loan/LoanApplication'))
 const UnderConstruction = lazy(() => import('./pages/UnderConstroction'))
 const UnauthorizedPage = lazy(() => import('./pages/UnauthorizedPage/UnauthorizedPage'))
-const LoanDaashboard = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard'))
-const CustomerOnboarding = lazy(() => import('./pages/Loan/LoanApplication/CustomerOnboarding'))
+const LoanDashboard = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard'))
+const CustomerOnboarding = lazy(() => import('./pages/Users/Customers/CustomerOnboarding'))
+const GuarantorOnboarding = lazy(() => import('./pages/Users/Guarantors/GuarantorOnboarding'))
 const CustomerDetails = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard/Customer/CustomerDetails'))
-const GuarantorDetail = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard/Guarantor/GuarantorDetail'))
+const GuarantorDetail = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard/Guarantor/GuarantorDetails'))
 const WitnessDetails = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard/Witness/WitnessDetails'))
 
 const tenet = import.meta.env.VITE_TENET;
@@ -36,17 +41,16 @@ const baseURL = import.meta.env.VITE_BASE_URL;
 
 export const mainURL = `/${tenet}-${baseURL}/auth`;
 
-
 const AuthWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // localStorage.clear();
   const { token, tokenData, loginInProgress } = useContext<IAuthContext>(AuthContext);
-  const { user, fetchUserByUserName } = useUserStore()
+  const { user, fetchUserByUserName } = useUserStore();
 
-  console.log("token", token);
+
   useEffect(() => {
     if (token && tokenData) {
       localStorage.setItem("token", token);
-      fetchUserByUserName(tokenData.sub)
+      fetchUserByUserName(tokenData.sub);
+      // selectingRole(user.);
     }
   }, [token]);
 
@@ -55,9 +59,7 @@ const AuthWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }
 
   if (!token) {
-    return (
-      <LandingPage />
-    );
+    return <LandingPage />;
   }
 
   if (!user) {
@@ -72,21 +74,8 @@ const AuthWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 };
 
 const App: React.FC = () => {
-
-
   return (
-    <ConfigProvider
-    // theme={{
-    //   token: {
-    //     // Seed Token
-    //     colorPrimary: '#87282b',
-    //     borderRadius: 5,
-
-    //     // Alias Token
-    //     colorBgContainer: '#f6ffed',
-    //   },
-    // }}
-    >
+    <ConfigProvider theme={themeConfig}>
       <AuthProvider authConfig={authConfig2}>
         <Suspense fallback={<PageLoader />}>
           <RoleProvider>
@@ -117,15 +106,12 @@ const App: React.FC = () => {
                       <Routes>
                         <Route path="accounts" element={
                           <UnderConstruction />
-                          // <Accounts />
                         } />
                         <Route path="roles" element={
                           <UnderConstruction />
-                          // <Roles />
                         } />
                         <Route path="members" element={
                           <UnderConstruction />
-                          // <Members />
                         } />
                       </Routes>
                     }
@@ -133,67 +119,74 @@ const App: React.FC = () => {
                   <Route
                     path="approval/*"
                     element={
-
                       <Routes>
                         <Route path="group" element={
                           <UnderConstruction />
-                          // <Group />
                         } />
                         <Route path="user" element={
                           <UnderConstruction />
-                          // <User />
                         } />
                         <Route path="workflow" element={
                           <UnderConstruction />
-                          // <Workflow />
                         } />
                       </Routes>
-
                     }
                   />
                   <Route
                     path="gold/*"
                     element={
-
                       <Routes>
                         <Route path="goldsmith" element={
                           <UnderConstruction />
-                          // <GoldSmith />
                         } />
                         <Route path="marketvalue" element={
                           <UnderConstruction />
-                          // <MarketValue />
                         } />
                       </Routes>
-
                     }
                   />
+
+                  <Route
+                    path="users/*"
+                    element={
+                      <PrivateRoute allowedRoles={
+                        ["ADMIN", "BHO", "VIEWER"]
+                      } />}>
+                    <Route path="customer" element={<CustomerOnboarding />} />
+                    <Route path="customers" element={<Customers />} />
+                    <Route path="customer/:id" element={<UnderConstruction />} />
+
+                    <Route path="guarantor" element={<GuarantorOnboarding />} />
+                    <Route path="guarantors" element={<Guarantors />} />
+                    <Route path="guarantor/:id" element={<UnderConstruction />} />
+
+                    <Route path="witnesses" element={<Witnesses />} />
+                    <Route path="witness" element={<UnderConstruction />} />
+                    <Route path="witness/:id" element={<UnderConstruction />} />
+                  </Route>
+
                   <Route
                     path="loan/*"
                     element={
                       <PrivateRoute allowedRoles={
-                        ["ADMIN", "EDITOR", "VIEWER"]
-                      } userRole={'ADMIN'} />}>
+                        ["ADMIN", "BHO", "VIEWER"]
+                      } />}>
                     <Route path="application" element={<LoanApplication />} />
-                    <Route path="application/new" element={<CustomerOnboarding />} />
-                    <Route path="application/:id" element={<LoanDaashboard />} />
-                    <Route path="application/:id/customer" element={<CustomerDetails />} />
-                    <Route path="application/:id/guarantor" element={<GuarantorDetail />} />
-                    <Route path="application/:id/witness" element={<WitnessDetails />} />
-                    <Route path="marketvalue" element={
-                      <UnderConstruction />
-                      // <MarketValue />
-                    } />
+                    <Route path="application/:appId" element={<LoanDashboard />} />
+                    {/* <Route path="application/:appId" element={<CustomerOnboarding />} /> */}
+                    <Route path="application/:appId" element={<LoanDashboard />} />
+                    <Route path="application/:appId/customer" element={<CustomerDetails />} />
+                    <Route path="application/:appId/guarantor" element={<GuarantorDetail />} />
+                    <Route path="application/:appId/witness" element={<WitnessDetails />} />
                   </Route>
                 </Route>
               </Routes>
             </AuthWrapper>
           </RoleProvider>
         </Suspense>
-
       </AuthProvider>
     </ConfigProvider>
-  )
-}
+  );
+};
 
 export default App;

@@ -20,10 +20,10 @@ const schema = yup.object().shape({
 interface IExceptionalApproval {
     setOtpModalOpen: () => void;
     setNadraModalOpen: () => void;
-    NADRAStatus: string | null | undefined;
+    // NADRAStatus: string | null | undefined;
 }
 
-const ExceptionalApproval: React.FC<IExceptionalApproval> = ({ setOtpModalOpen, setNadraModalOpen, NADRAStatus }) => {
+const ExceptionalApproval: React.FC<IExceptionalApproval> = ({ setOtpModalOpen, setNadraModalOpen }) => {
     const { control, handleSubmit, formState: { errors }, setValue } = useForm({
         resolver: yupResolver(schema),
     });
@@ -104,7 +104,7 @@ const ExceptionalApproval: React.FC<IExceptionalApproval> = ({ setOtpModalOpen, 
                 </div>
                 <div>
                     <Button type="primary" htmlType="submit" danger icon={<CheckSquareOutlined />} loading={appraisalApprovalLoading}>Exceptional Approval</Button>
-                    <Button type='default' onClick={setNadraModalOpen} icon={<QrcodeOutlined />} disabled={NADRAStatus !== 'Y'}>View NADRA QR</Button>
+                    <Button type='default' onClick={setNadraModalOpen} icon={<QrcodeOutlined />}>Scan QR</Button>
                 </div>
             </Form>
         </Card>

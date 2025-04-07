@@ -30,11 +30,12 @@ interface ICustomerState {
   customerError: string | null;
 
   fetchCustomer: () => Promise<void>;
-  fetchCustomerById: (idx: string) => Promise<void>;
+  fetchCustomerByAppId: (idx: string) => Promise<void>;
   fetchCustomerByCNIC: (cnic: string) => Promise<void>;
   addCustomer: (customer: ICustomer) => Promise<void>;
   updateCustomer: (idx: string, updatedUser: ICustomer) => Promise<void>;
   deleteCustomer: (idx: string) => Promise<void>;
+  resetCustomer: () => void;
 }
 
 const useCustomerStore = create<ICustomerState>((set) => ({
@@ -55,11 +56,13 @@ const useCustomerStore = create<ICustomerState>((set) => ({
     }
   },
 
-  fetchCustomerById: async (idx: string) => {
+  fetchCustomerByAppId: async (appId: string) => {
     set({ customerLoading: true, customerError: null });
     try {
-      const response = await API.get(`/customer/${idx}`);
-      set({ selectedCustomer: response.data, customerLoading: false });
+      const response = await API.get(
+        `/mobixCamsClientele/v1/clienteles/${appId}/type/customer`
+      );
+      set({ customers: response.data, customerLoading: false });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({ customerError: error.message, customerLoading: false });
@@ -80,10 +83,10 @@ const useCustomerStore = create<ICustomerState>((set) => ({
   addCustomer: async (customer: ICustomer) => {
     set({ customerLoading: true, customerError: null, customer: null });
     try {
-      const response = await APIAuth.post(
-        "/mobixCamsClientele/v1/clienteles",
-        customer
-      );
+      const response = await APIAuth.post("/mobixCamsClientele/v1/clienteles", {
+        ...customer,
+        type: "C",
+      });
       set((state) => ({
         customer: response.data,
         customers: [...state.customers, response.data],
@@ -129,6 +132,8 @@ const useCustomerStore = create<ICustomerState>((set) => ({
       set({ customerError: error.message, customerLoading: false });
     }
   },
+
+  resetCustomer: () => set({ customer: null }),
 }));
 
 export default useCustomerStore;

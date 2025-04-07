@@ -1,11 +1,11 @@
-import { ApartmentOutlined, BlockOutlined, DeploymentUnitOutlined, GroupOutlined, NodeIndexOutlined, ProductOutlined, ProjectOutlined, RocketOutlined, RubyOutlined, UngroupOutlined, UsergroupAddOutlined, UserOutlined, UserSwitchOutlined } from '@ant-design/icons';
+import { ApartmentOutlined, BlockOutlined, DeploymentUnitOutlined, GroupOutlined, NodeIndexOutlined, ProductOutlined, ProjectOutlined, RocketOutlined, RubyOutlined, UngroupOutlined, UsergroupAddOutlined, UserOutlined, UserSwitchOutlined, TeamOutlined } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Logo1 from '../../../assets/full_logo_white.png';
 import Logo2 from '../../../assets/logo.png';
 import { ItemType as SideItemType } from 'antd/es/menu/interface';
-import { useRole } from '../../../hooks/RoleContext';
+import useUserStore from '../../../store/userStore';
 
 type CustomItemType = SideItemType & {
     roles?: string[];
@@ -110,14 +110,41 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
         },
         {
             type: 'submenu',
+            icon: <TeamOutlined />,
+            label: 'Application Users',
+            key: '5',
+            roles: ["ADMIN", "BHO"],
+            children: [
+                {
+                    label: 'Customers',
+                    key: '5-1',
+                    icon: <UserOutlined />,
+                    onClick: () => navigate(`/${mainNavigation}/users/customers`),
+                },
+                {
+                    label: 'Guarantors',
+                    key: '5-2',
+                    icon: <UserOutlined />,
+                    onClick: () => navigate(`/${mainNavigation}/users/guarantors`),
+                },
+                {
+                    label: 'Witnesses',
+                    key: '5-3',
+                    icon: <UserOutlined />,
+                    onClick: () => navigate(`/${mainNavigation}/users/witnesses`),
+                },
+            ]
+        },
+        {
+            type: 'submenu',
             icon: <RocketOutlined />,
             label: 'Loan Application',
-            key: '5',
-            roles: ["ADMIN"],
+            key: '6',
+            roles: ["ADMIN", 'BHO'],
             children: [
                 {
                     label: 'Loan Request',
-                    key: '5-1',
+                    key: '6-1',
                     icon: <UngroupOutlined />,
                     onClick: () => navigate(`/${mainNavigation}/loan/application`),
                 },
@@ -126,9 +153,9 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
 
     ]
 
-    const { selectedRole } = useRole();
+    const { currentRole } = useUserStore()
     // Filter menu based on selected role
-    const filteredMenu = items.filter((item: CustomItemType) => item.roles?.includes(selectedRole));
+    const filteredMenu = items.filter((item: CustomItemType) => item.roles?.includes(currentRole?.code ?? ''));
     const [openKeys, setOpenKeys] = useState<string[]>([]);
 
     const handleOpenChange = (keys: string[]) => {
@@ -150,7 +177,7 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
             <Menu
                 mode='inline'
                 theme='dark'
-                defaultSelectedKeys={['1']}
+                // defaultSelectedKeys={['1']}
                 openKeys={openKeys}
                 onOpenChange={handleOpenChange} // Ensures only one submenu stays open
                 items={filteredMenu}

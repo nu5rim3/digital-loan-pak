@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export function formatCurrency(value: number): string {
   const formattedValue = value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return formattedValue;
@@ -17,63 +19,24 @@ export function formatName(name: string) {
     .join(" "); // Join words back together
 }
 
-type Rule = {
-  name: string;
-  description: string;
-  status: string;
+export const dateFormats = (date: string, dateFormat: string) => {
+  const dateObj = new Date(date);
+  return moment(dateObj).format(`${dateFormat}`);
 };
 
-enum ActionType {
-  APPROVE = "APPROVE",
-  SPECIAL_APPROVAL = "SPECIAL_APPROVAL",
-  CLOSE = "CLOSE",
-  REFRESH = "REFRESH",
-  INVALID = "INVALID",
+export function kebabToTitleCase(str: string): string {
+  return str
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
-export const getApprovalStatus = (rules: Rule[]): string => {
-  if (!rules || rules.length === 0) return ActionType.INVALID;
+export const formatCNIC = (value: string) => {
+  const cleaned = value.replace(/\D/g, ""); // Remove non-numeric characters
+  const match = cleaned.match(/^(\d{0,5})(\d{0,7})?(\d{0,1})?$/);
+  if (!match) return value;
 
-  const cnicRule = rules.find(
-    (rule) => rule.name === "RUL_CNIC_ID_VERIFICATION"
-  );
-  const nameRule = rules.find(
-    (rule) => rule.name === "RUL_CNIC_NAME_VERIFICATION"
-  );
-
-  if (!cnicRule || !nameRule) {
-    return ActionType.INVALID; // If any required rule is missing
-  }
-
-  if (cnicRule.status === "N" && nameRule.status === "N") {
-    return ActionType.APPROVE;
-  }
-
-  if (cnicRule.status === "N" && nameRule.status === "Y") {
-    return ActionType.SPECIAL_APPROVAL;
-  }
-
-  if (cnicRule.status === "Y") {
-    return ActionType.CLOSE;
-  }
-
-  if (cnicRule.status === "P" && nameRule.status === "P") {
-    return ActionType.REFRESH;
-  }
-
-  return ActionType.INVALID;
-};
-
-export const getVerificationStatus = (rules: Rule[]) => {
-  const cnicRule = rules.find(
-    (rule) => rule.name === "RUL_CNIC_ID_VERIFICATION"
-  );
-  const nameRule = rules.find(
-    (rule) => rule.name === "RUL_CNIC_NAME_VERIFICATION"
-  );
-
-  return {
-    isNameVerify: nameRule ? nameRule.status === "N" : false, // "N" means Verified
-    isCnicVerify: cnicRule ? cnicRule.status === "N" : false, // "N" means Verified
-  };
+  return [match[1], match[2], match[3]]
+    .filter(Boolean) // Remove empty groups
+    .join("-");
 };

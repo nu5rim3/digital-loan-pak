@@ -11,11 +11,11 @@ const NADRAModal: React.FC<NADRAModalProps> = ({ open, onCancel }) => {
     return (
         <Modal
             open={open}
-            title="NADRA QR"
+            title="QR Verification"
             onCancel={onCancel}
             onOk={onCancel}
         >
-            <Divider>Scan the QR code below to get NADRA Verification</Divider>
+            <Divider>Scan the QR code below to get verification</Divider>
             {/* Place your QR code component here */}
             <div className='flex justify-center'>
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Card, Divider, Layout, Tag } from 'antd'
 import SearchBar from '../../../components/common/searchBar/SearchBar'
 import PaginatedTable from '../../../components/common/tables/PaginatedTable'
@@ -7,17 +7,21 @@ import PaginatedTable from '../../../components/common/tables/PaginatedTable'
 import { formatCurrency } from '../../../utils/formatterFunctions'
 import { useNavigate } from 'react-router-dom'
 import useLoanStore from '../../../store/loanStore'
+import { mainURL } from '../../../App'
 
 const { Content } = Layout
 
 
 const LoanApplication: React.FC = () => {
 
+    const navigate = useNavigate();
+    const { loading, addLoan } = useLoanStore();
+
     const columns = [
         {
             title: 'Application ID',
-            dataIndex: 'applicationID',
-            key: 'applicationID',
+            dataIndex: 'applicationId',
+            key: 'applicationId',
         },
         {
             title: 'Customer Name',
@@ -62,8 +66,9 @@ const LoanApplication: React.FC = () => {
             title: 'Action',
             key: 'action',
             align: 'right',
-            render: () => (
-                <a href='/'>View</a>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            render: (_: string, item: any) => (
+                <a onClick={() => navigate(`${item.applicationId}`)}>View</a>
             ),
         },
     ];
@@ -71,73 +76,80 @@ const LoanApplication: React.FC = () => {
     const dummyData = [
         {
             key: '1',
-            applicationID: 'APP0935093095',
+            applicationId: 'APP0000000066427',
             cusName: 'Shabira',
             loanType: 'Gold Loan',
             loanAmount: '100',
             status: 'C',
+            cidx: 'CLI0000000000003'
         },
         {
             key: '2',
-            applicationID: 'APP0935093095',
+            applicationId: 'APP0000000066425',
             cusName: 'Shabira',
             loanType: 'Gold Loan',
             loanAmount: '100000',
             status: 'P',
+            cidx: 'CLI0000000000003'
         },
         {
             key: '3',
-            applicationID: 'APP0935093095',
+            applicationId: "APP0000000000001",
             cusName: 'Shabira',
             loanType: 'Gold Loan',
             loanAmount: '100000',
             status: 'F',
+            cidx: 'CLI0000000000003'
         },
         {
             key: '4',
-            applicationID: 'APP0935093095',
+            applicationId: 'APP0000000066602',
             cusName: 'Shabira',
             loanType: 'Gold Loan',
             loanAmount: '100000',
             status: 'C',
+            cidx: 'CLI0000000000003'
         },
         {
             key: '5',
-            applicationID: 'APP0935093095',
+            applicationId: 'APP0000000066447',
             cusName: 'Shabira',
             loanType: 'Gold Loan',
             loanAmount: '1000',
             status: 'C',
+            cidx: 'CLI0000000000003'
         },
         {
             key: '6',
-            applicationID: 'APP0935093095',
+            applicationId: 'APP0000000000007',
             cusName: 'Shabira',
             loanType: 'Gold Loan',
             loanAmount: '1054000',
             status: 'P',
+            cidx: 'CLI0000000000003'
         },
         {
             key: '7',
-            applicationID: 'APP0935093095',
+            applicationId: 'APP0000000000008',
             cusName: 'Shabira',
             loanType: 'Gold Loan',
             loanAmount: '134000',
             status: 'F',
+            cidx: 'CLI0000000000003'
         },
         {
             key: '8',
-            applicationID: 'APP0935093095',
+            applicationId: 'APP0000000000009',
             cusName: 'Shabira',
             loanType: 'Gold Loan',
             loanAmount: '6100000',
             status: 'C',
+            cidx: 'CLI0000000000003'
         }
     ];
 
     // const [open, setOpen] = useState(false);
-    const navigate = useNavigate();
-    const { loading, addLoan } = useLoanStore();
+
 
     // const showDrawer = () => {
     //     setOpen(true);
@@ -155,14 +167,14 @@ const LoanApplication: React.FC = () => {
             financialUnit: "IBU",
             client: "WEB",
         }).then(() => {
-            navigate(`new`)
+            navigate(`${mainURL}/users/customer`, { state: { newLoan: true } })
         })
     };
 
     return (
         <Content>
             <Card title="Loan Request">
-                <SearchBar action={newLoanHandler} actionLoading={loading} />
+                <SearchBar action={newLoanHandler} actionLoading={loading} actionTitle='New Loan' />
 
                 <Divider />
 

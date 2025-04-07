@@ -1,47 +1,277 @@
-import { Button, Card, Tag } from 'antd'
-import React from 'react'
-import { useNavigate } from 'react-router-dom';
+import { Button, Card, Collapse, CollapseProps, Empty } from 'antd'
+import React, { lazy, useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom';
+import { getLoanStatusByName, getOnlyStatusByName } from '../../../../utils/MSASActionFunctions';
+import useLoanStore from '../../../../store/loanStore';
+import { kebabToTitleCase } from '../../../../utils/formatterFunctions';
+import LoanStatusTag from '../../../../components/common/tags/LoanStatusTag';
+import useStakeholderStore from '../../../../store/stakeholderStore';
+import { getStakeholderByType } from '../../../../utils/stakholderFunction';
+import { CaretLeftOutlined } from '@ant-design/icons';
+import useCustomerStore from '../../../../store/customerStore';
 
-const appID = 'APP0935093095'
+const CustomerDetailsView = lazy(() => import('./Customer/CustomerDetailsView'))
+const WitnessDetails = lazy(() => import('./Witness/WitnessDetails'))
+const GuarantorDetailsView = lazy(() => import('./Guarantor/GuarantorDetailsView'))
 
-
-const statuses = [
-    { label: "Customer", color: "green", path: 'customer', status: 'Verified' },
-    { label: "Guarantor", color: "red", path: 'guarantor', status: 'Failed' },
-    { label: "Witness", color: "yellow", path: 'witness', status: 'Pending' },
-];
+interface StatusProps {
+    isCompleted: string;
+    isMandatory: string;
+}
 
 const LoanDaashboard: React.FC = () => {
 
     const navigate = useNavigate();
+    const { appId } = useParams();
+    const { loading, loanStatus, fetchLoanStatusById } = useLoanStore();
+    const { stakeholders, fetchStackholderByAppId } = useStakeholderStore()
+    const { customers, fetchCustomerByAppId } = useCustomerStore()
+    // TODO: get customer name from the loan application and show it in the card title
+
+    console.log('appId : ', appId);
+
+    // TODO: have to call the apprisal api to get the status of the loan application
+
+    const onChange = (key: string | string[]) => {
+        console.log(key);
+    };
 
 
+    const genExtra = ({ isCompleted, isMandatory }: StatusProps) => (
+        <>
+            <LoanStatusTag type={'C'} status={isCompleted} />
+            <LoanStatusTag type={'M'} status={isMandatory} />
+        </>
+    );
+
+
+    const getComponentByName = (name: string) => {
+        switch (name) {
+            case 'customer':
+                return <CustomerDetailsView formDetails={getStakeholderByType('C', stakeholders)[0] ?? ''} />;
+            // return <CustomerDetailsView formDetails={null} />;
+            case 'guarantor':
+                return <GuarantorDetailsView formDetails={getStakeholderByType('G', stakeholders)} />;
+            case 'witness':
+                return <WitnessDetails formDetails={getStakeholderByType('W', stakeholders)} />;
+            case 'LOAN_COLLATERAL':
+                return <div>Collateral</div>;
+            case 'GOLD_LOAN_APPLICAION':
+                return <div>Gold Loan Application</div>;
+            case 'loan-application':
+                return <div>Loan Application</div>;
+            case 'LOAN_APPLICATION_APPROVAL':
+                return <div>Loan Application Approval</div>;
+            case 'image-upload':
+                return <div>Image Upload</div>;
+            case 'cash-flow':
+                return <div>Cash Flow</div>;
+            case 'credit-scoring':
+                return <div>Credit Scoring</div>;
+            case 'customer-acknowledgement':
+                return <div>Customer Acknowledgement</div>;
+            case 'term-deposit':
+                return <div>Term Deposit</div>;
+            case 'gold-facility':
+                return <div>Gold Facility</div>;
+            case 'business-introducer':
+                return <div>Business Introducer</div>;
+            default:
+                return null;
+        }
+    };
+
+
+    const callGetDetailsByName = (name: string) => {
+        console.log('callGetDetailsByName : ', name);
+    }
+
+    const dummyLoanStatus = [
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2022-08-09T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 1,
+            "section": "customer",
+            "isMandatory": "1",
+            "completed": "1",
+            "enabled": null,
+            "status": "A"
+        },
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2022-08-09T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 2,
+            "section": "guarantor",
+            "isMandatory": "1",
+            "completed": "0",
+            "enabled": null,
+            "status": "A"
+        },
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2022-08-09T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 3,
+            "section": "loan-application",
+            "isMandatory": "1",
+            "completed": "1",
+            "enabled": null,
+            "status": "A"
+        },
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2022-08-09T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 4,
+            "section": "cash-flow",
+            "isMandatory": "1",
+            "completed": "1",
+            "enabled": null,
+            "status": "A"
+        },
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2022-08-09T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 5,
+            "section": "image-upload",
+            "isMandatory": "1",
+            "completed": "0",
+            "enabled": null,
+            "status": "A"
+        },
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2022-08-09T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 6,
+            "section": "credit-scoring",
+            "isMandatory": "0",
+            "completed": "1",
+            "enabled": null,
+            "status": "A"
+        },
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2022-08-09T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 7,
+            "section": "customer-acknowledgement",
+            "isMandatory": "1",
+            "completed": "1",
+            "enabled": null,
+            "status": "A"
+        },
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2024-07-11T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 8,
+            "section": "witness",
+            "isMandatory": "1",
+            "completed": "1",
+            "enabled": null,
+            "status": "A"
+        },
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2024-07-11T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 9,
+            "section": "term-deposit",
+            "isMandatory": "0",
+            "completed": "1",
+            "enabled": null,
+            "status": "A"
+        },
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2024-07-11T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 10,
+            "section": "gold-facility",
+            "isMandatory": "0",
+            "completed": "1",
+            "enabled": null,
+            "status": "A"
+        }
+    ]
+
+    const items: CollapseProps['items'] = dummyLoanStatus && dummyLoanStatus.map((rule) => ({ //loanStatus
+        key: `${rule.section}`,
+        label: kebabToTitleCase(rule.section),
+        children: getComponentByName(rule.section),
+        extra: genExtra(getLoanStatusByName(rule.section, dummyLoanStatus)),
+        collapsible: getOnlyStatusByName(rule.section, dummyLoanStatus) !== 'A' ? 'disabled' : undefined,
+        onChange: () => callGetDetailsByName(rule.section),
+    }));
+
+    useEffect(() => {
+        fetchLoanStatusById(appId ?? '')
+        fetchCustomerByAppId(appId ?? '')
+        fetchStackholderByAppId(appId ?? '')
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [appId])
+
+
+    if (loading) {
+        return (
+            <Card title={`Loan Application - ${appId}`}>
+                <Empty description={'Loading...'} />
+            </Card>
+        )
+    }
+
+    if (loanStatus.length === 0) {
+        return (
+            <Card title={`Loan Application - ${appId}`}>
+                <Empty
+                    description={'No Data Found'}
+                    children={
+                        <>
+                            <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
+                            <Button type="primary" className="ml-3" onClick={() => fetchLoanStatusById(appId ?? '')}>Refresh</Button>
+                        </>
+                    }
+                />
+            </Card>
+        )
+    }
 
     return (
         <>
-            <Card title={`Loan Application - ${appID}`}>
-                <div className="grid grid-cols-3 gap-3">
-                    {statuses.map((status, index) => (
-                        <Card
-                            key={index}
-                            className="relative flex justify-center items-center p-6 hover:shadow-xl cursor-pointer"
-                            onClick={() => navigate(`${status.path}`)}
-                        >
-                            {/* <span className={`absolute top-3 right-3 w-5 h-5 rounded-full ${status.color}`} /> */}
-                            <Tag color={`${status.color}`} className="absolute w-20 top-3 right-3 text-center">{status.status}</Tag>
-
-                            <p className="font-semibold text-xl">{status.label}</p>
-                        </Card>
-                    ))}
+            {/* TODO: add the customer name to the card title */}
+            <Card title={
+                <div className='flex justify-between'>
+                    <div>Loan Application: {appId}</div>
+                    <div>Customer Name: {customers[0]?.fullName}</div>
                 </div>
+            }>
+                <Collapse
+                    accordion
+                    // defaultActiveKey={['']}
+                    onChange={onChange}
+                    expandIconPosition={'end'}
+                    items={items}
+                />
 
+                <div className="mt-5">
+                    <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
+                    <Button type="primary" className="ml-3">Ready to Apply</Button>
+                </div>
             </Card>
-
-            <div className="fixed bottom-16 flex">
-                {/* Your additional content goes here */}
-                <Button type="default" onClick={() => navigate(-1)}>Back</Button>
-                <Button type="primary" className="ml-3">Ready to Apply</Button>
-            </div>
         </>
     );
 }

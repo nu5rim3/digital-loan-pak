@@ -1,7 +1,7 @@
 import { DownOutlined, MenuFoldOutlined, MenuUnfoldOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Button, Dropdown, Layout, MenuProps, Skeleton, Space, Tag } from 'antd';
 import React, { useContext } from 'react'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { mainURL } from '../../../App';
 import { IAuthContext, AuthContext } from 'react-oauth2-code-pkce';
 import useUserStore from '../../../store/userStore';
@@ -14,9 +14,9 @@ export interface ICHeaderProps {
 const CHeader: React.FC<ICHeaderProps> = ({ collapsed, setCollapsed }) => {
 
   const { logOut } = useContext<IAuthContext>(AuthContext);
-  const { user } = useUserStore()
+  const { user, currentRole } = useUserStore()
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const items: MenuProps['items'] = [
     {
@@ -51,10 +51,10 @@ const CHeader: React.FC<ICHeaderProps> = ({ collapsed, setCollapsed }) => {
       danger: true,
       label: <a onClick={() => {
         // console.log('Logout')
-        // localStorage.removeItem('selectedRole')
-        // localStorage.clear()
-        // sessionStorage.clear()
         logOut();
+        localStorage.removeItem("oauth_token");
+        sessionStorage.clear(); // Clear all session data
+        document.cookie = "oauth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         // navigate(`${mainURL}/login`)
       }} >
         Logout
@@ -75,7 +75,7 @@ const CHeader: React.FC<ICHeaderProps> = ({ collapsed, setCollapsed }) => {
           />
         </div>
         <div>
-          <Tag color='blue'>CAD - CHECKER</Tag>
+          <Tag color='blue'>{currentRole?.code}</Tag>
         </div>
         <div>
           <Dropdown menu={{ items }}>

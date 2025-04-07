@@ -1,30 +1,30 @@
 import { Button, Card, Form, Typography } from 'antd'
 import React, { useEffect, useState } from 'react'
-import useVerificationStore from '../../../../store/verificationStore';
 import { ReloadOutlined, EyeOutlined } from "@ant-design/icons";
-import CommonModal from '../../../../components/common/modal/commonModal';
-import useCommonStore from '../../../../store/commonStore';
 import { Empty } from 'antd';
+import useCommonStore from '../../../store/commonStore';
+import useVerificationStore from '../../../store/verificationStore';
+import CommonModal from '../modal/commonModal';
 
 interface IECIBDetails {
-    customerIdx: string;
-    customerCNIC: string;
+    idx: string;
+    cnic: string;
 }
 
-const ECIBDetails: React.FC<IECIBDetails> = ({ customerIdx, customerCNIC }) => {
+const ECIBDetails: React.FC<IECIBDetails> = ({ idx, cnic }) => {
 
     const { ecibDetails, ecibLoading, fetchECIBById } = useVerificationStore()
     const { ecibReportUrl, fetchECIBReport } = useCommonStore()
     const [openModal, setOpenModal] = useState(false);
 
     useEffect(() => {
-        fetchECIBById(customerIdx)
-        fetchECIBReport(customerCNIC)
+        fetchECIBById(idx)
+        fetchECIBReport(cnic)
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [customerCNIC])
+    }, [cnic])
 
     const onRefresh = () => {
-        fetchECIBById(customerIdx)
+        fetchECIBById(idx)
     }
 
 
@@ -35,7 +35,7 @@ const ECIBDetails: React.FC<IECIBDetails> = ({ customerIdx, customerCNIC }) => {
         <>
             <Card title={'Extrenal CIB Details'} loading={ecibLoading} extra={
                 <>
-                    <Button type="text" icon={<EyeOutlined />} onClick={() => setOpenModal(true)}>View Report</Button>
+                    <Button type="text" icon={<EyeOutlined />} onClick={() => setOpenModal(true)} disabled={ecibDetails === null}>View Report</Button>
                     <Button type="text" icon={<ReloadOutlined />} onClick={onRefresh} />
                 </>
             }>

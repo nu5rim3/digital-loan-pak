@@ -3,84 +3,87 @@ import { Input, Button, Form, Select, Card, Space } from "antd";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useEffect, useState } from "react";
-import { CloseCircleOutlined } from "@ant-design/icons";
-import useCustomerStore from "../../../../store/customerStore";
-import useCommonStore from "../../../../store/commonStore";
-import useLoanStore from "../../../../store/loanStore";
+import { CloseCircleOutlined, CaretLeftOutlined } from "@ant-design/icons";
+import useCommonStore from "../../../store/commonStore";
+import useCustomerStore from "../../../store/customerStore";
+import useLoanStore from "../../../store/loanStore";
+import { formatCNIC } from "../../../utils/formatterFunctions";
+import { useNavigate } from "react-router-dom";
 const { Search } = Input;
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
     name: yup.string().required("Name is required"),
     initals: yup.string().required("Initials is required"),
-    surname: yup.string().required("Surname is required"),
+    surname: yup.string(),
     telcoProvider: yup.string().required("Operator is required"),
     contactNumber: yup.string().required("Contact Number is required"),
     identificationType: yup.string().required("Identification Type is required"),
     identificationNumber: yup.string().required("Identification Number is required"),
 });
 
-interface ICustomerDetails {
-    setCustomerIdx: (idx: string) => void;
-    setCustomerCNIC: (cnic: string) => void;
+interface IFormDetails {
+    type: string;
+    setIdx: (idx: string) => void;
+    setCNIC: (cnic: string) => void;
     setApprovalStatus: (status: string) => void;
 }
 
-const CustomerDetails: React.FC<ICustomerDetails> = ({ setCustomerIdx, setCustomerCNIC, setApprovalStatus }) => {
+const FormDetails: React.FC<IFormDetails> = ({ type, setIdx, setCNIC, setApprovalStatus }) => {
     const { control, handleSubmit, formState: { errors }, reset, setValue } = useForm({
         resolver: yupResolver(schema),
     });
 
     const [searchValue, setSearchValue] = useState('');
 
-    const { customer, customerLoading, selectedCustomer, addCustomer, fetchCustomerByCNIC } = useCustomerStore();
+    const { customer, customerLoading, addCustomer, fetchCustomerByCNIC, resetCustomer } = useCustomerStore();
     const { operatorLoading, operators, fetchOperators } = useCommonStore();
     const { loan } = useLoanStore();
+    const navigate = useNavigate();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
 
-        const postData = { ...data, type: "G", fullName: `${data.name} ${data.initals} ${data.surname}`, appraisalId: loan?.idx }
+        const postData = { ...data, fullName: `${data.name ?? ''} ${data.initals ?? ''} ${data.surname ?? ''}`, appraisalId: loan?.idx }
         delete postData['name']
         delete postData['initals']
         delete postData['surname']
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const response: any = await addCustomer({ ...postData })
+        const response: any = await addCustomer({ ...postData, type: type })
         if (response) {
-            setCustomerIdx(response?.idx);
-            setCustomerCNIC(response?.identificationNumber);
+            setIdx(response?.idx);
+            setCNIC(response?.identificationNumber);
         }
 
     };
 
     useEffect(() => {
         if (customer) {
-            setCustomerCNIC(customer?.identificationNumber);
-            setCustomerIdx(customer?.idx || '');
+            setCNIC(customer?.identificationNumber);
+            setIdx(customer?.idx || '');
         }
-    }, [customer, setCustomerCNIC, setCustomerIdx]);
+    }, [customer, setCNIC, setIdx]);
 
 
     const handleSearch = (value: string) => {
         console.log('handleSearch : ', value);
         fetchCustomerByCNIC(value)
-        setCustomerCNIC(value)
+        setCNIC(value)
     }
 
     const clearSreach = () => {
         setSearchValue('')
-        setCustomerIdx('')
-        setCustomerCNIC('')
+        setIdx('')
+        setCNIC('')
         setApprovalStatus('')
     }
 
     const formRest = () => {
         reset()
         clearSreach()
+        resetCustomer()
     }
-
-    console.log('selectedCustomer : ', selectedCustomer);
 
     const loadFormvalue = () => {
         fetchOperators()
@@ -88,23 +91,15 @@ const CustomerDetails: React.FC<ICustomerDetails> = ({ setCustomerIdx, setCustom
 
     useEffect(() => {
         loadFormvalue()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    const formatCNIC = (value: string) => {
-        const cleaned = value.replace(/\D/g, ""); // Remove non-numeric characters
-        const match = cleaned.match(/^(\d{0,5})(\d{0,7})?(\d{0,1})?$/);
-        if (!match) return value;
-
-        return [match[1], match[2], match[3]]
-            .filter(Boolean) // Remove empty groups
-            .join("-");
-    };
 
     return (
-        <Card title={'Customer Onboarding'}>
+        <Card title={`${type === 'C' ? 'Customer' : 'Guarantor'} Onboarding`}>
             <Form layout="vertical">
                 <div>
-                    <Form.Item label="Search Customer using CNIC">
+                    <Form.Item label={`Search ${type === 'C' ? 'Customer' : 'Guarantor'}  using CNIC`}>
                         <Space.Compact className='flex-1'>
                             <Search
                                 value={searchValue}
@@ -141,7 +136,7 @@ const CustomerDetails: React.FC<ICustomerDetails> = ({ setCustomerIdx, setCustom
                                 render={({ field }) => <Input {...field} placeholder="Enter initals" />}
                             />
                         </Form.Item>
-                        <Form.Item label="Surname" validateStatus={errors.surname ? "error" : ""} help={errors.surname?.message} required>
+                        <Form.Item label="Surname" validateStatus={errors.surname ? "error" : ""} help={errors.surname?.message}>
                             <Controller
                                 name="surname"
                                 control={control}
@@ -202,6 +197,7 @@ const CustomerDetails: React.FC<ICustomerDetails> = ({ setCustomerIdx, setCustom
                     </div>
                 </div>
                 <div className="flex gap-3 mt-5">
+                    <Button onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
                     <Button type="primary" htmlType="submit" loading={customerLoading}>
                         Save and Verify
                     </Button>
@@ -214,4 +210,4 @@ const CustomerDetails: React.FC<ICustomerDetails> = ({ setCustomerIdx, setCustom
     );
 };
 
-export default CustomerDetails;
+export default FormDetails;

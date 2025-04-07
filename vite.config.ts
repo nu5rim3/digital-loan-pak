@@ -12,19 +12,39 @@ export default defineConfig(({ mode }) => {
     server: {
       port: Number(env.VITE_PORT) || 3000, // Use VITE_PORT from .env
       proxy: {
-        "/pak-digital-loan/oauth2": {
-          target: "https://pakauthuat.lolc.com.pk",
+        "/mobixCamsClientele": {
+          target: "https://pomicroapiuat.lolc.com.pk",
           changeOrigin: true,
-          secure: true,
+          secure: false,
           agent: new http.Agent(),
-          rewrite: (path) => {
-            return path.replace(/^\/pak-digital-loan/, "");
+          rewrite: (path: string) => {
+            return path.replace(/^\/mobixCamsClientele/, "/mobixCamsClientele");
           },
-          strictPort: true,
-          host: true,
+          // configure: (proxy, options) => {
+          //   proxy.on('proxyReq', (proxyReq, req, res) => {
+          //     // Add the 'x-auth-token' header to the request
+          //     proxyReq.setHeader('x-auth-token', 'your-auth-token');
+          //   });
+          // },
         },
       },
-      // base: `/${env.VITE_TENET}-${env.VITE_BASE_URL}/`, // pakoman-digital-loan
+      strictPort: true,
+      host: true,
+      cors: {
+        origin: "https://pomicroapiuat.lolc.com.pk",
+        // allowedHeaders: ['x-auth-token', 'Content-Type'],
+      },
+    },
+    preview: {
+      port: 3000,
+      strictPort: true,
+      cors: {
+        origin: "https://pomicroapiuat.lolc.com.pk",
+        // allowedHeaders: ['x-auth-token', 'Content-Type'],
+      },
     },
   };
 });
+
+// https://pomicroapiuat.lolc.com.pk/mobixCamsLoan/v1/appraisals
+//https://pomicroapiuat.lolc.com.pk/mobixCamsCommon/v1/sms/vendors

@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useForm, Controller } from "react-hook-form";
 import { Input, Form, Button, Card, Select } from "antd";
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
-
-import useStakeholderStore from '../../../../../store/stakeholderStore';
 import useCommonStore from '../../../../../store/commonStore';
 import { formatCNIC } from '../../../../../utils/formatterFunctions';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import useCustomerStore from '../../../../../store/customerStore';
-import { CaretLeftOutlined, EditOutlined, UndoOutlined } from '@ant-design/icons';
-import { getStakeholderByType } from '../../../../../utils/stakholderFunction';
+import { mainURL } from '../../../../../App';
+import { IStakeholder } from '../../../../../store/stakeholderStore';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
@@ -33,115 +31,138 @@ const schema = yup.object().shape({
     stkFatherOrHusName: yup.string().required("Father or Husband Name is required"),
     stkEduLevel: yup.string().required("Education Level is required"),
     stkPhysDisability: yup.string().required("Physical Disability is required"),
+    relationship: yup.string().required("Relationship is required"),
     headOfFamily: yup.string().required("Head of Family is required"),
     healthCondition: yup.string().required("Health Condition is required"),
     stkSequence: yup.string(),
-    stkNumOfDependents: yup.string().nullable(),
-    stkNumOfEarners: yup.string().nullable(),
-    stkCusCode: yup.string().nullable(),
-    stkGrpRefNo: yup.string().nullable(),
-    stkPhysDisabilityDesce: yup.string().nullable(),
-    geoLocation: yup.string().required("Geo Location is required"),
+    stkNumOfDependents: yup.string(),
+    stkNumOfEarners: yup.string(),
+    stkCusCode: yup.string(),
+    stkGrpRefNo: yup.string(),
+    stkPhysDisabilityDesce: yup.string(),
+    status: yup.string(),
+    houseHoldCont: yup.string(),
+    currentResPlace: yup.string(),
+    modeOfSecurity: yup.string(),
+    geoLocation: yup.string(),
+    stkEmpNo: yup.string(),
 });
 
-const CustomerDetails: React.FC = () => {
+interface ICustomerDetailsView {
+    formDetails?: IStakeholder | null;
+    // type: string;
+    // setIdx: (idx: string) => void;
+    // setCNIC: (cnic: string) => void;
+    // setApprovalStatus: (status: string) => void;
+}
 
-    const { control, handleSubmit, formState: { errors }, setValue, watch, reset } = useForm({
+const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) => {
+
+    const { control, formState: { errors }, setValue, watch } = useForm({
         resolver: yupResolver(schema),
     });
     const { organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, educationLevel, educationLevelLoading, fetchEducationLevel, headOfFamily, headOfFamilyLoading, fetchHeadOfFamily, healthCondition, healthConditionLoading, fetchHealthCondition } = useCommonStore()
-    const { stakeholderLoading, stakeholders, fetchStackholderByAppId, addStakeholder, updateStakeholder } = useStakeholderStore()
     const { customers, fetchCustomerByAppId } = useCustomerStore()
     const { appId } = useParams()
     const navigate = useNavigate();
-    const mode = useLocation().state?.mode ?? 'create';
 
-    const [stakholderId, setStakholderId] = useState('');
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const onSubmit = async (data: any) => {
-        console.log(data);
-        if (mode === 'create') {
-            addStakeholder({ ...data, appraisalID: appId ?? '', new: true, stkType: 'C' })
-        } else if (mode === 'edit') {
-            updateStakeholder(stakholderId, { ...data, appraisalID: appId ?? '', update: true, stkType: 'C' })
-        }
-    }
 
     useEffect(() => {
+        // fetchCustomerByCNIC(customer?.identificationNumber ?? '');
         fetchOrganizationType()
         fetchCNICStaus()
         fetchEducationLevel()
         fetchHeadOfFamily()
         fetchHealthCondition()
         fetchCustomerByAppId(appId ?? '')
-        fetchStackholderByAppId(appId ?? '')
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
-        if (mode === 'edit') {
-            const formDetails = getStakeholderByType('C', stakeholders)[0]
-            setStakholderId(formDetails?.idx)
-            if (formDetails) {
-                setValue("appraisalID", formDetails?.appraisalID ?? appId ?? '');
-                setValue("stkSequence", formDetails?.stkSequence);
-                setValue("stkOrgType", formDetails?.stkOrgType);
-                setValue("stkCNic", formDetails?.stkCNic);
-                setValue("stkCNicIssuedDate", formDetails?.stkCNicIssuedDate);
-                setValue("stkCNicExpDate", formDetails?.stkCNicExpDate);
-                setValue("stkCNicStatus", formDetails?.stkCNicStatus);
-                setValue("stkCusCode", formDetails?.stkCusCode ?? '');
-                setValue("stkCusName", formDetails?.stkCusName);
-                setValue("stkInitials", formDetails?.stkInitials);
-                setValue("stkSurName", formDetails?.stkSurName);
-                setValue("stkOtherName", formDetails?.stkOtherName);
-                setValue("stkDob", formDetails?.stkDob);
-                setValue("stkAge", formDetails?.stkAge);
-                setValue("stkGender", formDetails?.stkGender);
-                setValue("stkMaritialStatus", formDetails?.stkMaritialStatus);
-                setValue("stkMaritialComment", formDetails?.stkMaritialComment);
-                setValue("stkTitle", formDetails?.stkTitle);
-                setValue("stkFatherOrHusName", formDetails?.stkFatherOrHusName);
-                setValue("stkNumOfDependents", formDetails?.stkNumOfDependents);
-                setValue("stkNumOfEarners", formDetails?.stkNumOfEarners);
-                setValue("stkEduLevel", formDetails?.stkEduLevel);
-                setValue("stkPhysDisability", formDetails?.stkPhysDisability);
-                setValue("stkPhysDisabilityDesce", formDetails?.stkPhysDisabilityDesce);
-                setValue("stkGrpRefNo", formDetails?.stkGrpRefNo ?? '');
-                setValue("headOfFamily", formDetails?.headOfFamily);
-                setValue("healthCondition", formDetails?.healthCondition);
-                setValue("geoLocation", formDetails?.geoLocation);
-            }
+        if (formDetails) {
+            setValue("appraisalID", formDetails?.appraisalID ?? appId ?? '');
+            setValue("stkSequence", formDetails?.stkSequence);
+            setValue("stkOrgType", formDetails?.stkOrgType);
+            setValue("stkCNic", formDetails?.stkCNic);
+            setValue("stkCNicIssuedDate", formDetails?.stkCNicIssuedDate);
+            setValue("stkCNicExpDate", formDetails?.stkCNicExpDate);
+            setValue("stkCNicStatus", formDetails?.stkCNicStatus);
+            setValue("stkCusCode", formDetails?.stkCusCode);
+            setValue("stkCusName", formDetails?.stkCusName);
+            setValue("stkInitials", formDetails?.stkInitials);
+            setValue("stkSurName", formDetails?.stkSurName);
+            setValue("stkOtherName", formDetails?.stkOtherName);
+            setValue("stkDob", formDetails?.stkDob);
+            setValue("stkAge", formDetails?.stkAge);
+            setValue("stkGender", formDetails?.stkGender);
+            setValue("stkMaritialStatus", formDetails?.stkMaritialStatus);
+            setValue("stkMaritialComment", formDetails?.stkMaritialComment);
+            setValue("stkTitle", formDetails?.stkTitle);
+            setValue("stkFatherOrHusName", formDetails?.stkFatherOrHusName);
+            setValue("stkNumOfDependents", formDetails?.stkNumOfDependents);
+            setValue("stkNumOfEarners", formDetails?.stkNumOfEarners);
+            setValue("stkEduLevel", formDetails?.stkEduLevel);
+            setValue("stkPhysDisability", formDetails?.stkPhysDisability);
+            setValue("stkPhysDisabilityDesce", formDetails?.stkPhysDisabilityDesce);
+            setValue("stkGrpRefNo", formDetails?.stkGrpRefNo);
+            setValue("status", formDetails?.status);
+            setValue("relationship", formDetails?.relationship);
+            setValue("headOfFamily", formDetails?.headOfFamily);
+            setValue("houseHoldCont", formDetails?.houseHoldCont);
+            setValue("healthCondition", formDetails?.healthCondition);
+            setValue("geoLocation", formDetails?.geoLocation);
+            setValue("stkEmpNo", formDetails?.stkEmpNo);
         }
 
         if (customers.length > 0) {
             setValue("stkCusName", customers[0]?.fullName);
             setValue("stkCNic", customers[0]?.identificationNumber);
         }
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [stakeholders, customers])
+    }, [formDetails, customers])
 
 
     const physDisability = watch('stkPhysDisability');
 
-    console.log('errors : ', errors);
+    if (formDetails === null) {
+        return (
+            <>
+                <Card title={'Customer Detail'}>
+                    <Form layout="vertical">
+                        <div className="grid grid-cols-4 gap-3">
+                            <Form.Item label="Full Name">
+                                <Input value={customers[0]?.fullName ?? '-'} disabled />
+                            </Form.Item>
+                            <Form.Item label={'CNIC Type'}>
+                                <Input value={customers[0]?.identificationType ?? '-'} disabled />
+                            </Form.Item>
+                            <Form.Item label="CNIC">
+                                <Input value={customers[0]?.identificationNumber ?? '-'} disabled />
+                            </Form.Item>
+                            <Form.Item label="Contact Number">
+                                <Input value={customers[0]?.contactNumber ?? '-'} disabled />
+                            </Form.Item>
+                        </div>
+                        <div className="flex gap-3">
+                            <Button type="primary" onClick={() => navigate(`${mainURL}/loan/application/${appId}/customer`, { state: { mode: 'create' } })}>
+                                Add More Details
+                            </Button>
+                        </div>
+                    </Form>
+                </Card>
 
-
-    const onRestHandle = () => {
-        if (mode === 'create') {
-            reset()
-        } else {
-            fetchStackholderByAppId(appId ?? '')
-        }
+                {/* <CustomerScreen mode={mode} setMode={setMode} /> */}
+            </>
+        )
     }
 
     return (
         <div className='flex flex-col gap-3'>
 
+            {/* <CustomerScreen mode={mode} setMode={setMode} /> */}
+
             <Card title="Personal Details">
-                <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
+                <Form layout="vertical" disabled>
                     <div className="grid grid-cols-4 gap-3">
                         <Form.Item label="Title" validateStatus={errors.stkTitle ? "error" : ""} help={errors.stkTitle?.message} required>
                             <Controller
@@ -337,28 +358,44 @@ const CustomerDetails: React.FC = () => {
                             <Controller
                                 name="stkNumOfDependents"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Number of Dependents" value={field.value || ''} />}
+                                render={({ field }) => <Input {...field} placeholder="Enter Number of Dependents" />}
                             />
                         </Form.Item>
-                        <Form.Item label="Number of Earners" validateStatus={errors.stkNumOfEarners ? "error" : ""} help={errors.stkNumOfEarners?.message}>
+                        <Form.Item label="Number of Earners" validateStatus={errors.stkNumOfEarners ? "error" : ""} help={errors.stkNumOfEarners?.message} hidden>
                             <Controller
                                 name="stkNumOfEarners"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Number of Earners" value={field.value || ''} />}
+                                render={({ field }) => <Input {...field} placeholder="Enter Number of Earners" />}
                             />
                         </Form.Item>
+
+
                         <Form.Item label="Customer Code" validateStatus={errors.stkCusCode ? "error" : ""} help={errors.stkCusCode?.message}>
                             <Controller
                                 name="stkCusCode"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Customer Code" value={field.value || ''} />}
+                                render={({ field }) => <Input {...field} placeholder="Enter Customer Code" />}
                             />
                         </Form.Item>
                         <Form.Item label="Group Reference Number" validateStatus={errors.stkGrpRefNo ? "error" : ""} help={errors.stkGrpRefNo?.message}>
                             <Controller
                                 name="stkGrpRefNo"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Group Reference Number" value={field.value || ''} />}
+                                render={({ field }) => <Input {...field} placeholder="Enter Group Reference Number" />}
+                            />
+                        </Form.Item>
+                        <Form.Item label="Status" validateStatus={errors.status ? "error" : ""} help={errors.status?.message} hidden>
+                            <Controller
+                                name="status"
+                                control={control}
+                                render={({ field }) => <Input {...field} placeholder="Enter Status" />}
+                            />
+                        </Form.Item>
+                        <Form.Item label="Relationship" validateStatus={errors.relationship ? "error" : ""} help={errors.relationship?.message} required>
+                            <Controller
+                                name="relationship"
+                                control={control}
+                                render={({ field }) => <Input {...field} placeholder="Enter Relationship" />}
                             />
                         </Form.Item>
                         <Form.Item label="Head of Family" validateStatus={errors.headOfFamily ? "error" : ""} help={errors.headOfFamily?.message} required>
@@ -377,6 +414,13 @@ const CustomerDetails: React.FC = () => {
                                         loading={headOfFamilyLoading}
                                     />
                                 }
+                            />
+                        </Form.Item>
+                        <Form.Item label="Household Contact" validateStatus={errors.houseHoldCont ? "error" : ""} help={errors.houseHoldCont?.message} hidden>
+                            <Controller
+                                name="houseHoldCont"
+                                control={control}
+                                render={({ field }) => <Input {...field} placeholder="Enter Household Contact" />}
                             />
                         </Form.Item>
                         <Form.Item label="Health Condition" validateStatus={errors.healthCondition ? "error" : ""} help={errors.healthCondition?.message} required>
@@ -417,29 +461,30 @@ const CustomerDetails: React.FC = () => {
                             <Controller
                                 name="stkPhysDisabilityDesce"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Physical Disability Description" value={field.value || ''} />}
+                                render={({ field }) => <Input {...field} placeholder="Enter Physical Disability Description" />}
                             />
                         </Form.Item>
-                        <Form.Item label="Geo Location" validateStatus={errors.geoLocation ? "error" : ""} help={errors.geoLocation?.message} required>
+                        <Form.Item label="Geo Location" validateStatus={errors.geoLocation ? "error" : ""} help={errors.geoLocation?.message}>
                             <Controller
                                 name="geoLocation"
                                 control={control}
                                 render={({ field }) => <Input {...field} placeholder="Enter Geo Location" />}
                             />
                         </Form.Item>
-                    </div>
-                    <div className="flex gap-3 mt-5">
-                        <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>
-                            Back
-                        </Button>
-                        <Button type="primary" htmlType="submit" loading={false} icon={<EditOutlined />}>
-                            {mode === 'create' ? 'Save' : 'Update'}
-                        </Button>
-                        <Button type="default" onClick={onRestHandle} danger icon={<UndoOutlined />} loading={stakeholderLoading}>
-                            Reset
-                        </Button>
+                        <Form.Item label="Employee Number" validateStatus={errors.stkEmpNo ? "error" : ""} help={errors.stkEmpNo?.message}>
+                            <Controller
+                                name="stkEmpNo"
+                                control={control}
+                                render={({ field }) => <Input {...field} placeholder="Enter Employee Number" />}
+                            />
+                        </Form.Item>
                     </div>
                 </Form>
+                <div className="flex gap-3 mt-5">
+                    <Button type="primary" onClick={() => navigate(`${mainURL}/loan/application/${appId}/customer`, { state: { mode: 'edit' } })}>
+                        Update
+                    </Button>
+                </div>
             </Card>
 
             <Card title={'Contact Information'}>
@@ -449,4 +494,4 @@ const CustomerDetails: React.FC = () => {
     )
 }
 
-export default CustomerDetails
+export default CustomerDetailsView

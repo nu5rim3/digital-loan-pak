@@ -33,8 +33,21 @@ interface ILoanResponse {
   creationDate: string;
 }
 
+export interface ILoanStatus {
+  createdBy: string;
+  creationDate: string;
+  lastModifiedBy: string | null;
+  lastModifiedDate: string | null;
+  id: number;
+  section: string;
+  isMandatory: string;
+  completed: string;
+  status: string;
+}
+
 interface ILoanState {
   loans: ILoan[];
+  loanStatus: ILoanStatus[];
   loan: ILoanResponse | null;
   selectedLoan: ILoan | null;
   loading: boolean;
@@ -44,11 +57,13 @@ interface ILoanState {
   fetchLoanById: (id: number) => Promise<void>;
   addLoan: (loan: ILoan) => Promise<void>;
   updateLoan: (id: number, updatedLoan: ILoan) => Promise<void>;
+  fetchLoanStatusById: (appId: string) => Promise<void>;
   //   deleteLoan: (id: number) => Promise<void>;
 }
 
 const useLoanStore = create<ILoanState>((set) => ({
   loans: [],
+  loanStatus: [],
   loan: null,
   selectedLoan: null,
   loading: false,
@@ -79,6 +94,20 @@ const useLoanStore = create<ILoanState>((set) => ({
         type: "success",
         message: "Loan fetched successfully",
       });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      set({ error: error.message, loading: false });
+    }
+  },
+
+  fetchLoanStatusById: async (appId: string) => {
+    set({ loading: true, error: null, loanStatus: [] });
+    try {
+      const response = await API.get(
+        `/mobixCamsLoan/v1/appraisals/validations/${appId}`
+      );
+      set({ loanStatus: response.data, loading: false });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);

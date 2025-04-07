@@ -1,14 +1,14 @@
 import { Button, Card, Empty, Form, Typography } from 'antd'
 import React, { useEffect, useState } from 'react'
-import useVerificationStore from '../../../../store/verificationStore';
-import { formatCurrency, formatName } from '../../../../utils/formatterFunctions';
 import { ReloadOutlined, EyeOutlined } from "@ant-design/icons";
-import { calculateLoanStats } from '../../../../utils/loanStats';
-import CommonModal from '../../../../components/common/modal/commonModal';
+import useVerificationStore from '../../../store/verificationStore';
+import { formatCurrency, formatName } from '../../../utils/formatterFunctions';
+import { calculateLoanStats } from '../../../utils/loanStats';
+import CommonModal from '../modal/commonModal';
 
 interface ICRIBDetails {
-    customerIdx: string;
-    customerCNIC: string;
+    idx: string;
+    cnic: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -41,7 +41,7 @@ const LoanCards = (loanData: any) => {
     );
 };
 
-const CRIBDetails: React.FC<ICRIBDetails> = ({ customerCNIC }) => {
+const CRIBDetails: React.FC<ICRIBDetails> = ({ cnic }) => {
 
     const { cribDetails, cribLoading, fetchCRIBByCnic } = useVerificationStore()
     const [openModal, setOpenModal] = useState(false);
@@ -58,12 +58,12 @@ const CRIBDetails: React.FC<ICRIBDetails> = ({ customerCNIC }) => {
 
 
     useEffect(() => {
-        fetchCRIBByCnic(customerCNIC)
+        fetchCRIBByCnic(cnic)
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [customerCNIC])
+    }, [cnic])
 
     const onRefresh = () => {
-        fetchCRIBByCnic(customerCNIC)
+        fetchCRIBByCnic(cnic)
     }
 
     useEffect(() => {
@@ -85,7 +85,7 @@ const CRIBDetails: React.FC<ICRIBDetails> = ({ customerCNIC }) => {
         <>
             <Card title={'Internal CRIB Details'} loading={cribLoading} extra={
                 <>
-                    <Button type="text" icon={<EyeOutlined />} onClick={() => setOpenModal(true)}>View More</Button>
+                    <Button type="text" icon={<EyeOutlined />} onClick={() => setOpenModal(true)} disabled={cribDetails?.detail === null}>View More</Button>
                     <Button type="text" icon={<ReloadOutlined />} onClick={onRefresh} />
                 </>
             }>
@@ -97,7 +97,7 @@ const CRIBDetails: React.FC<ICRIBDetails> = ({ customerCNIC }) => {
                                     <b>{formatName(cribDetails?.clientName ?? '-') ?? '-'}</b>
                                 </Form.Item>
                                 <Form.Item label="CNIC">
-                                    <b>{customerCNIC ?? '-'}</b>
+                                    <b>{cnic ?? '-'}</b>
                                 </Form.Item>
                                 <Form.Item label="Previous Loans">
                                     <b>{cribLoan.numberOfPreviousLoans}</b>

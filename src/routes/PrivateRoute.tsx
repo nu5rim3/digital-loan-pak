@@ -1,15 +1,16 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useRole } from "../hooks/RoleContext";
 import { mainURL } from "../App";
+import useUserStore from "../store/userStore";
 
 interface PrivateRouteProps {
     allowedRoles: string[];
-    userRole: string;
 }
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({ userRole }) => {
-    const { selectedRole } = useRole();
-    return [selectedRole].includes(userRole) ? <Outlet /> : <Navigate to={`${mainURL}/unauthorized`} />;
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ allowedRoles }) => {
+
+    const { currentRole } = useUserStore();
+
+    return allowedRoles.includes(currentRole?.code ?? '') ? <Outlet /> : <Navigate to={`${mainURL}/unauthorized`} />;
 };
 
 export default PrivateRoute;

@@ -5,42 +5,27 @@ import Logo from '../../assets/full_logo_black.png'
 import { useNavigate } from 'react-router-dom';
 import CFooter from '../../components/layouts/footer/CFooter';
 import { mainURL } from '../../App';
+import useUserStore, { IUserRols } from '../../store/userStore';
 // import PageLoader from '../../components/common/loaders/PageLoader';
 
 const { Content } = Layout;
 const { Title } = Typography;
-
-interface Role {
-    id: string;
-    name: string;
-    description: string;
-}
-
-const roles: Role[] = [
-    { id: 'role1', name: 'Credit Officer', description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' },
-    { id: 'role2', name: 'Super Administrator', description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' },
-    { id: 'role3', name: 'Branch Manager', description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' },
-    { id: 'role4', name: 'Call Center Officer', description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' },
-    { id: 'role5', name: 'Chief Operating Officer', description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' },
-    { id: 'role6', name: 'Credit Reviewer', description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' },
-    { id: 'role7', name: 'Regional Business Head', description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' },
-    { id: 'role8', name: 'Credit Approver', description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' },
-    { id: 'role9', name: 'Area Manager', description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' },
-];
 
 const SelectUser: React.FC = () => {
 
     // const { token, tokenData } = useContext<IAuthContext>(AuthContext);
     const navigate = useNavigate();
 
-    const [selectedRole, setSelectedRole] = useState<string | null>(null);
+    const [selectedRoleCode, setSelectedRoleCode] = useState<string | null>(null);
 
-    const handleSelectRole = (roleId: string): void => {
-        setSelectedRole(roleId);
-        console.log('Selected Role:', roleId);
-        setTimeout(() => {
+    const { user, selectingRole } = useUserStore()
+
+    const handleSelectRole = (role: IUserRols): void => {
+        setSelectedRoleCode(role.code);
+        selectingRole(role);
+        if (role) {
             navigate(`${mainURL}/dashboard`);
-        }, 1000);
+        }
     };
 
     return (
@@ -63,17 +48,17 @@ const SelectUser: React.FC = () => {
 
                     {/* Role Tiles */}
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 p-4">
-                        {roles.map((role) => (
+                        {user?.roles.map((role) => (
                             <Card
-                                key={role.id}
+                                key={role.code}
                                 hoverable
-                                className={`shadow-md rounded-lg text-center cursor-pointer transition-transform transform ${selectedRole === role.id
+                                className={`shadow-md rounded-lg text-center cursor-pointer transition-transform transform ${selectedRoleCode === role.code
                                     ? 'border-blue-500 bg-blue-50 scale-105'
                                     : 'border-gray-200 bg-white'
                                     }`}
-                                onClick={() => handleSelectRole(role.id)}
+                                onClick={() => handleSelectRole(role)}
                             >
-                                <Title level={4}>{role.name}</Title>
+                                <Title level={4}>{role.description}</Title>
                                 <p>{role.description}</p>
                             </Card>
                         ))}

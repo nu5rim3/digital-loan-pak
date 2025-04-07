@@ -24,13 +24,15 @@ import { TAuthConfig, TRefreshTokenExpiredEvent } from "react-oauth2-code-pkce"
 
 
 export const authConfig2: TAuthConfig = {
-  clientId: 'ZWwWCTXU5lyTUxjvivnYfiLYhdUa',
-  authorizationEndpoint: 'https://pakauthuat.lolc.com.pk/oauth2/authorize',
-  tokenEndpoint: 'https://pakauthuat.lolc.com.pk/oauth2/token',
-  redirectUri: 'http://localhost:3000/pak-digital-loan/auth',
+  clientId: import.meta.env.VITE_AUTH_CLIENT_ID,
+  authorizationEndpoint: import.meta.env.VITE_AUTHORIZATION_ENDPOINT,
+  tokenEndpoint: import.meta.env.VITE_TOKEN_ENDPOINT,
+  redirectUri: import.meta.env.VITE_REDIRECT_URI,
   scope: "openid",
   storage: "local",
   autoLogin: false,
+  decodeToken: true,
+  logoutEndpoint: import.meta.env.VITE_LOGOUT_ENDPOINT,
 
   extraTokenParameters: {
     client_id: 'ZWwWCTXU5lyTUxjvivnYfiLYhdUa',
@@ -45,5 +47,3 @@ export const authConfig2: TAuthConfig = {
   },
 };
 
-
-// callback_urls: regexp=(http://localhost:3000/pak-digital-loan/auth|http://localhost:3000|http://localhost:3000/pak-digital-loan/logout)
