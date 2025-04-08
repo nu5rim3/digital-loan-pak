@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { API } from "../services/api";
+import { API, APIAuth } from "../services/api";
 import { notification } from "antd";
 
 export interface IStakeholder {
@@ -22,7 +22,14 @@ export interface IStakeholder {
   stkGender: string;
   stkGrpRefNo: string;
   stkInitials: string;
-  stkMaritialStatus: string;
+  stkMaritialStatus:
+    | string
+    | "MARRIED"
+    | "SINGLE"
+    | "DIVORCED"
+    | "WIDOWED"
+    | null;
+  maritalStatus: string | "MARRIED" | "SINGLE" | "DIVORCED" | "WIDOWED" | null;
   stkMaritialComment: string;
   stkNumOfDependents: string;
   stkNumOfEarners: string;
@@ -33,9 +40,8 @@ export interface IStakeholder {
   stkSequence: string;
   stkSurName: string;
   stkTitle: string;
-  stkType: "C" | "W" | "G";
+  stkType: "C" | "W" | "G" | "BI";
   currentResidences: string;
-  maritalStatus: "MARRIED" | "SINGLE" | "DIVORCED" | "WIDOWED";
   disabilityChecked: boolean;
   eduOther: boolean;
   headOfFamily: string;
@@ -84,7 +90,7 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
   addStakeholder: async (stakeholder: IStakeholder) => {
     set({ stakeholderLoading: true, stakeholderError: null });
     try {
-      const response = await API.post(
+      const response = await APIAuth.post(
         "/mobixCamsClientele/v1/clienteles/stakeholder",
         stakeholder
       );
@@ -103,11 +109,11 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
   updateStakeholder: async (idx: string, updatedUser: IStakeholder) => {
     set({ stakeholderLoading: true, stakeholderError: null });
     try {
-      const response = await API.put(
+      const response = await APIAuth.put(
         `/mobixCamsClientele/v1/clienteles/stakeholder/${idx}`,
         updatedUser
       );
-      set({ stakeholders: response.data, stakeholderLoading: false });
+      set({ selectedStakeholder: response.data, stakeholderLoading: false });
       notification.success({
         message: "Success",
         description:

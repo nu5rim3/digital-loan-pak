@@ -48,7 +48,7 @@ const useOTPStore = create<IOTPState>((set) => ({
   verifyOTP: async (idx: string, code: string) => {
     set({ otpVerificationLoading: true, otpVerificationError: null });
     try {
-      const response = await API.post(
+      const response = await APIAuth.post(
         `/mobixCamsClientele/v1/clienteles/verifications/verify-sms`,
         { idx, code }
       );

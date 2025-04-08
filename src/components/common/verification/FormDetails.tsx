@@ -3,12 +3,13 @@ import { Input, Button, Form, Select, Card, Space } from "antd";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useEffect, useState } from "react";
-import { CloseCircleOutlined, CaretLeftOutlined } from "@ant-design/icons";
+import { CloseCircleOutlined, SaveOutlined, UndoOutlined } from "@ant-design/icons";
 import useCommonStore from "../../../store/commonStore";
 import useCustomerStore from "../../../store/customerStore";
 import useLoanStore from "../../../store/loanStore";
 import { formatCNIC } from "../../../utils/formatterFunctions";
-import { useNavigate } from "react-router-dom";
+import useGuarantorStore from "../../../store/guarantorStore";
+// import { useNavigate } from "react-router-dom";
 const { Search } = Input;
 
 // ✅ Validation Schema
@@ -27,9 +28,10 @@ interface IFormDetails {
     setIdx: (idx: string) => void;
     setCNIC: (cnic: string) => void;
     setApprovalStatus: (status: string) => void;
+    appId?: string | null
 }
 
-const FormDetails: React.FC<IFormDetails> = ({ type, setIdx, setCNIC, setApprovalStatus }) => {
+const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, setApprovalStatus }) => {
     const { control, handleSubmit, formState: { errors }, reset, setValue } = useForm({
         resolver: yupResolver(schema),
     });
@@ -37,38 +39,55 @@ const FormDetails: React.FC<IFormDetails> = ({ type, setIdx, setCNIC, setApprova
     const [searchValue, setSearchValue] = useState('');
 
     const { customer, customerLoading, addCustomer, fetchCustomerByCNIC, resetCustomer } = useCustomerStore();
+    const { guarantor, guarantorLoading, addGuarantor, fetchGuarantorByCNIC } = useGuarantorStore()
     const { operatorLoading, operators, fetchOperators } = useCommonStore();
     const { loan } = useLoanStore();
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
 
-        const postData = { ...data, fullName: `${data.name ?? ''} ${data.initals ?? ''} ${data.surname ?? ''}`, appraisalId: loan?.idx }
+        const postData = { ...data, fullName: `${data.name ?? ''} ${data.initals ?? ''} ${data.surname ?? ''}`, appraisalId: appId ?? loan?.idx }
         delete postData['name']
         delete postData['initals']
         delete postData['surname']
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const response: any = await addCustomer({ ...postData, type: type })
-        if (response) {
-            setIdx(response?.idx);
-            setCNIC(response?.identificationNumber);
+        if (type === 'C') {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const response: any = await addCustomer({ ...postData, type: type })
+            if (response) {
+                setIdx(response?.idx);
+                setCNIC(response?.identificationNumber);
+            }
+        } else if (type === 'G') {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const response: any = await addGuarantor({ ...postData, type: type })
+            if (response) {
+                setIdx(response?.idx);
+                setCNIC(response?.identificationNumber);
+            }
         }
-
     };
 
     useEffect(() => {
-        if (customer) {
+        if (customer && type === 'C') {
             setCNIC(customer?.identificationNumber);
             setIdx(customer?.idx || '');
         }
-    }, [customer, setCNIC, setIdx]);
+        if (guarantor && type === 'G') {
+            setCNIC(guarantor?.identificationNumber);
+            setIdx(guarantor?.idx || '');
+        }
+    }, [type, guarantor, customer, setCNIC, setIdx]);
 
 
     const handleSearch = (value: string) => {
         console.log('handleSearch : ', value);
-        fetchCustomerByCNIC(value)
+        if (type === 'C') {
+            fetchCustomerByCNIC(value)
+        } else if (type === 'G') {
+            fetchGuarantorByCNIC(value)
+        }
         setCNIC(value)
     }
 
@@ -197,11 +216,10 @@ const FormDetails: React.FC<IFormDetails> = ({ type, setIdx, setCNIC, setApprova
                     </div>
                 </div>
                 <div className="flex gap-3 mt-5">
-                    <Button onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
-                    <Button type="primary" htmlType="submit" loading={customerLoading}>
+                    <Button type="primary" htmlType="submit" loading={customerLoading || guarantorLoading} icon={<SaveOutlined />}>
                         Save and Verify
                     </Button>
-                    <Button type="default" onClick={formRest} danger>
+                    <Button type="default" onClick={formRest} danger icon={<UndoOutlined />}>
                         Reset
                     </Button>
                 </div>

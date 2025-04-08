@@ -26,16 +26,12 @@ const LoanDaashboard: React.FC = () => {
     const { loading, loanStatus, fetchLoanStatusById } = useLoanStore();
     const { stakeholders, fetchStackholderByAppId } = useStakeholderStore()
     const { customers, fetchCustomerByAppId } = useCustomerStore()
-    // TODO: get customer name from the loan application and show it in the card title
-
-    console.log('appId : ', appId);
 
     // TODO: have to call the apprisal api to get the status of the loan application
 
     const onChange = (key: string | string[]) => {
         console.log(key);
     };
-
 
     const genExtra = ({ isCompleted, isMandatory }: StatusProps) => (
         <>
@@ -44,16 +40,16 @@ const LoanDaashboard: React.FC = () => {
         </>
     );
 
-
     const getComponentByName = (name: string) => {
         switch (name) {
             case 'customer':
-                return <CustomerDetailsView formDetails={getStakeholderByType('C', stakeholders)[0] ?? ''} />;
+                return <CustomerDetailsView formDetails={getStakeholderByType('C', stakeholders ?? [])[0] ?? null} />;
             // return <CustomerDetailsView formDetails={null} />;
             case 'guarantor':
-                return <GuarantorDetailsView formDetails={getStakeholderByType('G', stakeholders)} />;
+                return <GuarantorDetailsView formDetails={getStakeholderByType('G', stakeholders ?? []) ?? []} />;
+            // return <GuarantorDetailsView formDetails={[]} />;
             case 'witness':
-                return <WitnessDetails formDetails={getStakeholderByType('W', stakeholders)} />;
+                return <WitnessDetails formDetails={getStakeholderByType('W', stakeholders ?? []) ?? []} />;
             case 'LOAN_COLLATERAL':
                 return <div>Collateral</div>;
             case 'GOLD_LOAN_APPLICAION':
@@ -252,7 +248,6 @@ const LoanDaashboard: React.FC = () => {
 
     return (
         <>
-            {/* TODO: add the customer name to the card title */}
             <Card title={
                 <div className='flex justify-between'>
                     <div>Loan Application: {appId}</div>
@@ -261,9 +256,10 @@ const LoanDaashboard: React.FC = () => {
             }>
                 <Collapse
                     accordion
-                    // defaultActiveKey={['']}
+                    size="large"
+                    defaultActiveKey={['customer']}
+                    expandIconPosition={'start'}
                     onChange={onChange}
-                    expandIconPosition={'end'}
                     items={items}
                 />
 

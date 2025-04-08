@@ -62,8 +62,6 @@ const CHeader: React.FC<ICHeaderProps> = ({ collapsed, setCollapsed }) => {
     },
   ];
 
-  console.log('localStorage', localStorage)
-
   return (
     <Header style={{ paddingLeft: 5, paddingRight: 10 }}>
       <div className='flex flex-row justify-between'>

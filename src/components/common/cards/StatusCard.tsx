@@ -4,7 +4,7 @@ import { Card } from 'antd';
 interface StatusCardProps {
     itemKey: string;
     title: string;
-    value: number;
+    value?: number;
     hcolor: string;
     bcolor: string;
     icon: ReactNode;

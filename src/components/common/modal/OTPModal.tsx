@@ -13,7 +13,7 @@ interface OTPModalProps {
 
 const OTPModal: React.FC<OTPModalProps> = ({ idx, visible, onCancel, onCompleted }) => {
 
-    const { control, handleSubmit, setValue, watch } = useForm();
+    const { control, handleSubmit, setValue, watch, reset } = useForm();
     const { sendOTP, verifyOTP, otpLoading, otpVerificationLoading, otpVerificationResponse } = useOTPStore()
     const otpRefs = useRef<(HTMLInputElement | null)[]>(Array(6).fill(null));
     const [isResendDisabled, setIsResendDisabled] = useState(true);
@@ -22,13 +22,16 @@ const OTPModal: React.FC<OTPModalProps> = ({ idx, visible, onCancel, onCompleted
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
         const otpValue = Object.values(data).join("");
-        console.log("OTP Submitted:", otpValue);
-        verifyOTP(idx, otpValue).then(() => {
-            console.log("OTP Verified:", otpVerificationResponse);
+        verifyOTP(idx, otpValue);
+    };
+
+    useEffect(() => {
+        if (otpVerificationResponse !== null) {
             onCancel();
             onCompleted();
-        });
-    };
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [otpVerificationResponse]);
 
     // Move focus to next input
     const handleChange = (index: number, value: string) => {
@@ -52,6 +55,7 @@ const OTPModal: React.FC<OTPModalProps> = ({ idx, visible, onCancel, onCompleted
         sendOTP(idx);
         setResetTrigger((prev) => prev + 1);
         setIsResendDisabled(true);
+        reset();
     }
 
     useEffect(() => {

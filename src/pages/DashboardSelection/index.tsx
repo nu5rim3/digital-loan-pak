@@ -11,15 +11,16 @@ import { IAuthContext, AuthContext } from "react-oauth2-code-pkce";
 
 const dashboards = [
     {
-        id: "islamic",
-        name: "Islamic Business Unit",
-        image: LOLC_ISLAMIC,
-    },
-    {
         id: "conventional",
         name: "Conventional Business Unit",
         image: LOLC_CONVENTIONAL,
     },
+    {
+        id: "islamic",
+        name: "Islamic Business Unit",
+        image: LOLC_ISLAMIC,
+    },
+
 ];
 
 export default function DashboardSelection() {
@@ -52,9 +53,10 @@ export default function DashboardSelection() {
                     <img src={Logo1} alt='digital-loan' style={{ width: 500 }} />
                 </div>
                 <div className='h-full flex flex-col justify-center items-center'>
-                    <div className='flex gap-4'>
+                    <div className='flex gap-10'>
                         {dashboards.map((dashboard) => (
                             <Card
+                                style={{ width: 400 }}
                                 key={dashboard.id}
                                 hoverable
                                 cover={
@@ -68,9 +70,9 @@ export default function DashboardSelection() {
                                     </div>
                                 }
                                 onClick={() => handleSelect(dashboard.id)}
-                                className={selected === dashboard.id ? 'border-4 border-blue-500' : ''}
+                                className={selected === dashboard.id ? 'border-4 border-blue-500' : 'p-4'}
                             >
-                                <Card.Meta title={dashboard.name} className="text-center" />
+                                <Card.Meta title={dashboard.name} className="text-center text-xl" />
                             </Card>
                         ))}
                     </div>

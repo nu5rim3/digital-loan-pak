@@ -85,7 +85,7 @@ const CRIBDetails: React.FC<ICRIBDetails> = ({ cnic }) => {
         <>
             <Card title={'Internal CRIB Details'} loading={cribLoading} extra={
                 <>
-                    <Button type="text" icon={<EyeOutlined />} onClick={() => setOpenModal(true)} disabled={cribDetails?.detail === null}>View More</Button>
+                    <Button type="default" icon={<EyeOutlined />} onClick={() => setOpenModal(true)} disabled={cribDetails?.detail === null}>View More</Button>
                     <Button type="text" icon={<ReloadOutlined />} onClick={onRefresh} />
                 </>
             }>
@@ -125,7 +125,7 @@ const CRIBDetails: React.FC<ICRIBDetails> = ({ cnic }) => {
                     </div>
                 </Form>
             </Card>
-            <CommonModal open={openModal} onClose={() => setOpenModal(false)} title={'CRIB Details'} size='large'>
+            <CommonModal open={openModal} onClose={() => setOpenModal(false)} title={'CRIB Details'} size='large' footer={true}>
                 <>
                     {cribDetails !== null && LoanCards(cribDetails)}
                 </>

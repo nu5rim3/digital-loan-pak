@@ -4,5 +4,8 @@ export function getStakeholderByType(
   stkType: string,
   stakeholders: IStakeholder[]
 ): IStakeholder[] {
-  return stakeholders.filter((stakeholder) => stakeholder.stkType === stkType);
+  return (
+    stakeholders &&
+    stakeholders.filter((stakeholder) => stakeholder.stkType === stkType)
+  );
 }

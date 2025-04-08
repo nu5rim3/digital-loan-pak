@@ -5,29 +5,27 @@ import NADRAModal from '../../../../components/common/modal/NADRAModal';
 import OTPModal from '../../../../components/common/modal/OTPModal';
 import { QrcodeOutlined, CaretLeftOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
-import useCustomerStore from '../../../../store/customerStore';
 import useLoanStore from '../../../../store/loanStore';
 import CRIBDetails from '../../../../components/common/verification/CRIBDetails';
 import ECIBDetails from '../../../../components/common/verification/ECIBDetails';
 import MSASVerification from '../../../../components/common/verification/MSASVerification';
 import BlacklistVerification from '../../../../components/common/verification/BlacklistVerification';
 import FormDetails from '../../../../components/common/verification/FormDetails';
-import ViewDetails from '../../../../components/common/verification/ViewDetails';
+// import ViewDetails from '../../../../components/common/verification/ViewDetails';
 import { getStatusByName, TRule } from '../../../../utils/MSASActionFunctions';
 import { mainURL } from '../../../../App';
+// import useGuarantorStore from '../../../../store/guarantorStore';
 
 const GuarantorOnboarding: React.FC = () => {
-    const { customer } = useCustomerStore()
+    // const { guarantor, fetchGuarantorByAppId } = useGuarantorStore()
     const [otpModalOpen, setOtpModalOpen] = useState(false);
     const [nadraModalOpen, setNadraModalOpen] = useState(false)
-    const [customerIdx, setCustomerIdx] = useState<string | undefined>(customer?.idx ?? '');//CLI0000000000001, CLI0000000103821
-    const [customerCNIC, setCustomerCNIC] = useState<string | undefined>(customer?.identificationNumber ?? '');//CLI0000000001537 - 61101-2920780-9 - 37101-9830957-9
-    const [approvalStatus, setApprovalStatus] = useState('');
+    const [guarantorIdx, setGuarantorIdx] = useState<string | undefined>('');//CLI0000000000001, CLI0000000103821
+    const [guarantorCNIC, setGuarantorCNIC] = useState<string | undefined>('');//CLI0000000001537 - 61101-2920780-9 - 37101-9830957-9
+    const [approvalStatus, setApprovalStatus] = useState('PENDING');
     const [otpVerification, setOtpVerification] = useState('P');
     const [msasTrigger, setMsasTrigger] = useState(0);
     const [ruleStatus, setRuleStatus] = useState<TRule[]>([]);
-    // const [NADRAStatus, setNADRAStatus] = useState<string | null>();
-    // const [OtpStatus, setOtpStatus] = useState<string | null>();
 
     const { loan } = useLoanStore();
 
@@ -35,7 +33,6 @@ const GuarantorOnboarding: React.FC = () => {
 
     const navigate = useNavigate();
 
-    console.log('state : ', state);
 
     const { appId } = state as { appId: string };
 
@@ -53,7 +50,6 @@ const GuarantorOnboarding: React.FC = () => {
     }
 
     useEffect(() => {
-        // setNADRAStatus(getStatusByName('RUL_BIOMETRIC_VERIFICATION', ruleStatus))
         setOtpVerification(getStatusByName('RUL_CLI_OTP_VERIFICATION', ruleStatus))
 
     }, [ruleStatus])
@@ -62,11 +58,9 @@ const GuarantorOnboarding: React.FC = () => {
         if (appId === undefined) {
             navigate(-1)
         }
-    }, [loan])
-
-    console.log('otpVerification', otpVerification)
-
-
+        // fetchGuarantorByAppId(appId ?? '')
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [loan, appId])
 
 
     return (
@@ -74,26 +68,29 @@ const GuarantorOnboarding: React.FC = () => {
             <div className='flex flex-col gap-3'>
 
 
-                {customer === null ?
-                    <FormDetails setIdx={setCustomerIdx} setCNIC={setCustomerCNIC} setApprovalStatus={setApprovalStatus} type='G' />
+                {/* {guarantor === null ?
+                    <FormDetails setIdx={setGuarantorIdx} setCNIC={setGuarantorCNIC} setApprovalStatus={setApprovalStatus} type='G' />
                     :
-                    <ViewDetails type='G' setIdx={setCustomerIdx} setCnic={setCustomerCNIC} />
+                    <ViewDetails type='G' setIdx={setGuarantorIdx} setCnic={setGuarantorCNIC} />
+                } */}
+
+                <FormDetails setIdx={setGuarantorIdx} setCNIC={setGuarantorCNIC} setApprovalStatus={setApprovalStatus} type='G' appId={appId ?? ''} />
+
+
+                {
+                    guarantorIdx && <MSASVerification idx={guarantorIdx ?? ''} cnic={guarantorCNIC ?? ''} setApprovalStatus={setApprovalStatus} key={msasTrigger} setRuleStatus={setRuleStatus} />
                 }
 
                 {
-                    customerIdx && <MSASVerification idx={customerIdx ?? ''} cnic={customerCNIC ?? ''} setApprovalStatus={setApprovalStatus} key={msasTrigger} setRuleStatus={setRuleStatus} />
+                    guarantorCNIC && <BlacklistVerification idx={guarantorIdx ?? ''} cnic={guarantorCNIC ?? ''} />
                 }
 
                 {
-                    customerCNIC && <BlacklistVerification idx={customerIdx ?? ''} cnic={customerCNIC ?? ''} />
+                    guarantorCNIC && <CRIBDetails idx={guarantorIdx ?? ''} cnic={''} />//guarantorCNIC ?? 
                 }
 
                 {
-                    customerCNIC && <CRIBDetails idx={customerIdx ?? ''} cnic={''} />//customerCNIC ?? 
-                }
-
-                {
-                    customerIdx && <ECIBDetails idx={customerIdx ?? ''} cnic={customerCNIC ?? ''} />
+                    guarantorIdx && <ECIBDetails idx={guarantorIdx ?? ''} cnic={guarantorCNIC ?? ''} />
                 }
 
                 {
@@ -114,7 +111,7 @@ const GuarantorOnboarding: React.FC = () => {
                 {
                     approvalStatus === 'INVALID' &&
                     <>
-                        <Tag color='red' className='text-center'>Cannot proceed {customerIdx ?? ''} is not valid</Tag>
+                        <Tag color='red' className='text-center'>Cannot proceed {guarantorIdx ?? ''} is not valid</Tag>
                         <div className='flex gap-3'>
                             <Button onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
                         </div>
@@ -124,7 +121,7 @@ const GuarantorOnboarding: React.FC = () => {
                 {
                     approvalStatus === 'CLOSE' &&
                     <>
-                        <Tag color='red' className='text-center'>Cannot proceed {customerIdx ?? ''} is not valid</Tag>
+                        <Tag color='red' className='text-center'>Cannot proceed {guarantorIdx ?? ''} is not valid</Tag>
                         <div className='flex gap-3'>
                             <Button onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
                         </div>
@@ -141,11 +138,21 @@ const GuarantorOnboarding: React.FC = () => {
                     </>
                 }
 
+                {
+                    approvalStatus === 'PENDING' &&
+                    <>
+
+                        <div className='flex gap-3'>
+                            <Button onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
+                        </div>
+                    </>
+                }
+
             </div >
             {
-                customerIdx !== '' &&
+                guarantorIdx !== '' &&
                 <>
-                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={customerIdx ?? ''} onCompleted={() => navigate(`${appId}`)} />
+                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={guarantorIdx ?? ''} onCompleted={() => navigate(`${appId}`)} />
                     <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} />
                 </>
             }

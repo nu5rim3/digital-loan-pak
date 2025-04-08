@@ -27,7 +27,11 @@ const MSASVerification: React.FC<IMSASVerification> = ({ idx, setApprovalStatus,
 
     useEffect(() => {
         setVerfication(getVerificationStatus(msasDetails?.rules ?? []))
-        setApprovalStatus(getApprovalStatus(msasDetails?.rules ?? []))
+        if (msasDetails !== null) {
+            setApprovalStatus(getApprovalStatus(msasDetails?.rules))
+        } else {
+            setApprovalStatus('PENDING')
+        }
         setRuleStatus(msasDetails?.rules ?? [])
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [msasDetails])

@@ -7,11 +7,13 @@ import useCommonStore from '../../../../../store/commonStore';
 import { formatCNIC } from '../../../../../utils/formatterFunctions';
 import { useNavigate, useParams } from 'react-router-dom';
 import { mainURL } from '../../../../../App';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { IStakeholder } from '../../../../../store/stakeholderStore';
+import useGuarantorStore from '../../../../../store/guarantorStore';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
+    idx: yup.string(),
     appraisalID: yup.string(),
     stkOrgType: yup.string().required("Orgination Type is required"),
     stkCNic: yup.string().required("CNIC is required"),
@@ -54,13 +56,14 @@ interface IGuarantorDetailsView {
 
 const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) => {
 
-    const { control, formState: { errors }, setValue } = useForm({
+    const { control, formState: { errors }, setValue, watch } = useForm({
         resolver: yupResolver(schema),
     });
     const { organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, educationLevel, educationLevelLoading, fetchEducationLevel, headOfFamily, headOfFamilyLoading, fetchHeadOfFamily, healthCondition, healthConditionLoading, fetchHealthCondition } = useCommonStore()
     const { appId } = useParams()
     const navigate = useNavigate();
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const { fetchGuarantorByAppId } = useGuarantorStore()
 
     useEffect(() => {
         fetchOrganizationType()
@@ -68,17 +71,18 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
         fetchEducationLevel()
         fetchHeadOfFamily()
         fetchHealthCondition()
+        fetchGuarantorByAppId(appId ?? '')
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const onClickCreate = () => {
-        console.log('Create Guarantor');
         navigate(`${mainURL}/users/guarantor`, { state: { appId: appId } })
     }
 
     const selectedGuarantor = (idx: string) => {
         const selected = formDetails?.find((item) => item.idx === idx);
         if (selected) {
+            setValue("idx", selected?.idx ?? '');
             setValue("appraisalID", selected?.appraisalID ?? appId ?? '');
             setValue("stkSequence", selected?.stkSequence);
             setValue("stkOrgType", selected?.stkOrgType);
@@ -94,7 +98,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
             setValue("stkDob", selected?.stkDob);
             setValue("stkAge", selected?.stkAge);
             setValue("stkGender", selected?.stkGender);
-            setValue("stkMaritialStatus", selected?.stkMaritialStatus);
+            setValue("stkMaritialStatus", selected?.stkMaritialStatus ?? '');
             setValue("stkMaritialComment", selected?.stkMaritialComment);
             setValue("stkTitle", selected?.stkTitle);
             setValue("stkFatherOrHusName", selected?.stkFatherOrHusName);
@@ -103,7 +107,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
         }
     }
 
-    console.log('formDetails : ', formDetails);
+    const idx = watch("idx");
 
     if (formDetails?.length === 0) {
         return (
@@ -131,7 +135,12 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
             {
                 selectedIndex > 0 && (
                     <>
-                        <Card title={`Personal Details: Guarantor ${selectedIndex}`}>
+                        <Card title={<div className='flex justify-between'>
+                            <div>Personal Details: Guarantor {selectedIndex}</div>
+                            <Button type="default" onClick={() => {
+                                navigate(`${mainURL}/loan/application/${appId}/guarantor`, { state: { mode: 'edit', idx: idx } })
+                            }} icon={<EditOutlined />}>Update details</Button>
+                        </div>}>
                             <Form layout="vertical" disabled>
                                 <div className="grid grid-cols-4 gap-3">
                                     <Form.Item label="Title" validateStatus={errors.stkTitle ? "error" : ""} help={errors.stkTitle?.message} required>
@@ -441,13 +450,15 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                                             render={({ field }) => <Input {...field} placeholder="Enter Employee Number" />}
                                         />
                                     </Form.Item>
+                                    <Form.Item hidden>
+                                        <Controller
+                                            name="idx"
+                                            control={control}
+                                            render={({ field }) => <Input {...field} />}
+                                        />
+                                    </Form.Item>
                                 </div>
                             </Form>
-                            <div className="flex gap-3 mt-5">
-                                <Button type="primary" onClick={() => navigate(`${mainURL}/loan/application/${appId}/guarantor`, { state: { mode: 'edit', selectedIndex: selectedIndex - 1 } })}>
-                                    Update
-                                </Button>
-                            </div>
                         </Card>
 
                         <Card title={'Contact Information'}>

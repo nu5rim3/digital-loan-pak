@@ -80,7 +80,7 @@ const CustomerDetails: React.FC = () => {
     }, [])
 
     useEffect(() => {
-        if (mode === 'edit') {
+        if (mode === 'edit' && stakeholders.length > 0) {
             const formDetails = getStakeholderByType('C', stakeholders)[0]
             setStakholderId(formDetails?.idx)
             if (formDetails) {
@@ -99,7 +99,7 @@ const CustomerDetails: React.FC = () => {
                 setValue("stkDob", formDetails?.stkDob);
                 setValue("stkAge", formDetails?.stkAge);
                 setValue("stkGender", formDetails?.stkGender);
-                setValue("stkMaritialStatus", formDetails?.stkMaritialStatus);
+                setValue("stkMaritialStatus", formDetails?.stkMaritialStatus ?? '');
                 setValue("stkMaritialComment", formDetails?.stkMaritialComment);
                 setValue("stkTitle", formDetails?.stkTitle);
                 setValue("stkFatherOrHusName", formDetails?.stkFatherOrHusName);

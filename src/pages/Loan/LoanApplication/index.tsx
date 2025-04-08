@@ -8,6 +8,7 @@ import { formatCurrency } from '../../../utils/formatterFunctions'
 import { useNavigate } from 'react-router-dom'
 import useLoanStore from '../../../store/loanStore'
 import { mainURL } from '../../../App'
+import useCustomerStore from '../../../store/customerStore'
 
 const { Content } = Layout
 
@@ -16,6 +17,7 @@ const LoanApplication: React.FC = () => {
 
     const navigate = useNavigate();
     const { loading, addLoan } = useLoanStore();
+    const { resetCustomer } = useCustomerStore()
 
     const columns = [
         {
@@ -121,12 +123,12 @@ const LoanApplication: React.FC = () => {
         },
         {
             key: '6',
-            applicationId: 'APP0000000000007',
+            applicationId: 'APP0000000066411',
             cusName: 'Shabira',
             loanType: 'Gold Loan',
             loanAmount: '1054000',
-            status: 'P',
-            cidx: 'CLI0000000000003'
+            status: 'C',
+            cidx: 'CLI0000000103951'
         },
         {
             key: '7',
@@ -168,6 +170,7 @@ const LoanApplication: React.FC = () => {
             client: "WEB",
         }).then(() => {
             navigate(`${mainURL}/users/customer`, { state: { newLoan: true } })
+            resetCustomer();
         })
     };
 

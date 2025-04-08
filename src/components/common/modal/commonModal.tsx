@@ -6,7 +6,7 @@ interface CommonModalProps {
     onClose: () => void;
     children?: React.ReactNode;
     title: string;
-    size?: 'small' | 'medium' | 'large';
+    size?: 'small' | 'medium' | 'large' | 'xlarge';
     footer: boolean;
 }
 
@@ -14,6 +14,7 @@ const sizeMap = {
     small: 400,
     medium: 600,
     large: 800,
+    xlarge: 1400,
 };
 
 const CommonModal: React.FC<CommonModalProps> = ({ open, onClose, children, title, size = 'medium', footer = null }) => {

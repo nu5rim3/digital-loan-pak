@@ -41,13 +41,13 @@ export const getApprovalStatus = (rules: TRule[]): string => {
     return ActionType.SPECIAL_APPROVAL;
   }
 
-  if (cnicRule.status === "Y") {
-    return ActionType.CLOSE;
-  }
+  // if (cnicRule.status === "Y") {
+  //   return ActionType.CLOSE;
+  // }
 
-  if (cnicRule.status === "P" || nameRule.status === "P") {
-    return ActionType.REFRESH;
-  }
+  // if (cnicRule.status === "P" || nameRule.status === "P") {
+  //   return ActionType.REFRESH;
+  // }
 
   return ActionType.INVALID;
 };

@@ -58,9 +58,9 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
     const onSubmit = async (data: any) => {
         console.log(data);
         if (mode === 'create') {
-            addStakeholder({ ...data, appraisalID: appId ?? '', new: true, stkType: 'C' })
+            addStakeholder({ ...data, appraisalID: appId ?? '', new: true, stkType: 'G' })
         } else if (mode === 'edit') {
-            updateStakeholder(stakholderId, { ...data, appraisalID: appId ?? '', update: true, stkType: 'C' })
+            updateStakeholder(stakholderId, { ...data, appraisalID: appId ?? '', update: true, stkType: 'G' })
         }
     }
 
@@ -93,7 +93,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                 setValue("stkDob", formDetails?.stkDob);
                 setValue("stkAge", formDetails?.stkAge);
                 setValue("stkGender", formDetails?.stkGender);
-                setValue("stkMaritialStatus", formDetails?.stkMaritialStatus);
+                setValue("stkMaritialStatus", formDetails?.stkMaritialStatus ?? '');
                 setValue("stkTitle", formDetails?.stkTitle);
                 setValue("stkFatherOrHusName", formDetails?.stkFatherOrHusName);
                 setValue("currentResidences", formDetails?.currentResidences);

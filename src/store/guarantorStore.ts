@@ -30,7 +30,7 @@ interface ICustomerState {
   guarantorError: string | null;
 
   fetchGuarantor: () => Promise<void>;
-  fetchGuarantorById: (idx: string) => Promise<void>;
+  fetchGuarantorByAppId: (appId: string) => Promise<void>;
   fetchGuarantorByCNIC: (cnic: string) => Promise<void>;
   addGuarantor: (guarantor: IGuarantor) => Promise<void>;
   updateGuarantor: (idx: string, updatedUser: IGuarantor) => Promise<void>;
@@ -55,13 +55,13 @@ const useGuarantorStore = create<ICustomerState>((set) => ({
     }
   },
 
-  fetchGuarantorById: async (appId: string) => {
+  fetchGuarantorByAppId: async (appId: string) => {
     set({ guarantorLoading: true, guarantorError: null });
     try {
       const response = await API.get(
         `/mobixCamsClientele/v1/clienteles/${appId}/type/guarantor`
       );
-      set({ guarantor: response.data, guarantorLoading: false });
+      set({ guarantors: response.data, guarantorLoading: false });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({ guarantorError: error.message, guarantorLoading: false });

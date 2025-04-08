@@ -45,8 +45,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ actionLoading, actionTitle, actio
     };
 
     const handleCreateNew = () => {
-        // Handle create new logic here
-        console.log('Create new');
         action()
     };
 

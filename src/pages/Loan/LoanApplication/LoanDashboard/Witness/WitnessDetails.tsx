@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Form, Button, Card, Empty } from "antd";
+import { Button, Card, Empty, Descriptions } from "antd";
 import { useParams } from 'react-router-dom';
 import { IStakeholder } from '../../../../../store/stakeholderStore';
 import useWitnessStore from '../../../../../store/witnessStore';
 import CommonModal from '../../../../../components/common/modal/commonModal';
 import CreateWitness from '../../../../Users/Witnesses/CreateWitness';
-import { PlusOutlined } from '@ant-design/icons'
+import { PlusOutlined, EditOutlined } from '@ant-design/icons'
 
 interface IWitnessDetails {
     formDetails?: IStakeholder[];
@@ -16,8 +16,9 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
     const { appId } = useParams();
     const [openModal, setOpenModal] = useState(false)
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [mode, setMode] = useState('create')
 
-    const { witnesses, fetchWitnessByAppId } = useWitnessStore();
+    const { fetchWitnessByAppId } = useWitnessStore();
 
     useEffect(() => {
         fetchWitnessByAppId(appId ?? '')
@@ -27,18 +28,24 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
 
     // const navigate = useNavigate();
 
-    console.log("Form details", formDetails);
-
-    console.log('witnesses : ', witnesses);
+    const onClickUpdate = () => {
+        setOpenModal(true)
+        setMode('update')
+    }
 
     const onClickCreate = () => {
         setOpenModal(true)
+        setMode('create')
     }
 
     if (formDetails?.length === 0) {
         return (
             <div>
-                <Empty description={<span>Witnesses are not available. Please create a witness.</span>} children={<Button type="primary" onClick={onClickCreate} icon={<PlusOutlined />}>Add Witness</Button>} />
+                <Empty description={<span>Witnesses are not available. Please create a witness.</span>} children={<Button type="primary" onClick={() => setOpenModal(true)} icon={<PlusOutlined />}>Add Witness</Button>} />
+
+                <CommonModal open={openModal} onClose={() => setOpenModal(false)} title={'Add Wintess'} size='large' footer={true}>
+                    <CreateWitness appId={appId ?? ''} mode='create' onClose={() => setOpenModal(false)} />
+                </CommonModal>
             </div>
         )
     }
@@ -64,53 +71,42 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
 
                         {
                             selectedIndex >= 0 && (
-                                <div>
-                                    <Card title={`Witness ${selectedIndex + 1}`}>
-                                        <div className='grid grid-cols-2 gap-3'>
-                                            <Form.Item label="First Name">
-                                                {formDetails[selectedIndex].stkCusName ?? '-'}
-                                            </Form.Item>
-                                            <Form.Item label="Last Name">
-                                                {formDetails[selectedIndex].currentResPlace ?? '-'}
-                                            </Form.Item>
-                                            <Form.Item label="CNIC">
-                                                {formDetails[selectedIndex].stkCNic}
-                                            </Form.Item>
-                                            <Form.Item label="Contact Number">
-                                                {formDetails[selectedIndex]?.currentResPlace ?? '-'}
-                                            </Form.Item>
+                                <div className='flex flex-col gap-3'>
+                                    <Card title={
+                                        <div className='flex justify-between'>
+                                            <div>Witness {selectedIndex + 1}</div>
+                                            <Button type="default" onClick={onClickUpdate} icon={<EditOutlined />}>Update Details</Button>
                                         </div>
+                                    }
+                                    >
+                                        <Descriptions column={5}>
+                                            <Descriptions.Item label="Title">{formDetails[selectedIndex].stkTitle ?? '-'}</Descriptions.Item>
+                                            <Descriptions.Item label="Full Name">{formDetails[selectedIndex].stkCusName ?? '-'}</Descriptions.Item>
+                                            <Descriptions.Item label="Surname Name">{formDetails[selectedIndex].stkSurName ?? '-'}</Descriptions.Item>
+                                            <Descriptions.Item label="Initials">{formDetails[selectedIndex].stkInitials ?? '-'}</Descriptions.Item>
+                                            <Descriptions.Item label="CNIC">{formDetails[selectedIndex].stkCNic ?? '-'}</Descriptions.Item>
+                                        </Descriptions>
+                                    </Card>
+                                    <Card title={
+                                        <div className='flex justify-between'>
+                                            <div>Contact Information: Witness {selectedIndex + 1}</div>
+                                            <Button type="default" onClick={onClickCreate} icon={<EditOutlined />}>Update Contact</Button>
+                                        </div>
+                                    }
+                                    >
+                                        <Descriptions column={2}>
+                                            <Descriptions.Item label="Contact Number">{formDetails[selectedIndex].stkCusName ?? '-'}</Descriptions.Item>
+                                            <Descriptions.Item label="Address">{formDetails[selectedIndex].stkSurName ?? '-'}</Descriptions.Item>
+                                        </Descriptions>
                                     </Card>
                                 </div>
                             )
                         }
-
-
-                        {/* {
-                            formDetails.map((witness, index) => (
-                                <Card key={index} title={`Witness ${index + 1}`} className='mb-3'>
-                                    <div className='grid grid-cols-2 gap-3'>
-                                        <Form.Item label="First Name">
-                                            {witness.stkCusName ?? '-'}
-                                        </Form.Item>
-                                        <Form.Item label="Last Name">
-                                            {witness.currentResPlace ?? '-'}
-                                        </Form.Item>
-                                        <Form.Item label="CNIC">
-                                            {witness.stkCNic}
-                                        </Form.Item>
-                                        <Form.Item label="Contact Number">
-                                            {witness?.currentResPlace ?? '-'}
-                                        </Form.Item>
-                                    </div>
-                                </Card>
-                            ))
-                        } */}
                     </div>
                 )
             }
             <CommonModal open={openModal} onClose={() => setOpenModal(false)} title={'Add Wintess'} size='large' footer={true}>
-                <CreateWitness appId={appId ?? ''} />
+                <CreateWitness appId={appId ?? ''} mode={mode} onClose={() => setOpenModal(false)} witnessDetails={formDetails ? formDetails[selectedIndex] : null} />
             </CommonModal>
         </div>
     )

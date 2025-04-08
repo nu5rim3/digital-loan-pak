@@ -20,9 +20,9 @@ const CustomerOnboarding: React.FC = () => {
     const { customer } = useCustomerStore()
     const [otpModalOpen, setOtpModalOpen] = useState(false);
     const [nadraModalOpen, setNadraModalOpen] = useState(false)
-    const [customerIdx, setCustomerIdx] = useState<string | undefined>(customer?.idx ?? 'CLI0000000000003');//CLI0000000000001, CLI0000000103821
-    const [customerCNIC, setCustomerCNIC] = useState<string | undefined>(customer?.identificationNumber ?? '37101-9830957-9');//CLI0000000001537 - 61101-2920780-9 - 37101-9830957-9
-    const [approvalStatus, setApprovalStatus] = useState('');
+    const [customerIdx, setCustomerIdx] = useState<string | undefined>(customer?.idx ?? '');//CLI0000000000001, CLI0000000103821
+    const [customerCNIC, setCustomerCNIC] = useState<string | undefined>(customer?.identificationNumber ?? '');//CLI0000000001537 - 61101-2920780-9 - 37101-9830957-9
+    const [approvalStatus, setApprovalStatus] = useState('PENDING');
     const [otpVerification, setOtpVerification] = useState('P');
     const [msasTrigger, setMsasTrigger] = useState(0);
     const [ruleStatus, setRuleStatus] = useState<TRule[]>([]);
@@ -56,12 +56,8 @@ const CustomerOnboarding: React.FC = () => {
         if (loan?.idx === undefined) {
             navigate(-1)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loan])
-
-    console.log('otpVerification', otpVerification)
-
-
-
 
     return (
         <>
@@ -135,11 +131,21 @@ const CustomerOnboarding: React.FC = () => {
                     </>
                 }
 
+                {
+                    approvalStatus === 'PENDING' &&
+                    <>
+
+                        <div className='flex gap-3'>
+                            <Button onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
+                        </div>
+                    </>
+                }
+
             </div >
             {
                 customerIdx !== '' &&
                 <>
-                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={customerIdx ?? ''} onCompleted={() => navigate(`${loan?.idx}`)} />
+                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={customerIdx ?? ''} onCompleted={() => navigate(`${mainURL}/loan/application/${loan?.idx}`)} />
                     <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} />
                 </>
             }

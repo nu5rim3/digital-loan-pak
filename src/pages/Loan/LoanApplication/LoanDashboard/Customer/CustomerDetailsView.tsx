@@ -9,6 +9,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import useCustomerStore from '../../../../../store/customerStore';
 import { mainURL } from '../../../../../App';
 import { IStakeholder } from '../../../../../store/stakeholderStore';
+import { EditOutlined } from '@ant-design/icons';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
@@ -95,7 +96,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
             setValue("stkDob", formDetails?.stkDob);
             setValue("stkAge", formDetails?.stkAge);
             setValue("stkGender", formDetails?.stkGender);
-            setValue("stkMaritialStatus", formDetails?.stkMaritialStatus);
+            setValue("stkMaritialStatus", formDetails?.stkMaritialStatus ?? '');
             setValue("stkMaritialComment", formDetails?.stkMaritialComment);
             setValue("stkTitle", formDetails?.stkTitle);
             setValue("stkFatherOrHusName", formDetails?.stkFatherOrHusName);
@@ -161,7 +162,17 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
 
             {/* <CustomerScreen mode={mode} setMode={setMode} /> */}
 
-            <Card title="Personal Details">
+            <Card title={<div className='flex justify-between'>
+                <div>Customer Details</div>
+                <div>
+                    <Button
+                        icon={<EditOutlined />}
+                        type="default"
+                        onClick={() => navigate(`${mainURL}/loan/application/${appId}/customer`, { state: { mode: 'edit' } })}>
+                        Update Details
+                    </Button>
+                </div>
+            </div>}>
                 <Form layout="vertical" disabled>
                     <div className="grid grid-cols-4 gap-3">
                         <Form.Item label="Title" validateStatus={errors.stkTitle ? "error" : ""} help={errors.stkTitle?.message} required>
@@ -480,11 +491,6 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                         </Form.Item>
                     </div>
                 </Form>
-                <div className="flex gap-3 mt-5">
-                    <Button type="primary" onClick={() => navigate(`${mainURL}/loan/application/${appId}/customer`, { state: { mode: 'edit' } })}>
-                        Update
-                    </Button>
-                </div>
             </Card>
 
             <Card title={'Contact Information'}>

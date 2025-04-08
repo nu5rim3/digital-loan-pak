@@ -59,7 +59,7 @@ const ECIBDetails: React.FC<IECIBDetails> = ({ idx, cnic }) => {
                     </div>
                 </Form>
             </Card>
-            <CommonModal open={openModal} onClose={() => setOpenModal(false)} title={'ECIB Details'} size='large'>
+            <CommonModal open={openModal} onClose={() => setOpenModal(false)} title={'ECIB Details'} size='xlarge' footer={true}>
                 <>
                     {
                         ecibReportUrl === null ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={
