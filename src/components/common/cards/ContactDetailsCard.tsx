@@ -36,7 +36,6 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle, st
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = (data: any) => {
-        console.log(data)
         if (mode === 'edit') {
             updateContactDetail(selectedConId ?? '', data).finally(() => {
                 reset()
@@ -73,7 +72,6 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle, st
     }
 
     useEffect(() => {
-        console.log('calling contact details: ', stkId, stakeHolderType)
         if (!openModal) {
             fetchContactDetailsByStkId(stkId ?? '')
         }
