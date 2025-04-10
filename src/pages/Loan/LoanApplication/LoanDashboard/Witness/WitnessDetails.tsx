@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Card, Empty, Descriptions } from "antd";
 import { useParams } from 'react-router-dom';
-import { IStakeholder } from '../../../../../store/stakeholderStore';
+import useStakeholderStore, { IStakeholder } from '../../../../../store/stakeholderStore';
 import useWitnessStore from '../../../../../store/witnessStore';
 import CommonModal from '../../../../../components/common/modal/commonModal';
 import CreateWitness from '../../../../Users/Witnesses/CreateWitness';
 import { PlusOutlined, EditOutlined } from '@ant-design/icons'
+import ContactDetailsCard from '../../../../../components/common/cards/ContactDetailsCard';
+import AddressDetailsCard from '../../../../../components/common/cards/AddressDetailsCard';
 
 interface IWitnessDetails {
     formDetails?: IStakeholder[];
@@ -19,11 +21,13 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
     const [mode, setMode] = useState('create')
 
     const { fetchWitnessByAppId } = useWitnessStore();
+    const { fetchStackholderByAppId } = useStakeholderStore()
 
     useEffect(() => {
         fetchWitnessByAppId(appId ?? '')
+        fetchStackholderByAppId(appId ?? '')
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [appId])
+    }, [appId, openModal])
 
 
     // const navigate = useNavigate();
@@ -36,6 +40,7 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
     const onClickCreate = () => {
         setOpenModal(true)
         setMode('create')
+        setSelectedIndex(0)
     }
 
     if (formDetails?.length === 0) {
@@ -52,7 +57,6 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
 
     return (
         <div>
-
             {
                 formDetails && formDetails?.length > 0 && (
                     <div className='flex flex-col gap-3'>
@@ -87,18 +91,11 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
                                             <Descriptions.Item label="CNIC">{formDetails[selectedIndex].stkCNic ?? '-'}</Descriptions.Item>
                                         </Descriptions>
                                     </Card>
-                                    <Card title={
-                                        <div className='flex justify-between'>
-                                            <div>Contact Information: Witness {selectedIndex + 1}</div>
-                                            <Button type="default" onClick={onClickCreate} icon={<EditOutlined />}>Update Contact</Button>
-                                        </div>
-                                    }
-                                    >
-                                        <Descriptions column={2}>
-                                            <Descriptions.Item label="Contact Number">{formDetails[selectedIndex].stkCusName ?? '-'}</Descriptions.Item>
-                                            <Descriptions.Item label="Address">{formDetails[selectedIndex].stkSurName ?? '-'}</Descriptions.Item>
-                                        </Descriptions>
-                                    </Card>
+
+                                    <ContactDetailsCard stkId={formDetails[selectedIndex].idx ?? ''} subTitle={`Wintess ${selectedIndex + 1}`} stakeHolderType='W' />
+
+                                    <AddressDetailsCard stkId={formDetails[selectedIndex].idx ?? ''} subTitle={`Wintess ${selectedIndex + 1}`} />
+
                                 </div>
                             )
                         }
@@ -106,7 +103,9 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
                 )
             }
             <CommonModal open={openModal} onClose={() => setOpenModal(false)} title={'Add Wintess'} size='large' footer={true}>
-                <CreateWitness appId={appId ?? ''} mode={mode} onClose={() => setOpenModal(false)} witnessDetails={formDetails ? formDetails[selectedIndex] : null} />
+                {
+                    mode === 'update' ? <CreateWitness appId={appId ?? ''} mode={mode} onClose={() => setOpenModal(false)} witnessDetails={formDetails && formDetails[selectedIndex]} /> : <CreateWitness appId={appId ?? ''} mode={mode} onClose={() => setOpenModal(false)} />
+                }
             </CommonModal>
         </div>
     )

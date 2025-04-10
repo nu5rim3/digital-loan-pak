@@ -1,5 +1,5 @@
 import { Button, Card, Collapse, CollapseProps, Empty } from 'antd'
-import React, { lazy, useEffect } from 'react'
+import React, { lazy, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { getLoanStatusByName, getOnlyStatusByName } from '../../../../utils/MSASActionFunctions';
 import useLoanStore from '../../../../store/loanStore';
@@ -24,13 +24,30 @@ const LoanDaashboard: React.FC = () => {
     const navigate = useNavigate();
     const { appId } = useParams();
     const { loading, loanStatus, fetchLoanStatusById } = useLoanStore();
-    const { stakeholders, fetchStackholderByAppId } = useStakeholderStore()
+    const { stakeholders, fetchStackholderByAppId, fetchContactDetailsByStkId, fetchAddressDetailsByStkId } = useStakeholderStore();
     const { customers, fetchCustomerByAppId } = useCustomerStore()
 
     // TODO: have to call the apprisal api to get the status of the loan application
 
     const onChange = (key: string | string[]) => {
-        console.log(key);
+        const triggerKey = key[0]
+        let type = ''
+        switch (triggerKey) {
+            case 'customer':
+                type = 'C'
+                break;
+            case 'guarantor':
+                type = 'G'
+                break;
+            case 'witness':
+                type = 'W'
+                break;
+            default:
+                break;
+        }
+        const selectedIdx = getStakeholderByType(type, stakeholders ?? [])[0]?.idx
+        fetchContactDetailsByStkId(selectedIdx ?? '')
+        fetchAddressDetailsByStkId(selectedIdx ?? '')
     };
 
     const genExtra = ({ isCompleted, isMandatory }: StatusProps) => (
@@ -44,10 +61,8 @@ const LoanDaashboard: React.FC = () => {
         switch (name) {
             case 'customer':
                 return <CustomerDetailsView formDetails={getStakeholderByType('C', stakeholders ?? [])[0] ?? null} />;
-            // return <CustomerDetailsView formDetails={null} />;
             case 'guarantor':
                 return <GuarantorDetailsView formDetails={getStakeholderByType('G', stakeholders ?? []) ?? []} />;
-            // return <GuarantorDetailsView formDetails={[]} />;
             case 'witness':
                 return <WitnessDetails formDetails={getStakeholderByType('W', stakeholders ?? []) ?? []} />;
             case 'LOAN_COLLATERAL':
@@ -66,6 +81,10 @@ const LoanDaashboard: React.FC = () => {
                 return <div>Credit Scoring</div>;
             case 'customer-acknowledgement':
                 return <div>Customer Acknowledgement</div>;
+            case 'guarantor-acknowledgement':
+                return <div>Guarantor Acknowledgement</div>;
+            case 'witness-acknowledgement':
+                return <div>Witness Acknowledgement</div>;
             case 'term-deposit':
                 return <div>Term Deposit</div>;
             case 'gold-facility':
@@ -78,9 +97,6 @@ const LoanDaashboard: React.FC = () => {
     };
 
 
-    const callGetDetailsByName = (name: string) => {
-        console.log('callGetDetailsByName : ', name);
-    }
 
     const dummyLoanStatus = [
         {
@@ -211,7 +227,6 @@ const LoanDaashboard: React.FC = () => {
         children: getComponentByName(rule.section),
         extra: genExtra(getLoanStatusByName(rule.section, dummyLoanStatus)),
         collapsible: getOnlyStatusByName(rule.section, dummyLoanStatus) !== 'A' ? 'disabled' : undefined,
-        onChange: () => callGetDetailsByName(rule.section),
     }));
 
     useEffect(() => {
@@ -222,29 +237,29 @@ const LoanDaashboard: React.FC = () => {
     }, [appId])
 
 
-    if (loading) {
-        return (
-            <Card title={`Loan Application - ${appId}`}>
-                <Empty description={'Loading...'} />
-            </Card>
-        )
-    }
+    // if (loading) {
+    //     return (
+    //         <Card title={`Loan Application - ${appId}`}>
+    //             <Empty description={'Loading...'} />
+    //         </Card>
+    //     )
+    // }
 
-    if (loanStatus.length === 0) {
-        return (
-            <Card title={`Loan Application - ${appId}`}>
-                <Empty
-                    description={'No Data Found'}
-                    children={
-                        <>
-                            <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
-                            <Button type="primary" className="ml-3" onClick={() => fetchLoanStatusById(appId ?? '')}>Refresh</Button>
-                        </>
-                    }
-                />
-            </Card>
-        )
-    }
+    // if (loanStatus.length === 0) {
+    //     return (
+    //         <Card title={`Loan Application - ${appId}`}>
+    //             <Empty
+    //                 description={'No Data Found'}
+    //                 children={
+    //                     <>
+    //                         <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
+    //                         <Button type="primary" className="ml-3" onClick={() => fetchLoanStatusById(appId ?? '')}>Refresh</Button>
+    //                     </>
+    //                 }
+    //             />
+    //         </Card>
+    //     )
+    // }
 
     return (
         <>

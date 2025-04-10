@@ -10,6 +10,8 @@ import { mainURL } from '../../../../../App';
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { IStakeholder } from '../../../../../store/stakeholderStore';
 import useGuarantorStore from '../../../../../store/guarantorStore';
+import ContactDetailsCard from '../../../../../components/common/cards/ContactDetailsCard';
+import AddressDetailsCard from '../../../../../components/common/cards/AddressDetailsCard';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
@@ -63,6 +65,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
     const { appId } = useParams()
     const navigate = useNavigate();
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [selectedIdx, setSelectedIdx] = useState('');
     const { fetchGuarantorByAppId } = useGuarantorStore()
 
     useEffect(() => {
@@ -82,6 +85,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
     const selectedGuarantor = (idx: string) => {
         const selected = formDetails?.find((item) => item.idx === idx);
         if (selected) {
+            setSelectedIdx(selected?.idx);
             setValue("idx", selected?.idx ?? '');
             setValue("appraisalID", selected?.appraisalID ?? appId ?? '');
             setValue("stkSequence", selected?.stkSequence);
@@ -461,9 +465,12 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                             </Form>
                         </Card>
 
-                        <Card title={'Contact Information'}>
+                        <ContactDetailsCard stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} stakeHolderType='G' />
 
-                        </Card>
+                        <AddressDetailsCard stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
+
+                        <Card title={"Income and Asset Details"}></Card>
+
                     </>
                 )
             }

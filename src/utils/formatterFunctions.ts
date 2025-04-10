@@ -40,3 +40,22 @@ export const formatCNIC = (value: string) => {
     .filter(Boolean) // Remove empty groups
     .join("-");
 };
+
+export const formatPhoneNumber = (value: string) => {
+  const cleaned = value.replace(/\D/g, ""); // Remove non-numeric characters
+  const match = cleaned.match(/^(\d{4})(\d{7})?$/);
+  if (!match) return value;
+
+  return [match[1], match[2]].filter(Boolean).join("");
+};
+
+// duration = 5Y, 5M
+export const splitDuration = (duration: string) => {
+  const years = duration.match(/(\d+)Y/);
+  const months = duration.match(/(\d+)M/);
+
+  return {
+    years: years ? years[1] + "Y" : "0Y",
+    months: months ? months[1] + "M" : "0M",
+  };
+};

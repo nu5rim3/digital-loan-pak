@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { API, APIAuth } from "../services/api";
 import { notification } from "antd";
+import { getStakeholderByType } from "../utils/stakholderFunction";
 
 export interface IStakeholder {
   appraisalID: string;
@@ -54,12 +55,52 @@ export interface IStakeholder {
   update: boolean;
 }
 
+interface IContactDetails {
+  phoneNoType: string | "Home" | "Mobile";
+  phoneNo: string;
+  status?: string;
+  idx?: string;
+}
+interface IAddressDetails {
+  idx: string;
+  addressType: "PERMANANT" | "TEMPORARY" | "OTHER"; // Use a union type for predefined values
+  addressLine1: string;
+  addressLine2?: string | null; // Optional line
+  addressLine3?: string | null; // Optional line
+  addressLine4?: string | null; // Optional line
+  area: string;
+  city: string;
+  district: string;
+  province: string;
+  community: string;
+  nearByPopPlc: string;
+  durOfCurrLoc: string; // Duration as a string (e.g., "2Y,10M")
+  residenceType: "O" | "R" | "C" | "P" | "T"; // O = Own, R = Rent, C = Company, P = Parent, T = Other
+  status: "A" | "I"; // Active (A) or Inactive (I)
+  createdBy?: string;
+  creationDate?: string;
+  lastModifiedBy?: string;
+  lastModifiedDate?: string;
+}
+
 interface IStackholderState {
   stakeholders: IStakeholder[];
   stakeholder: IStakeholder | null;
+  customerStakeholder: IStakeholder | IStakeholder[] | null;
+  guarantorStakeholder: IStakeholder | IStakeholder[] | null;
+  witnessStakeholder: IStakeholder | IStakeholder[] | null;
   selectedStakeholder: IStakeholder | null;
   stakeholderLoading: boolean;
   stakeholderError: string | null;
+
+  contactDetails: IContactDetails[];
+  contactDetail: IContactDetails | null;
+  contactDetailsLoading: boolean;
+  contactDetailsError: string | null;
+
+  addressDetails: IAddressDetails[];
+  addressDetailsLoading: boolean;
+  addressDetailsError: string | null;
 
   //   fetchStakeholdes: () => Promise<void>;
   // fetchStakeholderById: (idx: string) => Promise<void>;
@@ -67,14 +108,51 @@ interface IStackholderState {
   addStakeholder: (stakeholder: IStakeholder) => Promise<void>;
   fetchStackholderByAppId: (appraisalId: string) => Promise<void>;
   updateStakeholder: (idx: string, updatedUser: IStakeholder) => Promise<void>;
+
+  fetchContactDetailsByStkId: (stkId: string) => Promise<void>;
+  addContactDetail: (
+    stkId: string,
+    contactDetail: IContactDetails[]
+  ) => Promise<void>;
+  updateContactDetail: (
+    conId: string,
+    contactDetail: IContactDetails
+  ) => Promise<void>;
+  inActivateContactDetail: (conId: string) => Promise<void>;
+
+  fetchAddressDetailsByStkId: (stkId: string) => Promise<void>;
+  addAddressDetail: (
+    stkId: string,
+    addressDetail: IAddressDetails[]
+  ) => Promise<void>;
+  updateAddressDetail: (
+    resId: string,
+    addressDetail: IAddressDetails
+  ) => Promise<void>;
+  inActivateAddressDetail: (resId: string) => Promise<void>;
 }
 
 const useStakeholderStore = create<IStackholderState>((set) => ({
   stakeholders: [],
   stakeholder: null,
+  customerStakeholder: null,
+  guarantorStakeholder: null,
+  witnessStakeholder: null,
   selectedStakeholder: null,
   stakeholderLoading: false,
   stakeholderError: null,
+
+  contactDetails: [],
+  contactDetail: null,
+  customerContactDetails: null,
+  guarantorContactDetails: null,
+  witnessContactDetails: null,
+  contactDetailsLoading: false,
+  contactDetailsError: null,
+
+  addressDetails: [],
+  addressDetailsLoading: false,
+  addressDetailsError: null,
 
   //   fetchStakeholdes: async () => {
   //     set({ stakeholderLoading: true, stakeholderError: null });
@@ -126,15 +204,198 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
   },
 
   fetchStackholderByAppId: async (appraisalId: string) => {
-    set({ stakeholderLoading: true, stakeholderError: null });
+    set({
+      stakeholderLoading: true,
+      stakeholderError: null,
+      customerStakeholder: null,
+      guarantorStakeholder: null,
+      witnessStakeholder: null,
+    });
     try {
       const response = await API.get(
         `/mobixCamsClientele/v1/clienteles/stakeholder/${appraisalId}/appraisal`
       );
-      set({ stakeholders: response.data, stakeholderLoading: false });
+      set({
+        stakeholders: response.data,
+        customerStakeholder: getStakeholderByType("C", response.data),
+        guarantorStakeholder: getStakeholderByType("G", response.data),
+        witnessStakeholder: getStakeholderByType("W", response.data),
+        stakeholderLoading: false,
+      });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({ stakeholderError: error.message, stakeholderLoading: false });
+    }
+  },
+
+  fetchContactDetailsByStkId: async (stkId: string) => {
+    set({ contactDetailsLoading: true, contactDetailsError: null });
+    try {
+      const response = await API.get(
+        `/mobixCamsClientele/v1/clienteles/contacts/${stkId}`
+      );
+      set({
+        contactDetails: response.data,
+        contactDetailsLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ contactDetailsError: error.message, contactDetailsLoading: false });
+    }
+  },
+
+  addContactDetail: async (stkId: string, contactDetail: IContactDetails[]) => {
+    set({ contactDetailsLoading: true, contactDetailsError: null });
+    try {
+      const response = await APIAuth.post(
+        `/mobixCamsClientele/v1/clienteles/contacts/${stkId}`,
+        contactDetail
+      );
+      set({
+        contactDetails: response.data,
+        contactDetailsLoading: false,
+      });
+      notification.success({
+        message: "Success",
+        description:
+          response.data.message ?? "Contact Detail Created successfully!",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ contactDetailsError: error.message, contactDetailsLoading: false });
+    }
+  },
+
+  updateContactDetail: async (
+    conId: string,
+    contactDetail: IContactDetails
+  ) => {
+    set({ contactDetailsLoading: true, contactDetailsError: null });
+    try {
+      const response = await APIAuth.put(
+        `/mobixCamsClientele/v1/clienteles/contacts/${conId}`,
+        contactDetail
+      );
+      set({
+        contactDetail: response.data,
+        contactDetailsLoading: false,
+      });
+      notification.success({
+        message: "Success",
+        description:
+          response.data.message ?? "Contact Detail Updated successfully!",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ contactDetailsError: error.message, contactDetailsLoading: false });
+    }
+  },
+
+  inActivateContactDetail: async (conId: string) => {
+    set({ contactDetailsLoading: true, contactDetailsError: null });
+    try {
+      const response = await APIAuth.put(
+        `/mobixCamsClientele/v1/clienteles/contacts/${conId}/inactive`
+      );
+      set({
+        // contactDetails: response.data,
+        contactDetailsLoading: false,
+      });
+      notification.success({
+        message: "Success",
+        description:
+          response.data.message ?? "Contact Detail Deleted successfully!",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ contactDetailsError: error.message, contactDetailsLoading: false });
+    }
+  },
+
+  fetchAddressDetailsByStkId: async (stkId: string) => {
+    set({ addressDetailsLoading: true, addressDetailsError: null });
+    try {
+      const response = await API.get(
+        `/mobixCamsClientele/v1/clienteles/residence/${stkId}`
+      );
+      set({
+        addressDetails: response.data,
+        addressDetailsLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ addressDetailsError: error.message, addressDetailsLoading: false });
+    }
+  },
+
+  addAddressDetail: async (
+    stkId: string,
+    addAddressDetail: IAddressDetails[]
+  ) => {
+    set({ addressDetailsLoading: true, addressDetailsError: null });
+    try {
+      const response = await APIAuth.post(
+        `/mobixCamsClientele/v1/clienteles/residence/${stkId}`,
+        addAddressDetail
+      );
+      set({
+        addressDetails: response.data,
+        addressDetailsLoading: false,
+      });
+      notification.success({
+        message: "Success",
+        description:
+          response.data.message ?? "Address Detail Created successfully!",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ addressDetailsError: error.message, addressDetailsLoading: false });
+    }
+  },
+
+  updateAddressDetail: async (
+    resId: string,
+    addressDetail: IAddressDetails
+  ) => {
+    set({ addressDetailsLoading: true, addressDetailsError: null });
+    try {
+      const response = await APIAuth.put(
+        `/mobixCamsClientele/v1/clienteles/residence/${resId}`,
+        addressDetail
+      );
+      set({
+        // addressDetails: response.data,
+        addressDetailsLoading: false,
+      });
+      notification.success({
+        message: "Success",
+        description:
+          response.data.message ?? "Address Detail Updated successfully!",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ addressDetailsError: error.message, addressDetailsLoading: false });
+    }
+  },
+
+  inActivateAddressDetail: async (resId: string) => {
+    set({ addressDetailsLoading: true, addressDetailsError: null });
+    try {
+      const response = await APIAuth.put(
+        `/mobixCamsClientele/v1/clienteles/residence/${resId}/inactive`
+      );
+      set({
+        // addressDetails: response.data,
+        addressDetailsLoading: false,
+      });
+      notification.success({
+        message: "Success",
+        description:
+          response.data.message ?? "Address Detail Deleted successfully!",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ addressDetailsError: error.message, addressDetailsLoading: false });
     }
   },
 }));

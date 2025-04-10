@@ -48,6 +48,18 @@ interface IResidenceType {
   status: "A" | "I";
 }
 
+interface ICommunity {
+  code: string;
+  description: string;
+  status: "A" | "I";
+}
+
+interface IArea {
+  code: string;
+  description: string;
+  status: "A" | "I";
+}
+
 interface ICommonState {
   operators: IOperator[];
   operatorLoading: boolean;
@@ -81,6 +93,14 @@ interface ICommonState {
   residenceTypeLoading: boolean;
   residenceTypeError: string | null;
 
+  communities: ICommunity[];
+  communityLoading: boolean;
+  communityError: string | null;
+
+  areas: IArea[];
+  areaLoading: boolean;
+  areaError: string | null;
+
   fetchOperators: () => Promise<void>;
   fetchECIBReport: (cnic: string) => Promise<void>;
   fetchOrganizationType: () => Promise<void>;
@@ -89,6 +109,8 @@ interface ICommonState {
   fetchHeadOfFamily: () => Promise<void>;
   fetchHealthCondition: () => Promise<void>;
   fetchResidenceType: () => Promise<void>;
+  fetchCommunities: () => Promise<void>;
+  fetchAreas: () => Promise<void>;
 }
 
 const useCommonStore = create<ICommonState>((set) => ({
@@ -127,6 +149,14 @@ const useCommonStore = create<ICommonState>((set) => ({
   relationship: [],
   relationshipLoading: false,
   relationshipError: null,
+
+  communities: [],
+  communityLoading: false,
+  communityError: null,
+
+  areas: [],
+  areaLoading: false,
+  areaError: null,
 
   fetchOperators: async () => {
     set({ operatorLoading: true, operatorError: null });
@@ -232,6 +262,29 @@ const useCommonStore = create<ICommonState>((set) => ({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({ residenceTypeError: error.message, residenceTypeLoading: false });
+    }
+  },
+
+  fetchCommunities: async () => {
+    set({ communityLoading: true, communityError: null });
+    try {
+      const response = await API.get("/mobixCamsCommon/v1/communities");
+      set({ communities: response.data, communityLoading: false });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ communityError: error.message, communityLoading: false });
+    }
+  },
+
+  // /mobixCamsCommon/v1/cities/areas
+  fetchAreas: async () => {
+    set({ areaLoading: true, areaError: null });
+    try {
+      const response = await API.get("/mobixCamsCommon/v1/cities/areas");
+      set({ areas: response.data, areaLoading: false });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ areaError: error.message, areaLoading: false });
     }
   },
 }));

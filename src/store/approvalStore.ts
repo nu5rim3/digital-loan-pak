@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { API } from "../services/api";
+import { API, APIAuth } from "../services/api";
 
 interface IExceptionalApprovalCategory {
   code: string;
@@ -70,7 +70,7 @@ const useApprovalStore = create<IApprovalState>((set) => ({
       appraisalApprovalResponse: null,
     });
     try {
-      const response = await API.post(
+      const response = await APIAuth.post(
         `/mobixCamsApproval/v1/approvals/appraisal`,
         payload
       );
