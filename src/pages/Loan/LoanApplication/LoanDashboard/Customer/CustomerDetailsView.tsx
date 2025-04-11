@@ -11,8 +11,8 @@ import { mainURL } from '../../../../../App';
 import { IStakeholder } from '../../../../../store/stakeholderStore';
 import { EditOutlined } from '@ant-design/icons';
 // import TrailCalculation from '../../../../Users/Customers/TrialCalculation';
-import ContactDetailsCard from '../../../../../components/common/cards/ContactDetailsCard';
-import AddressDetailsCard from '../../../../../components/common/cards/AddressDetailsCard';
+import ContactDetailsCard from '../../../../../components/common/stakeHolder/ContactDetailsCard';
+import AddressDetailsCard from '../../../../../components/common/stakeHolder/AddressDetailsCard';
 
 const { Title } = Typography;
 

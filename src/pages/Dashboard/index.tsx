@@ -1,6 +1,6 @@
 import React from 'react'
-import StatusCard from '../../components/common/cards/StatusCard'
 import { SyncOutlined, PlusCircleFilled } from '@ant-design/icons';
+import StatusCard from '../../components/common/cards/StatusCard';
 
 const Dashboard: React.FC = () => {
 

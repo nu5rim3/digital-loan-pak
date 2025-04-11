@@ -6,8 +6,8 @@ import useWitnessStore from '../../../../../store/witnessStore';
 import CommonModal from '../../../../../components/common/modal/commonModal';
 import CreateWitness from '../../../../Users/Witnesses/CreateWitness';
 import { PlusOutlined, EditOutlined } from '@ant-design/icons'
-import ContactDetailsCard from '../../../../../components/common/cards/ContactDetailsCard';
-import AddressDetailsCard from '../../../../../components/common/cards/AddressDetailsCard';
+import ContactDetailsCard from '../../../../../components/common/stakeHolder/ContactDetailsCard';
+import AddressDetailsCard from '../../../../../components/common/stakeHolder/AddressDetailsCard';
 
 interface IWitnessDetails {
     formDetails?: IStakeholder[];
