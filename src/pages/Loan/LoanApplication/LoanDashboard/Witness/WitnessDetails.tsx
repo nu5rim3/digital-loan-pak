@@ -92,7 +92,7 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
                                         </Descriptions>
                                     </Card>
 
-                                    <ContactDetailsCard stkId={formDetails[selectedIndex].idx ?? ''} subTitle={`Wintess ${selectedIndex + 1}`} stakeHolderType='W' />
+                                    <ContactDetailsCard stkId={formDetails[selectedIndex].idx ?? ''} subTitle={`Wintess ${selectedIndex + 1}`} />
 
                                     <AddressDetailsCard stkId={formDetails[selectedIndex].idx ?? ''} subTitle={`Wintess ${selectedIndex + 1}`} />
 

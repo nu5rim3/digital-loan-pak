@@ -17,10 +17,9 @@ const schema = yup.object().shape({
 interface IContactDetailsCard {
     stkId: string;
     subTitle?: string;
-    stakeHolderType?: 'C' | 'G' | 'W' | "BI"
 }
 
-const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle, stakeHolderType }) => {
+const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) => {
 
     const [openModal, setOpenModal] = useState(false)
     const [selectedConId, setSelectedConId] = useState('');
@@ -76,7 +75,7 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle, st
             fetchContactDetailsByStkId(stkId ?? '')
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [stakeholder, openModal, stkId, stakeHolderType])
+    }, [stakeholder, openModal, stkId])
 
     if (contactDetailsLoading) {
         return (

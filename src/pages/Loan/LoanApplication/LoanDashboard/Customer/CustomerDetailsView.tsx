@@ -504,7 +504,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                 }]}
             />
 
-            <ContactDetailsCard stkId={formDetails?.idx ?? ''} stakeHolderType='C' />
+            <ContactDetailsCard stkId={formDetails?.idx ?? ''} />
 
 
             <AddressDetailsCard stkId={formDetails?.idx ?? ''} />
