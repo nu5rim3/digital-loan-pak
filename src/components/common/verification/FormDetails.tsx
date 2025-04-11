@@ -82,7 +82,6 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
 
 
     const handleSearch = (value: string) => {
-        console.log('handleSearch : ', value);
         if (type === 'C') {
             fetchCustomerByCNIC(value)
         } else if (type === 'G') {

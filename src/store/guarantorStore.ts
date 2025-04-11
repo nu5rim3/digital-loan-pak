@@ -97,7 +97,6 @@ const useGuarantorStore = create<ICustomerState>((set) => ({
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.log(error);
       set({ guarantorError: error.message, guarantorLoading: false });
     }
   },

@@ -1,5 +1,5 @@
 import { Button, Card, Collapse, CollapseProps, Empty } from 'antd'
-import React, { lazy, useEffect, useState } from 'react'
+import React, { lazy, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { getLoanStatusByName, getOnlyStatusByName } from '../../../../utils/MSASActionFunctions';
 import useLoanStore from '../../../../store/loanStore';
@@ -46,8 +46,10 @@ const LoanDaashboard: React.FC = () => {
                 break;
         }
         const selectedIdx = getStakeholderByType(type, stakeholders ?? [])[0]?.idx
-        fetchContactDetailsByStkId(selectedIdx ?? '')
-        fetchAddressDetailsByStkId(selectedIdx ?? '')
+        if (selectedIdx) {
+            fetchContactDetailsByStkId(selectedIdx ?? '')
+            fetchAddressDetailsByStkId(selectedIdx ?? '')
+        }
     };
 
     const genExtra = ({ isCompleted, isMandatory }: StatusProps) => (
@@ -237,29 +239,29 @@ const LoanDaashboard: React.FC = () => {
     }, [appId])
 
 
-    // if (loading) {
-    //     return (
-    //         <Card title={`Loan Application - ${appId}`}>
-    //             <Empty description={'Loading...'} />
-    //         </Card>
-    //     )
-    // }
+    if (loading) {
+        return (
+            <Card title={`Loan Application - ${appId}`}>
+                <Empty description={'Loading...'} />
+            </Card>
+        )
+    }
 
-    // if (loanStatus.length === 0) {
-    //     return (
-    //         <Card title={`Loan Application - ${appId}`}>
-    //             <Empty
-    //                 description={'No Data Found'}
-    //                 children={
-    //                     <>
-    //                         <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
-    //                         <Button type="primary" className="ml-3" onClick={() => fetchLoanStatusById(appId ?? '')}>Refresh</Button>
-    //                     </>
-    //                 }
-    //             />
-    //         </Card>
-    //     )
-    // }
+    if (loanStatus.length === 0) {
+        return (
+            <Card title={`Loan Application - ${appId}`}>
+                <Empty
+                    description={'No Data Found'}
+                    children={
+                        <>
+                            <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
+                            <Button type="primary" className="ml-3" onClick={() => fetchLoanStatusById(appId ?? '')}>Refresh</Button>
+                        </>
+                    }
+                />
+            </Card>
+        )
+    }
 
     return (
         <>

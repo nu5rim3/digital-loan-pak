@@ -1,6 +1,6 @@
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
-import * as process from "process"; // ✅ Explicitly import process
+import * as process from "process";
 import tailwindcss from "@tailwindcss/vite";
 import http from "https";
 
@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react(), tailwindcss()],
     server: {
-      port: Number(env.VITE_PORT) || 3000, // Use VITE_PORT from .env
+      port: Number(env.VITE_PORT) || 3000,
       proxy: {
         "/mobixCamsClientele": {
           target: "https://pomicroapiuat.lolc.com.pk",
@@ -20,19 +20,48 @@ export default defineConfig(({ mode }) => {
           rewrite: (path: string) => {
             return path.replace(/^\/mobixCamsClientele/, "/mobixCamsClientele");
           },
-          // configure: (proxy, options) => {
-          //   proxy.on('proxyReq', (proxyReq, req, res) => {
-          //     // Add the 'x-auth-token' header to the request
-          //     proxyReq.setHeader('x-auth-token', 'your-auth-token');
-          //   });
-          // },
+        },
+        "/mobixCamsCommon": {
+          target: "https://pomicroapiuat.lolc.com.pk",
+          changeOrigin: true,
+          secure: false,
+          agent: new http.Agent(),
+          rewrite: (path: string) => {
+            return path.replace(/^\/mobixCamsCommon/, "/mobixCamsCommon");
+          },
+        },
+        "/mobixCamsLoan": {
+          target: "https://pomicroapiuat.lolc.com.pk",
+          changeOrigin: true,
+          secure: false,
+          agent: new http.Agent(),
+          rewrite: (path: string) => {
+            return path.replace(/^\/mobixCamsLoan/, "/mobixCamsLoan");
+          },
+        },
+        "/mobixCamsCredit": {
+          target: "https://pomicroapiuat.lolc.com.pk",
+          changeOrigin: true,
+          secure: false,
+          agent: new http.Agent(),
+          rewrite: (path: string) => {
+            return path.replace(/^\/mobixCamsCredit/, "/mobixCamsCredit");
+          },
+        },
+        "/mobixCamsApproval": {
+          target: "https://pomicroapiuat.lolc.com.pk",
+          changeOrigin: true,
+          secure: false,
+          agent: new http.Agent(),
+          rewrite: (path: string) => {
+            return path.replace(/^\/mobixCamsApproval/, "/mobixCamsApproval");
+          },
         },
       },
       strictPort: true,
       host: true,
       cors: {
         origin: "https://pomicroapiuat.lolc.com.pk",
-        // allowedHeaders: ['x-auth-token', 'Content-Type'],
       },
     },
     preview: {
@@ -40,11 +69,7 @@ export default defineConfig(({ mode }) => {
       strictPort: true,
       cors: {
         origin: "https://pomicroapiuat.lolc.com.pk",
-        // allowedHeaders: ['x-auth-token', 'Content-Type'],
       },
     },
   };
 });
-
-// https://pomicroapiuat.lolc.com.pk/mobixCamsLoan/v1/appraisals
-//https://pomicroapiuat.lolc.com.pk/mobixCamsCommon/v1/sms/vendors

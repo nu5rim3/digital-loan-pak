@@ -65,7 +65,7 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
                         </div>
                         <div className='grid grid-cols-4 gap-3'>
                             {
-                                formDetails.map((witness, index) => (
+                                formDetails.map((_, index) => (
                                     <Button key={index} type='primary' onClick={() => { setSelectedIndex(index) }}>
                                         Witness {index + 1}
                                     </Button>

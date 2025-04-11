@@ -78,8 +78,6 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle, st
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [stakeholder, openModal, stkId, stakeHolderType])
 
-    // fetchContactDetailsByStkId(stkId ?? '')
-
     if (contactDetailsLoading) {
         return (
             <Card className='flex justify-center'>

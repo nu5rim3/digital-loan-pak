@@ -67,19 +67,14 @@ const CRIBDetails: React.FC<ICRIBDetails> = ({ cnic }) => {
     }
 
     useEffect(() => {
-        console.log("cribDetails before processing:", cribDetails);
 
         // Ensure cribDetails is an array before passing to calculateLoanStats
         if (Array.isArray(cribDetails)) {
             setCribLoan(calculateLoanStats(cribDetails));
         } else {
-            console.warn("cribDetails is not an array:", cribDetails);
             setCribLoan(calculateLoanStats([])); // Pass an empty array as fallback
         }
     }, [cribDetails]);
-
-
-    console.log('cribDetails : ', cribDetails);
 
     return (
         <>

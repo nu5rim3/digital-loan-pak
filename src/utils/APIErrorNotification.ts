@@ -6,18 +6,15 @@ import { AxiosError } from "axios";
  * @param {AxiosError} error - The error object from Axios
  */
 export const handleAxiosError = (error: AxiosError) => {
-  console.error("API Error:", error);
-
   // Extract response details
   const status = error.response?.status;
-  const message = error.response?.data?.message || "Something went wrong.";
 
   // Handle different status codes
   switch (status) {
     case 400:
       notification.error({
         message: "Bad Request",
-        description: message || "The request was invalid.",
+        description: "The request was invalid.",
       });
       break;
     case 401:
@@ -49,7 +46,7 @@ export const handleAxiosError = (error: AxiosError) => {
     default:
       notification.error({
         message: "Error",
-        description: message || "An unexpected error occurred.",
+        description: "An unexpected error occurred.",
       });
   }
 

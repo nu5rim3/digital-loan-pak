@@ -1,13 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from "zustand";
-import { API, APIAuth } from "../services/api";
-
-interface IOTPResponse {
-  idx: string;
-  status: string;
-  code: string;
-}
+import { APIAuth } from "../services/api";
 
 interface IOTPState {
   otpResponse: any | null;

@@ -56,7 +56,6 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
-        console.log(data);
         if (mode === 'create') {
             addStakeholder({ ...data, appraisalID: appId ?? '', new: true, stkType: 'G' })
         } else if (mode === 'edit') {
@@ -104,10 +103,6 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [stakeholders, customers])
-
-
-    console.log('errors : ', errors);
-
 
     const onRestHandle = () => {
         if (mode === 'create') {

@@ -60,7 +60,6 @@ const CustomerDetails: React.FC = () => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
-        console.log(data);
         if (mode === 'create') {
             addStakeholder({ ...data, appraisalID: appId ?? '', new: true, stkType: 'C' })
         } else if (mode === 'edit') {
@@ -125,8 +124,6 @@ const CustomerDetails: React.FC = () => {
 
 
     const physDisability = watch('stkPhysDisability');
-
-    console.log('errors : ', errors);
 
 
     const onRestHandle = () => {

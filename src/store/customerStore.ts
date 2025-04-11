@@ -98,7 +98,6 @@ const useCustomerStore = create<ICustomerState>((set) => ({
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.log(error);
       set({ customerError: error.message, customerLoading: false });
     }
   },
