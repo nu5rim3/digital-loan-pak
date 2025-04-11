@@ -37,6 +37,12 @@ export const handleAxiosError = (error: AxiosError) => {
         description: "The requested resource was not found.",
       });
       break;
+    case 429:
+      notification.error({
+        message: "Too Many Requests",
+        description: "You have made too many requests in a short period.",
+      });
+      break;
     case 500:
       notification.error({
         message: "Server Error",

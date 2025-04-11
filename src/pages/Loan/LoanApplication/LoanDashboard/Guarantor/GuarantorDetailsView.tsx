@@ -69,14 +69,19 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
     const { fetchGuarantorByAppId } = useGuarantorStore()
 
     useEffect(() => {
-        fetchOrganizationType()
-        fetchCNICStaus()
-        fetchEducationLevel()
-        fetchHeadOfFamily()
-        fetchHealthCondition()
         fetchGuarantorByAppId(appId ?? '')
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    useEffect(() => {
+        if (organizationType.length === 0) { fetchOrganizationType() }
+        if (cnicStaus.length === 0) { fetchCNICStaus() }
+        if (educationLevel.length === 0) { fetchEducationLevel() }
+        if (headOfFamily.length === 0) { fetchHeadOfFamily() }
+        if (healthCondition.length === 0) { fetchHealthCondition() }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
 
     const onClickCreate = () => {
         navigate(`${mainURL}/users/guarantor`, { state: { appId: appId } })

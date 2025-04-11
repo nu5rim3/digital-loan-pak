@@ -74,15 +74,19 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
 
 
     useEffect(() => {
-        // fetchCustomerByCNIC(customer?.identificationNumber ?? '');
-        fetchOrganizationType()
-        fetchCNICStaus()
-        fetchEducationLevel()
-        fetchHeadOfFamily()
-        fetchHealthCondition()
         fetchCustomerByAppId(appId ?? '')
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fetchCustomerByAppId])
+    }, [appId])
+
+    useEffect(() => {
+        if (organizationType.length === 0) { fetchOrganizationType() }
+        if (cnicStaus.length === 0) { fetchCNICStaus() }
+        if (educationLevel.length === 0) { fetchEducationLevel() }
+        if (headOfFamily.length === 0) { fetchHeadOfFamily() }
+        if (healthCondition.length === 0) { fetchHealthCondition() }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
 
     useEffect(() => {
         if (formDetails) {
