@@ -429,7 +429,7 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
     set({ recipientLoading: true, recipientError: null });
     try {
       const response = await API.get(
-        `/mobixCamsClientele/v1/clienteles/residence/${stkId}`
+        `/mobixCamsClientele/v1/clienteles/recipient/${stkId}`
       );
       set({
         recipients: response.data,
@@ -445,7 +445,7 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
     set({ recipientLoading: true, recipientError: null });
     try {
       const response = await APIAuth.post(
-        `/mobixCamsClientele/v1/clienteles/residence/${stkId}`,
+        `/mobixCamsClientele/v1/clienteles/recipient/${stkId}`,
         recipientDetails
       );
       set({
@@ -467,7 +467,7 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
     set({ recipientLoading: true, recipientError: null });
     try {
       const response = await APIAuth.post(
-        `/mobixCamsClientele/v1/clienteles/residence/${recId}`,
+        `/mobixCamsClientele/v1/clienteles/recipient/${recId}`,
         recipientDetails
       );
       set({
