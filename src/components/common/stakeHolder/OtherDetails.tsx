@@ -92,8 +92,6 @@ const OtherDetails: React.FC<IOtherDetails> = ({ stkId }) => {
 
     const sector = watch('sector');
 
-    console.log('sector', sector);
-
     useEffect(() => {
         if (sector) {
             fetchSubSectors(sector);
@@ -121,7 +119,7 @@ const OtherDetails: React.FC<IOtherDetails> = ({ stkId }) => {
                                     </div>}
                                 {otherInfoLoading ?
                                     <div className='flex flex-1 justify-center' >
-                                        <Empty description={"Loading Recipient Details..."} />
+                                        <Empty description={"Loading Other Details..."} />
                                     </div> :
                                     <>
                                         {otherInfo?.length > 0 ?
@@ -131,7 +129,7 @@ const OtherDetails: React.FC<IOtherDetails> = ({ stkId }) => {
                                                 ))}
                                             </div> :
                                             <div className='flex flex-1 justify-center' >
-                                                <Empty description={"No Recipient Details Available"} />
+                                                <Empty description={"No Other Details Available"} />
                                             </div>
                                         }
                                     </>
@@ -151,7 +149,7 @@ const OtherDetails: React.FC<IOtherDetails> = ({ stkId }) => {
             >
                 <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
                     <div className='grid grid-cols-2 gap-3'>
-                        <Form.Item label="Preferred Language" validateStatus={errors.prefLang ? 'error' : ''} help={errors.prefLang?.message}>
+                        <Form.Item label="Preferred Language" validateStatus={errors.prefLang ? 'error' : ''} help={errors.prefLang?.message} required>
                             <Controller
                                 name="prefLang"
                                 control={control}
@@ -165,7 +163,7 @@ const OtherDetails: React.FC<IOtherDetails> = ({ stkId }) => {
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="Occupation" validateStatus={errors.occupation ? 'error' : ''} help={errors.occupation?.message}>
+                        <Form.Item label="Occupation" validateStatus={errors.occupation ? 'error' : ''} help={errors.occupation?.message} required>
                             <Controller
                                 name="occupation"
                                 control={control}
@@ -179,7 +177,7 @@ const OtherDetails: React.FC<IOtherDetails> = ({ stkId }) => {
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="Sector" validateStatus={errors.sector ? 'error' : ''} help={errors.sector?.message}>
+                        <Form.Item label="Sector" validateStatus={errors.sector ? 'error' : ''} help={errors.sector?.message} required>
                             <Controller
                                 name="sector"
                                 control={control}
@@ -193,7 +191,7 @@ const OtherDetails: React.FC<IOtherDetails> = ({ stkId }) => {
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="Sub Sector" validateStatus={errors.subSector ? 'error' : ''} help={errors.subSector?.message}>
+                        <Form.Item label="Sub Sector" validateStatus={errors.subSector ? 'error' : ''} help={errors.subSector?.message} required>
                             <Controller
                                 name="subSector"
                                 control={control}
@@ -207,7 +205,7 @@ const OtherDetails: React.FC<IOtherDetails> = ({ stkId }) => {
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="Savings Required" validateStatus={errors.savingsReq ? 'error' : ''} help={errors.savingsReq?.message}>
+                        <Form.Item label="Savings Required" validateStatus={errors.savingsReq ? 'error' : ''} help={errors.savingsReq?.message} required>
                             <Controller
                                 name="savingsReq"
                                 control={control}
@@ -220,7 +218,7 @@ const OtherDetails: React.FC<IOtherDetails> = ({ stkId }) => {
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="Policy Exposure" validateStatus={errors.poliExpo ? 'error' : ''} help={errors.poliExpo?.message}>
+                        <Form.Item label="Policy Exposure" validateStatus={errors.poliExpo ? 'error' : ''} help={errors.poliExpo?.message} required>
                             <Controller
                                 name="poliExpo"
                                 control={control}
@@ -233,7 +231,7 @@ const OtherDetails: React.FC<IOtherDetails> = ({ stkId }) => {
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="How did you know" validateStatus={errors.howDidYouKnow ? 'error' : ''} help={errors.howDidYouKnow?.message}>
+                        <Form.Item label="How did you know" validateStatus={errors.howDidYouKnow ? 'error' : ''} help={errors.howDidYouKnow?.message} required>
                             <Controller
                                 name="howDidYouKnow"
                                 control={control}
@@ -247,7 +245,7 @@ const OtherDetails: React.FC<IOtherDetails> = ({ stkId }) => {
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="WHT Declaration" validateStatus={errors.whtDec ? 'error' : ''} help={errors.whtDec?.message}>
+                        <Form.Item label="WHT Declaration" validateStatus={errors.whtDec ? 'error' : ''} help={errors.whtDec?.message} required>
                             <Controller
                                 name="whtDec"
                                 control={control}

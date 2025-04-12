@@ -85,12 +85,12 @@ const BankDetails: React.FC<IBankDetails> = ({ stkId }) => {
                             <>
                                 <div className='flex justify-end pb-3'>
                                     <Button type="primary" onClick={() => openModal('create')} icon={<PlusOutlined />}>
-                                        Add Bank Details
+                                        Add Post Dated Cheque Details
                                     </Button>
                                 </div>
                                 {pdcDetailsLoading ?
                                     <div className='flex flex-1 justify-center' >
-                                        <Empty description={"Loading Recipient Details..."} />
+                                        <Empty description={"Loading Post Dated Cheque Details..."} />
                                     </div> :
                                     <>
                                         {PDCDetails?.length > 0 ?
@@ -100,7 +100,7 @@ const BankDetails: React.FC<IBankDetails> = ({ stkId }) => {
                                                 ))}
                                             </div> :
                                             <div className='flex flex-1 justify-center' >
-                                                <Empty description={"No Recipient Details Available"} />
+                                                <Empty description={"No Post Dated Cheque Details Available"} />
                                             </div>
                                         }
                                     </>
@@ -118,35 +118,36 @@ const BankDetails: React.FC<IBankDetails> = ({ stkId }) => {
             >
                 <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
                     <div className='grid grid-cols-2 gap-3'>
-                        <Form.Item label="Bank" validateStatus={errors.bank ? 'error' : ''} help={errors.bank?.message}>
+                        <Form.Item label="Bank" validateStatus={errors.bank ? 'error' : ''} help={errors.bank?.message} required>
                             <Controller
                                 name="bank"
                                 control={control}
                                 render={({ field }) =>
                                     <Select
                                         {...field}
-                                        placeholder="Preferred Language"
+                                        allowClear
+                                        placeholder="Select Bank"
                                         options={banks.map((lang) => ({ label: lang.description, value: lang.code }))}
                                         loading={bankLoading}
                                     />
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="Cheque No" validateStatus={errors.chequeNo ? 'error' : ''} help={errors.chequeNo?.message}>
+                        <Form.Item label="Cheque No" validateStatus={errors.chequeNo ? 'error' : ''} help={errors.chequeNo?.message} required>
                             <Controller
                                 name="chequeNo"
                                 control={control}
                                 render={({ field }) => <Input {...field} placeholder="Cheque No" />}
                             />
                         </Form.Item>
-                        <Form.Item label="Account No" validateStatus={errors.accountNo ? 'error' : ''} help={errors.accountNo?.message}>
+                        <Form.Item label="Account No" validateStatus={errors.accountNo ? 'error' : ''} help={errors.accountNo?.message} required>
                             <Controller
                                 name="accountNo"
                                 control={control}
                                 render={({ field }) => <Input {...field} placeholder="Account No" />}
                             />
                         </Form.Item>
-                        <Form.Item label="Account Title" validateStatus={errors.accountTitle ? 'error' : ''} help={errors.accountTitle?.message}>
+                        <Form.Item label="Account Title" validateStatus={errors.accountTitle ? 'error' : ''} help={errors.accountTitle?.message} required>
                             <Controller
                                 name="accountTitle"
                                 control={control}
