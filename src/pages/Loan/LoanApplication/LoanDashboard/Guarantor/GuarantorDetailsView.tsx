@@ -12,6 +12,7 @@ import { IStakeholder } from '../../../../../store/stakeholderStore';
 import useGuarantorStore from '../../../../../store/guarantorStore';
 import ContactDetailsCard from '../../../../../components/common/stakeHolder/ContactDetailsCard';
 import AddressDetailsCard from '../../../../../components/common/stakeHolder/AddressDetailsCard';
+import IncomeDetails from '../../../../../components/common/stakeHolder/IncomeDetails';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
@@ -474,7 +475,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
 
                         <AddressDetailsCard stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
 
-                        <Card title={"Income and Asset Details"}></Card>
+                        <IncomeDetails stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
 
                     </>
                 )

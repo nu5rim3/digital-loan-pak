@@ -69,6 +69,7 @@ const BankDetails: React.FC<IBankDetails> = ({ stkId }) => {
                 fetchBanks();
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [stkId, isModalOpen, fetchPDCDetailsByStkId, fetchBanks]);
 
 

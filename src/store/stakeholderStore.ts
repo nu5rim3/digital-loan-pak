@@ -126,6 +126,19 @@ export interface IPDCDetails {
   lastModifiedDate?: string; // ISO string format for date
 }
 
+export interface IIncomeDetails {
+  idx?: string;
+  sourceOfIncome: string;
+  monthlyIncome: string;
+  assetsDesc: string;
+  totValAssets: string;
+  totMonIncome: string;
+  status?: string;
+  createdBy?: string;
+  creationDate?: string; // ISO date string
+  lastModifiedBy?: string;
+  lastModifiedDate?: string; // ISO date string
+}
 interface IStackholderState {
   stakeholders: IStakeholder[];
   stakeholder: IStakeholder | null;
@@ -156,6 +169,10 @@ interface IStackholderState {
   PDCDetails: IPDCDetails[];
   pdcDetailsLoading: boolean;
   pdcDetailsError: string | null;
+
+  incomesDetails: IIncomeDetails[];
+  incomeDetailsLoading: boolean;
+  incomeDetailsError: string | null;
 
   //   fetchStakeholdes: () => Promise<void>;
   // fetchStakeholderById: (idx: string) => Promise<void>;
@@ -197,6 +214,16 @@ interface IStackholderState {
   fetchPDCDetailsByStkId: (stkId: string) => Promise<void>;
   addPDCDetail: (stkId: string, pdcDetails: IPDCDetails) => Promise<void>;
   updatePDCDetail: (pdId: string, pdcDetails: IPDCDetails) => Promise<void>;
+
+  fetchIncomeDetailsByStkId: (stkId: string) => Promise<void>;
+  addIncomeDetail: (
+    stkId: string,
+    incomeDetails: IIncomeDetails
+  ) => Promise<void>;
+  updateIncomeDetail: (
+    incId: string,
+    incomeDetails: IIncomeDetails
+  ) => Promise<void>;
 }
 
 const useStakeholderStore = create<IStackholderState>((set) => ({
@@ -232,6 +259,10 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
   PDCDetails: [],
   pdcDetailsLoading: false,
   pdcDetailsError: null,
+
+  incomesDetails: [],
+  incomeDetailsLoading: false,
+  incomeDetailsError: null,
 
   //   fetchStakeholdes: async () => {
   //     set({ stakeholderLoading: true, stakeholderError: null });
@@ -655,6 +686,66 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({ pdcDetailsError: error.message, pdcDetailsLoading: false });
+    }
+  },
+
+  fetchIncomeDetailsByStkId: async (stkId: string) => {
+    set({ incomeDetailsLoading: true, incomeDetailsError: null });
+    try {
+      const response = await API.get(
+        `/mobixCamsClientele/v1/clienteles/guarantor/income/${stkId}`
+      );
+      set({
+        incomesDetails: response.data,
+        incomeDetailsLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ incomeDetailsError: error.message, incomeDetailsLoading: false });
+    }
+  },
+
+  updateIncomeDetail: async (incId: string, incomeDetails: IIncomeDetails) => {
+    set({ incomeDetailsLoading: true, incomeDetailsError: null });
+    try {
+      const response = await APIAuth.put(
+        `/mobixCamsClientele/v1/clienteles/guarantor/income/${incId}`,
+        incomeDetails
+      );
+      set({
+        // incomesDetails: response.data,
+        incomeDetailsLoading: false,
+      });
+      notification.success({
+        message: "Success",
+        description:
+          response.data.message ?? "Income Detail Updated successfully!",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ incomeDetailsError: error.message, incomeDetailsLoading: false });
+    }
+  },
+
+  addIncomeDetail: async (stkId: string, incomeDetails: IIncomeDetails) => {
+    set({ incomeDetailsLoading: true, incomeDetailsError: null });
+    try {
+      const response = await APIAuth.post(
+        `/mobixCamsClientele/v1/clienteles/guarantor/income/${stkId}`,
+        incomeDetails
+      );
+      set({
+        // incomesDetails: response.data,
+        incomeDetailsLoading: false,
+      });
+      notification.success({
+        message: "Success",
+        description:
+          response.data.message ?? "Income Detail Created successfully!",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ incomeDetailsError: error.message, incomeDetailsLoading: false });
     }
   },
 }));
