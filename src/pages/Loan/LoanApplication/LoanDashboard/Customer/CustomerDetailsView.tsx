@@ -13,6 +13,7 @@ import { EditOutlined } from '@ant-design/icons';
 // import TrailCalculation from '../../../../Users/Customers/TrialCalculation';
 import ContactDetailsCard from '../../../../../components/common/stakeHolder/ContactDetailsCard';
 import AddressDetailsCard from '../../../../../components/common/stakeHolder/AddressDetailsCard';
+import InsuranceRecipientCard from '../../../../../components/common/stakeHolder/InsuranceRecipientCard';
 
 const { Title } = Typography;
 
@@ -171,7 +172,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
 
             {/* <TrailCalculation /> */}
 
-            <Collapse
+            {/* <Collapse
                 size='small'
                 defaultActiveKey={['1']}
                 items={[{
@@ -506,17 +507,15 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                         </Form>
                     </>
                 }]}
-            />
+            /> */}
 
             <ContactDetailsCard stkId={formDetails?.idx ?? ''} />
 
 
-            <AddressDetailsCard stkId={formDetails?.idx ?? ''} />
+            {/* <AddressDetailsCard stkId={formDetails?.idx ?? ''} /> */}
 
+            <InsuranceRecipientCard stkId={formDetails?.idx ?? ''} />
 
-            <Card title={"Insurance Recipient / Nominee  Details"}>
-                <Title level={5} className='mb-2'>Residence Information</Title>
-            </Card>
             <Card title={"Post Dated Cheque Details"}>
 
             </Card>

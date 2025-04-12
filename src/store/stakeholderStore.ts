@@ -55,7 +55,7 @@ export interface IStakeholder {
   update: boolean;
 }
 
-interface IContactDetails {
+export interface IContactDetails {
   phoneNoType: string | "Home" | "Mobile";
   phoneNo: string;
   status?: string;
@@ -83,6 +83,19 @@ interface IAddressDetails {
   lastModifiedDate?: string;
 }
 
+interface IRecipient {
+  idx?: string;
+  recipientName: string | null;
+  relationship: string;
+  cNicNo: string;
+  phoneNo: string;
+  status: "A" | "I";
+  createdBy?: string;
+  creationDate?: string; // ISO date string
+  lastModifiedBy?: string;
+  lastModifiedDate?: string; // ISO date string
+}
+
 interface IStackholderState {
   stakeholders: IStakeholder[];
   stakeholder: IStakeholder | null;
@@ -101,6 +114,10 @@ interface IStackholderState {
   addressDetails: IAddressDetails[];
   addressDetailsLoading: boolean;
   addressDetailsError: string | null;
+
+  recipients: IRecipient[];
+  recipientLoading: boolean;
+  recipientError: string | null;
 
   //   fetchStakeholdes: () => Promise<void>;
   // fetchStakeholderById: (idx: string) => Promise<void>;
@@ -130,6 +147,10 @@ interface IStackholderState {
     addressDetail: IAddressDetails
   ) => Promise<void>;
   inActivateAddressDetail: (resId: string) => Promise<void>;
+
+  fetchRecipientByStkId: (stkId: string) => Promise<void>;
+  addRecipient: (stkId: string, recipientDetails: IRecipient) => Promise<void>;
+  updateRecipient: (idx: string, recipientDetails: IRecipient) => Promise<void>;
 }
 
 const useStakeholderStore = create<IStackholderState>((set) => ({
@@ -153,6 +174,10 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
   addressDetails: [],
   addressDetailsLoading: false,
   addressDetailsError: null,
+
+  recipients: [],
+  recipientLoading: false,
+  recipientError: null,
 
   //   fetchStakeholdes: async () => {
   //     set({ stakeholderLoading: true, stakeholderError: null });
@@ -396,6 +421,67 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({ addressDetailsError: error.message, addressDetailsLoading: false });
+    }
+  },
+
+  // /mobixCamsClientele/v1/clienteles/recipient/{stk_id}
+  fetchRecipientByStkId: async (stkId: string) => {
+    set({ recipientLoading: true, recipientError: null });
+    try {
+      const response = await API.get(
+        `/mobixCamsClientele/v1/clienteles/residence/${stkId}`
+      );
+      set({
+        recipients: response.data,
+        recipientLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ recipientError: error.message, recipientLoading: false });
+    }
+  },
+
+  addRecipient: async (stkId: string, recipientDetails: IRecipient) => {
+    set({ recipientLoading: true, recipientError: null });
+    try {
+      const response = await APIAuth.post(
+        `/mobixCamsClientele/v1/clienteles/residence/${stkId}`,
+        recipientDetails
+      );
+      set({
+        recipients: response.data,
+        recipientLoading: false,
+      });
+      notification.success({
+        message: "Success",
+        description:
+          response.data.message ?? "Recipient Detail Created successfully!",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ recipientError: error.message, recipientLoading: false });
+    }
+  },
+
+  updateRecipient: async (recId: string, recipientDetails: IRecipient) => {
+    set({ recipientLoading: true, recipientError: null });
+    try {
+      const response = await APIAuth.post(
+        `/mobixCamsClientele/v1/clienteles/residence/${recId}`,
+        recipientDetails
+      );
+      set({
+        recipients: response.data,
+        recipientLoading: false,
+      });
+      notification.success({
+        message: "Success",
+        description:
+          response.data.message ?? "Recipient Detail Updated successfully!",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ recipientError: error.message, recipientLoading: false });
     }
   },
 }));
