@@ -113,6 +113,19 @@ export interface IOtherInfo {
   lastModifiedDate?: string; // ISO string format for date
 }
 
+export interface IPDCDetails {
+  idx?: string;
+  bank: string;
+  chequeNo: string;
+  accountNo: string;
+  accountTitle: string;
+  status?: string;
+  createdBy?: string;
+  creationDate?: string; // ISO string format for date
+  lastModifiedBy?: string;
+  lastModifiedDate?: string; // ISO string format for date
+}
+
 interface IStackholderState {
   stakeholders: IStakeholder[];
   stakeholder: IStakeholder | null;
@@ -139,6 +152,10 @@ interface IStackholderState {
   otherInfo: IOtherInfo[];
   otherInfoLoading: boolean;
   otherInfoError: string | null;
+
+  PDCDetails: IPDCDetails[];
+  pdcDetailsLoading: boolean;
+  pdcDetailsError: string | null;
 
   //   fetchStakeholdes: () => Promise<void>;
   // fetchStakeholderById: (idx: string) => Promise<void>;
@@ -176,6 +193,10 @@ interface IStackholderState {
   fetchOtherInfoByStkId: (stkId: string) => Promise<void>;
   addOtherInfo: (stkId: string, otherInfo: IOtherInfo) => Promise<void>;
   updateOtherInfo: (othId: string, otherInfo: IOtherInfo) => Promise<void>;
+
+  fetchPDCDetailsByStkId: (stkId: string) => Promise<void>;
+  addPDCDetail: (stkId: string, pdcDetails: IPDCDetails) => Promise<void>;
+  updatePDCDetail: (pdId: string, pdcDetails: IPDCDetails) => Promise<void>;
 }
 
 const useStakeholderStore = create<IStackholderState>((set) => ({
@@ -207,6 +228,10 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
   otherInfo: [],
   otherInfoLoading: false,
   otherInfoError: null,
+
+  PDCDetails: [],
+  pdcDetailsLoading: false,
+  pdcDetailsError: null,
 
   //   fetchStakeholdes: async () => {
   //     set({ stakeholderLoading: true, stakeholderError: null });
@@ -499,7 +524,7 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
         recipientDetails
       );
       set({
-        recipients: response.data,
+        // recipients: response.data,
         recipientLoading: false,
       });
       notification.success({
@@ -570,6 +595,66 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({ otherInfoError: error.message, otherInfoLoading: false });
+    }
+  },
+
+  fetchPDCDetailsByStkId: async (stkId: string) => {
+    set({ pdcDetailsLoading: true, pdcDetailsError: null });
+    try {
+      const response = await API.get(
+        `/mobixCamsClientele/v1/clienteles/pdc/${stkId}`
+      );
+      set({
+        PDCDetails: response.data,
+        pdcDetailsLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ pdcDetailsError: error.message, pdcDetailsLoading: false });
+    }
+  },
+
+  addPDCDetail: async (stkId: string, pdcDetails: IPDCDetails) => {
+    set({ pdcDetailsLoading: true, pdcDetailsError: null });
+    try {
+      const response = await APIAuth.post(
+        `/mobixCamsClientele/v1/clienteles/pdc/${stkId}`,
+        pdcDetails
+      );
+      set({
+        // PDCDetails: response.data,
+        pdcDetailsLoading: false,
+      });
+      notification.success({
+        message: "Success",
+        description:
+          response.data.message ?? "PDC Detail Created successfully!",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ pdcDetailsError: error.message, pdcDetailsLoading: false });
+    }
+  },
+
+  updatePDCDetail: async (pdId: string, pdcDetails: IPDCDetails) => {
+    set({ pdcDetailsLoading: true, pdcDetailsError: null });
+    try {
+      const response = await APIAuth.put(
+        `/mobixCamsClientele/v1/clienteles/pdc/${pdId}`,
+        pdcDetails
+      );
+      set({
+        // PDCDetails: response.data,
+        pdcDetailsLoading: false,
+      });
+      notification.success({
+        message: "Success",
+        description:
+          response.data.message ?? "PDC Detail Updated successfully!",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ pdcDetailsError: error.message, pdcDetailsLoading: false });
     }
   },
 }));

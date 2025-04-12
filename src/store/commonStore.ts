@@ -97,6 +97,11 @@ interface ISubSector {
   description: string;
   status: "A" | "I";
 }
+interface IBank {
+  code: string;
+  description: string;
+  status: "A" | "I";
+}
 
 interface ICommonState {
   operators: IOperator[];
@@ -163,6 +168,10 @@ interface ICommonState {
   subSectorLoading: boolean;
   subSectorError: string | null;
 
+  banks: IBank[];
+  bankLoading: boolean;
+  bankError: string | null;
+
   fetchOperators: () => Promise<void>;
   fetchECIBReport: (cnic: string) => Promise<void>;
   fetchOrganizationType: () => Promise<void>;
@@ -179,6 +188,7 @@ interface ICommonState {
   fetchLanguages: () => Promise<void>;
   fetchSectors: () => Promise<void>;
   fetchSubSectors: (secId: string) => Promise<void>;
+  fetchBanks: () => Promise<void>;
 }
 
 type TPersist = (
@@ -268,6 +278,10 @@ const useCommonStore = create<ICommonState>(
       subSectors: [],
       subSectorLoading: false,
       subSectorError: null,
+
+      banks: [],
+      bankLoading: false,
+      bankError: null,
 
       fetchOperators: async () => {
         set({ operatorLoading: true, operatorError: null });
@@ -495,6 +509,17 @@ const useCommonStore = create<ICommonState>(
           set({ subSectorError: error.message, subSectorLoading: false });
         }
       },
+
+      fetchBanks: async () => {
+        set({ bankLoading: true, bankError: null });
+        try {
+          const response = await API.get("/mobixCamsCommon/v1/pd-banks");
+          set({ banks: response.data, bankLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({ bankError: error.message, bankLoading: false });
+        }
+      },
     }),
 
     {
@@ -512,6 +537,10 @@ const useCommonStore = create<ICommonState>(
         occupations: state.occupations,
         informationSources: state.informationSources,
         languages: state.languages,
+        sectors: state.sectors,
+        subSectors: state.subSectors,
+        banks: state.banks,
+        organizationType: state.organizationType,
       }),
     }
   )

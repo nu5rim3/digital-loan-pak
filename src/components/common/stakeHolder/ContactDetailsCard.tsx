@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Collapse, Descriptions, Empty, Form, Input, Select, Switch } from 'antd';
-import { PlusOutlined, EditOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -159,7 +159,7 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
                         </Form.Item>
                     </div>
                     <div className="flex justify-end gap-3">
-                        <Button type="primary" htmlType="submit" loading={contactDetailsLoading}>
+                        <Button type="primary" htmlType="submit" loading={contactDetailsLoading} icon={<SaveOutlined />}>
                             {mode === 'create' ? 'Save' : 'Update'}
                         </Button>
                         <Button type="default" onClick={closeModal}>Cancel</Button>

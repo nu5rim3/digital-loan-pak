@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Collapse, Descriptions, Empty, Form, Input, Select } from 'antd';
-import { PlusOutlined, EditOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import CommonModal from '../modal/commonModal';
-import { formatPhoneNumber, formatCNIC } from '../../../utils/formatterFunctions';
+import { formatPhoneNumber, formatCNIC, formatSentence } from '../../../utils/formatterFunctions';
 import useStakeholderStore, { IRecipient } from '../../../store/stakeholderStore';
 import useCommonStore from '../../../store/commonStore';
 import { getDescriptionByFamilyCode } from '../../../utils/stakholderFunction';
@@ -161,16 +161,17 @@ const InsuranceRecipientCard: React.FC<IInsuranceRecipientCard> = ({ stkId }) =>
                                 name="relationship"
                                 control={control}
                                 render={({ field }) => (
-                                    <Select {...field} placeholder="Select Relationship" loading={relationshipLoading} options={relationship.map(item => ({ label: item.description, value: item.code }))} />
+                                    <Select {...field} placeholder="Select Relationship" loading={relationshipLoading} options={relationship.map(item => ({ label: formatSentence(item.description), value: item.code }))} />
                                 )}
                             />
                         </Form.Item>
                     </div>
                     <div className="flex justify-end gap-3">
-                        <Button type="primary" htmlType="submit" loading={relationshipLoading}>
+                        <Button type="primary" htmlType="submit" loading={relationshipLoading} icon={<SaveOutlined />}>
                             {mode === 'create' ? 'Save' : 'Update'}
                         </Button>
                         <Button type="default" onClick={closeModal}>Cancel</Button>
+
                     </div>
                 </Form>
             </CommonModal>

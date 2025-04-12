@@ -80,19 +80,21 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
     }
 
     useEffect(() => {
-        fetchCommunities()
-        fetchResidenceType()
-        fetchAreas()
-        fetchAddressDetailsByStkId(stkId ?? '')
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [stkId])
-
-    useEffect(() => {
         if (!openModal) {
             fetchAddressDetailsByStkId(stkId ?? '')
+        } else {
+            if (communities.length === 0) {
+                fetchCommunities()
+            }
+            if (residenceType.length === 0) {
+                fetchResidenceType()
+            }
+            if (areas.length === 0) {
+                fetchAreas()
+            }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [openModal, stkId])
+    }, [stkId, openModal])
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = (data: any) => {

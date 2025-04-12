@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Collapse, Descriptions, Empty, Form, Select } from 'antd';
-import { PlusOutlined, EditOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -74,11 +74,20 @@ const OtherDetails: React.FC<IOtherDetails> = ({ stkId }) => {
         if (!isModalOpen) {
             fetchOtherInfoByStkId(stkId ?? '');
         } else {
-            fetchOccupations();
-            fetchInformationSources();
-            fetchLanguages();
-            fetchSectors();
+            if (occupations.length === 0) {
+                fetchOccupations();
+            }
+            if (informationSources.length === 0) {
+                fetchInformationSources();
+            }
+            if (languages.length === 0) {
+                fetchLanguages();
+            }
+            if (sectors.length === 0) {
+                fetchSectors();
+            }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [stkId, isModalOpen, fetchOtherInfoByStkId, fetchOccupations, fetchInformationSources, fetchLanguages, fetchSectors]);
 
     const sector = watch('sector');
@@ -253,7 +262,7 @@ const OtherDetails: React.FC<IOtherDetails> = ({ stkId }) => {
                         </Form.Item>
                     </div>
                     <div className="flex justify-end gap-3">
-                        <Button type="primary" htmlType="submit" loading={otherInfoLoading}>
+                        <Button type="primary" htmlType="submit" loading={otherInfoLoading} icon={<SaveOutlined />}>
                             {mode === 'create' ? 'Save' : 'Update'}
                         </Button>
                         <Button type="default" onClick={closeModal}>Cancel</Button>
