@@ -15,6 +15,7 @@ import ContactDetailsCard from '../../../../../components/common/stakeHolder/Con
 import AddressDetailsCard from '../../../../../components/common/stakeHolder/AddressDetailsCard';
 import InsuranceRecipientCard from '../../../../../components/common/stakeHolder/InsuranceRecipientCard';
 import TrialCalculation from '../../../../Users/Customers/TrialCalculation';
+import OtherDetails from '../../../../../components/common/stakeHolder/OtherDetails';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
@@ -515,6 +516,8 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
             <AddressDetailsCard stkId={formDetails?.idx ?? ''} />
 
             <InsuranceRecipientCard stkId={formDetails?.idx ?? ''} />
+
+            <OtherDetails stkId={formDetails?.idx ?? ''} />
 
             <Card title={"Post Dated Cheque Details"}>
 

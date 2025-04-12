@@ -67,6 +67,37 @@ interface IRelationship {
   status: "A" | "I";
 }
 
+interface IOccupation {
+  code: string;
+  description: string;
+  status: "A" | "I";
+}
+
+interface IInformationSource {
+  code: string;
+  description: string;
+  status: "A" | "I";
+}
+
+interface ILanguages {
+  code: string;
+  description: string;
+  status: "A" | "I";
+}
+
+interface ISector {
+  code: string;
+  description: string;
+  status: "A" | "I";
+}
+
+interface ISubSector {
+  code: string;
+  sector: string;
+  description: string;
+  status: "A" | "I";
+}
+
 interface ICommonState {
   operators: IOperator[];
   operatorLoading: boolean;
@@ -112,6 +143,26 @@ interface ICommonState {
   relationshipLoading: boolean;
   relationshipError: string | null;
 
+  occupations: IOccupation[];
+  occupationLoading: boolean;
+  occupationError: string | null;
+
+  informationSources: IInformationSource[];
+  informationSourceLoading: boolean;
+  informationSourceError: string | null;
+
+  languages: ILanguages[];
+  languageLoading: boolean;
+  languageError: string | null;
+
+  sectors: ISector[];
+  sectorLoading: boolean;
+  sectorError: string | null;
+
+  subSectors: ISubSector[];
+  subSectorLoading: boolean;
+  subSectorError: string | null;
+
   fetchOperators: () => Promise<void>;
   fetchECIBReport: (cnic: string) => Promise<void>;
   fetchOrganizationType: () => Promise<void>;
@@ -123,6 +174,11 @@ interface ICommonState {
   fetchCommunities: () => Promise<void>;
   fetchAreas: () => Promise<void>;
   fetchRelationship: () => Promise<void>;
+  fetchOccupations: () => Promise<void>;
+  fetchInformationSources: () => Promise<void>;
+  fetchLanguages: () => Promise<void>;
+  fetchSectors: () => Promise<void>;
+  fetchSubSectors: (secId: string) => Promise<void>;
 }
 
 type TPersist = (
@@ -192,6 +248,26 @@ const useCommonStore = create<ICommonState>(
       relationship: [],
       relationshipLoading: false,
       relationshipError: null,
+
+      occupations: [],
+      occupationLoading: false,
+      occupationError: null,
+
+      informationSources: [],
+      informationSourceLoading: false,
+      informationSourceError: null,
+
+      languages: [],
+      languageLoading: false,
+      languageError: null,
+
+      sectors: [],
+      sectorLoading: false,
+      sectorError: null,
+
+      subSectors: [],
+      subSectorLoading: false,
+      subSectorError: null,
 
       fetchOperators: async () => {
         set({ operatorLoading: true, operatorError: null });
@@ -349,6 +425,76 @@ const useCommonStore = create<ICommonState>(
           });
         }
       },
+
+      // /mobixCamsCommon/v1/occupations
+      fetchOccupations: async () => {
+        set({ occupationLoading: true, occupationError: null });
+        try {
+          const response = await API.get("/mobixCamsCommon/v1/occupations");
+          set({ occupations: response.data, occupationLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({ occupationError: error.message, occupationLoading: false });
+        }
+      },
+
+      // mobixCamsCommon/v1/information-sources
+      fetchInformationSources: async () => {
+        set({ informationSourceLoading: true, informationSourceError: null });
+        try {
+          const response = await API.get(
+            "/mobixCamsCommon/v1/information-sources"
+          );
+          set({
+            informationSources: response.data,
+            informationSourceLoading: false,
+          });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({
+            informationSourceError: error.message,
+            informationSourceLoading: false,
+          });
+        }
+      },
+
+      // /mobixCamsCommon/v1/languages
+      fetchLanguages: async () => {
+        set({ languageLoading: true, languageError: null });
+        try {
+          const response = await API.get("/mobixCamsCommon/v1/languages");
+          set({ languages: response.data, languageLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({ languageError: error.message, languageLoading: false });
+        }
+      },
+
+      // /mobixCamsCommon/v1/sectors
+      fetchSectors: async () => {
+        set({ sectorLoading: true, sectorError: null });
+        try {
+          const response = await API.get("/mobixCamsCommon/v1/sectors");
+          set({ sectors: response.data, sectorLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({ sectorError: error.message, sectorLoading: false });
+        }
+      },
+
+      // /mobixCamsCommon/v1/sub-sectors/{sec_id}
+      fetchSubSectors: async (secId: string) => {
+        set({ subSectorLoading: true, subSectorError: null });
+        try {
+          const response = await API.get(
+            `/mobixCamsCommon/v1/sub-sectors/${secId}`
+          );
+          set({ subSectors: response.data, subSectorLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({ subSectorError: error.message, subSectorLoading: false });
+        }
+      },
     }),
 
     {
@@ -362,6 +508,10 @@ const useCommonStore = create<ICommonState>(
         healthCondition: state.healthCondition,
         headOfFamily: state.headOfFamily,
         educationLevel: state.educationLevel,
+        relationship: state.relationship,
+        occupations: state.occupations,
+        informationSources: state.informationSources,
+        languages: state.languages,
       }),
     }
   )

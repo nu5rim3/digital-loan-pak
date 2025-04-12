@@ -96,6 +96,23 @@ export interface IRecipient {
   lastModifiedDate?: string; // ISO date string
 }
 
+export interface IOtherInfo {
+  idx?: string;
+  occupation: string;
+  howDidYouKnow: string;
+  prefLang: string;
+  sector: string;
+  subSector?: string;
+  savingsReq: string;
+  whtDec?: string;
+  poliExpo: string;
+  status?: string;
+  createdBy?: string;
+  creationDate?: string; // ISO string format for date
+  lastModifiedBy?: string;
+  lastModifiedDate?: string; // ISO string format for date
+}
+
 interface IStackholderState {
   stakeholders: IStakeholder[];
   stakeholder: IStakeholder | null;
@@ -118,6 +135,10 @@ interface IStackholderState {
   recipients: IRecipient[];
   recipientLoading: boolean;
   recipientError: string | null;
+
+  otherInfo: IOtherInfo[];
+  otherInfoLoading: boolean;
+  otherInfoError: string | null;
 
   //   fetchStakeholdes: () => Promise<void>;
   // fetchStakeholderById: (idx: string) => Promise<void>;
@@ -151,6 +172,10 @@ interface IStackholderState {
   fetchRecipientByStkId: (stkId: string) => Promise<void>;
   addRecipient: (stkId: string, recipientDetails: IRecipient) => Promise<void>;
   updateRecipient: (idx: string, recipientDetails: IRecipient) => Promise<void>;
+
+  fetchOtherInfoByStkId: (stkId: string) => Promise<void>;
+  addOtherInfo: (stkId: string, otherInfo: IOtherInfo) => Promise<void>;
+  updateOtherInfo: (othId: string, otherInfo: IOtherInfo) => Promise<void>;
 }
 
 const useStakeholderStore = create<IStackholderState>((set) => ({
@@ -178,6 +203,10 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
   recipients: [],
   recipientLoading: false,
   recipientError: null,
+
+  otherInfo: [],
+  otherInfoLoading: false,
+  otherInfoError: null,
 
   //   fetchStakeholdes: async () => {
   //     set({ stakeholderLoading: true, stakeholderError: null });
@@ -481,6 +510,66 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({ recipientError: error.message, recipientLoading: false });
+    }
+  },
+
+  fetchOtherInfoByStkId: async (stkId: string) => {
+    set({ otherInfoLoading: true, otherInfoError: null });
+    try {
+      const response = await API.get(
+        `/mobixCamsClientele/v1/clienteles/other/${stkId}`
+      );
+      set({
+        otherInfo: response.data,
+        otherInfoLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ otherInfoError: error.message, otherInfoLoading: false });
+    }
+  },
+
+  addOtherInfo: async (stkId: string, otherInfo: IOtherInfo) => {
+    set({ otherInfoLoading: true, otherInfoError: null });
+    try {
+      const response = await APIAuth.post(
+        `/mobixCamsClientele/v1/clienteles/other/${stkId}`,
+        otherInfo
+      );
+      set({
+        // otherInfo: response.data,
+        otherInfoLoading: false,
+      });
+      notification.success({
+        message: "Success",
+        description:
+          response.data.message ?? "Other Info Created successfully!",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ otherInfoError: error.message, otherInfoLoading: false });
+    }
+  },
+
+  updateOtherInfo: async (othId: string, otherInfo: IOtherInfo) => {
+    set({ otherInfoLoading: true, otherInfoError: null });
+    try {
+      const response = await APIAuth.put(
+        `/mobixCamsClientele/v1/clienteles/other/${othId}`,
+        otherInfo
+      );
+      set({
+        // otherInfo: response.data,
+        otherInfoLoading: false,
+      });
+      notification.success({
+        message: "Success",
+        description:
+          response.data.message ?? "Other Info Updated successfully!",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ otherInfoError: error.message, otherInfoLoading: false });
     }
   },
 }));
