@@ -83,13 +83,13 @@ interface IAddressDetails {
   lastModifiedDate?: string;
 }
 
-interface IRecipient {
+export interface IRecipient {
   idx?: string;
   recipientName: string | null;
   relationship: string;
   cNicNo: string;
   phoneNo: string;
-  status: "A" | "I";
+  status?: "A" | "I";
   createdBy?: string;
   creationDate?: string; // ISO date string
   lastModifiedBy?: string;
@@ -424,7 +424,6 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
     }
   },
 
-  // /mobixCamsClientele/v1/clienteles/recipient/{stk_id}
   fetchRecipientByStkId: async (stkId: string) => {
     set({ recipientLoading: true, recipientError: null });
     try {
@@ -449,7 +448,7 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
         recipientDetails
       );
       set({
-        recipients: response.data,
+        // recipients: response.data,
         recipientLoading: false,
       });
       notification.success({
@@ -466,7 +465,7 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
   updateRecipient: async (recId: string, recipientDetails: IRecipient) => {
     set({ recipientLoading: true, recipientError: null });
     try {
-      const response = await APIAuth.post(
+      const response = await APIAuth.put(
         `/mobixCamsClientele/v1/clienteles/recipient/${recId}`,
         recipientDetails
       );

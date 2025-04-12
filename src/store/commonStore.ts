@@ -61,6 +61,12 @@ interface IArea {
   status: "A" | "I";
 }
 
+interface IRelationship {
+  code: string;
+  description: string;
+  status: "A" | "I";
+}
+
 interface ICommonState {
   operators: IOperator[];
   operatorLoading: boolean;
@@ -102,6 +108,10 @@ interface ICommonState {
   areaLoading: boolean;
   areaError: string | null;
 
+  relationship: IRelationship[];
+  relationshipLoading: boolean;
+  relationshipError: string | null;
+
   fetchOperators: () => Promise<void>;
   fetchECIBReport: (cnic: string) => Promise<void>;
   fetchOrganizationType: () => Promise<void>;
@@ -112,6 +122,7 @@ interface ICommonState {
   fetchResidenceType: () => Promise<void>;
   fetchCommunities: () => Promise<void>;
   fetchAreas: () => Promise<void>;
+  fetchRelationship: () => Promise<void>;
 }
 
 type TPersist = (
@@ -170,10 +181,6 @@ const useCommonStore = create<ICommonState>(
       residenceTypeLoading: false,
       residenceTypeError: null,
 
-      relationship: [],
-      relationshipLoading: false,
-      relationshipError: null,
-
       communities: [],
       communityLoading: false,
       communityError: null,
@@ -181,6 +188,10 @@ const useCommonStore = create<ICommonState>(
       areas: [],
       areaLoading: false,
       areaError: null,
+
+      relationship: [],
+      relationshipLoading: false,
+      relationshipError: null,
 
       fetchOperators: async () => {
         set({ operatorLoading: true, operatorError: null });
@@ -324,7 +335,22 @@ const useCommonStore = create<ICommonState>(
           set({ areaError: error.message, areaLoading: false });
         }
       },
+
+      fetchRelationship: async () => {
+        set({ relationshipLoading: true, relationshipError: null });
+        try {
+          const response = await API.get("/mobixCamsCommon/v1/fml-details");
+          set({ relationship: response.data, relationshipLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({
+            relationshipError: error.message,
+            relationshipLoading: false,
+          });
+        }
+      },
     }),
+
     {
       name: "common-store", // unique name
       storage: localStorageWrapper, // custom storage wrapper

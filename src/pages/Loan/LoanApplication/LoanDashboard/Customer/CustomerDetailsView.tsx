@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useForm, Controller } from "react-hook-form";
-import { Input, Form, Button, Card, Select, Typography, Collapse } from "antd";
+import { Input, Form, Button, Card, Select, Collapse } from "antd";
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import useCommonStore from '../../../../../store/commonStore';
@@ -14,8 +14,7 @@ import { EditOutlined } from '@ant-design/icons';
 import ContactDetailsCard from '../../../../../components/common/stakeHolder/ContactDetailsCard';
 import AddressDetailsCard from '../../../../../components/common/stakeHolder/AddressDetailsCard';
 import InsuranceRecipientCard from '../../../../../components/common/stakeHolder/InsuranceRecipientCard';
-
-const { Title } = Typography;
+import TrialCalculation from '../../../../Users/Customers/TrialCalculation';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
@@ -138,6 +137,9 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
     if (formDetails === null) {
         return (
             <>
+                <div className='pb-5'>
+                    <TrialCalculation />
+                </div>
                 <Card title={'Customer Detail'}>
                     <Form layout="vertical">
                         <div className="grid grid-cols-4 gap-3">
@@ -170,9 +172,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
     return (
         <div className='flex flex-col gap-3'>
 
-            {/* <TrailCalculation /> */}
-
-            {/* <Collapse
+            <Collapse
                 size='small'
                 defaultActiveKey={['1']}
                 items={[{
@@ -507,12 +507,12 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                         </Form>
                     </>
                 }]}
-            /> */}
+            />
 
             <ContactDetailsCard stkId={formDetails?.idx ?? ''} />
 
 
-            {/* <AddressDetailsCard stkId={formDetails?.idx ?? ''} /> */}
+            <AddressDetailsCard stkId={formDetails?.idx ?? ''} />
 
             <InsuranceRecipientCard stkId={formDetails?.idx ?? ''} />
 
