@@ -69,7 +69,7 @@ const LiabilityAffidavitForm: React.FC = () => {
         <>
 
             <div className='flex justify-end pb-3'>
-                <Tag color="red" className='text-sm flex items-center'>
+                <Tag color="red" className='text-sm flex items-center' hidden={liabilitie?.liabilities?.length === 0}>
                     <b>Total Outstanding Amount: {formatCurrency(Number(liabilitie?.totalAmount))}</b>
                 </Tag>
 
