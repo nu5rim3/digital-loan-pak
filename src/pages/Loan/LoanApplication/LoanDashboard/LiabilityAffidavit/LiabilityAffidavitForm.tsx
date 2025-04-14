@@ -99,8 +99,8 @@ const LiabilityAffidavitForm: React.FC = () => {
                 footer={true}
                 open={isModalOpen}
                 onClose={closeModal}
-                title={`${formatSentence(mode)} Liability Affidavit Details`}
                 size="large"
+                title={`${formatSentence(mode)} Liability Affidavit Details`}
             >
                 <Form
                     layout="vertical"

@@ -52,8 +52,6 @@ const LiabilityAffidavit: React.FC<ILiabilityAffidavit> = () => {
                 ]}
             />
 
-
-
         </div>
     )
 }

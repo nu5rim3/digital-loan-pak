@@ -67,6 +67,19 @@ export interface IGoldLoanFacilities {
   renewalDate: string;
 }
 
+export interface ITermDepositPlaced {
+  appraisalIdx?: string;
+  idx?: string;
+  bankCode: string;
+  depositPlaced: string;
+  maturityDate: string;
+  days: string;
+  months: string;
+  years: string;
+  profitOfFrequency: string;
+  tdrAmount: string;
+}
+
 interface ILoanState {
   loans: ILoan[];
   loanStatus: ILoanStatus[];
@@ -83,6 +96,10 @@ interface ILoanState {
   goldLoanFacilities: IGoldLoanFacilities[];
   goldLoanFacilitiesLoading: boolean;
   goldLoanFacilitiesError: string | null;
+
+  termDepositPlaced: ITermDepositPlaced[];
+  termDepositPlacedLoading: boolean;
+  termDepositPlacedError: string | null;
 
   fetchLoans: () => Promise<void>;
   fetchLoanById: (id: number) => Promise<void>;
@@ -109,6 +126,14 @@ interface ILoanState {
     updatedGoldLoanFacilities: IGoldLoanFacilities
   ) => Promise<void>;
   deleteGoldLoanFacilities: (goldId: string) => Promise<void>;
+
+  fetchTermDepositByAppId: (appId: string) => Promise<void>;
+  addTermDepositPlaced: (termDepositeData: ITermDepositPlaced) => Promise<void>;
+  updateTermDepositPlaced: (
+    tdId: string,
+    termDepositeData: ITermDepositPlaced
+  ) => Promise<void>;
+  deleteTermDepositPlaced: (tdId: string) => Promise<void>;
 }
 
 const useLoanStore = create<ILoanState>((set) => ({
@@ -130,6 +155,10 @@ const useLoanStore = create<ILoanState>((set) => ({
   goldLoanFacilities: [],
   goldLoanFacilitiesLoading: false,
   goldLoanFacilitiesError: null,
+
+  termDepositPlaced: [],
+  termDepositPlacedLoading: false,
+  termDepositPlacedError: null,
 
   fetchLoans: async () => {
     set({ loading: true, error: null });
@@ -335,7 +364,6 @@ const useLoanStore = create<ILoanState>((set) => ({
         goldLoanFacilities
       );
       set({
-        // goldLoanFacilities: response.data,
         goldLoanFacilitiesLoading: false,
       });
       notification.success({
@@ -363,11 +391,6 @@ const useLoanStore = create<ILoanState>((set) => ({
         updatedGoldLoanFacilities
       );
       set(() => ({
-        // goldLoanFacilities: state.goldLoanFacilities.map((gold) =>
-        //   gold.appraisalIdx === goldId
-        //     ? { ...gold, ...updatedGoldLoanFacilities }
-        //     : gold
-        // ),
         goldLoanFacilitiesLoading: false,
       }));
       notification.success({
@@ -384,7 +407,6 @@ const useLoanStore = create<ILoanState>((set) => ({
     }
   },
 
-  // /mobixCamsLoan/v1/gold-loan-facilities/{gl_id}/inactive
   deleteGoldLoanFacilities: async (goldId: string) => {
     set({ goldLoanFacilitiesLoading: true, goldLoanFacilitiesError: null });
     try {
@@ -392,9 +414,6 @@ const useLoanStore = create<ILoanState>((set) => ({
         `/mobixCamsLoan/v1/gold-loan-facilities/${goldId}/inactive`
       );
       set(() => ({
-        // goldLoanFacilities: state.goldLoanFacilities.filter(
-        //   (gold) => gold.appraisalIdx !== goldId
-        // ),
         goldLoanFacilitiesLoading: false,
       }));
       notification.success({
@@ -407,6 +426,95 @@ const useLoanStore = create<ILoanState>((set) => ({
       set({
         goldLoanFacilitiesError: error.message,
         goldLoanFacilitiesLoading: false,
+      });
+    }
+  },
+
+  fetchTermDepositByAppId: async (appId: string) => {
+    set({ termDepositPlacedLoading: true, termDepositPlacedError: null });
+    try {
+      const response = await API.get(
+        `/mobixCamsLoan/v1/term-deposits/appraisals/${appId}`
+      );
+      set({
+        termDepositPlaced: response.data.data ?? [],
+        termDepositPlacedLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      set({
+        termDepositPlacedError: error.message,
+        termDepositPlacedLoading: false,
+      });
+    }
+  },
+
+  addTermDepositPlaced: async () => {
+    set({ termDepositPlacedLoading: true, termDepositPlacedError: null });
+    try {
+      await APIAuth.post(`/mobixCamsLoan/v1/term-deposits`);
+      set({
+        termDepositPlacedLoading: false,
+      });
+      notification.success({
+        type: "success",
+        message: "Term Deposit Placed successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      set({
+        termDepositPlacedError: error.message,
+        termDepositPlacedLoading: false,
+      });
+    }
+  },
+
+  updateTermDepositPlaced: async (
+    tdId: string,
+    termDepositeData: ITermDepositPlaced
+  ) => {
+    set({ termDepositPlacedLoading: true, termDepositPlacedError: null });
+    try {
+      await APIAuth.put(
+        `/mobixCamsLoan/v1/term-deposits/${tdId}`,
+        termDepositeData
+      );
+      set(() => ({
+        termDepositPlacedLoading: false,
+      }));
+      notification.success({
+        type: "success",
+        message: "Term Deposit Placed updated successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      set({
+        termDepositPlacedError: error.message,
+        termDepositPlacedLoading: false,
+      });
+    }
+  },
+
+  deleteTermDepositPlaced: async (tdId: string) => {
+    set({ termDepositPlacedLoading: true, termDepositPlacedError: null });
+    try {
+      await APIAuth.put(`/mobixCamsLoan/v1/term-deposits/${tdId}/inactive`);
+      set(() => ({
+        termDepositPlacedLoading: false,
+      }));
+      notification.success({
+        type: "success",
+        message: "Term Deposit Placed deleted successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      set({
+        termDepositPlacedError: error.message,
+        termDepositPlacedLoading: false,
       });
     }
   },
