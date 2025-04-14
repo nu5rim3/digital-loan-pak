@@ -58,6 +58,15 @@ export interface AppLiabilities {
   liabilities: ILiability[];
 }
 
+export interface IGoldLoanFacilities {
+  idx?: string;
+  appraisalIdx?: string;
+  facilityObtained?: string | "Y" | "N";
+  bankCode: string;
+  loanAmount: string;
+  renewalDate: string;
+}
+
 interface ILoanState {
   loans: ILoan[];
   loanStatus: ILoanStatus[];
@@ -70,12 +79,18 @@ interface ILoanState {
   liabilityLoading: boolean;
   liabilityError: string | null;
 
+  // Gold Loan Facilities
+  goldLoanFacilities: IGoldLoanFacilities[];
+  goldLoanFacilitiesLoading: boolean;
+  goldLoanFacilitiesError: string | null;
+
   fetchLoans: () => Promise<void>;
   fetchLoanById: (id: number) => Promise<void>;
   addLoan: (loan: ILoan) => Promise<void>;
   updateLoan: (id: number, updatedLoan: ILoan) => Promise<void>;
   fetchLoanStatusById: (appId: string) => Promise<void>;
 
+  // Liabilities
   fetchLiabilities: (appId: string) => Promise<void>;
   addLiability: (AppLiabilities: AppLiabilities) => Promise<void>;
   updateLiability: (
@@ -83,7 +98,17 @@ interface ILoanState {
     updatedLiability: ILiability
   ) => Promise<void>;
   deleteLiability: (libIdx: string) => Promise<void>;
-  //   deleteLoan: (id: number) => Promise<void>;
+
+  // Gold Loan Facilities
+  fetchGoldLoanFacilities: (appId: string) => Promise<void>;
+  addGoldLoanFacilities: (
+    goldLoanFacilities: IGoldLoanFacilities
+  ) => Promise<void>;
+  updateGoldLoanFacilities: (
+    goldId: string,
+    updatedGoldLoanFacilities: IGoldLoanFacilities
+  ) => Promise<void>;
+  deleteGoldLoanFacilities: (goldId: string) => Promise<void>;
 }
 
 const useLoanStore = create<ILoanState>((set) => ({
@@ -101,6 +126,10 @@ const useLoanStore = create<ILoanState>((set) => ({
   },
   liabilityLoading: false,
   liabilityError: null,
+
+  goldLoanFacilities: [],
+  goldLoanFacilitiesLoading: false,
+  goldLoanFacilitiesError: null,
 
   fetchLoans: async () => {
     set({ loading: true, error: null });
@@ -273,6 +302,112 @@ const useLoanStore = create<ILoanState>((set) => ({
     } catch (error: any) {
       console.error(error);
       set({ liabilityError: error.message, liabilityLoading: false });
+    }
+  },
+
+  // gold loan facilities
+  fetchGoldLoanFacilities: async (appId: string) => {
+    set({ goldLoanFacilitiesLoading: true, goldLoanFacilitiesError: null });
+    try {
+      const response = await API.get(
+        `/mobixCamsLoan/v1/gold-loan-facilities/appraisals/${appId}`
+      );
+      set({
+        goldLoanFacilities: response.data.data,
+        goldLoanFacilitiesLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      set({
+        goldLoanFacilitiesError: error.message,
+        goldLoanFacilitiesLoading: false,
+      });
+    }
+  },
+
+  // /mobixCamsLoan/v1/gold-loan-facilities
+  addGoldLoanFacilities: async (goldLoanFacilities: IGoldLoanFacilities) => {
+    set({ goldLoanFacilitiesLoading: true, goldLoanFacilitiesError: null });
+    try {
+      await APIAuth.post(
+        `/mobixCamsLoan/v1/gold-loan-facilities`,
+        goldLoanFacilities
+      );
+      set({
+        // goldLoanFacilities: response.data,
+        goldLoanFacilitiesLoading: false,
+      });
+      notification.success({
+        type: "success",
+        message: "Gold Loan Facilities added successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      set({
+        goldLoanFacilitiesError: error.message,
+        goldLoanFacilitiesLoading: false,
+      });
+    }
+  },
+
+  updateGoldLoanFacilities: async (
+    goldId: string,
+    updatedGoldLoanFacilities: IGoldLoanFacilities
+  ) => {
+    set({ goldLoanFacilitiesLoading: true, goldLoanFacilitiesError: null });
+    try {
+      await APIAuth.put(
+        `/mobixCamsLoan/v1/gold-loan-facilities/${goldId}`,
+        updatedGoldLoanFacilities
+      );
+      set(() => ({
+        // goldLoanFacilities: state.goldLoanFacilities.map((gold) =>
+        //   gold.appraisalIdx === goldId
+        //     ? { ...gold, ...updatedGoldLoanFacilities }
+        //     : gold
+        // ),
+        goldLoanFacilitiesLoading: false,
+      }));
+      notification.success({
+        type: "success",
+        message: "Gold Loan Facilities updated successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      set({
+        goldLoanFacilitiesError: error.message,
+        goldLoanFacilitiesLoading: false,
+      });
+    }
+  },
+
+  // /mobixCamsLoan/v1/gold-loan-facilities/{gl_id}/inactive
+  deleteGoldLoanFacilities: async (goldId: string) => {
+    set({ goldLoanFacilitiesLoading: true, goldLoanFacilitiesError: null });
+    try {
+      await APIAuth.put(
+        `/mobixCamsLoan/v1/gold-loan-facilities/${goldId}/inactive`
+      );
+      set(() => ({
+        // goldLoanFacilities: state.goldLoanFacilities.filter(
+        //   (gold) => gold.appraisalIdx !== goldId
+        // ),
+        goldLoanFacilitiesLoading: false,
+      }));
+      notification.success({
+        type: "success",
+        message: "Gold Loan Facilities deleted successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      set({
+        goldLoanFacilitiesError: error.message,
+        goldLoanFacilitiesLoading: false,
+      });
     }
   },
 }));

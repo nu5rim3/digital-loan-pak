@@ -31,6 +31,13 @@ export function kebabToTitleCase(str: string): string {
     .join(" ");
 }
 
+export function formatCamelCase(str: string): string {
+  return str
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 export const formatCNIC = (value: string) => {
   const cleaned = value.replace(/\D/g, ""); // Remove non-numeric characters
   const match = cleaned.match(/^(\d{0,5})(\d{0,7})?(\d{0,1})?$/);

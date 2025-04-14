@@ -7,7 +7,7 @@ import useLoanStore, { ILiability } from '../../../../../store/loanStore';
 import CommonModal from '../../../../../components/common/modal/commonModal';
 import { PlusOutlined, EditOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router-dom';
-import { formatCurrency, formatSentence } from '../../../../../utils/formatterFunctions';
+import { formatCamelCase, formatCurrency, formatSentence } from '../../../../../utils/formatterFunctions';
 
 const schema = yup.object().shape({
     institutionName: yup.string().required('Institution Name is required'),
@@ -157,7 +157,7 @@ const DetailsCard: React.FC<{ detail: ILiability; onEdit: () => void; onRemove: 
             <Button type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
         </div>
         <Descriptions column={1}>
-            <Descriptions.Item label="Institution Name">{detail.institutionName}</Descriptions.Item>
+            <Descriptions.Item label="Institution Name">{formatCamelCase(detail.institutionName)}</Descriptions.Item>
             <Descriptions.Item label="Loan Nature">{detail.loanNature}</Descriptions.Item>
             <Descriptions.Item label="Outstanding Amount">{formatCurrency(Number(detail.outstandingAmount))}</Descriptions.Item>
         </Descriptions>
