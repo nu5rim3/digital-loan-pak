@@ -65,8 +65,6 @@ const LiabilityAffidavitForm: React.FC = () => {
         }
     }, [isModalOpen, fetchLiabilities, appId])
 
-    console.log("liabilities: ", liabilitie)
-
     return (
         <>
 
