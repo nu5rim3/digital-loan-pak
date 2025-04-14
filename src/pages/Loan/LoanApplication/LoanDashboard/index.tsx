@@ -13,6 +13,7 @@ import useCustomerStore from '../../../../store/customerStore';
 const CustomerDetailsView = lazy(() => import('./Customer/CustomerDetailsView'))
 const WitnessDetails = lazy(() => import('./Witness/WitnessDetails'))
 const GuarantorDetailsView = lazy(() => import('./Guarantor/GuarantorDetailsView'))
+const LiabilityAffidavit = lazy(() => import('./LiabilityAffidavit'))
 
 interface StatusProps {
     isCompleted: string;
@@ -67,6 +68,8 @@ const LoanDaashboard: React.FC = () => {
                 return <GuarantorDetailsView formDetails={getStakeholderByType('G', stakeholders ?? []) ?? []} />;
             case 'witness':
                 return <WitnessDetails formDetails={getStakeholderByType('W', stakeholders ?? []) ?? []} />;
+            case 'Liability-Affidavit':
+                return <LiabilityAffidavit />;
             case 'LOAN_COLLATERAL':
                 return <div>Collateral</div>;
             case 'GOLD_LOAN_APPLICAION':
@@ -127,70 +130,10 @@ const LoanDaashboard: React.FC = () => {
         },
         {
             "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 3,
-            "section": "loan-application",
-            "isMandatory": "1",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 4,
-            "section": "cash-flow",
-            "isMandatory": "1",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 5,
-            "section": "image-upload",
-            "isMandatory": "1",
-            "completed": "0",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 6,
-            "section": "credit-scoring",
-            "isMandatory": "0",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 7,
-            "section": "customer-acknowledgement",
-            "isMandatory": "1",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
             "creationDate": "2024-07-11T09:24:51.357+00:00",
             "lastModifiedBy": null,
             "lastModifiedDate": null,
-            "id": 8,
+            "id": 3,
             "section": "witness",
             "isMandatory": "1",
             "completed": "1",
@@ -202,7 +145,80 @@ const LoanDaashboard: React.FC = () => {
             "creationDate": "2024-07-11T09:24:51.357+00:00",
             "lastModifiedBy": null,
             "lastModifiedDate": null,
+            "id": 4,
+            "section": "Liability-Affidavit",
+            "isMandatory": "1",
+            "completed": "1",
+            "enabled": null,
+            "status": "A"
+        },
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2022-08-09T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 5,
+            "section": "loan-application",
+            "isMandatory": "1",
+            "completed": "1",
+            "enabled": null,
+            "status": "A"
+        },
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2022-08-09T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 6,
+            "section": "cash-flow",
+            "isMandatory": "1",
+            "completed": "1",
+            "enabled": null,
+            "status": "A"
+        },
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2022-08-09T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 7,
+            "section": "image-upload",
+            "isMandatory": "1",
+            "completed": "0",
+            "enabled": null,
+            "status": "A"
+        },
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2022-08-09T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 8,
+            "section": "credit-scoring",
+            "isMandatory": "0",
+            "completed": "1",
+            "enabled": null,
+            "status": "A"
+        },
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2022-08-09T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
             "id": 9,
+            "section": "customer-acknowledgement",
+            "isMandatory": "1",
+            "completed": "1",
+            "enabled": null,
+            "status": "A"
+        },
+
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2024-07-11T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 10,
             "section": "term-deposit",
             "isMandatory": "0",
             "completed": "1",
@@ -214,7 +230,7 @@ const LoanDaashboard: React.FC = () => {
             "creationDate": "2024-07-11T09:24:51.357+00:00",
             "lastModifiedBy": null,
             "lastModifiedDate": null,
-            "id": 10,
+            "id": 11,
             "section": "gold-facility",
             "isMandatory": "0",
             "completed": "1",

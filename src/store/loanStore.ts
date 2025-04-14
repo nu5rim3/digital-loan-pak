@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { API } from "../services/api";
+import { API, APIAuth } from "../services/api";
 import { notification } from "antd";
 
 interface ILoan {
@@ -45,6 +45,19 @@ export interface ILoanStatus {
   status: string;
 }
 
+export interface ILiability {
+  idx?: string;
+  institutionName: string;
+  loanNature: string;
+  outstandingAmount: string;
+}
+
+export interface AppLiabilities {
+  appIdx: string;
+  totalAmount?: string;
+  liabilities: ILiability[];
+}
+
 interface ILoanState {
   loans: ILoan[];
   loanStatus: ILoanStatus[];
@@ -53,11 +66,23 @@ interface ILoanState {
   loading: boolean;
   error: string | null;
 
+  liabilitie: AppLiabilities;
+  liabilityLoading: boolean;
+  liabilityError: string | null;
+
   fetchLoans: () => Promise<void>;
   fetchLoanById: (id: number) => Promise<void>;
   addLoan: (loan: ILoan) => Promise<void>;
   updateLoan: (id: number, updatedLoan: ILoan) => Promise<void>;
   fetchLoanStatusById: (appId: string) => Promise<void>;
+
+  fetchLiabilities: (appId: string) => Promise<void>;
+  addLiability: (AppLiabilities: AppLiabilities) => Promise<void>;
+  updateLiability: (
+    libIdx: string,
+    updatedLiability: ILiability
+  ) => Promise<void>;
+  deleteLiability: (libIdx: string) => Promise<void>;
   //   deleteLoan: (id: number) => Promise<void>;
 }
 
@@ -68,6 +93,14 @@ const useLoanStore = create<ILoanState>((set) => ({
   selectedLoan: null,
   loading: false,
   error: null,
+
+  liabilitie: {
+    appIdx: "",
+    totalAmount: "",
+    liabilities: [],
+  },
+  liabilityLoading: false,
+  liabilityError: null,
 
   fetchLoans: async () => {
     set({ loading: true, error: null });
@@ -148,6 +181,98 @@ const useLoanStore = create<ILoanState>((set) => ({
     } catch (error: any) {
       console.error(error);
       set({ error: error.message, loading: false });
+    }
+  },
+
+  fetchLiabilities: async (appId: string) => {
+    set({ liabilityLoading: true, liabilityError: null });
+    try {
+      const response = await API.get(
+        `/mobixCamsLoan/v1/liabilities/appraisals/${appId}`
+      );
+      set({
+        liabilitie: response.data,
+        liabilityLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      set({ liabilityError: error.message, liabilityLoading: false });
+    }
+  },
+
+  addLiability: async (AppLiabilities: AppLiabilities) => {
+    set({ liabilityLoading: true, liabilityError: null });
+    try {
+      const response = await APIAuth.post(
+        `/mobixCamsLoan/v1/liabilities`,
+        AppLiabilities
+      );
+      set({
+        liabilitie: response.data,
+        liabilityLoading: false,
+      });
+      notification.success({
+        type: "success",
+        message: "Liability added successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      set({ liabilityError: error.message, liabilityLoading: false });
+    }
+  },
+
+  updateLiability: async (libIdx: string, updatedLiability: ILiability) => {
+    set({ liabilityLoading: true, liabilityError: null });
+    try {
+      await APIAuth.put(
+        `/mobixCamsLoan/v1/liabilities/${libIdx}`,
+        updatedLiability
+      );
+      set((state) => ({
+        liabilitie: {
+          ...state.liabilitie,
+          liabilities: state.liabilitie.liabilities.map((liability) =>
+            liability.idx === libIdx
+              ? { ...liability, ...updatedLiability }
+              : liability
+          ),
+        },
+        liabilityLoading: false,
+      }));
+      notification.success({
+        type: "success",
+        message: "Liability updated successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      set({ liabilityError: error.message, liabilityLoading: false });
+    }
+  },
+
+  deleteLiability: async (libIdx: string) => {
+    set({ liabilityLoading: true, liabilityError: null });
+    try {
+      await APIAuth.put(`/mobixCamsLoan/v1/liabilities/${libIdx}/inactive`);
+      set((state) => ({
+        liabilitie: {
+          ...state.liabilitie,
+          liabilities: state.liabilitie.liabilities.filter(
+            (liability) => liability.idx !== libIdx
+          ),
+        },
+        liabilityLoading: false,
+      }));
+      notification.success({
+        type: "success",
+        message: "Liability deleted successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      set({ liabilityError: error.message, liabilityLoading: false });
     }
   },
 }));
