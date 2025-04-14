@@ -5,9 +5,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import useLoanStore, { ILiability } from '../../../../../store/loanStore';
 import CommonModal from '../../../../../components/common/modal/commonModal';
-import { PlusOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router-dom';
-import { formatCurrency } from '../../../../../utils/formatterFunctions';
+import { formatCurrency, formatSentence } from '../../../../../utils/formatterFunctions';
 
 const schema = yup.object().shape({
     institutionName: yup.string().required('Institution Name is required'),
@@ -19,7 +19,7 @@ const LiabilityAffidavitForm: React.FC = () => {
 
     const { appId } = useParams()
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [mode, setMode] = useState<'create' | 'edit' | 'remove'>('create');
+    const [mode, setMode] = useState<'save' | 'update' | 'remove'>('save');
     const [selectedDetail, setSelectedDetail] = useState<ILiability | null>(null);
 
     const { control, formState: { errors }, setValue, handleSubmit, reset } = useForm({
@@ -28,7 +28,7 @@ const LiabilityAffidavitForm: React.FC = () => {
 
     const { liabilitie, liabilityLoading, fetchLiabilities, addLiability, updateLiability, deleteLiability } = useLoanStore()
 
-    const openModal = (mode: 'create' | 'edit', details: ILiability | null = null) => {
+    const openModal = (mode: 'save' | 'update' | 'remove', details: ILiability | null = null) => {
         setMode(mode);
         setSelectedDetail(details);
         setIsModalOpen(true);
@@ -47,9 +47,9 @@ const LiabilityAffidavitForm: React.FC = () => {
     };
 
     const onSubmit = (data: ILiability) => {
-        if (mode === 'edit') {
+        if (mode === 'update') {
             updateLiability(selectedDetail?.idx ?? '', data).finally(closeModal);
-        } else if (mode === 'create') {
+        } else if (mode === 'save') {
             addLiability({
                 appIdx: appId ?? '',
                 liabilities: [data]
@@ -73,7 +73,7 @@ const LiabilityAffidavitForm: React.FC = () => {
                     <b>Total Outstanding Amount: {formatCurrency(Number(liabilitie?.totalAmount))}</b>
                 </Tag>
 
-                <Button type="primary" onClick={() => openModal('create')} icon={<PlusOutlined />}>
+                <Button type="primary" onClick={() => openModal('save')} icon={<PlusOutlined />}>
                     Add Liability Details
                 </Button>
             </div>
@@ -85,7 +85,7 @@ const LiabilityAffidavitForm: React.FC = () => {
                     {liabilitie?.liabilities?.length > 0 ?
                         <div className='grid grid-cols-4 gap-4'>
                             {liabilitie.liabilities?.map((item, index) => (
-                                <DetailsCard key={index} detail={item} onEdit={() => openModal('edit', item)} />
+                                <DetailsCard key={index} detail={item} onEdit={() => openModal('update', item)} onRemove={() => openModal('remove', item)} />
                             ))}
                         </div> :
                         <div className='flex flex-1 justify-center' >
@@ -99,7 +99,7 @@ const LiabilityAffidavitForm: React.FC = () => {
                 footer={true}
                 open={isModalOpen}
                 onClose={closeModal}
-                title={`${mode === 'create' ? 'Create' : 'Update'} Liability Affidavit Details`}
+                title={`${formatSentence(mode)} Liability Affidavit Details`}
                 size="large"
             >
                 <Form
@@ -138,8 +138,8 @@ const LiabilityAffidavitForm: React.FC = () => {
                         </Form.Item>
                     </div>
                     <div className="flex justify-end gap-3">
-                        <Button type="primary" htmlType="submit" loading={liabilityLoading} icon={<SaveOutlined />}>
-                            {mode === 'create' ? 'Save' : 'Update'}
+                        <Button type="primary" htmlType="submit" loading={liabilityLoading} icon={mode === 'remove' ? <DeleteOutlined /> : <SaveOutlined />} danger={mode === 'remove'}>
+                            {formatSentence(mode)}
                         </Button>
                         <Button type="default" onClick={closeModal}>Cancel</Button>
                     </div>
@@ -150,10 +150,11 @@ const LiabilityAffidavitForm: React.FC = () => {
     )
 }
 
-const DetailsCard: React.FC<{ detail: ILiability; onEdit: () => void; }> = ({ detail, onEdit }) => (
+const DetailsCard: React.FC<{ detail: ILiability; onEdit: () => void; onRemove: () => void; }> = ({ detail, onEdit, onRemove }) => (
     <Card>
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-1">
             <Button type="default" size="small" icon={<EditOutlined />} onClick={onEdit} />
+            <Button type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
         </div>
         <Descriptions column={1}>
             <Descriptions.Item label="Institution Name">{detail.institutionName}</Descriptions.Item>
