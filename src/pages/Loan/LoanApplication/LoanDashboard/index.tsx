@@ -248,9 +248,15 @@ const LoanDaashboard: React.FC = () => {
     }));
 
     useEffect(() => {
-        fetchLoanStatusById(appId ?? '')
-        fetchCustomerByAppId(appId ?? '')
-        fetchStackholderByAppId(appId ?? '')
+        if (loanStatus.length === 0) {
+            fetchLoanStatusById(appId ?? '')
+        }
+        if (customers.length === 0) {
+            fetchCustomerByAppId(appId ?? '')
+        }
+        if (stakeholders.length === 0) {
+            fetchStackholderByAppId(appId ?? '')
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [appId])
 
