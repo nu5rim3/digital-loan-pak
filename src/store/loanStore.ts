@@ -71,7 +71,7 @@ export interface ITermDepositPlaced {
   appraisalIdx?: string;
   idx?: string;
   bankCode: string;
-  depositPlaced: string;
+  depositPlaced?: string;
   maturityDate: string;
   days: string;
   months: string;

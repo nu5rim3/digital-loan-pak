@@ -67,9 +67,9 @@ const TermDepositPlaced: React.FC<ITermDeposit> = () => {
 
     const onSubmit = (data: ITermDepositPlaced) => {
         if (mode === 'update') {
-            updateTermDepositPlaced(selectedDetail?.idx ?? '', data).finally(closeModal);
+            updateTermDepositPlaced(selectedDetail?.idx ?? '', { ...data, depositPlaced: 'Y' }).finally(closeModal);
         } else if (mode === 'save') {
-            addTermDepositPlaced({ ...data, appraisalIdx: appId }).finally(closeModal);
+            addTermDepositPlaced({ ...data, depositPlaced: 'Y', appraisalIdx: appId }).finally(closeModal);
         } else if (mode === 'remove') {
             deleteTermDepositPlaced(selectedDetail?.idx ?? '').finally(closeModal);
         }

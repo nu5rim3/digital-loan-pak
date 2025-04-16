@@ -255,29 +255,29 @@ const LoanDaashboard: React.FC = () => {
     }, [appId])
 
 
-    // if (loading) {
-    //     return (
-    //         <Card title={`Loan Application - ${appId}`}>
-    //             <Empty description={'Loading...'} />
-    //         </Card>
-    //     )
-    // }
+    if (loading) {
+        return (
+            <Card title={`Loan Application - ${appId}`}>
+                <Empty description={'Loading...'} />
+            </Card>
+        )
+    }
 
-    // if (loanStatus.length === 0) {
-    //     return (
-    //         <Card title={`Loan Application - ${appId}`}>
-    //             <Empty
-    //                 description={'No Data Found'}
-    //                 children={
-    //                     <>
-    //                         <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
-    //                         <Button type="primary" className="ml-3" onClick={() => fetchLoanStatusById(appId ?? '')}>Refresh</Button>
-    //                     </>
-    //                 }
-    //             />
-    //         </Card>
-    //     )
-    // }
+    if (loanStatus.length === 0) {
+        return (
+            <Card title={`Loan Application - ${appId}`}>
+                <Empty
+                    description={'No Data Found'}
+                    children={
+                        <>
+                            <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
+                            <Button type="primary" className="ml-3" onClick={() => fetchLoanStatusById(appId ?? '')}>Refresh</Button>
+                        </>
+                    }
+                />
+            </Card>
+        )
+    }
 
     return (
         <>
