@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
 import { Button, Card, Collapse, Descriptions, Empty, Form, Select } from 'antd';
-import { PlusOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, SaveOutlined, UndoOutlined } from '@ant-design/icons';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -263,6 +263,7 @@ const OtherDetails: React.FC<IOtherDetails> = ({ stkId }) => {
                         <Button type="primary" htmlType="submit" loading={otherInfoLoading} icon={<SaveOutlined />}>
                             {mode === 'create' ? 'Save' : 'Update'}
                         </Button>
+                        <Button type="default" htmlType="reset" onClick={() => reset()} danger icon={<UndoOutlined />}>Reset</Button>
                         <Button type="default" onClick={closeModal}>Cancel</Button>
                     </div>
                 </Form>

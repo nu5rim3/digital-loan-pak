@@ -61,7 +61,7 @@ export interface IContactDetails {
   status?: string;
   idx?: string;
 }
-interface IAddressDetails {
+export interface IAddressDetails {
   idx: string;
   addressType: "PERMANANT" | "TEMPORARY" | "OTHER"; // Use a union type for predefined values
   addressLine1: string;

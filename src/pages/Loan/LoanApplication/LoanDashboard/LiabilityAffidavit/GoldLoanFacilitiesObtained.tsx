@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import useLoanStore, { IGoldLoanFacilities } from '../../../../../store/loanStore';
 import CommonModal from '../../../../../components/common/modal/commonModal';
-import { PlusOutlined, EditOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, SaveOutlined, DeleteOutlined, UndoOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router-dom';
 import { formatCamelCase, formatCurrency, formatSentence } from '../../../../../utils/formatterFunctions';
 import useCommonStore from '../../../../../store/commonStore';
@@ -138,6 +138,7 @@ const GoldLoanFacilitiesObtained: React.FC<IGoldLoanFacilitiesObtained> = () => 
                         <Button type="primary" htmlType="submit" loading={goldLoanFacilitiesLoading} icon={mode === 'remove' ? <DeleteOutlined /> : <SaveOutlined />} danger={mode === 'remove'}>
                             {formatSentence(mode)}
                         </Button>
+                        <Button type="default" htmlType="reset" onClick={() => reset()} danger icon={<UndoOutlined />}>Reset</Button>
                         <Button type="default" onClick={closeModal}>Cancel</Button>
                     </div>
                 </Form>
