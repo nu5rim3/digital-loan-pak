@@ -16,7 +16,6 @@ interface IOtherDetails {
 
 const schema = yup.object().shape({
     occupation: yup.string().required('Occupation is required'),
-    subOccupation: yup.string().required('Sub Occupation is required'),
     howDidYouKnow: yup.string().required('How did you know is required'),
     prefLang: yup.string().required('Preferred Language is required'),
     sector: yup.string().required('Sector is required'),
