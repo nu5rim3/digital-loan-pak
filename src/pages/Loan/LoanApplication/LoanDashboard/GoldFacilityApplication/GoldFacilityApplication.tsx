@@ -205,8 +205,6 @@ const GoldFacilityApplication: React.FC = () => {
     }, [marketValue, goldLoanType])
 
     useEffect(() => {
-        console.log('goldNetWeight', Number(goldNetWeight))
-        console.log('goldMarketValue', convertStringToNumber(marketValue?.valueAmount ?? ''))
         if (goldLoanType === 'GOD' && marketValue !== undefined && Number(goldNetWeight) > 0) {
             setValue('goldCollateralValue', (Number(goldNetWeight) * convertStringToNumber(marketValue?.valueAmount ?? '')).toString());
         } else if (goldLoanType === 'DEN' && marketValue !== undefined && Number(goldNetWeight) > 0) {
