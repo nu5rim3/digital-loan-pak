@@ -438,10 +438,6 @@ const CustomerDetails: React.FC = () => {
                     </div>
                 </Form>
             </Card>
-
-            <Card title={'Contact Information'}>
-
-            </Card>
         </div>
     )
 }

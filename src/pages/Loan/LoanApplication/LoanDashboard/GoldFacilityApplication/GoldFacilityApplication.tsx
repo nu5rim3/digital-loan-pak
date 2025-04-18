@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Card, Descriptions, Empty, Form, Input, Select } from 'antd'
+import { Button, Card, Descriptions, Empty, Form, Input, InputNumber, Select } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -385,7 +385,20 @@ const GoldFacilityApplication: React.FC = () => {
                                                                 control={control}
                                                                 disabled
                                                                 render={({ field }) => (
-                                                                    <Input {...field} placeholder="Gold Collateral Value" />
+                                                                    <InputNumber
+                                                                        {...field}
+                                                                        placeholder="Gold Collateral Value"
+                                                                        style={{ width: '100%' }}
+                                                                        formatter={(value) =>
+                                                                            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
+                                                                        }
+                                                                        parser={(value) =>
+                                                                            value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
+                                                                        }
+                                                                        step={0.01}
+                                                                        min={0}
+                                                                        stringMode // keeps precision in string format
+                                                                    />
                                                                 )}
                                                             />
                                                         </Form.Item>
@@ -410,8 +423,22 @@ const GoldFacilityApplication: React.FC = () => {
                                                             <Controller
                                                                 name="denCollateralValue"
                                                                 control={control}
+                                                                disabled
                                                                 render={({ field }) => (
-                                                                    <Input {...field} placeholder="Den Collateral Value" />
+                                                                    <InputNumber
+                                                                        {...field}
+                                                                        placeholder="Den Collateral Value"
+                                                                        style={{ width: '100%' }}
+                                                                        formatter={(value) =>
+                                                                            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
+                                                                        }
+                                                                        parser={(value) =>
+                                                                            value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
+                                                                        }
+                                                                        step={0.01}
+                                                                        min={0}
+                                                                        stringMode // keeps precision in string format
+                                                                    />
                                                                 )}
                                                             />
                                                         </Form.Item>

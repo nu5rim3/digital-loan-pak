@@ -1,4 +1,4 @@
-import { Button, Card, Descriptions, Form, Input, Select, Tag } from 'antd'
+import { Button, Card, Descriptions, Form, Input, InputNumber, Select, Tag } from 'antd'
 import React from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
@@ -147,7 +147,20 @@ const TrialCalculation: React.FC = () => {
                                 name="loanAmount"
                                 control={control}
                                 render={({ field }) => (
-                                    <Input {...field} placeholder="Enter Loan Amount" />
+                                    <InputNumber
+                                        {...field}
+                                        placeholder="Gold Collateral Value"
+                                        style={{ width: '100%' }}
+                                        formatter={(value) =>
+                                            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
+                                        }
+                                        parser={(value) =>
+                                            value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
+                                        }
+                                        step={0.01}
+                                        min={0}
+                                        stringMode // keeps precision in string format
+                                    />
                                 )}
                             />
                         </Form.Item>

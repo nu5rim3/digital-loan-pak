@@ -328,10 +328,6 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                     </div>
                 </Form>
             </Card>
-
-            <Card title={'Contact Information'}>
-
-            </Card>
         </div >
     )
 }

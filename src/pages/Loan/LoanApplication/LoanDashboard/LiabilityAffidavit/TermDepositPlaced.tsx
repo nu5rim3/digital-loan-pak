@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Card, Descriptions, Empty, Form, Input, Select } from 'antd'
+import { Button, Card, Descriptions, Empty, Form, Input, InputNumber, Select } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -234,7 +234,20 @@ const TermDepositPlaced: React.FC<ITermDeposit> = () => {
                                 name="tdrAmount"
                                 control={control}
                                 render={({ field }) => (
-                                    <Input {...field} placeholder="TDR Amount" />
+                                    <InputNumber
+                                        {...field}
+                                        placeholder="TDR Amount"
+                                        style={{ width: '100%' }}
+                                        formatter={(value) =>
+                                            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
+                                        }
+                                        parser={(value) =>
+                                            value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
+                                        }
+                                        step={0.01}
+                                        min={0}
+                                        stringMode // keeps precision in string format
+                                    />
                                 )}
                             />
                         </Form.Item>
