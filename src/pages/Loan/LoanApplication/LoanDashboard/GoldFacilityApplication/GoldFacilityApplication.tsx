@@ -10,7 +10,7 @@ import { PlusOutlined, EditOutlined, SaveOutlined, DeleteOutlined, UndoOutlined 
 import useUserStore from '../../../../../store/userStore';
 import { useParams } from 'react-router-dom';
 import CommonModal from '../../../../../components/common/modal/commonModal';
-import { formatSentence } from '../../../../../utils/formatterFunctions';
+import { convertStringToNumber, formatSentence } from '../../../../../utils/formatterFunctions';
 
 const schema = yup.object().shape({
     tppNumber: yup.string().required('TTP Number is required'),
@@ -141,7 +141,6 @@ const GoldFacilityApplication: React.FC = () => {
 
     const onSubmit = (data: IGoldLoanAppDetails) => {
         const _data: IGoldLoanAppDetails = { ...data, goldLoanAppArticleDtlsDtoList: goldLoanAppArticleDtlsDtoList, loanAppStatus: 'A', id: '' }
-        console.log('data', _data);
         if (mode === 'update') {
             updateGoldLoanAppDetails(selectedDetail?.appIdx ?? '', _data).finally(closeModal);
         } else if (mode === 'save') {
@@ -178,29 +177,43 @@ const GoldFacilityApplication: React.FC = () => {
     }, [user, isModalOpen, fetachGoldLoanAppDetails, appId, fetchGoldsmith])
 
     const goldLoanType = watch('goldLoanAppType');
+    const goldNetWeight = watch('goldNetWeight');
+
 
     useEffect(() => {
         if (marketValue) {
             if (goldLoanType === 'GOD') {
                 setValue('goldMarketValue', marketValue?.valueAmount ?? '');
                 setValue('goldsmithIdFx', user?.branches[0].code ?? '');
-                setValue('denMarketValue', '');
-                setValue('denCollateralValue', '');
-                setValue('denGrossWeight', '');
-                setValue('denNetWeight', '');
+                setValue('denMarketValue', '0');
+                setValue('denCollateralValue', '0');
+                setValue('denGrossWeight', '0');
+                setValue('denNetWeight', '0');
                 setValue('goldLoanAppArticleDtlsDtoList', goldLoanAppArticleDtlsDtoList);
             } else if (goldLoanType === 'DEN') {
                 setValue('denMarketValue', marketValue?.valueAmount ?? '');
-                setValue('goldMarketValue', '');
-                setValue('goldsmithIdFx', '');
-                setValue('goldCollateralValue', '');
-                setValue('goldGrossWeight', '');
-                setValue('goldNetWeight', '');
-                setValue('goldsmithId', '');
+                setValue('goldMarketValue', '0');
+                setValue('goldsmithIdFx', '0');
+                setValue('goldCollateralValue', '0');
+                setValue('goldGrossWeight', '0');
+                setValue('goldNetWeight', '0');
+                setValue('goldsmithId', '0');
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [marketValue, goldLoanType])
+
+    useEffect(() => {
+        console.log('goldNetWeight', Number(goldNetWeight))
+        console.log('goldMarketValue', convertStringToNumber(marketValue?.valueAmount ?? ''))
+        if (goldLoanType === 'GOD' && marketValue !== undefined && Number(goldNetWeight) > 0) {
+            setValue('goldCollateralValue', (Number(goldNetWeight) * convertStringToNumber(marketValue?.valueAmount ?? '')).toString());
+        } else if (goldLoanType === 'DEN' && marketValue !== undefined && Number(goldNetWeight) > 0) {
+            setValue('denCollateralValue', (Number(goldNetWeight) * convertStringToNumber(marketValue?.valueAmount ?? '')).toString());
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [goldNetWeight, marketValue])
+
 
 
     return (
@@ -346,15 +359,7 @@ const GoldFacilityApplication: React.FC = () => {
                                                                 )}
                                                             />
                                                         </Form.Item>
-                                                        <Form.Item label="Gold Collateral Value" validateStatus={errors.goldCollateralValue ? 'error' : ''} help={errors.goldCollateralValue?.message} required>
-                                                            <Controller
-                                                                name="goldCollateralValue"
-                                                                control={control}
-                                                                render={({ field }) => (
-                                                                    <Input {...field} placeholder="Gold Collateral Value" />
-                                                                )}
-                                                            />
-                                                        </Form.Item>
+
                                                         <Form.Item label="Gold Gross Weight" validateStatus={errors.goldGrossWeight ? 'error' : ''} help={errors.goldGrossWeight?.message} required>
                                                             <Controller
                                                                 name="goldGrossWeight"
@@ -371,6 +376,17 @@ const GoldFacilityApplication: React.FC = () => {
                                                                 control={control}
                                                                 render={({ field }) => (
                                                                     <Input {...field} placeholder="Gold Net Weight" />
+                                                                )}
+                                                            />
+                                                        </Form.Item>
+
+                                                        <Form.Item label="Gold Collateral Value" validateStatus={errors.goldCollateralValue ? 'error' : ''} help={errors.goldCollateralValue?.message} required>
+                                                            <Controller
+                                                                name="goldCollateralValue"
+                                                                control={control}
+                                                                disabled
+                                                                render={({ field }) => (
+                                                                    <Input {...field} placeholder="Gold Collateral Value" />
                                                                 )}
                                                             />
                                                         </Form.Item>

@@ -66,3 +66,9 @@ export const splitDuration = (duration: string) => {
     months: months ? months[1] + "M" : "0M",
   };
 };
+
+export const convertStringToNumber = (value: string) => {
+  const cleaned = value.replace(/,/g, ""); // Remove commas
+  const numberValue = parseFloat(cleaned);
+  return isNaN(numberValue) ? 0 : numberValue;
+};

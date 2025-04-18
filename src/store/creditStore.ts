@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { API, APIAuth } from "../services/api";
+import { notification } from "antd";
 
 export interface IGoldLoanAppArticleDetails {
   articleDtls: string;
@@ -74,6 +75,9 @@ const useCreditStore = create<IGoldLoanState>((set) => ({
       set(() => ({
         goldLoanAppDetailsLoading: false,
       }));
+      notification.success({
+        message: "Gold Facility Application Details Added Successfully",
+      });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({
