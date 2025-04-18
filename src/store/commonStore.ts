@@ -103,6 +103,41 @@ interface IBank {
   status: "A" | "I";
 }
 
+interface IArticleMaster {
+  code: string;
+  description: string;
+  status: "A" | "I";
+}
+
+interface IMarketValue {
+  id: string;
+  valueAmount: string;
+  valueStatus: string | "A" | "I";
+  valueComment: string;
+  createdBy: string;
+  creationDate: string;
+  lastModifiedBy: string;
+  lastModifiedDate: string;
+  valueDate: string;
+}
+
+interface IGoldsmith {
+  id: string;
+  branchIdFx: string;
+  shopName: string;
+  ownerName: string;
+  contactNumber: string;
+  address: string;
+  addLineOne: string;
+  addLineTwo: string | null;
+  goldsmithStatus: string | "A" | "I";
+  createdBy: string;
+  creationDate: string;
+  lastModifiedBy: string;
+  lastModifiedDate: string;
+  branchName: string;
+}
+
 interface ICommonState {
   operators: IOperator[];
   operatorLoading: boolean;
@@ -172,6 +207,18 @@ interface ICommonState {
   bankLoading: boolean;
   bankError: string | null;
 
+  marketValue: IMarketValue | null;
+  marketValueLoading: boolean;
+  marketValueError: string | null;
+
+  articleMaster: IArticleMaster[];
+  articleMasterLoading: boolean;
+  articleMasterError: string | null;
+
+  goldsmiths: IGoldsmith[];
+  goldsmithLoading: boolean;
+  goldsmithError: string | null;
+
   fetchOperators: () => Promise<void>;
   fetchECIBReport: (cnic: string) => Promise<void>;
   fetchOrganizationType: () => Promise<void>;
@@ -189,6 +236,9 @@ interface ICommonState {
   fetchSectors: () => Promise<void>;
   fetchSubSectors: (secId: string) => Promise<void>;
   fetchBanks: () => Promise<void>;
+  fetchMarketValue: () => Promise<void>;
+  fetchArticleMaster: () => Promise<void>;
+  fetchGoldsmith: (branchCode: string) => Promise<void>;
 }
 
 type TPersist = (
@@ -282,6 +332,18 @@ const useCommonStore = create<ICommonState>(
       banks: [],
       bankLoading: false,
       bankError: null,
+
+      marketValue: null,
+      marketValueLoading: false,
+      marketValueError: null,
+
+      articleMaster: [],
+      articleMasterLoading: false,
+      articleMasterError: null,
+
+      goldsmiths: [],
+      goldsmithLoading: false,
+      goldsmithError: null,
 
       fetchOperators: async () => {
         set({ operatorLoading: true, operatorError: null });
@@ -518,6 +580,47 @@ const useCommonStore = create<ICommonState>(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
           set({ bankError: error.message, bankLoading: false });
+        }
+      },
+
+      fetchMarketValue: async () => {
+        set({ marketValueLoading: true, marketValueError: null });
+        const currentDate = new Date().toISOString().split("T")[0]; // YYYY-MM-DD format
+        try {
+          const response = await API.get(
+            `/mobixCamsCommon/v1/market-value/${currentDate}`
+          );
+          set({ marketValue: response.data, marketValueLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({ marketValueError: error.message, marketValueLoading: false });
+        }
+      },
+
+      fetchArticleMaster: async () => {
+        set({ articleMasterLoading: true, articleMasterError: null });
+        try {
+          const response = await API.get("/mobixCamsCommon/v1/article-master");
+          set({ articleMaster: response.data, articleMasterLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({
+            articleMasterError: error.message,
+            articleMasterLoading: false,
+          });
+        }
+      },
+
+      fetchGoldsmith: async (branchCode: string) => {
+        set({ goldsmithLoading: true, goldsmithError: null });
+        try {
+          const response = await API.get(
+            `/mobixCamsCommon/v1/goldsmith/${branchCode}/branchCode`
+          );
+          set({ goldsmiths: response.data, goldsmithLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({ goldsmithError: error.message, goldsmithLoading: false });
         }
       },
     }),

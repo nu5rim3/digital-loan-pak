@@ -14,6 +14,7 @@ const CustomerDetailsView = lazy(() => import('./Customer/CustomerDetailsView'))
 const WitnessDetails = lazy(() => import('./Witness/WitnessDetails'))
 const GuarantorDetailsView = lazy(() => import('./Guarantor/GuarantorDetailsView'))
 const LiabilityAffidavit = lazy(() => import('./LiabilityAffidavit'))
+const GoldFacilityApplication = lazy(() => import('./GoldFacilityApplication/GoldFacilityApplication'))
 
 interface StatusProps {
     isCompleted: string;
@@ -72,8 +73,8 @@ const LoanDaashboard: React.FC = () => {
                 return <LiabilityAffidavit />;
             case 'LOAN_COLLATERAL':
                 return <div>Collateral</div>;
-            case 'GOLD_LOAN_APPLICAION':
-                return <div>Gold Loan Application</div>;
+            case 'gold-facility-application':
+                return <GoldFacilityApplication />;
             case 'loan-application':
                 return <div>Loan Application</div>;
             case 'LOAN_APPLICATION_APPROVAL':
@@ -92,8 +93,6 @@ const LoanDaashboard: React.FC = () => {
                 return <div>Witness Acknowledgement</div>;
             case 'term-deposit':
                 return <div>Term Deposit</div>;
-            case 'gold-facility':
-                return <div>Gold Facility</div>;
             case 'business-introducer':
                 return <div>Business Introducer</div>;
             default:
@@ -166,10 +165,22 @@ const LoanDaashboard: React.FC = () => {
         },
         {
             "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
+            "creationDate": "2024-07-11T09:24:51.357+00:00",
             "lastModifiedBy": null,
             "lastModifiedDate": null,
             "id": 6,
+            "section": "gold-facility-application",
+            "isMandatory": "0",
+            "completed": "1",
+            "enabled": null,
+            "status": "A"
+        },
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2022-08-09T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 7,
             "section": "cash-flow",
             "isMandatory": "1",
             "completed": "1",
@@ -181,7 +192,7 @@ const LoanDaashboard: React.FC = () => {
             "creationDate": "2022-08-09T09:24:51.357+00:00",
             "lastModifiedBy": null,
             "lastModifiedDate": null,
-            "id": 7,
+            "id": 8,
             "section": "image-upload",
             "isMandatory": "1",
             "completed": "0",
@@ -193,7 +204,7 @@ const LoanDaashboard: React.FC = () => {
             "creationDate": "2022-08-09T09:24:51.357+00:00",
             "lastModifiedBy": null,
             "lastModifiedDate": null,
-            "id": 8,
+            "id": 10,
             "section": "credit-scoring",
             "isMandatory": "0",
             "completed": "1",
@@ -205,7 +216,7 @@ const LoanDaashboard: React.FC = () => {
             "creationDate": "2022-08-09T09:24:51.357+00:00",
             "lastModifiedBy": null,
             "lastModifiedDate": null,
-            "id": 9,
+            "id": 11,
             "section": "customer-acknowledgement",
             "isMandatory": "1",
             "completed": "1",
@@ -218,25 +229,13 @@ const LoanDaashboard: React.FC = () => {
             "creationDate": "2024-07-11T09:24:51.357+00:00",
             "lastModifiedBy": null,
             "lastModifiedDate": null,
-            "id": 10,
+            "id": 12,
             "section": "term-deposit",
             "isMandatory": "0",
             "completed": "1",
             "enabled": null,
             "status": "A"
         },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2024-07-11T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 11,
-            "section": "gold-facility",
-            "isMandatory": "0",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        }
     ]
 
     const items: CollapseProps['items'] = dummyLoanStatus && dummyLoanStatus.map((rule) => ({ //loanStatus

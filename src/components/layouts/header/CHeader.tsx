@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { mainURL } from '../../../App';
 import { IAuthContext, AuthContext } from 'react-oauth2-code-pkce';
 import useUserStore from '../../../store/userStore';
+import { formatName } from '../../../utils/formatterFunctions';
 const { Header } = Layout;
 
 export interface ICHeaderProps {
@@ -81,7 +82,7 @@ const CHeader: React.FC<ICHeaderProps> = ({ collapsed, setCollapsed }) => {
               <Space className='text-white'>
                 <Avatar size={32} icon={<UserOutlined />} className='bg-blue-500' />
                 {user?.userName ? (
-                  <b>{user?.userName}</b>
+                  <b>{formatName(user?.userName)}</b>
                 ) : (
                   <Skeleton.Input style={{ width: 120 }} active size="small" />
                 )}

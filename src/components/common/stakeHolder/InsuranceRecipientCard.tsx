@@ -19,6 +19,7 @@ const schema = yup.object().shape({
     relationship: yup.string().required('Relationship is required'),
     cNicNo: yup.string().required('CNIC is required'),
     phoneNo: yup.string().required('Phone Number is required').test('len', 'Phone Number must be 11 characters', val => val?.length === 11),
+    isBorrowerRelatedParty: yup.string().default('Y'),
 });
 
 const InsuranceRecipientCard: React.FC<IInsuranceRecipientCard> = ({ stkId }) => {
@@ -29,6 +30,7 @@ const InsuranceRecipientCard: React.FC<IInsuranceRecipientCard> = ({ stkId }) =>
 
     const { control, formState: { errors }, setValue, handleSubmit, reset } = useForm({
         resolver: yupResolver(schema),
+        defaultValues: { isBorrowerRelatedParty: 'Y' },
     });
 
     const { relationshipLoading, relationship, fetchRelationship } = useCommonStore();
@@ -43,7 +45,7 @@ const InsuranceRecipientCard: React.FC<IInsuranceRecipientCard> = ({ stkId }) =>
             setValue('relationship', recipent.relationship);
             setValue('cNicNo', recipent.cNicNo);
             setValue('phoneNo', formatPhoneNumber(recipent.phoneNo));
-
+            setValue('isBorrowerRelatedParty', recipent.isBorrowerRelatedParty ?? 'Y');
         } else {
             reset();
         }
@@ -165,6 +167,18 @@ const InsuranceRecipientCard: React.FC<IInsuranceRecipientCard> = ({ stkId }) =>
                                 )}
                             />
                         </Form.Item>
+                        <Form.Item label="Is Customer Related Party" validateStatus={errors.isBorrowerRelatedParty ? 'error' : ''} help={errors.isBorrowerRelatedParty?.message}>
+                            <Controller
+                                name="isBorrowerRelatedParty"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select {...field} placeholder="Select Option" options={[
+                                        { label: 'Yes', value: 'Y' },
+                                        { label: 'No', value: 'N' },
+                                    ]} />
+                                )}
+                            />
+                        </Form.Item>
                     </div>
                     <div className="flex justify-end gap-3">
                         <Button type="primary" htmlType="submit" loading={relationshipLoading} icon={<SaveOutlined />}>
@@ -190,6 +204,7 @@ const DetailsCard: React.FC<{ detail: IRecipient; onEdit: () => void }> = ({ det
             <Descriptions.Item label="CNIC">{detail.cNicNo}</Descriptions.Item>
             <Descriptions.Item label="Contact Number">{detail.phoneNo}</Descriptions.Item>
             <Descriptions.Item label="Relationship">{getDescriptionByFamilyCode(detail.relationship)}</Descriptions.Item>
+            <Descriptions.Item label="Is Customer Related Party">{detail.isBorrowerRelatedParty === 'Y' ? 'Yes' : 'No'}</Descriptions.Item>
         </Descriptions>
     </Card>
 );

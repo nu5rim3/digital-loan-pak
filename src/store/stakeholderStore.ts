@@ -94,6 +94,7 @@ export interface IRecipient {
   creationDate?: string; // ISO date string
   lastModifiedBy?: string;
   lastModifiedDate?: string; // ISO date string
+  isBorrowerRelatedParty: string | "Y" | "N";
 }
 
 export interface IOtherInfo {
