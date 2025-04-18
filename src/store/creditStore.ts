@@ -22,6 +22,7 @@ export interface IGoldLoanAppDetails {
   goldLoanAppArticleDtlsDtoList?: IGoldLoanAppArticleDetails[] | null;
   goldMarketValue?: string;
   goldNetWeight?: string;
+  goldsmithName?: string;
 
   denCollateralValue?: string;
   denGrossWeight?: string;
@@ -56,7 +57,7 @@ const useCreditStore = create<IGoldLoanState>((set) => ({
         `/mobixCamsCredit/v1/gold-loan/${appId}/appraisalId`
       );
       set({
-        goldLoanAppDetails: response.data,
+        goldLoanAppDetails: [response.data],
         goldLoanAppDetailsLoading: false,
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -162,6 +162,7 @@ const GoldFacilityApplication: React.FC = () => {
         setArticleValue('masterArticleCode', selectedItem.masterArticleCode ?? '', { shouldValidate: true });
         setArticleValue('articleStatus', selectedItem.articleStatus ?? '', { shouldValidate: true });
         setArticleValue('articleQuantity', selectedItem.articleQuantity ?? '', { shouldValidate: true });
+        setArticleValue('articleDtls', selectedItem.articleDtls ?? '', { shouldValidate: true });
         setfGoldLoanAppArticleDtlsDtoList((prev) => prev.filter((_, i) => i !== index));
     }
 
@@ -460,7 +461,7 @@ const GoldFacilityApplication: React.FC = () => {
     )
 }
 
-const DetailsCard: React.FC<{ detail: IGoldLoanAppDetails; onEdit: () => void; onRemove: () => void; dataArray: any[] }> = ({ detail, onEdit, onRemove, dataArray }) => (
+const DetailsCard: React.FC<{ detail: IGoldLoanAppDetails; onEdit: () => void; onRemove: () => void; dataArray: any[] }> = ({ detail, onEdit, onRemove }) => (
     <Card>
         <div className="flex justify-end gap-1" hidden>
             <Button type="default" size="small" icon={<EditOutlined />} onClick={onEdit} />
@@ -489,7 +490,7 @@ const DetailsCard: React.FC<{ detail: IGoldLoanAppDetails; onEdit: () => void; o
                     {
                         detail.goldLoanAppType === 'GOD' && (
                             <>
-                                <Descriptions.Item label="Goldsmith ID">{dataArray[0].find((item: any) => item.id === detail.goldsmithIdFx)?.name}</Descriptions.Item>
+                                <Descriptions.Item label="Goldsmith ID">{detail.goldsmithName ?? detail.goldsmithIdFx}</Descriptions.Item>
                                 <Descriptions.Item label="Gold Collateral Value">{detail.goldCollateralValue}</Descriptions.Item>
                                 <Descriptions.Item label="Gold Gross Weight">{detail.goldGrossWeight}</Descriptions.Item>
                                 <Descriptions.Item label="Gold Market Value">{detail.goldMarketValue}</Descriptions.Item>
