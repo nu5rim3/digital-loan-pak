@@ -106,6 +106,8 @@ const useUserStore = create<IUserState>(
           set({ user: response.data, loading: false });
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
+          // navigate to login page
+          // window.location.href = "/";
           set({ error: error.message, loading: false });
         }
       },

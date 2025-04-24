@@ -72,3 +72,14 @@ export const convertStringToNumber = (value: string) => {
   const numberValue = parseFloat(cleaned);
   return isNaN(numberValue) ? 0 : numberValue;
 };
+
+export const getRoleName = (role: string) => {
+  switch (role) {
+    case "ADMIN":
+      return "Administrator";
+    case "BHO":
+      return "Branch Head Officer";
+    default:
+      return role;
+  }
+};

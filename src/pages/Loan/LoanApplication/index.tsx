@@ -132,7 +132,7 @@ const LoanApplication: React.FC = () => {
         },
         {
             key: '7',
-            applicationId: 'APP0000000000008',
+            applicationId: 'APP0000000066707',
             cusName: 'Shabira',
             loanType: 'Gold Loan',
             loanAmount: '134000',

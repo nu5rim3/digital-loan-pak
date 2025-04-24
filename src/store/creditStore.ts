@@ -32,10 +32,161 @@ export interface IGoldLoanAppDetails {
   loanAppStatus?: string | "A" | "I";
 }
 
-interface IGoldLoanState {
+export interface IProduct {
+  tcNo: string;
+  pMode: string;
+  pFacilityType: string;
+  pUser: string;
+  pTrhdMe: string;
+  pTrhdLType: string;
+  pTrhdMethod: string;
+  pTrhdBrh: string;
+  pTrhdTerm: string;
+  pTrhdNoPre: string;
+  pTrhdNoDw: string;
+  pTrhdTr: string;
+  pTrhdLocCost: string;
+  pTrhdStmYn: string;
+  pTrhdStmPer: string | null;
+  pTrhdStmDuty: string | null;
+  pTrhdCurCode: string;
+  pTrhdInvTax: string;
+  pTrhdBus: string;
+  pTrhdInvTaxRt: string;
+  pTrhdCrib: string;
+  pTrhdFlexi: string;
+  pTrhdBsCd: string | null;
+  pTrhdBsTr: string | null;
+  pTrhdMgTr: string | null;
+  pTrhdReSeq: string | null;
+  pTrhdCustTyp: string;
+  pTrhdReward: string;
+  pTrhdLCode: string | null;
+  pTrhdQuo: string;
+  pTrhdStmApp: string;
+  pTrhdInsuCoverFlg: string;
+  pTrhdInsuCoverAmt: string | null;
+  pTrhdIntrType: string | null;
+  pTrhdRewardPre: string | null;
+  pTrhdRewardType: string | null;
+  pTrhdRewardBusagent: string | null;
+  pTrhdRewardAddMethod: string | null;
+  pTrhdSplitReward: string | null;
+  pInsuOption: string | null;
+  pInsuAddCrit: string | null;
+  pTrhdColMeth: string | null;
+  prevLoanProd: string | null;
+  prevLoanContractNo: string | null;
+  prevLoanOutstanding: string | null;
+  countOfRollOver: string | null;
+  pTrtx: {
+    trtxTrx: string;
+    trtxAmt: string;
+    trtxAddcrit: string;
+    trtxCalMethod: string;
+    prtbMndFlg: string;
+  }[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  pStru: any[];
+}
+
+export interface IProductDefinition {
+  proCode: string;
+  proName: string;
+  taxRate: string;
+  beBiRate: string;
+  dscr: string;
+  maxLoanAmount: string;
+  loanLimitPrecent: string;
+  annualNetOfBnsIncome: string;
+  status: string;
+  createdBy: string;
+  creationDate: string; // ISO date string
+  lastModifiedBy: string;
+  lastModifiedDate: string; // ISO date string
+}
+export interface IFinancialEntry {
+  key: string;
+  monthly?: string;
+  semiAnnual?: string;
+  annually?: string;
+  createdBy?: string;
+  creationDate?: string;
+  lastModifiedBy?: string;
+  lastModifiedDate?: string;
+  supportBy?: string | null;
+}
+
+export interface ICashFlowData {
+  appraisalId: string;
+  grossSalaryIncome: string;
+  totBusinessIncome: string;
+  totHouseholdIncome: string;
+  totRevenue: string;
+  totHouseholdExpense: string;
+  totBusinessExpense: string;
+  totExpense: string;
+  netMonthlyDisposable: string;
+  taxableAmount: string | null;
+  beBiRate: string | null;
+  dscr: string;
+  maxDebtBurden: string;
+  tenure: string;
+  maxLoanValue: string;
+  annualHouseIncome: string;
+  annualDisposableIncome: string;
+
+  applicantRevenue: IFinancialEntry[];
+  houseHoldContribution: IFinancialEntry[];
+  houseHoldExpenses: IFinancialEntry[];
+  bnsOrAgriExpenses: IFinancialEntry[];
+}
+
+interface ICreditState {
   goldLoanAppDetails: IGoldLoanAppDetails[];
   goldLoanAppDetailsLoading: boolean;
   goldLoanAppDetailsError: string | null;
+
+  applicantRevenue: IFinancialEntry[];
+  houseHoldContribution: IFinancialEntry[];
+  houseHoldExpenses: IFinancialEntry[];
+  bnsOrAgriExpenses: IFinancialEntry[];
+
+  cashFlows: ICashFlowData | null;
+  cashFlowsLoading: boolean;
+  cashFlowsError: string | null;
+
+  grossSalaryIncome: number | string | null;
+  totBusinessIncome: number | string | null;
+  totHouseholdIncome: number | string | null;
+  totRevenue: number | string | null;
+
+  totHouseholdExpense: number | string | null;
+  totBusinessExpense: number | string | null;
+  totExpense: number | string | null;
+
+  annualHouseIncome: number | string | null;
+  annualDisposableIncome: number | string | null;
+
+  netMonthlyDisposable: number | string | null;
+
+  product: IProduct | null;
+  productLoading: boolean;
+  productError: string | null;
+
+  productDefinition: IProductDefinition | null;
+  productDefinitionLoading: boolean;
+  productDefinitionError: string | null;
+
+  maxDebtBurden: number | string | null;
+  maxLoanValue: number | string | null;
+  taxableAmount: number | string | null;
+
+  annualDisposable: number | string | null;
+  annualHousehold: number | string | null;
+  annualRevenue: number | string | null;
+
+  isAlegibleFroLoan: boolean;
 
   fetachGoldLoanAppDetails: (appId: string) => Promise<void>;
   addGoldLoanAppDetails: (data: IGoldLoanAppDetails) => Promise<void>;
@@ -43,12 +194,118 @@ interface IGoldLoanState {
     goldId: string,
     data: IGoldLoanAppDetails
   ) => Promise<void>;
+
+  addCashFlows: (appId: string, data: ICashFlowData) => Promise<void>;
+  fetchCashFlows: (appId: string) => Promise<void>;
+
+  addApplicantRevenue: (
+    data: IFinancialEntry | IFinancialEntry[]
+  ) => Promise<void>;
+  updateApplicantRevenue: (key: string, data: IFinancialEntry) => Promise<void>;
+  fetchApplicantRevenue: () => Promise<void>;
+  removeApplicantRevenue: (key: string) => Promise<void>;
+
+  addHouseHoldContribution: (
+    data: IFinancialEntry | IFinancialEntry[]
+  ) => Promise<void>;
+  updateHouseHoldContribution: (
+    key: string,
+    data: IFinancialEntry
+  ) => Promise<void>;
+  fetchHouseHoldContribution: () => Promise<void>;
+  removeHouseHoldContribution: (key: string) => Promise<void>;
+
+  addHouseHoldExpenses: (
+    data: IFinancialEntry | IFinancialEntry[]
+  ) => Promise<void>;
+  updateHouseHoldExpenses: (
+    key: string,
+    data: IFinancialEntry
+  ) => Promise<void>;
+  fetchHouseHoldExpenses: () => Promise<void>;
+  removeHouseHoldExpenses: (key: string) => Promise<void>;
+
+  addBnsOrAgriExpenses: (
+    data: IFinancialEntry | IFinancialEntry[]
+  ) => Promise<void>;
+  updateBnsOrAgriExpenses: (
+    key: string,
+    data: IFinancialEntry
+  ) => Promise<void>;
+  fetchBnsOrAgriExpenses: () => Promise<void>;
+  removeBnsOrAgriExpenses: (key: string) => Promise<void>;
+
+  getMonthValueBasedOnKey: (key: string) => number;
+  calulateGrossSalary: () => void;
+  calculateTotalHouseRevenue: () => void;
+  getTotalBusinessRevenue: () => void;
+  calculateTotalRevenue: () => void;
+
+  getMonthValueBasedOnKeyExpenses: (key: string) => number;
+  calculateTotalHouseholdExpense: () => void;
+  calculateTotalBusinessExpense: () => void;
+  calculateTotalExpense: () => void;
+
+  calculateNetMonthlyDisposable: () => void;
+
+  calculateMaxDebtBurden: () => void;
+  calucalteMaxLoanValue: () => void;
+  calculateAnnualDisposable: () => void;
+  calculateAnnualHousehold: () => void;
+  calculateAnnualRevenue: () => void;
+  calculateTaxableAmount: () => void;
+
+  checkAlegibleFroLoan: () => void;
+
+  fetchProduct: (appId: string) => Promise<void>;
+  fetchProductDefinition: (prodCode: string) => Promise<void>;
 }
 
-const useCreditStore = create<IGoldLoanState>((set) => ({
+const useCreditStore = create<ICreditState>((set) => ({
   goldLoanAppDetails: [],
   goldLoanAppDetailsLoading: false,
   goldLoanAppDetailsError: null,
+
+  applicantRevenue: [],
+  houseHoldContribution: [],
+  houseHoldExpenses: [],
+  bnsOrAgriExpenses: [],
+
+  cashFlows: null,
+  cashFlowsLoading: false,
+  cashFlowsError: null,
+
+  grossSalaryIncome: null,
+  totBusinessIncome: null,
+  totHouseholdIncome: null,
+  totRevenue: null,
+
+  totHouseholdExpense: null,
+  totBusinessExpense: null,
+  totExpense: null,
+
+  annualHouseIncome: null,
+  annualDisposableIncome: null,
+
+  netMonthlyDisposable: null,
+
+  product: null,
+  productLoading: false,
+  productError: null,
+
+  productDefinition: null,
+  productDefinitionLoading: false,
+  productDefinitionError: null,
+
+  maxDebtBurden: null,
+  maxLoanValue: null,
+  taxableAmount: null,
+
+  annualDisposable: null,
+  annualHousehold: null,
+  annualRevenue: null,
+
+  isAlegibleFroLoan: false,
 
   fetachGoldLoanAppDetails: async (appId: string) => {
     set({ goldLoanAppDetailsLoading: true });
@@ -104,6 +361,426 @@ const useCreditStore = create<IGoldLoanState>((set) => ({
         goldLoanAppDetailsError: error.message,
         goldLoanAppDetailsLoading: false,
       });
+    }
+  },
+
+  addCashFlows: async (appId: string, data: ICashFlowData) => {
+    set({ cashFlowsLoading: true });
+    try {
+      await APIAuth.post(
+        `/mobixCamsCredit/v1/credit/income-expense/${appId}`,
+        data
+      );
+      set(() => ({
+        cashFlowsLoading: false,
+      }));
+      notification.success({
+        message: "Cash Flow Added Successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        cashFlowsError: error.message,
+        cashFlowsLoading: false,
+      });
+    }
+  },
+
+  fetchCashFlows: async (appId: string) => {
+    set({ cashFlowsLoading: true });
+    try {
+      const response = await API.get(
+        `/mobixCamsCredit/v1/credit/income-expense/${appId}`
+      );
+      set({
+        cashFlows: response.data,
+        cashFlowsLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        cashFlowsError: error.message,
+        cashFlowsLoading: false,
+      });
+    }
+  },
+
+  addApplicantRevenue: async (data: IFinancialEntry | IFinancialEntry[]) => {
+    if (Array.isArray(data)) {
+      set(() => ({
+        applicantRevenue: data,
+      }));
+    } else {
+      set((state) => ({
+        applicantRevenue: [...state.applicantRevenue, data],
+      }));
+      notification.success({
+        message: "Applicant Revenue Added Successfully",
+      });
+    }
+  },
+
+  updateApplicantRevenue: async (key: string, data: IFinancialEntry) => {
+    set((state) => ({
+      applicantRevenue: state.applicantRevenue.map((item) =>
+        item.key === key ? { ...item, ...data } : item
+      ),
+    }));
+    notification.success({
+      message: "Applicant Revenue Updated Successfully",
+    });
+  },
+
+  fetchApplicantRevenue: async () => {
+    set((state) => ({
+      applicantRevenue: state.applicantRevenue,
+    }));
+  },
+
+  removeApplicantRevenue: async (key: string) => {
+    set((state) => ({
+      applicantRevenue: state.applicantRevenue.filter(
+        (item) => item.key !== key
+      ),
+    }));
+    notification.success({
+      message: "Applicant Revenue Removed Successfully",
+    });
+  },
+
+  addHouseHoldContribution: async (
+    data: IFinancialEntry | IFinancialEntry[]
+  ) => {
+    if (Array.isArray(data)) {
+      set(() => ({
+        houseHoldContribution: data,
+      }));
+    } else {
+      set((state) => ({
+        houseHoldContribution: [...state.houseHoldContribution, data],
+      }));
+      notification.success({
+        message: "Household Contribution Added Successfully",
+      });
+    }
+  },
+
+  updateHouseHoldContribution: async (key: string, data: IFinancialEntry) => {
+    set((state) => ({
+      houseHoldContribution: state.houseHoldContribution.map((item) =>
+        item.key === key ? { ...item, ...data } : item
+      ),
+    }));
+    notification.success({
+      message: "Household Contribution Updated Successfully",
+    });
+  },
+
+  fetchHouseHoldContribution: async () => {
+    set((state) => ({
+      houseHoldContribution: state.houseHoldContribution,
+    }));
+  },
+
+  removeHouseHoldContribution: async (key: string) => {
+    set((state) => ({
+      houseHoldContribution: state.houseHoldContribution.filter(
+        (item) => item.key !== key
+      ),
+    }));
+    notification.success({
+      message: "Household Contribution Removed Successfully",
+    });
+  },
+
+  addHouseHoldExpenses: async (data: IFinancialEntry | IFinancialEntry[]) => {
+    if (Array.isArray(data)) {
+      set(() => ({
+        houseHoldExpenses: data,
+      }));
+    } else {
+      set((state) => ({
+        houseHoldExpenses: [...state.houseHoldExpenses, data],
+      }));
+      notification.success({
+        message: "Household Expenses Added Successfully",
+      });
+    }
+  },
+
+  updateHouseHoldExpenses: async (key: string, data: IFinancialEntry) => {
+    set((state) => ({
+      houseHoldExpenses: state.houseHoldExpenses.map((item) =>
+        item.key === key ? { ...item, ...data } : item
+      ),
+    }));
+    notification.success({
+      message: "Household Expenses Updated Successfully",
+    });
+  },
+
+  fetchHouseHoldExpenses: async () => {
+    set((state) => ({
+      houseHoldExpenses: state.houseHoldExpenses,
+    }));
+  },
+
+  removeHouseHoldExpenses: async (key: string) => {
+    set((state) => ({
+      houseHoldExpenses: state.houseHoldExpenses.filter(
+        (item) => item.key !== key
+      ),
+    }));
+    notification.success({
+      message: "Household Expenses Removed Successfully",
+    });
+  },
+
+  addBnsOrAgriExpenses: async (data: IFinancialEntry | IFinancialEntry[]) => {
+    if (Array.isArray(data)) {
+      set(() => ({
+        bnsOrAgriExpenses: data,
+      }));
+    } else {
+      set((state) => ({
+        bnsOrAgriExpenses: [...state.bnsOrAgriExpenses, data],
+      }));
+      notification.success({
+        message: "Business or Agriculture Expenses Added Successfully",
+      });
+    }
+  },
+
+  updateBnsOrAgriExpenses: async (key: string, data: IFinancialEntry) => {
+    set((state) => ({
+      bnsOrAgriExpenses: state.bnsOrAgriExpenses.map((item) =>
+        item.key === key ? { ...item, ...data } : item
+      ),
+    }));
+    notification.success({
+      message: "Business or Agriculture Expenses Updated Successfully",
+    });
+  },
+
+  fetchBnsOrAgriExpenses: async () => {
+    set((state) => ({
+      bnsOrAgriExpenses: state.bnsOrAgriExpenses,
+    }));
+  },
+
+  removeBnsOrAgriExpenses: async (key: string) => {
+    set((state) => ({
+      bnsOrAgriExpenses: state.bnsOrAgriExpenses.filter(
+        (item) => item.key !== key
+      ),
+    }));
+    notification.success({
+      message: "Business or Agriculture Expenses Removed Successfully",
+    });
+  },
+
+  getMonthValueBasedOnKey: (key: string) => {
+    if (!key) return 0;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const filteredItem: any = useCreditStore
+      .getState()
+      .applicantRevenue.find((item) => item.key === key);
+
+    return filteredItem ? Number(filteredItem.monthly) : 0;
+  },
+
+  calculateTotalHouseRevenue: () => {
+    set((state) => ({
+      totHouseholdIncome: state.houseHoldContribution.reduce((acc, item) => {
+        return acc + Number(item.monthly ?? 0);
+      }, 0),
+    }));
+  },
+
+  calculateTotalRevenue: () => {
+    set((state) => ({
+      totRevenue: state.applicantRevenue.reduce((acc, item) => {
+        return (
+          acc + Number(item.monthly ?? 0) + Number(state.totHouseholdIncome)
+        );
+      }, 0),
+    }));
+  },
+
+  calulateGrossSalary: () => {
+    set((state) => ({
+      grossSalaryIncome:
+        state.getMonthValueBasedOnKey("Salary") +
+        state.getMonthValueBasedOnKey("Pension"),
+    }));
+  },
+
+  getTotalBusinessRevenue: () => {
+    set((state) => ({
+      totBusinessIncome:
+        state.getMonthValueBasedOnKey("Business 1") +
+        state.getMonthValueBasedOnKey("Business 2"),
+    }));
+  },
+
+  getMonthValueBasedOnKeyExpenses: (key: string) => {
+    if (!key) return 0;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const filteredItem: any = useCreditStore
+      .getState()
+      .houseHoldExpenses.find((item) => item.key === key);
+
+    return filteredItem ? Number(filteredItem.monthly) : 0;
+  },
+
+  calculateTotalHouseholdExpense: () => {
+    set((state) => ({
+      totHouseholdExpense: state.houseHoldExpenses.reduce((acc, item) => {
+        return acc + Number(item.monthly ?? 0);
+      }, 0),
+    }));
+  },
+
+  calculateTotalBusinessExpense: () => {
+    set((state) => ({
+      totBusinessExpense: state.bnsOrAgriExpenses.reduce((acc, item) => {
+        return acc + Number(item.monthly ?? 0);
+      }, 0),
+    }));
+  },
+
+  calculateTotalExpense: () => {
+    set((state) => ({
+      totExpense:
+        state.houseHoldExpenses.reduce((acc, item) => {
+          return acc + Number(item.monthly ?? 0);
+        }, 0) +
+        state.bnsOrAgriExpenses.reduce((acc, item) => {
+          return acc + Number(item.monthly ?? 0);
+        }, 0),
+    }));
+  },
+
+  calculateNetMonthlyDisposable: () => {
+    set((state) => ({
+      netMonthlyDisposable:
+        state.applicantRevenue.reduce((acc, item) => {
+          return (
+            acc + Number(item.monthly ?? 0) + Number(state.totHouseholdIncome)
+          );
+        }, 0) -
+        (state.houseHoldExpenses.reduce((acc, item) => {
+          return acc + Number(item.monthly ?? 0);
+        }, 0) +
+          state.bnsOrAgriExpenses.reduce((acc, item) => {
+            return acc + Number(item.monthly ?? 0);
+          }, 0)),
+    }));
+  },
+
+  fetchProduct: async (appId: string) => {
+    set({ productLoading: true });
+    try {
+      const response = await API.get(`/mobixCamsCredit/v1/credit/tc/${appId}`);
+      set({
+        product: response.data,
+        productLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        productError: error.message,
+        productLoading: false,
+      });
+    }
+  },
+
+  fetchProductDefinition: async (prodCode: string) => {
+    set({ productDefinitionLoading: true });
+    try {
+      const response = await API.get(
+        `/mobixCamsCredit/v1/credit/product/definition/${prodCode}`
+      );
+      set({
+        productDefinition: response.data,
+        productDefinitionLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        productDefinitionError: error.message,
+        productDefinitionLoading: false,
+      });
+    }
+  },
+
+  calculateMaxDebtBurden: () => {
+    set((state) => ({
+      maxDebtBurden:
+        (Number(state.netMonthlyDisposable ?? 0) *
+          Number(state.productDefinition?.dscr ?? 0)) /
+        100,
+    }));
+  },
+
+  calucalteMaxLoanValue: () => {
+    const goldLoanType = ["EG", "GL", "GN", "MG"];
+    const requestedLoanType = useCreditStore.getState().product?.pTrhdLType;
+
+    if (goldLoanType.includes(requestedLoanType ?? "")) {
+      set((state) => ({
+        maxLoanValue:
+          ((Number(state.netMonthlyDisposable ?? 0) *
+            Number(state.productDefinition?.dscr ?? 0)) /
+            100) *
+          12,
+      }));
+    } else {
+      set((state) => ({
+        maxLoanValue:
+          ((Number(state.netMonthlyDisposable ?? 0) *
+            Number(state.productDefinition?.dscr ?? 0)) /
+            100) *
+          Number(state.product?.pTrhdTerm ?? 0),
+      }));
+    }
+  },
+
+  calculateAnnualDisposable: () => {
+    set((state) => ({
+      annualDisposable: Number(state.netMonthlyDisposable) * 12,
+    }));
+  },
+
+  calculateAnnualHousehold: () => {
+    set((state) => ({
+      annualHousehold: Number(state.totHouseholdIncome) * 12,
+    }));
+  },
+
+  calculateAnnualRevenue: () => {
+    set((state) => ({
+      annualRevenue: Number(state.totRevenue) * 12,
+    }));
+  },
+
+  calculateTaxableAmount: () => {
+    set((state) => ({
+      taxableAmount:
+        Number(state.annualRevenue ?? 0) *
+        (Number(state.productDefinition?.taxRate ?? 0) / 100),
+    }));
+  },
+
+  checkAlegibleFroLoan: () => {
+    const loanAmount = useCreditStore.getState().product?.pTrhdLocCost ?? 0;
+    const maxLoanValue = useCreditStore.getState().maxLoanValue ?? 0;
+    if (maxLoanValue === 0) {
+      set({ isAlegibleFroLoan: false });
+    } else if (loanAmount > maxLoanValue) {
+      set({ isAlegibleFroLoan: false });
+    } else if (loanAmount <= maxLoanValue) {
+      set({ isAlegibleFroLoan: true });
     }
   },
 }));

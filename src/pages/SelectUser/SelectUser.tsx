@@ -7,6 +7,7 @@ import CFooter from '../../components/layouts/footer/CFooter';
 import { mainURL } from '../../App';
 import useUserStore, { IUserRols } from '../../store/userStore';
 import Logo from '../../assets/LOLC_CONVENTIONAL.png'
+import { getRoleName } from '../../utils/formatterFunctions';
 // import PageLoader from '../../components/common/loaders/PageLoader';
 
 const { Content } = Layout;
@@ -64,7 +65,7 @@ const SelectUser: React.FC = () => {
                                             }`}
                                         onClick={() => handleSelectRole(role)}
                                     >
-                                        <Title level={4}>{role.description}</Title>
+                                        <Title level={4}>{getRoleName(role.code)}</Title>
                                         <p>{role.description}</p>
                                     </Card>
                                 ))}

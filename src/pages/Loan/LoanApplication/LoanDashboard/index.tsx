@@ -15,6 +15,7 @@ const WitnessDetails = lazy(() => import('./Witness/WitnessDetails'))
 const GuarantorDetailsView = lazy(() => import('./Guarantor/GuarantorDetailsView'))
 const LiabilityAffidavit = lazy(() => import('./LiabilityAffidavit'))
 const GoldFacilityApplication = lazy(() => import('./GoldFacilityApplication/GoldFacilityApplication'))
+const CashFlow = lazy(() => import('./CashFlow'))
 
 interface StatusProps {
     isCompleted: string;
@@ -82,7 +83,7 @@ const LoanDaashboard: React.FC = () => {
             case 'image-upload':
                 return <div>Image Upload</div>;
             case 'cash-flow':
-                return <div>Cash Flow</div>;
+                return <CashFlow />;
             case 'credit-scoring':
                 return <div>Credit Scoring</div>;
             case 'customer-acknowledgement':

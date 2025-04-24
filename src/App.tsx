@@ -50,8 +50,8 @@ const AuthWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     if (token && tokenData) {
       localStorage.setItem("token", token);
       fetchUserByUserName(tokenData.sub);
-      // selectingRole(user.);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
   if (loginInProgress) {

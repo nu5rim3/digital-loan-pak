@@ -300,15 +300,16 @@ const TrialCalculation: React.FC = () => {
 
                     </div>
                     <div className='mb-5'>
-                        <Card size='small' title={'Trial Calculation Charges'} styles={{
-                            header: {
-                                backgroundColor: '#002140',
-                                fontStyle: 'bold',
-                            },
-                            title: {
-                                color: 'white',
-                            },
-                        }}>
+                        <Card size='small' title={'Trial Calculation Charges'}
+                            styles={{
+                                header: {
+                                    backgroundColor: '#002140',
+                                    fontStyle: 'bold',
+                                },
+                                title: {
+                                    color: 'white',
+                                },
+                            }}>
                             <Descriptions column={4}>
                                 <Descriptions.Item label="Sequences">{'-'}</Descriptions.Item>
                                 <Descriptions.Item label="Term">{'-'}</Descriptions.Item>
