@@ -53,7 +53,7 @@ const Summary: React.FC = () => {
     useEffect(() => {
         fetchCashFlows(appId ?? '')
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [appId])
+    }, [appId, addCashFlows])
 
 
     return (
