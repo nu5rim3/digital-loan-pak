@@ -35,6 +35,9 @@ const GuarantorOnboarding = lazy(() => import('./pages/Users/Guarantors/Guaranto
 const CustomerDetails = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard/Customer/CustomerDetails'))
 const GuarantorDetail = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard/Guarantor/GuarantorDetails'))
 const WitnessDetails = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard/Witness/WitnessDetails'))
+const BusinessIntroducers = lazy(() => import('./pages/AccessAndPermission/Roles'))
+const FormLoanAppliaction = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard/LoanApplication/FormLoanAppliaction'))
+
 
 const tenet = import.meta.env.VITE_TENET;
 const baseURL = import.meta.env.VITE_BASE_URL;
@@ -110,8 +113,8 @@ const App: React.FC = () => {
                         <Route path="roles" element={
                           <UnderConstruction />
                         } />
-                        <Route path="members" element={
-                          <UnderConstruction />
+                        <Route path="business-introducers" element={
+                          <BusinessIntroducers />
                         } />
                       </Routes>
                     }
@@ -172,12 +175,13 @@ const App: React.FC = () => {
                         ["ADMIN", "BHO", "VIEWER"]
                       } />}>
                     <Route path="application" element={<LoanApplication />} />
-                    <Route path="application/:appId" element={<LoanDashboard />} />
+                    {/* <Route path="application/:appId" element={<LoanDashboard />} /> */}
                     {/* <Route path="application/:appId" element={<CustomerOnboarding />} /> */}
                     <Route path="application/:appId" element={<LoanDashboard />} />
                     <Route path="application/:appId/customer" element={<CustomerDetails />} />
                     <Route path="application/:appId/guarantor" element={<GuarantorDetail />} />
                     <Route path="application/:appId/witness" element={<WitnessDetails />} />
+                    <Route path="application/:appId/loan-application" element={<FormLoanAppliaction />} />
                   </Route>
                 </Route>
               </Routes>

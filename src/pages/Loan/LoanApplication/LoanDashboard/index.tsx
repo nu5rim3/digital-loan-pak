@@ -16,6 +16,7 @@ const GuarantorDetailsView = lazy(() => import('./Guarantor/GuarantorDetailsView
 const LiabilityAffidavit = lazy(() => import('./LiabilityAffidavit'))
 const GoldFacilityApplication = lazy(() => import('./GoldFacilityApplication/GoldFacilityApplication'))
 const CashFlow = lazy(() => import('./CashFlow'))
+const LoanApplication = lazy(() => import('./LoanApplication'))
 
 interface StatusProps {
     isCompleted: string;
@@ -77,7 +78,7 @@ const LoanDaashboard: React.FC = () => {
             case 'gold-facility-application':
                 return <GoldFacilityApplication />;
             case 'loan-application':
-                return <div>Loan Application</div>;
+                return <LoanApplication />;
             case 'LOAN_APPLICATION_APPROVAL':
                 return <div>Loan Application Approval</div>;
             case 'image-upload':

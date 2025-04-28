@@ -62,7 +62,7 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
                     label: 'Business Introducers',
                     key: '2-3',
                     icon: <UsergroupAddOutlined />,
-                    onClick: () => navigate(`/${mainNavigation}/permission/members`)
+                    onClick: () => navigate(`/${mainNavigation}/permission/business-introducers`)
                 }
             ]
         },

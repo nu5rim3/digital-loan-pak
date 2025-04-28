@@ -1,9 +1,9 @@
 import React from 'react'
 
-const Roles: React.FC = () => {
+const BusinessIntroducers: React.FC = () => {
     return (
-        <div>Roles</div>
+        <div>Business Introducers</div>
     )
 }
 
-export default Roles
+export default BusinessIntroducers

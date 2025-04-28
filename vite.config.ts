@@ -8,6 +8,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
   return {
+    base: "/pak-digital-loan/",
     plugins: [react(), tailwindcss()],
     server: {
       port: Number(env.VITE_PORT) || 3000,

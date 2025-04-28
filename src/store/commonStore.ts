@@ -138,6 +138,90 @@ interface IGoldsmith {
   branchName: string;
 }
 
+interface IFacilityPurpose {
+  code: string;
+}
+
+interface INatureOfBusiness {
+  code: string;
+  description: string;
+  status: "A" | "I";
+}
+
+interface IRepeatCustomers {
+  productCode: string;
+  code: string;
+  description: string;
+  creditScore: string;
+  status: "A" | "I";
+}
+
+interface IBusinessOwnership {
+  code: string;
+  description: string;
+  creditScore: string;
+  status: "A" | "I";
+}
+
+interface ILoanPurpose {
+  description: string;
+  creditScore: string;
+  status: "A" | "I";
+}
+
+interface IFloodsFactor {
+  code: string;
+  description: string;
+  creditScore: string;
+  status: "A" | "I";
+}
+
+interface IIrrigation {
+  code: string;
+  description: string;
+  creditScore: string;
+  status: "A" | "I";
+}
+
+interface IAgriMethods {
+  code: string;
+  description: string;
+  creditScore: string;
+  status: "A" | "I";
+}
+
+interface IProofOfCultivation {
+  code: string;
+  description: string;
+  creditScore: string;
+  status: "A" | "I";
+}
+
+interface INatureofEmployment {
+  code: string;
+  description: string;
+  status: "A" | "I";
+}
+
+interface IJobs {
+  code: string;
+  description: string;
+  status: "A" | "I";
+}
+
+interface IDistanceForResidenceOrWork {
+  code: string;
+  description: string;
+  status: "A" | "I";
+  creditScore: string;
+}
+
+interface ISalary {
+  code: string;
+  description: string;
+  status: "A" | "I";
+  creditScore: string;
+}
 interface ICommonState {
   operators: IOperator[];
   operatorLoading: boolean;
@@ -219,6 +303,58 @@ interface ICommonState {
   goldsmithLoading: boolean;
   goldsmithError: string | null;
 
+  facilityPurpose: IFacilityPurpose[];
+  facilityPurposeLoading: boolean;
+  facilityPurposeError: string | null;
+
+  natureOfBusiness: INatureOfBusiness[];
+  natureOfBusinessLoading: boolean;
+  natureOfBusinessError: string | null;
+
+  repeatCustomers: IRepeatCustomers[];
+  repeatCustomersLoading: boolean;
+  repeatCustomersError: string | null;
+
+  businessOwnership: IBusinessOwnership[];
+  businessOwnershipLoading: boolean;
+  businessOwnershipError: string | null;
+
+  loanPurposes: ILoanPurpose[];
+  loanPurposesLoading: boolean;
+  loanPurposesError: string | null;
+
+  floodsFactor: IFloodsFactor[];
+  floodsFactorLoading: boolean;
+  floodsFactorError: string | null;
+
+  irrigation: IIrrigation[];
+  irrigationLoading: boolean;
+  irrigationError: string | null;
+
+  agriMethods: IAgriMethods[];
+  agriMethodsLoading: boolean;
+  agriMethodsError: string | null;
+
+  proofOfCultivation: IProofOfCultivation[];
+  proofOfCultivationLoading: boolean;
+  proofOfCultivationError: string | null;
+
+  natureOfEmployment: INatureofEmployment[];
+  natureOfEmploymentLoading: boolean;
+  natureOfEmploymentError: string | null;
+
+  jobs: IJobs[];
+  jobsLoading: boolean;
+  jobsError: string | null;
+
+  distanceForResidenceOrWork: IDistanceForResidenceOrWork[];
+  distanceForResidenceOrWorkLoading: boolean;
+  distanceForResidenceOrWorkError: string | null;
+
+  salary: ISalary[];
+  salaryLoading: boolean;
+  salaryError: string | null;
+
   fetchOperators: () => Promise<void>;
   fetchECIBReport: (cnic: string) => Promise<void>;
   fetchOrganizationType: () => Promise<void>;
@@ -239,6 +375,20 @@ interface ICommonState {
   fetchMarketValue: () => Promise<void>;
   fetchArticleMaster: () => Promise<void>;
   fetchGoldsmith: (branchCode: string) => Promise<void>;
+  fetchFacilityPurpose: () => Promise<void>;
+  fetchNatureOfBusiness: () => Promise<void>;
+  fetchRepeatCustomers: () => Promise<void>;
+  fetchBusinessOwnership: () => Promise<void>;
+  fetchLoanPurposes: (productCode: string) => Promise<void>;
+  fetchFloodsFactor: (productCode: string) => Promise<void>;
+  fetchIrrigation: (productCode: string) => Promise<void>;
+  fetchAgriMethods: (productCode: string) => Promise<void>;
+  fetchProofOfCultivation: (productCode: string) => Promise<void>;
+  fetchNatureOfEmployment: () => Promise<void>;
+  fetchJobs: () => Promise<void>;
+  fetchDistanceForResidenceOrWork: (productCode: string) => Promise<void>;
+  fetchSalary: (productCode: string) => Promise<void>;
+  fetchRepeatCustomersWithProdCode: (productCode: string) => Promise<void>;
 }
 
 type TPersist = (
@@ -344,6 +494,58 @@ const useCommonStore = create<ICommonState>(
       goldsmiths: [],
       goldsmithLoading: false,
       goldsmithError: null,
+
+      facilityPurpose: [],
+      facilityPurposeLoading: false,
+      facilityPurposeError: null,
+
+      natureOfBusiness: [],
+      natureOfBusinessLoading: false,
+      natureOfBusinessError: null,
+
+      repeatCustomers: [],
+      repeatCustomersLoading: false,
+      repeatCustomersError: null,
+
+      businessOwnership: [],
+      businessOwnershipLoading: false,
+      businessOwnershipError: null,
+
+      loanPurposes: [],
+      loanPurposesLoading: false,
+      loanPurposesError: null,
+
+      floodsFactor: [],
+      floodsFactorLoading: false,
+      floodsFactorError: null,
+
+      irrigation: [],
+      irrigationLoading: false,
+      irrigationError: null,
+
+      agriMethods: [],
+      agriMethodsLoading: false,
+      agriMethodsError: null,
+
+      proofOfCultivation: [],
+      proofOfCultivationLoading: false,
+      proofOfCultivationError: null,
+
+      natureOfEmployment: [],
+      natureOfEmploymentLoading: false,
+      natureOfEmploymentError: null,
+
+      jobs: [],
+      jobsLoading: false,
+      jobsError: null,
+
+      distanceForResidenceOrWork: [],
+      distanceForResidenceOrWorkLoading: false,
+      distanceForResidenceOrWorkError: null,
+
+      salary: [],
+      salaryLoading: false,
+      salaryError: null,
 
       fetchOperators: async () => {
         set({ operatorLoading: true, operatorError: null });
@@ -621,6 +823,255 @@ const useCommonStore = create<ICommonState>(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
           set({ goldsmithError: error.message, goldsmithLoading: false });
+        }
+      },
+
+      // /mobixCamsCommon/v1/facility-purposes
+      fetchFacilityPurpose: async () => {
+        set({ facilityPurposeLoading: true, facilityPurposeError: null });
+        try {
+          const response = await API.get(
+            "/mobixCamsCommon/v1/facility-purposes"
+          );
+          set({
+            facilityPurpose: response.data,
+            facilityPurposeLoading: false,
+          });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({
+            facilityPurposeError: error.message,
+            facilityPurposeLoading: false,
+          });
+        }
+      },
+
+      // /mobixCamsCommon/v1/nature-of-businesses
+      fetchNatureOfBusiness: async () => {
+        set({ natureOfBusinessLoading: true, natureOfBusinessError: null });
+        try {
+          const response = await API.get(
+            "/mobixCamsCommon/v1/nature-of-businesses"
+          );
+          set({
+            natureOfBusiness: response.data,
+            natureOfBusinessLoading: false,
+          });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({
+            natureOfBusinessError: error.message,
+            natureOfBusinessLoading: false,
+          });
+        }
+      },
+
+      // /mobixCamsCommon/v1/repeat-customers
+      fetchRepeatCustomers: async () => {
+        set({ repeatCustomersLoading: true, repeatCustomersError: null });
+        try {
+          const response = await API.get(
+            "/mobixCamsCommon/v1/repeat-customers"
+          );
+          set({
+            repeatCustomers: response.data,
+            repeatCustomersLoading: false,
+          });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({
+            repeatCustomersError: error.message,
+            repeatCustomersLoading: false,
+          });
+        }
+      },
+
+      // /mobixCamsCommon/v1/business-ownerships
+      fetchBusinessOwnership: async () => {
+        set({ businessOwnershipLoading: true, businessOwnershipError: null });
+        try {
+          const response = await API.get(
+            "/mobixCamsCommon/v1/business-ownerships"
+          );
+          set({
+            businessOwnership: response.data,
+            businessOwnershipLoading: false,
+          });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({
+            businessOwnershipError: error.message,
+            businessOwnershipLoading: false,
+          });
+        }
+      },
+
+      // /mobixCamsCommon/v1/loan-purposes/products/{product_code}
+      fetchLoanPurposes: async (productCode: string) => {
+        set({ loanPurposesLoading: true, loanPurposesError: null });
+        try {
+          const response = await API.get(
+            `/mobixCamsCommon/v1/loan-purposes/products/${productCode}`
+          );
+          set({ loanPurposes: response.data, loanPurposesLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({ loanPurposesError: error.message, loanPurposesLoading: false });
+        }
+      },
+
+      // /mobixCamsCommon/v1/floods-factors/products/{product_code}
+      fetchFloodsFactor: async (productCode: string) => {
+        set({ floodsFactorLoading: true, floodsFactorError: null });
+        try {
+          const response = await API.get(
+            `/mobixCamsCommon/v1/floods-factors/products/${productCode}`
+          );
+          set({ floodsFactor: response.data, floodsFactorLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({ floodsFactorError: error.message, floodsFactorLoading: false });
+        }
+      },
+
+      // /mobixCamsCommon/v1/irrigations/products/{product_code}
+      fetchIrrigation: async (productCode: string) => {
+        set({ irrigationLoading: true, irrigationError: null });
+        try {
+          const response = await API.get(
+            `/mobixCamsCommon/v1/irrigations/products/${productCode}`
+          );
+          set({ irrigation: response.data, irrigationLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({ irrigationError: error.message, irrigationLoading: false });
+        }
+      },
+
+      // /mobixCamsCommon/v1/agri-methods/products/{product_code}
+      fetchAgriMethods: async (productCode: string) => {
+        set({ agriMethodsLoading: true, agriMethodsError: null });
+        try {
+          const response = await API.get(
+            `/mobixCamsCommon/v1/agri-methods/products/${productCode}`
+          );
+          set({ agriMethods: response.data, agriMethodsLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({ agriMethodsError: error.message, agriMethodsLoading: false });
+        }
+      },
+
+      // /mobixCamsCommon/v1/cultivation-proofs/products/{product_code}
+      fetchProofOfCultivation: async (productCode: string) => {
+        set({
+          proofOfCultivationLoading: true,
+          proofOfCultivationError: null,
+        });
+        try {
+          const response = await API.get(
+            `/mobixCamsCommon/v1/cultivation-proofs/products/${productCode}`
+          );
+          set({
+            proofOfCultivation: response.data,
+            proofOfCultivationLoading: false,
+          });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({
+            proofOfCultivationError: error.message,
+            proofOfCultivationLoading: false,
+          });
+        }
+      },
+
+      fetchNatureOfEmployment: async () => {
+        set({ natureOfEmploymentLoading: true, natureOfEmploymentError: null });
+        try {
+          const response = await API.get(
+            "/mobixCamsCommon/v1/employment-categories"
+          );
+          set({
+            natureOfEmployment: response.data,
+            natureOfEmploymentLoading: false,
+          });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({
+            natureOfEmploymentError: error.message,
+            natureOfEmploymentLoading: false,
+          });
+        }
+      },
+
+      // /mobixCamsCommon/v1/jobs
+      fetchJobs: async () => {
+        set({ jobsLoading: true, jobsError: null });
+        try {
+          const response = await API.get("/mobixCamsCommon/v1/jobs");
+          set({ jobs: response.data, jobsLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({ jobsError: error.message, jobsLoading: false });
+        }
+      },
+
+      // /mobixCamsCommon/v1/applicant-distances/products/{prodCode}
+      fetchDistanceForResidenceOrWork: async (productCode: string) => {
+        set({
+          distanceForResidenceOrWorkLoading: true,
+          distanceForResidenceOrWorkError: null,
+        });
+        try {
+          const response = await API.get(
+            `/mobixCamsCommon/v1/applicant-distances/products/${productCode}`
+          );
+          set({
+            distanceForResidenceOrWork: response.data,
+            distanceForResidenceOrWorkLoading: false,
+          });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({
+            distanceForResidenceOrWorkError: error.message,
+            distanceForResidenceOrWorkLoading: false,
+          });
+        }
+      },
+      // /mobixCamsCommon/v1/salary-information/products/{product_code}
+      fetchSalary: async (productCode: string) => {
+        set({ salaryLoading: true, salaryError: null });
+        try {
+          const response = await API.get(
+            `/mobixCamsCommon/v1/salary-information/products/${productCode}`
+          );
+          set({ salary: response.data, salaryLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({ salaryError: error.message, salaryLoading: false });
+        }
+      },
+
+      // /mobixCamsCommon/v1/repeat-customers/products/{product_code}
+      fetchRepeatCustomersWithProdCode: async (productCode: string) => {
+        set({
+          repeatCustomersLoading: true,
+          repeatCustomersError: null,
+        });
+        try {
+          const response = await API.get(
+            `/mobixCamsCommon/v1/repeat-customers/products/${productCode}`
+          );
+          set({
+            repeatCustomers: response.data,
+            repeatCustomersLoading: false,
+          });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({
+            repeatCustomersError: error.message,
+            repeatCustomersLoading: false,
+          });
         }
       },
     }),

@@ -142,6 +142,25 @@ export interface ICashFlowData {
   bnsOrAgriExpenses: IFinancialEntry[];
 }
 
+interface IBusinessIncome {
+  appraisalId: string;
+  idx?: string;
+  profession: string;
+  sourceOfIncome: string;
+  purposeOfLoan: string;
+  bnsName: string;
+  natureOfBns: string;
+  bnsAddress: string;
+  phoneNo: string;
+  description: string;
+  prevExpInBns: string;
+  ownOfBnsPlace: string;
+  costOfBns: string;
+  bnsRatings: string;
+  repeatCustomer: string;
+  status?: string;
+}
+
 interface ICreditState {
   goldLoanAppDetails: IGoldLoanAppDetails[];
   goldLoanAppDetailsLoading: boolean;
@@ -187,6 +206,10 @@ interface ICreditState {
   annualRevenue: number | string | null;
 
   isAlegibleFroLoan: boolean;
+
+  businessIncome: IBusinessIncome[];
+  businessIncomeLoading: boolean;
+  businessIncomeError: string | null;
 
   fetachGoldLoanAppDetails: (appId: string) => Promise<void>;
   addGoldLoanAppDetails: (data: IGoldLoanAppDetails) => Promise<void>;
@@ -259,6 +282,10 @@ interface ICreditState {
 
   fetchProduct: (appId: string) => Promise<void>;
   fetchProductDefinition: (prodCode: string) => Promise<void>;
+
+  fetchBusinessIncome: (appId: string) => Promise<void>;
+  addBusinessIncome: (appId: string, data: IBusinessIncome) => Promise<void>;
+  updateBusinessIncome: (appId: string, data: IBusinessIncome) => Promise<void>;
 }
 
 const useCreditStore = create<ICreditState>((set) => ({
@@ -306,6 +333,10 @@ const useCreditStore = create<ICreditState>((set) => ({
   annualRevenue: null,
 
   isAlegibleFroLoan: false,
+
+  businessIncome: [],
+  businessIncomeLoading: false,
+  businessIncomeError: null,
 
   fetachGoldLoanAppDetails: async (appId: string) => {
     set({ goldLoanAppDetailsLoading: true });
@@ -781,6 +812,69 @@ const useCreditStore = create<ICreditState>((set) => ({
       set({ isAlegibleFroLoan: false });
     } else if (loanAmount <= maxLoanValue) {
       set({ isAlegibleFroLoan: true });
+    }
+  },
+
+  fetchBusinessIncome: async (appId: string) => {
+    set({ businessIncomeLoading: true });
+    try {
+      const response = await API.get(
+        `/mobixCamsCredit/v1/credit/loan/app/bns/${appId}`
+      );
+      set({
+        businessIncome: response.data,
+        businessIncomeLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        businessIncomeError: error.message,
+        businessIncomeLoading: false,
+      });
+    }
+  },
+
+  addBusinessIncome: async (appId: string, data: IBusinessIncome) => {
+    set({ businessIncomeLoading: true });
+    try {
+      await APIAuth.post(
+        `/mobixCamsCredit/v1/credit/loan/app/bns/${appId}`,
+        data
+      );
+      set(() => ({
+        businessIncomeLoading: false,
+      }));
+      notification.success({
+        message: "Business Income Added Successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        businessIncomeError: error.message,
+        businessIncomeLoading: false,
+      });
+    }
+  },
+
+  updateBusinessIncome: async (appId: string, data: IBusinessIncome) => {
+    set({ businessIncomeLoading: true });
+    try {
+      await APIAuth.put(
+        `/mobixCamsCredit/v1/credit/loan/app/bns/${appId}`,
+        data
+      );
+      set(() => ({
+        businessIncomeLoading: false,
+      }));
+      notification.success({
+        message: "Business Income Updated Successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        businessIncomeError: error.message,
+        businessIncomeLoading: false,
+      });
     }
   },
 }));
