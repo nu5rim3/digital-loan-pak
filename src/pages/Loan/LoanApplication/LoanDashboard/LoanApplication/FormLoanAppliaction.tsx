@@ -15,6 +15,7 @@ import {
 import { schema } from './FormLoanAppliactionSchema'
 import useCreditStore from '../../../../../store/creditStore'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import UnderConstruction from '../../../../UnderConstroction'
 
 
 const FormLoanAppliaction: React.FC = () => {
@@ -209,7 +210,6 @@ const FormLoanAppliaction: React.FC = () => {
                                             )}
                                         />
                                     </Form.Item>
-                                    {/* costOfBns */}
                                     <Form.Item label="Cost Of Business" name="costOfBns" validateStatus={errors.costOfBns ? 'error' : ''} help={errors.costOfBns?.message} required>
                                         <Controller
                                             name="costOfBns"
@@ -467,6 +467,18 @@ const FormLoanAppliaction: React.FC = () => {
                                         />
                                     </Form.Item>
                                 </div>
+                            </Card>
+                        )}
+
+                        {sourceOfIncome === 'Rental Income' && (
+                            <Card title={"Rental Details"} size='small'>
+                                <UnderConstruction />
+                            </Card>
+                        )}
+
+                        {sourceOfIncome === 'Live Stock Income' && (
+                            <Card title={"Live Stock Details"} size='small'>
+                                <UnderConstruction />
                             </Card>
                         )}
 
