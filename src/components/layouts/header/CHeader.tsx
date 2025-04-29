@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { mainURL } from '../../../App';
 import { IAuthContext, AuthContext } from 'react-oauth2-code-pkce';
 import useUserStore from '../../../store/userStore';
-import { formatName } from '../../../utils/formatterFunctions';
+import { formatName, getRoleName } from '../../../utils/formatterFunctions';
 const { Header } = Layout;
 
 export interface ICHeaderProps {
@@ -74,7 +74,7 @@ const CHeader: React.FC<ICHeaderProps> = ({ collapsed, setCollapsed }) => {
           />
         </div>
         <div>
-          <Tag color='blue'>{currentRole?.code}</Tag>
+          <Tag color='blue'>{getRoleName(currentRole?.code ?? '')}</Tag>
         </div>
         <div>
           <Dropdown menu={{ items }}>

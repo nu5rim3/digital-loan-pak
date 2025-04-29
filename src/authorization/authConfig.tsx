@@ -12,7 +12,7 @@ export const authConfig2: TAuthConfig = {
   logoutEndpoint: import.meta.env.VITE_LOGOUT_ENDPOINT,
 
   extraTokenParameters: {
-    client_id: 'ZWwWCTXU5lyTUxjvivnYfiLYhdUa',
+    client_id: import.meta.env.VITE_AUTH_CLIENT_ID,
     grant_type: 'authorization_code',
   },
   onRefreshTokenExpire: (event: TRefreshTokenExpiredEvent) => {

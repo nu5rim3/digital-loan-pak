@@ -161,6 +161,98 @@ interface IBusinessIncome {
   status?: string;
 }
 
+interface IAgricultureIncome {
+  appraisalId: string;
+  idx?: string;
+  profession: string;
+  sourceOfIncome: string;
+  natureOfTheBorrower: string;
+  ownOfCult: string;
+  ownOfLand: string;
+  ownName: string;
+  ownCNIC: string;
+  ownAddress: string;
+  ownContact: string;
+  acresOwned: string;
+  acresRented: string;
+  acresTotal: string;
+  acresOfRabi: string;
+  rabiHarvestingDate: string;
+  rabiCultivationDate: string;
+  acresOfKharif: string;
+  kharifHarvestingDate: string;
+  kharifCultivationDate: string;
+  ownLandLoc: string;
+  rentedLandLoc: string;
+  district: string;
+  cropsToBeCult: string[];
+  cropsName: string;
+  landDetails: string;
+  comment: string;
+  loanLimitRabi: string;
+  loanLimitKharif: string;
+  loanLimitTotal: string;
+  purposeOfLoan: string;
+  floodsFactor: string;
+  irrigation: string;
+  methods: string;
+  proofOfCult: string;
+  expInCult: string;
+  marketCheck: string;
+  agriSecured: string;
+  borrowerDistrict: string;
+  loanTenure: string;
+  insCompany: string;
+  policyIssuedDate: string;
+  policyExpiredDate: string;
+  receiptNo: string;
+  premiumRate: string;
+  premiumRateForSugar: string;
+  evidance: string;
+  claimLodged: string;
+  otherInfo1: string;
+  otherInfo2: string;
+  otherInfo3: string;
+  assets: {
+    ownership: string;
+    qty: string;
+    amount: string;
+    status: string;
+    createdBy: string;
+    creationDate: string;
+    lastModifiedBy: string;
+    lastModifiedDate: string;
+  }[];
+  totAssetsValue: string;
+  status?: string;
+  createdBy?: string;
+  creationDate?: string;
+}
+
+interface ISalaryIncome {
+  appraisalId: string;
+  idx?: string;
+  profession: string;
+  sourceOfIncome: string;
+  purposeOfLoan: string;
+  employer: string;
+  typeOfBusiness: string;
+  designation: string;
+  currEmpPeriod: string;
+  empAddress: string;
+  typeOfJob: string;
+  natureOfEmp: string;
+  contactNo: string;
+  residenceOrWorking: string;
+  proofOfSalary: string;
+  repeatCustomer: string;
+  status?: string;
+  createdBy?: string;
+  creationDate?: string;
+  lastModifiedBy?: string;
+  lastModifiedDate?: string;
+}
+
 interface ICreditState {
   goldLoanAppDetails: IGoldLoanAppDetails[];
   goldLoanAppDetailsLoading: boolean;
@@ -210,6 +302,14 @@ interface ICreditState {
   businessIncome: IBusinessIncome[];
   businessIncomeLoading: boolean;
   businessIncomeError: string | null;
+
+  agricultureIncome: IAgricultureIncome[];
+  agricultureIncomeLoading: boolean;
+  agricultureIncomeError: string | null;
+
+  salaryIncome: ISalaryIncome[];
+  salaryIncomeLoading: boolean;
+  salaryIncomeError: string | null;
 
   fetachGoldLoanAppDetails: (appId: string) => Promise<void>;
   addGoldLoanAppDetails: (data: IGoldLoanAppDetails) => Promise<void>;
@@ -286,6 +386,20 @@ interface ICreditState {
   fetchBusinessIncome: (appId: string) => Promise<void>;
   addBusinessIncome: (appId: string, data: IBusinessIncome) => Promise<void>;
   updateBusinessIncome: (appId: string, data: IBusinessIncome) => Promise<void>;
+
+  fetchAgricultureIncome: (appId: string) => Promise<void>;
+  addAgricultureIncome: (
+    appId: string,
+    data: IAgricultureIncome
+  ) => Promise<void>;
+  updateAgricultureIncome: (
+    appId: string,
+    data: IAgricultureIncome
+  ) => Promise<void>;
+
+  fetchSalaryIncome: (appId: string) => Promise<void>;
+  addSalaryIncome: (appId: string, data: ISalaryIncome) => Promise<void>;
+  updateSalaryIncome: (appId: string, data: ISalaryIncome) => Promise<void>;
 }
 
 const useCreditStore = create<ICreditState>((set) => ({
@@ -337,6 +451,14 @@ const useCreditStore = create<ICreditState>((set) => ({
   businessIncome: [],
   businessIncomeLoading: false,
   businessIncomeError: null,
+
+  agricultureIncome: [],
+  agricultureIncomeLoading: false,
+  agricultureIncomeError: null,
+
+  salaryIncome: [],
+  salaryIncomeLoading: false,
+  salaryIncomeError: null,
 
   fetachGoldLoanAppDetails: async (appId: string) => {
     set({ goldLoanAppDetailsLoading: true });
@@ -874,6 +996,132 @@ const useCreditStore = create<ICreditState>((set) => ({
       set({
         businessIncomeError: error.message,
         businessIncomeLoading: false,
+      });
+    }
+  },
+
+  fetchAgricultureIncome: async (appId: string) => {
+    set({ agricultureIncomeLoading: true });
+    try {
+      const response = await API.get(
+        `/mobixCamsCredit/v1/credit/loan/app/cult/${appId}`
+      );
+      set({
+        agricultureIncome: response.data,
+        agricultureIncomeLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        agricultureIncomeError: error.message,
+        agricultureIncomeLoading: false,
+      });
+    }
+  },
+
+  addAgricultureIncome: async (appId: string, data: IAgricultureIncome) => {
+    set({ agricultureIncomeLoading: true });
+    try {
+      await APIAuth.post(
+        `/mobixCamsCredit/v1/credit/loan/app/cult/${appId}`,
+        data
+      );
+      set(() => ({
+        agricultureIncomeLoading: false,
+      }));
+      notification.success({
+        message: "Agriculture Income Added Successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        agricultureIncomeError: error.message,
+        agricultureIncomeLoading: false,
+      });
+    }
+  },
+
+  updateAgricultureIncome: async (appId: string, data: IAgricultureIncome) => {
+    set({ agricultureIncomeLoading: true });
+    try {
+      await APIAuth.put(
+        `/mobixCamsCredit/v1/credit/loan/app/cult/${appId}`,
+        data
+      );
+      set(() => ({
+        agricultureIncomeLoading: false,
+      }));
+      notification.success({
+        message: "Agriculture Income Updated Successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        agricultureIncomeError: error.message,
+        agricultureIncomeLoading: false,
+      });
+    }
+  },
+
+  fetchSalaryIncome: async (appId: string) => {
+    // fetch salary income
+    set({ salaryIncomeLoading: true });
+    try {
+      const response = await API.get(
+        `/mobixCamsCredit/v1/credit/loan/app/sal/${appId}`
+      );
+      set({
+        salaryIncome: response.data,
+        salaryIncomeLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        salaryIncomeError: error.message,
+        salaryIncomeLoading: false,
+      });
+    }
+  },
+  addSalaryIncome: async (appId: string, data: ISalaryIncome) => {
+    set({ salaryIncomeLoading: true });
+    try {
+      await APIAuth.post(
+        `/mobixCamsCredit/v1/credit/loan/app/sal/${appId}`,
+        data
+      );
+      set(() => ({
+        salaryIncomeLoading: false,
+      }));
+      notification.success({
+        message: "Salary Income Added Successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        salaryIncomeError: error.message,
+        salaryIncomeLoading: false,
+      });
+    }
+  },
+
+  updateSalaryIncome: async (appId: string, data: ISalaryIncome) => {
+    set({ salaryIncomeLoading: true });
+    try {
+      await APIAuth.put(
+        `/mobixCamsCredit/v1/credit/loan/app/sal/${appId}`,
+        data
+      );
+      set(() => ({
+        salaryIncomeLoading: false,
+      }));
+      notification.success({
+        message: "Salary Income Updated Successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        salaryIncomeError: error.message,
+        salaryIncomeLoading: false,
       });
     }
   },

@@ -55,6 +55,21 @@ export const schema = yup.object().shape({
         then: (schema) => schema.required('Borrower District is required'),
         otherwise: (schema) => schema.notRequired(),
     }),
+    acresOwned: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Acres Owned is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    acresRented: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Acres Rented is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    acresTotal: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Total Acres is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
     sowodo: yup.string().when('sourceOfIncome', {
         is: 'Agricultural Income',
         then: (schema) => schema.required('Sowodo is required'),
@@ -168,6 +183,131 @@ export const schema = yup.object().shape({
     marketCheck: yup.string().when('sourceOfIncome', {
         is: 'Agricultural Income',
         then: (schema) => schema.required('Market Check is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    rabiCrop: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Rabi Crop is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    acresOfRabi: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Acres of Rabi is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    rabiHarvestingDate: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Rabi Harvesting Date is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    rabiCultivationDate: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Rabi Cultivation Date is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    kharifCrop: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Kharif Crop is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    acresOfKharif: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Acres of Kharif is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    kharifHarvestingDate: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Kharif Harvesting Date is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    kharifCultivationDate: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Kharif Cultivation Date is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    khasra: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Khasra is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    khewat: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Khewat is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    khtoni: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Khtoni is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    ownLandLoc: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Owner Land Location is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    rentedLandLoc: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Rented Land Location is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    district: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('District is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    ownName: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Owner Name is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    ownCNIC: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Owner CNIC is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    ownAddress: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Owner Address is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    ownContact: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Owner Contact is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    cropsToBeCult: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Crops to be Cultivated is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    cropsName: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Crops Name is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    landDetails: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Land Details are required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    comment: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Comment is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    loanLimitRabi: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Loan Limit for Rabi is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    loanLimitKharif: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Loan Limit for Kharif is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    loanLimitTotal: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Total Loan Limit is required'),
         otherwise: (schema) => schema.notRequired(),
     }),
     employer: yup.string().when('sourceOfIncome', {

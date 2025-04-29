@@ -79,7 +79,63 @@ export const getRoleName = (role: string) => {
       return "Administrator";
     case "BHO":
       return "Branch Head Officer";
+    case "CRO":
+      return "Customer Relationship Officer";
+    case "CO":
+      return "Credit Officer";
+    case "BM":
+      return "Branch Manager";
+    case "CC":
+      return "Call Center Verification";
+    case "IMD":
+      return "Islamic Microfinance Division";
+    case "CR":
+      return "Credit Reviewer";
+    case "CA":
+      return "Credit Approver";
+    case "CAD":
+      return "Credit Administrative Division";
+    case "AM":
+      return "Area Manager";
+    case "RBH":
+      return "Regional Business Head";
+    case "COO":
+      return "Chief Operating Officer";
+    case "CEO":
+      return "Chief Executive Officer";
+    case "COP":
+      return "----- Credit Operations";
     default:
       return role;
   }
+};
+
+export const getDistrict = () => {
+  return [
+    { label: "Islamabad", value: "Islamabad" },
+    { label: "Karachi", value: "Karachi" },
+    { label: "Lahore", value: "Lahore" },
+    { label: "Faisalabad", value: "Faisalabad" },
+    { label: "Rawalpindi", value: "Rawalpindi" },
+    { label: "Hyderabad", value: "Hyderabad" },
+    { label: "Peshawar", value: "Peshawar" },
+    { label: "Quetta", value: "Quetta" },
+    { label: "Multan", value: "Multan" },
+    { label: "Gujranwala", value: "Gujranwala" },
+    { label: "Sialkot", value: "Sialkot" },
+    { label: "Sargodha", value: "Sargodha" },
+    { label: "Bahawalpur", value: "Bahawalpur" },
+    { label: "Sukkur", value: "Sukkur" },
+    { label: "Larkana", value: "Larkana" },
+    { label: "Abbottabad", value: "Abbottabad" },
+    { label: "Dera Ghazi Khan", value: "Dera Ghazi Khan" },
+    { label: "Mardan", value: "Mardan" },
+    { label: "Chiniot", value: "Chiniot" },
+    { label: "Khuzdar", value: "Khuzdar" },
+    { label: "Gwadar", value: "Gwadar" },
+    { label: "Mirpur", value: "Mirpur" },
+    { label: "Muzaffarabad", value: "Muzaffarabad" },
+    { label: "Gilgit", value: "Gilgit" },
+    { label: "Skardu", value: "Skardu" },
+  ];
 };

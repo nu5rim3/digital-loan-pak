@@ -222,6 +222,13 @@ interface ISalary {
   status: "A" | "I";
   creditScore: string;
 }
+
+interface IOwnership {
+  code: string;
+  description: string;
+  status: "A" | "I";
+  creditScore: string;
+}
 interface ICommonState {
   operators: IOperator[];
   operatorLoading: boolean;
@@ -355,6 +362,10 @@ interface ICommonState {
   salaryLoading: boolean;
   salaryError: string | null;
 
+  ownership: IOwnership[];
+  ownershipLoading: boolean;
+  ownershipError: string | null;
+
   fetchOperators: () => Promise<void>;
   fetchECIBReport: (cnic: string) => Promise<void>;
   fetchOrganizationType: () => Promise<void>;
@@ -389,6 +400,7 @@ interface ICommonState {
   fetchDistanceForResidenceOrWork: (productCode: string) => Promise<void>;
   fetchSalary: (productCode: string) => Promise<void>;
   fetchRepeatCustomersWithProdCode: (productCode: string) => Promise<void>;
+  fetchOwnership: (productCode: string) => Promise<void>;
 }
 
 type TPersist = (
@@ -546,6 +558,10 @@ const useCommonStore = create<ICommonState>(
       salary: [],
       salaryLoading: false,
       salaryError: null,
+
+      ownership: [],
+      ownershipLoading: false,
+      ownershipError: null,
 
       fetchOperators: async () => {
         set({ operatorLoading: true, operatorError: null });
@@ -1072,6 +1088,20 @@ const useCommonStore = create<ICommonState>(
             repeatCustomersError: error.message,
             repeatCustomersLoading: false,
           });
+        }
+      },
+
+      // /mobixCamsCommon/v1/cultivation-ownerships/products/{product_code}
+      fetchOwnership: async (productCode: string) => {
+        set({ ownershipLoading: true, ownershipError: null });
+        try {
+          const response = await API.get(
+            `/mobixCamsCommon/v1/cultivation-ownerships/products/${productCode}`
+          );
+          set({ ownership: response.data, ownershipLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({ ownershipError: error.message, ownershipLoading: false });
         }
       },
     }),
