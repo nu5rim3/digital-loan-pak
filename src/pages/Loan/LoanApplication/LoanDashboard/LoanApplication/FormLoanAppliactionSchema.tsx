@@ -165,6 +165,11 @@ export const schema = yup.object().shape({
         then: (schema) => schema.required('Methods is required'),
         otherwise: (schema) => schema.notRequired(),
     }),
+    purposeOfCultLoan: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Purpose of Cultivation Loan is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
     proofOfCult: yup.string().when('sourceOfIncome', {
         is: 'Agricultural Income',
         then: (schema) => schema.required('Proof of Cultivation is required'),
@@ -175,9 +180,13 @@ export const schema = yup.object().shape({
         then: (schema) => schema.required('Experience in Cultivation is required'),
         otherwise: (schema) => schema.notRequired(),
     }),
+    isAgriSecured: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.notRequired(),
+    }),
     agriSecured: yup.string().when('sourceOfIncome', {
         is: 'Agricultural Income',
-        then: (schema) => schema.required('Agricultural Secured is required'),
+        then: (schema) => schema.required('Agricultural Passbook Number is required'),
         otherwise: (schema) => schema.notRequired(),
     }),
     marketCheck: yup.string().when('sourceOfIncome', {
@@ -285,9 +294,24 @@ export const schema = yup.object().shape({
         then: (schema) => schema.required('Crops Name is required'),
         otherwise: (schema) => schema.notRequired(),
     }),
+    totAssetsValue: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Total Assets Value is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
     landDetails: yup.string().when('sourceOfIncome', {
         is: 'Agricultural Income',
         then: (schema) => schema.required('Land Details are required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    premiumRateForSugar: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Premium Rate for Sugar is required'),
+        otherwise: (schema) => schema.notRequired(),
+    }),
+    evidance: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.required('Evidence of Land Holding is required'),
         otherwise: (schema) => schema.notRequired(),
     }),
     comment: yup.string().when('sourceOfIncome', {
@@ -309,6 +333,18 @@ export const schema = yup.object().shape({
         is: 'Agricultural Income',
         then: (schema) => schema.required('Total Loan Limit is required'),
         otherwise: (schema) => schema.notRequired(),
+    }),
+    otherInfo1: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.notRequired(),
+    }),
+    otherInfo2: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.notRequired(),
+    }),
+    otherInfo3: yup.string().when('sourceOfIncome', {
+        is: 'Agricultural Income',
+        then: (schema) => schema.notRequired(),
     }),
     employer: yup.string().when('sourceOfIncome', {
         is: 'Salary Income',
@@ -362,54 +398,10 @@ export const schema = yup.object().shape({
     }),
 })
 
-// "profession": "Salaried",
-// "sourceOfIncome": "Salary income",
-// "purposeOfLoan": "5",
-// "employer": "Salary income",
-// "typeOfBusiness": "typeOfBusiness",
-// "designation": "designation",
-// "currEmpPeriod": "12y",
-// "empAddress": "245,Rajagiriya",
-// "typeOfJob": "Privatee",
-// "natureOfEmp": "Permanet",
-// "contactNo": "0715756956",
-// "residenceOrWorking":"Residence or working place of applicant",
-// "proofOfSalary":"3 months bank statement provided",
-// "repeatCustomer":"New customer/Average 15 days delay"
-
-// "appraisalId": "AP000000000001",
-// "idx": "LSTK0000000002341",
-// "profession": "Salaried",
-// "sourceOfIncome": "Salary income",
-// "borrowerDistrict": "s",
-// "sowodo": "ss",
-// "loanTenure": "s",
-// "insCompany": "s",
-// "policyIssuedDate": "2022-01-01T00:00:00.000+00:00",
-// "policyExpiredDate": "2022-01-01T00:00:00.000+00:00",
-// "receiptNo": "s",
-// "premiumRate": "s",
-// "animalOrCrop": "s",
-// "buffaloes": "s",
-// "cows": "s",
-// "bulls": "s",
-// "collateral": "s",
-// "claimLodged": "s",
-// "animalTagging": "s",
-// "purposeOfLoan": "s",
-// "natureOfTheBorrower": "s",
-// "ownOfLand": "",
-// "floodsFactor": "",
-// "irrigation": "",
-// "methods": "",
-// "proofOfCult": "",
-// "expInCult": "",
-// "agriSecured": "",
-// "marketCheck": "Mssss",
-// "status": "A"
-
-// { label: 'Salary Income', value: 'Salary Income' },
-// { label: 'Rental Income', value: 'Rental Income' },
-// { label: 'Business Income', value: 'Business Income' },
-// { label: 'Agricultural Income', value: 'Agricultural Income' },
-// { label: 'Live Stock Income', value: 'Live Stock Income' }
+export const schema2 = yup.object().shape({
+    ownership: yup.string().required('Ownership is required'),
+    // qty cannot add negative value or zero
+    qty: yup.number().typeError('Quantity must be a number').positive('Quantity must be greater than 0').required('Quantity is required'),
+    totalAmount: yup.string().required('Total Amount is required'),
+    amount: yup.string().required('Amount is required'),
+});

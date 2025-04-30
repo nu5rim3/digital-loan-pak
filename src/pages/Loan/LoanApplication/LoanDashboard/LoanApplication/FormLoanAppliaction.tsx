@@ -1,25 +1,29 @@
-import { Breadcrumb, Button, Card, Form, Input, InputNumber, Select } from 'antd'
-import React, { useEffect } from 'react'
+import { Breadcrumb, Button, Card, Checkbox, Descriptions, Empty, Form, Input, InputNumber, Select, Tag } from 'antd'
+import React, { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import useCommonStore from '../../../../../store/commonStore'
-import { formatName, getDistrict } from '../../../../../utils/formatterFunctions'
+import { formatCurrency, formatName, formatSentence, getDistrict } from '../../../../../utils/formatterFunctions'
 import {
-    // PlusOutlined,
-    //  EditOutlined, 
+    PlusOutlined,
+    EditOutlined,
     SaveOutlined,
     FileTextOutlined,
     UndoOutlined,
-    CaretLeftOutlined
+    CaretLeftOutlined,
+    DeleteOutlined
 } from '@ant-design/icons';
-import { schema } from './FormLoanAppliactionSchema'
-import useCreditStore from '../../../../../store/creditStore'
+import { schema, schema2 } from './FormLoanAppliactionSchema'
+import useCreditStore, { IOwnerships } from '../../../../../store/creditStore'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import UnderConstruction from '../../../../UnderConstroction'
+import CommonModal from '../../../../../components/common/modal/commonModal'
 
 
 const FormLoanAppliaction: React.FC = () => {
-
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [mode, setMode] = useState<'save' | 'update' | 'remove'>('save');
+    const [selectedDetail, setSelectedDetail] = useState<IOwnerships | null>(null);
     const { appId } = useParams()
     const { pathname } = useLocation()
     const cleanUrl = pathname.replace('/loan-application', '')
@@ -28,20 +32,74 @@ const FormLoanAppliaction: React.FC = () => {
         resolver: yupResolver(schema), defaultValues: {
             acresOwned: '0'
             , acresRented: '0'
+            , acresTotal: '0'
+            , loanLimitRabi: '0'
+            , loanLimitKharif: '0'
+            , loanLimitTotal: '0',
+            sourceOfIncome: 'Agricultural Income'
         }
     });
 
-    const { businessOwnership, businessOwnershipLoading, repeatCustomers, repeatCustomersLoading, salary, salaryLoading, distanceForResidenceOrWork, distanceForResidenceOrWorkLoading, jobs, jobsLoading, natureOfEmployment, natureOfEmploymentLoading, natureOfBusiness, natureOfBusinessLoading, facilityPurpose, facilityPurposeLoading, fetchFacilityPurpose, fetchNatureOfBusiness, fetchNatureOfEmployment, fetchJobs, fetchDistanceForResidenceOrWork, fetchSalary, fetchRepeatCustomersWithProdCode, fetchBusinessOwnership, fetchRepeatCustomers, fetchOwnership } = useCommonStore()
-    const { product, fetchProduct } = useCreditStore()
+    const { control: ownerControl, formState: { errors: ownerError }, handleSubmit: ownerSubmit, reset: ownerReset, watch: ownerWatch, setValue: ownerSetValue } = useForm({
+        resolver: yupResolver(schema2), defaultValues: {
+            amount: '0.00',
+            qty: 1,
+            totalAmount: '0.00',
+        }
+    });
+
+    const { marketCheck, marketCheckLoading, cultLoanPurposes, cultLoanPurposesLoading, agriMethods, agriMethodsLoading, proofOfCultivation, proofOfCultivationLoading, floodsFactor, floodsFactorLoading, irrigation, irrigationLoading, businessOwnership, businessOwnershipLoading, repeatCustomers, repeatCustomersLoading,
+        salary, salaryLoading, distanceForResidenceOrWork, distanceForResidenceOrWorkLoading,
+        jobs, jobsLoading, natureOfEmployment, natureOfEmploymentLoading, natureOfBusiness, natureOfBusinessLoading,
+        facilityPurpose, facilityPurposeLoading, fetchFacilityPurpose, fetchNatureOfBusiness, fetchNatureOfEmployment,
+        fetchJobs, fetchDistanceForResidenceOrWork, fetchSalary, fetchRepeatCustomersWithProdCode, fetchBusinessOwnership,
+        fetchRepeatCustomers, fetchOwnership, fetchIrrigation, fetchFloodsFactor, fetchProofOfCultivation, fetchAgriMethods, fetchCultLoanPurposes,
+        fetchMarketCheck } = useCommonStore()
+    const { ownerships, product, fetchProduct, addOwnerships, updateOwnerships, removeOwnerships } = useCreditStore()
+
+    const openModal = (mode: 'save' | 'update' | 'remove', details: IOwnerships | null = null) => {
+        setMode(mode);
+        setSelectedDetail(details);
+        setIsModalOpen(true);
+        if (details) {
+            ownerSetValue('ownership', details.ownership);
+            ownerSetValue('qty', Number(details.qty));
+            ownerSetValue('amount', details.amount);
+            ownerSetValue('totalAmount', details.totalAmount ?? '0.00');
+        } else {
+            reset();
+        }
+    };
+
+
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = (data: any) => {
         console.log(data);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const onOwnerSubmit = (data: any) => {
+
+        if (mode === 'update') {
+            updateOwnerships(selectedDetail?.ownership ?? '', { ...data }).finally(closeModal)
+        } else if (mode === 'save') {
+            addOwnerships(data).finally(closeModal).finally(closeModal)
+        } else if (mode === 'remove') {
+            removeOwnerships(selectedDetail?.ownership ?? '').finally(closeModal)
+        }
+
+    }
+
+    const closeModal = () => {
+        ownerReset();
+        setIsModalOpen(false);
+    };
+
     useEffect(() => {
         fetchFacilityPurpose()
         fetchProduct(appId ?? '')
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const sourceOfIncome = watch('sourceOfIncome') // 'Agricultural Income'
@@ -53,10 +111,11 @@ const FormLoanAppliaction: React.FC = () => {
             fetchNatureOfBusiness()
             fetchNatureOfEmployment()
             fetchJobs()
+            const productCode = product?.pTrhdLType ?? ''
             if (product?.pTrhdLType) {
-                fetchDistanceForResidenceOrWork(product?.pTrhdLType ?? '')
-                fetchSalary(product?.pTrhdLType ?? '')
-                fetchRepeatCustomersWithProdCode(product?.pTrhdLType ?? '')
+                fetchDistanceForResidenceOrWork(productCode)
+                fetchSalary(productCode)
+                fetchRepeatCustomersWithProdCode(productCode)
             }
         }
 
@@ -65,8 +124,16 @@ const FormLoanAppliaction: React.FC = () => {
             fetchRepeatCustomers()
         }
         if (sourceOfIncome === 'Agricultural Income') {
+            const productCode = 'ZA'//product?.pTrhdLType ?? ''
             if (product?.pTrhdLType) {
-                fetchOwnership(product?.pTrhdLType ?? '')
+                fetchOwnership(productCode)
+                fetchIrrigation(productCode)
+                fetchFloodsFactor(productCode)
+                fetchProofOfCultivation(productCode)
+                fetchAgriMethods(productCode)
+                fetchCultLoanPurposes(productCode)
+                fetchMarketCheck(productCode)
+                fetchRepeatCustomersWithProdCode(productCode)
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -77,6 +144,19 @@ const FormLoanAppliaction: React.FC = () => {
 
     const loanLimitRabi = watch('loanLimitRabi');
     const loanLimitKharif = watch('loanLimitKharif');
+
+    const isAgriSecured = watch('isAgriSecured');
+
+    const qty = ownerWatch('qty');
+    const amount = ownerWatch('amount');
+
+    useEffect(() => {
+        if (!isAgriSecured) {
+            setValue('agriSecured', '');
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isAgriSecured])
+
 
     useEffect(() => {
         const owned = parseFloat(acresOwned ?? '') || 0;
@@ -90,6 +170,24 @@ const FormLoanAppliaction: React.FC = () => {
         setValue('loanLimitTotal', (rabi + kharif).toString());
     }, [loanLimitRabi, loanLimitKharif, setValue]);
 
+
+    useEffect(() => {
+        const perAmount = parseFloat(amount ?? '') || 0;
+        const qtyValue = parseFloat(qty?.toString() ?? '') || 0;
+        ownerSetValue('totalAmount', (perAmount * qtyValue).toString());
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [qty, amount])
+
+
+    useEffect(() => {
+        if (ownerships.length > 0) {
+            const totalAmount = ownerships.reduce((acc, item) => acc + parseFloat(item.totalAmount ?? '0'), 0);
+            setValue('totAssetsValue', totalAmount.toString());
+        } else {
+            setValue('totAssetsValue', '0');
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ownerships])
 
 
     return (
@@ -384,7 +482,7 @@ const FormLoanAppliaction: React.FC = () => {
 
                                     <Card size='small' title={<span className='text-gray-600'>Land Owner's Information</span>}>
                                         <div className='grid grid-cols-4 gap-3'>
-                                            <Form.Item label="Full Name">
+                                            <Form.Item label="Full Name" name="ownName" validateStatus={errors.ownName ? 'error' : ''} help={errors.ownName?.message} required>
                                                 <Controller
                                                     name="ownName"
                                                     control={control}
@@ -396,9 +494,9 @@ const FormLoanAppliaction: React.FC = () => {
                                                     )}
                                                 />
                                             </Form.Item>
-                                            <Form.Item label="CNIC Number">
+                                            <Form.Item label="CNIC Number" name="ownCNIC" validateStatus={errors.ownCNIC ? 'error' : ''} help={errors.ownCNIC?.message} required>
                                                 <Controller
-                                                    name="borrowerDistrict"
+                                                    name="ownCNIC"
                                                     control={control}
                                                     render={({ field }) => (
                                                         <Input
@@ -408,9 +506,9 @@ const FormLoanAppliaction: React.FC = () => {
                                                     )}
                                                 />
                                             </Form.Item>
-                                            <Form.Item label="Contact Number">
+                                            <Form.Item label="Contact Number" name="ownContact" validateStatus={errors.ownContact ? 'error' : ''} help={errors.ownContact?.message} required>
                                                 <Controller
-                                                    name="borrowerDistrict"
+                                                    name="ownContact"
                                                     control={control}
                                                     render={({ field }) => (
                                                         <Input
@@ -420,9 +518,9 @@ const FormLoanAppliaction: React.FC = () => {
                                                     )}
                                                 />
                                             </Form.Item>
-                                            <Form.Item label="Address">
+                                            <Form.Item label="Address" name="ownAddress" validateStatus={errors.ownAddress ? 'error' : ''} help={errors.ownAddress?.message} required>
                                                 <Controller
-                                                    name="borrowerDistrict"
+                                                    name="ownAddress"
                                                     control={control}
                                                     render={({ field }) => (
                                                         <Input.TextArea
@@ -527,7 +625,7 @@ const FormLoanAppliaction: React.FC = () => {
 
                                     </Card>
 
-                                    <Card size='small' title={<span className='text-gray-600'>Crop Details</span>}>
+                                    <Card size='small' title={<span className='text-gray-600'>Crop Information</span>}>
                                         <div className='grid grid-cols-2 gap-3'>
                                             <div className='w-full'>
                                                 <Card size='small' title={<span className='text-gray-600'>Rabi Crop Details</span>}>
@@ -790,7 +888,400 @@ const FormLoanAppliaction: React.FC = () => {
                                         </div>
                                     </Card>
 
+                                    <Card size='small' title={<span>Basic Information</span>}>
+                                        <div className='grid grid-cols-3 gap-3'>
+
+                                            <Form.Item label="Purpose Of Cultivation Loan" name="purposeOfCultLoan" validateStatus={errors.purposeOfCultLoan ? 'error' : ''} help={errors.purposeOfCultLoan?.message} required>
+                                                <Controller
+                                                    name="purposeOfCultLoan"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Select
+                                                            {...field}
+                                                            placeholder="Select Purpose of Cultivation Loan"
+                                                            loading={cultLoanPurposesLoading}
+                                                            options={cultLoanPurposes.map((item) => ({ label: formatName(item.description), value: item.description }))}
+                                                        />
+                                                    )}
+                                                />
+                                            </Form.Item>
+
+                                            <Form.Item label="Repeat Customer" name="repeatCustomer" validateStatus={errors.repeatCustomer ? 'error' : ''} help={errors.repeatCustomer?.message} required>
+                                                <Controller
+                                                    name="repeatCustomer"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Select
+                                                            {...field}
+                                                            placeholder="Select Repeat Customer"
+                                                            loading={repeatCustomersLoading}
+                                                            options={repeatCustomers.map((item) => ({ label: item.description, value: item.description }))}
+                                                        />
+                                                    )}
+                                                />
+                                            </Form.Item>
+
+                                            <Form.Item label="Irrigation" name="irrigation" validateStatus={errors.irrigation ? 'error' : ''} help={errors.irrigation?.message} required>
+                                                <Controller
+                                                    name="irrigation"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Select
+                                                            {...field}
+                                                            placeholder="Select Irrigation"
+                                                            loading={irrigationLoading}
+                                                            options={irrigation.map((item) => ({ label: item.description, value: item.description }))}
+                                                        />
+                                                    )}
+                                                />
+                                            </Form.Item>
+
+                                            <Form.Item label="Floods Factor" name="floodsFactor" validateStatus={errors.floodsFactor ? 'error' : ''} help={errors.floodsFactor?.message} required>
+                                                <Controller
+                                                    name="floodsFactor"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Select
+                                                            {...field}
+                                                            placeholder="Select Floods Factor"
+                                                            loading={floodsFactorLoading}
+                                                            options={floodsFactor.map((item) => ({ label: item.description, value: item.description }))}
+                                                        />
+                                                    )}
+                                                />
+                                            </Form.Item>
+
+                                            <Form.Item label="Proof Of Cultivation" name="proofOfCult" validateStatus={errors.proofOfCult ? 'error' : ''} help={errors.proofOfCult?.message} required>
+                                                <Controller
+                                                    name="proofOfCult"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Select
+                                                            {...field}
+                                                            placeholder="Select Proof Of Cultivation"
+                                                            loading={proofOfCultivationLoading}
+                                                            options={proofOfCultivation.map((item) => ({ label: item.description, value: item.description }))}
+                                                        />
+                                                    )}
+                                                />
+                                            </Form.Item>
+
+                                            <Form.Item label="Agriculturing Methods" name="methods" validateStatus={errors.methods ? 'error' : ''} help={errors.methods?.message} required>
+                                                <Controller
+                                                    name="methods"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Select
+                                                            {...field}
+                                                            placeholder="Select Agriculturing Methods"
+                                                            loading={agriMethodsLoading}
+                                                            options={agriMethods.map((item) => ({ label: item.description, value: item.description }))}
+                                                        />
+                                                    )}
+                                                />
+                                            </Form.Item>
+
+                                            <Form.Item label="Market Check" name="marketCheck" validateStatus={errors.marketCheck ? 'error' : ''} help={errors.marketCheck?.message} required>
+                                                <Controller
+                                                    name="marketCheck"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Select
+                                                            {...field}
+                                                            placeholder="Select Market Check"
+                                                            loading={marketCheckLoading}
+                                                            options={marketCheck.map((item) => ({ label: item.description, value: item.description }))}
+                                                        />
+                                                    )}
+                                                />
+                                            </Form.Item>
+
+                                            <Form.Item label="Experience In Cultivation" name="expInCult" validateStatus={errors.expInCult ? 'error' : ''} help={errors.expInCult?.message} required>
+                                                <Controller
+                                                    name="expInCult"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Select
+                                                            {...field}
+                                                            placeholder="Select Experience In Cultivation"
+                                                            options={[
+                                                                { label: '1 Year', value: '1Y' },
+                                                                { label: '2 Years', value: '2Y' },
+                                                                { label: '3 Years', value: '3Y' },
+                                                                { label: '4 Years', value: '4Y' },
+                                                                { label: '5 Years', value: '5Y' },
+                                                                { label: '6 Years', value: '6Y' },
+                                                                { label: '7 Years', value: '7Y' },
+                                                                { label: '8 Years', value: '8Y' },
+                                                                { label: '9 Years', value: '9Y' },
+                                                                { label: '10 Years', value: '10Y' }
+                                                            ]}
+                                                        />
+                                                    )}
+                                                />
+                                            </Form.Item>
+
+                                            <div className='flex'>
+                                                <div className='flex flex-2/5'>
+                                                    <Form.Item label="Is Agriculture Secured" name="isAgriSecured" validateStatus={errors.isAgriSecured ? 'error' : ''} help={errors.isAgriSecured?.message} tooltip={'Is agri passbook available'}>
+                                                        <Controller
+                                                            name="isAgriSecured"
+                                                            control={control}
+                                                            render={({ field }) => (
+                                                                <Checkbox
+                                                                    {...field}
+                                                                />
+                                                            )}
+                                                        />
+                                                    </Form.Item>
+                                                </div>
+                                                <div className='flex-3/5' hidden={!isAgriSecured}>
+                                                    <Form.Item label="Agriculture Pass Book Number" name="agriSecured" validateStatus={errors.agriSecured ? 'error' : ''} help={errors.agriSecured?.message} required>
+                                                        <Controller
+                                                            name="agriSecured"
+                                                            control={control}
+                                                            render={({ field }) => (
+                                                                <Input
+                                                                    {...field}
+                                                                    placeholder="Agriculture Pass Book Number"
+                                                                />
+                                                            )}
+                                                        />
+                                                    </Form.Item>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </Card>
+
+                                    <Card size='small' title={<span className='text-gray-600'>Ownerships</span>}>
+                                        <div className='flex justify-end'>
+                                            <Button type='primary' onClick={() => openModal('save')} icon={<PlusOutlined />}>Add Ownership</Button>
+                                        </div>
+
+                                        {ownerships.length === 0 && (
+                                            <div className='flex justify-center'>
+                                                <Empty description={'No Ownership Found'} />
+                                            </div>
+                                        )}
+                                        <div className='grid grid-cols-5 gap-3 py-3'>
+                                            {ownerships !== null && ownerships.map((item, index) => (
+                                                <DetailsCard
+                                                    key={index}
+                                                    detail={item}
+                                                    onEdit={() => openModal('update', item)}
+                                                    onRemove={() => openModal('remove', item)}
+                                                />
+                                            ))}
+                                        </div>
+
+                                        <Form.Item label="Total Assets Value" name="totAssetsValue" validateStatus={errors.totAssetsValue ? 'error' : ''} help={errors.totAssetsValue?.message} required>
+                                            <Controller
+                                                name="totAssetsValue"
+                                                control={control}
+                                                render={({ field }) => (
+                                                    <InputNumber
+                                                        className='w-1/3'
+                                                        {...field}
+                                                        placeholder="Total Assets Value"
+                                                        defaultValue='0.00'
+                                                        formatter={(value) =>
+                                                            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
+                                                        }
+                                                        parser={(value) =>
+                                                            value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
+                                                        }
+                                                        step={0.01}
+                                                        min={0}
+                                                        stringMode
+                                                        prefix="Rs."
+                                                        readOnly
+                                                    />
+                                                )}
+                                            />
+                                        </Form.Item>
+                                    </Card>
+
+                                    <Card size='small' title={<span className='text-gray-600'>Crop Loan Insureance Report (CLIR)</span>}>
+                                        {/* loanTenure */}
+                                        <div className='grid grid-cols-4 gap-3'>
+                                            <Form.Item label="Loan Tenure" name="loanTenure" validateStatus={errors.loanTenure ? 'error' : ''} help={errors.loanTenure?.message} required>
+                                                <Controller
+                                                    name="loanTenure"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Input
+                                                            {...field}
+                                                            placeholder="Loan Tenure"
+                                                            defaultValue='360'
+                                                        />
+                                                    )}
+                                                />
+                                            </Form.Item>
+
+                                            <Form.Item label="Insurance Company" name="insCompany" validateStatus={errors.insCompany ? 'error' : ''} help={errors.insCompany?.message} required>
+                                                <Controller
+                                                    name="insCompany"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Input
+                                                            {...field}
+                                                            placeholder="Insurance Company"
+                                                        />
+                                                    )}
+                                                />
+                                            </Form.Item>
+
+                                            <Form.Item label="Policy Issued Date" name="policyIssuedDate" validateStatus={errors.policyIssuedDate ? 'error' : ''} help={errors.policyIssuedDate?.message} required>
+                                                <Controller
+                                                    name="policyIssuedDate"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Input
+                                                            {...field}
+                                                            placeholder="Policy Issued Date"
+                                                            type='date'
+                                                        />
+                                                    )}
+                                                />
+                                            </Form.Item>
+                                            {/* policyExpiredDate */}
+                                            <Form.Item label="Policy Expired Date" name="policyExpiredDate" validateStatus={errors.policyExpiredDate ? 'error' : ''} help={errors.policyExpiredDate?.message} required>
+                                                <Controller
+                                                    name="policyExpiredDate"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Input
+                                                            {...field}
+                                                            placeholder="Policy Expired Date"
+                                                            type='date'
+                                                        />
+                                                    )}
+                                                />
+                                            </Form.Item>
+
+                                            <Form.Item label="Premium Paid Receipt No" name="receiptNo" validateStatus={errors.receiptNo ? 'error' : ''} help={errors.receiptNo?.message} required>
+                                                <Controller
+                                                    name="receiptNo"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Input
+                                                            {...field}
+                                                            placeholder="Premium Paid Receipt No"
+                                                        />
+                                                    )}
+                                                />
+                                            </Form.Item>
+                                            {/* premiumRate */}
+                                            <Form.Item label="Premium Rate" name="premiumRate" validateStatus={errors.premiumRate ? 'error' : ''} help={errors.premiumRate?.message} required>
+                                                <Controller
+                                                    name="premiumRate"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Input
+                                                            className='w-full'
+                                                            {...field}
+                                                            placeholder="Premium Rate"
+                                                            type='number'
+                                                            suffix="%"
+                                                        />
+                                                    )}
+                                                />
+                                            </Form.Item>
+
+                                            <Form.Item label="Premium Rate For Sugarcane" name="premiumRateForSugar" validateStatus={errors.premiumRateForSugar ? 'error' : ''} help={errors.premiumRateForSugar?.message} required>
+                                                <Controller
+                                                    name="premiumRateForSugar"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <InputNumber
+                                                            className='w-full'
+                                                            {...field}
+                                                            placeholder="Premium Rate For Sugarcane"
+                                                            defaultValue='0.00'
+                                                            formatter={(value) =>
+                                                                `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
+                                                            }
+                                                            parser={(value) =>
+                                                                value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
+                                                            }
+                                                            step={0.01}
+                                                            min={0}
+                                                            stringMode
+                                                            prefix="Rs."
+                                                        />
+                                                    )}
+                                                />
+                                            </Form.Item>
+
+                                            <Form.Item label="Evidence of Land Holding" name="evidance" validateStatus={errors.evidance ? 'error' : ''} help={errors.evidance?.message} required>
+                                                <Controller
+                                                    name="evidance"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Input
+                                                            {...field}
+                                                            placeholder="Evidence of Land Holding"
+                                                        />
+                                                    )}
+                                                />
+                                            </Form.Item>
+
+                                            <Form.Item label="Number of Time Claim Loged" name="claimLodged" validateStatus={errors.claimLodged ? 'error' : ''} help={errors.claimLodged?.message} required>
+                                                <Controller
+                                                    name="claimLodged"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Input
+                                                            {...field}
+                                                            placeholder="Number of Time Claim Loged"
+                                                        />
+                                                    )}
+                                                />
+                                            </Form.Item>
+
+                                            <Form.Item label="Other Information 1" name="otherInfo1" validateStatus={errors.otherInfo1 ? 'error' : ''} help={errors.otherInfo1?.message}>
+                                                <Controller
+                                                    name="otherInfo1"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Input
+                                                            {...field}
+                                                            placeholder="Other Information 1"
+                                                        />
+                                                    )}
+                                                />
+                                            </Form.Item>
+
+                                            <Form.Item label="Other Information 2" name="otherInfo2" validateStatus={errors.otherInfo2 ? 'error' : ''} help={errors.otherInfo2?.message}>
+                                                <Controller
+                                                    name="otherInfo2"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Input
+                                                            {...field}
+                                                            placeholder="Other Information 2"
+                                                        />
+                                                    )}
+                                                />
+                                            </Form.Item>
+
+                                            <Form.Item label="Other Information 3" name="otherInfo3" validateStatus={errors.otherInfo3 ? 'error' : ''} help={errors.otherInfo3?.message}>
+                                                <Controller
+                                                    name="otherInfo3"
+                                                    control={control}
+                                                    render={({ field }) => (
+                                                        <Input
+                                                            {...field}
+                                                            placeholder="Other Information 3"
+                                                        />
+                                                    )}
+                                                />
+                                            </Form.Item>
+                                        </div>
+                                    </Card>
                                 </div>
+                                <Tag color="green" className='mt-3 font-bold'>Note: I test hereby undertake that I am the owner/ tenant/ shared cropper of the crops on the above specified land and will utilize the loan only for the purchase of inputs and other production activities of the reported crops.</Tag>
 
                             </Card>
                         )}
@@ -945,11 +1436,11 @@ const FormLoanAppliaction: React.FC = () => {
                             </Card>
                         )}
 
-                        {sourceOfIncome === 'Rental Income' && (
+                        {/* {sourceOfIncome === 'Rental Income' && (
                             <Card title={"Rental Details"} size='small'>
                                 <UnderConstruction />
                             </Card>
-                        )}
+                        )} */}
 
                         {sourceOfIncome === 'Live Stock Income' && (
                             <Card title={"Live Stock Details"} size='small'>
@@ -973,8 +1464,152 @@ const FormLoanAppliaction: React.FC = () => {
                     </Form>
                 </Card>
             </div>
+            <CommonModal
+                title="Ownerships"
+                open={isModalOpen}
+                onClose={closeModal}
+                footer={true}
+                size='large'
+            >
+                <Form layout='vertical'
+                    onFinish={ownerSubmit(onOwnerSubmit)}>
+                    <div className='grid grid-cols-4 gap-3'>
+                        <Form.Item label="Ownership Type" name="ownership" validateStatus={ownerError.ownership ? 'error' : ''} help={ownerError.ownership?.message} required>
+                            <Controller
+                                name="ownership"
+                                control={ownerControl}
+                                render={({ field }) => (
+                                    <Select
+                                        {...field}
+                                        placeholder="Select Ownership Type"
+                                        options={[
+                                            {
+                                                label: <span>Propeties</span>,
+                                                title: 'propeties',
+                                                options: [
+                                                    { label: <span>Home</span>, value: 'Home' },
+                                                    { label: <span>Agri Land</span>, value: 'Agri Land' },
+                                                    { label: <span>Land</span>, value: 'Land' },
+                                                    { label: <span>Tube Well</span>, value: 'Tube Well' },
+                                                    { label: <span>Trolly</span>, value: 'Trolly' },
+                                                ],
+                                            },
+                                            {
+                                                label: <span>Vehicles</span>,
+                                                title: 'vehicles',
+                                                options: [
+                                                    { label: <span>Tractor</span>, value: 'Tractor' },
+                                                    { label: <span>Car</span>, value: 'Car' },
+                                                    { label: <span>Motor Cycle</span>, value: 'Motor Cycle' },
+                                                ],
+                                            },
+                                            {
+                                                label: <span>Animals</span>,
+                                                title: 'animals',
+                                                options: [
+                                                    { label: <span>Cows</span>, value: 'Cows' },
+                                                    { label: <span>Goat</span>, value: 'Goat' },
+                                                    { label: <span>Sheep</span>, value: 'Sheep' },
+                                                    { label: <span>Buffalo</span>, value: 'Buffalo' },
+                                                ],
+                                            },
+                                        ]}
+                                    />
+                                )}
+                            />
+                        </Form.Item>
+                        {/* qty */}
+                        <Form.Item label="Quantity" name="qty" validateStatus={ownerError.qty ? 'error' : ''} help={ownerError.qty?.message} required>
+                            <Controller
+                                name="qty"
+                                control={ownerControl}
+                                render={({ field }) => (
+                                    <InputNumber
+                                        className='w-full'
+                                        {...field}
+                                        placeholder="Quantity"
+                                        defaultValue='1'
+                                    />
+                                )}
+                            />
+                        </Form.Item>
+                        <Form.Item label="Amount" name="amount" validateStatus={ownerError.amount ? 'error' : ''} help={ownerError.amount?.message} required>
+                            <Controller
+                                name="amount"
+                                control={ownerControl}
+                                render={({ field }) => (
+                                    <InputNumber
+                                        className='w-full'
+                                        {...field}
+                                        placeholder="Amount"
+                                        defaultValue='0'
+                                        formatter={(value) =>
+                                            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
+                                        }
+                                        parser={(value) =>
+                                            value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
+                                        }
+                                        step={0.01}
+                                        min={0}
+                                        stringMode
+                                        prefix="Rs."
+                                    />
+                                )}
+                            />
+                        </Form.Item>
+                        <Form.Item label="Total Amount" name="totalAmount" validateStatus={ownerError.totalAmount ? 'error' : ''} help={ownerError.totalAmount?.message} required>
+                            <Controller
+                                name="totalAmount"
+                                control={ownerControl}
+                                render={({ field }) => (
+                                    <InputNumber
+                                        className='w-full'
+                                        {...field}
+                                        placeholder="Total Amount"
+                                        defaultValue='0'
+                                        readOnly
+                                        formatter={(value) =>
+                                            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
+                                        }
+                                        parser={(value) =>
+                                            value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
+                                        }
+                                        step={0.01}
+                                        min={0}
+                                        stringMode
+                                        prefix="Rs."
+                                    />
+                                )}
+                            />
+                        </Form.Item>
+                    </div>
+                    <div className='flex justify-end'>
+                        <Button type="primary" htmlType="submit" icon={mode === 'remove' ? <DeleteOutlined /> : <SaveOutlined />} danger={mode === 'remove'}>
+                            {formatSentence(mode)}
+                        </Button>
+                        <Button type='default' className='ml-3' danger icon={<UndoOutlined />} onClick={() => ownerReset()}>
+                            Reset
+                        </Button>
+                    </div>
+                </Form>
+            </CommonModal>
         </div>
     )
 }
+
+const DetailsCard: React.FC<{ detail: IOwnerships; onEdit: () => void; onRemove: () => void; }> = ({ detail, onEdit, onRemove }) => (
+    <Card>
+        <div className="flex justify-end gap-1">
+            <Button type="default" size="small" icon={<EditOutlined />} onClick={onEdit} />
+            <Button type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
+        </div>
+        <Descriptions column={1}>
+            <Descriptions.Item label="Ownership">{detail.ownership ?? '-'}</Descriptions.Item>
+            <Descriptions.Item label="Quantity">{detail.qty ?? '-'}</Descriptions.Item>
+            <Descriptions.Item label="Per Amount">{formatCurrency(Number(detail.amount)) ?? '0.00'}</Descriptions.Item>
+            <Descriptions.Item label="Total Amount">{formatCurrency(Number(detail.totalAmount)) ?? '0.00'}</Descriptions.Item>
+        </Descriptions>
+    </Card>
+);
 
 export default FormLoanAppliaction

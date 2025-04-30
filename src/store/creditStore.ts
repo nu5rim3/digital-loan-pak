@@ -161,6 +161,18 @@ interface IBusinessIncome {
   status?: string;
 }
 
+export interface IOwnerships {
+  ownership: string;
+  qty: string;
+  amount: string;
+  totalAmount?: string;
+  status?: string;
+  createdBy?: string;
+  creationDate?: string;
+  lastModifiedBy?: string;
+  lastModifiedDate?: string;
+}
+
 interface IAgricultureIncome {
   appraisalId: string;
   idx?: string;
@@ -213,16 +225,7 @@ interface IAgricultureIncome {
   otherInfo1: string;
   otherInfo2: string;
   otherInfo3: string;
-  assets: {
-    ownership: string;
-    qty: string;
-    amount: string;
-    status: string;
-    createdBy: string;
-    creationDate: string;
-    lastModifiedBy: string;
-    lastModifiedDate: string;
-  }[];
+  assets: IOwnerships[];
   totAssetsValue: string;
   status?: string;
   createdBy?: string;
@@ -310,6 +313,8 @@ interface ICreditState {
   salaryIncome: ISalaryIncome[];
   salaryIncomeLoading: boolean;
   salaryIncomeError: string | null;
+
+  ownerships: IOwnerships[];
 
   fetachGoldLoanAppDetails: (appId: string) => Promise<void>;
   addGoldLoanAppDetails: (data: IGoldLoanAppDetails) => Promise<void>;
@@ -400,6 +405,11 @@ interface ICreditState {
   fetchSalaryIncome: (appId: string) => Promise<void>;
   addSalaryIncome: (appId: string, data: ISalaryIncome) => Promise<void>;
   updateSalaryIncome: (appId: string, data: ISalaryIncome) => Promise<void>;
+
+  addOwnerships: (data: IOwnerships) => Promise<void>;
+  updateOwnerships: (key: string, data: IOwnerships) => Promise<void>;
+  fetchOwnerships: () => Promise<void>;
+  removeOwnerships: (key: string) => Promise<void>;
 }
 
 const useCreditStore = create<ICreditState>((set) => ({
@@ -459,6 +469,8 @@ const useCreditStore = create<ICreditState>((set) => ({
   salaryIncome: [],
   salaryIncomeLoading: false,
   salaryIncomeError: null,
+
+  ownerships: [],
 
   fetachGoldLoanAppDetails: async (appId: string) => {
     set({ goldLoanAppDetailsLoading: true });
@@ -1124,6 +1136,40 @@ const useCreditStore = create<ICreditState>((set) => ({
         salaryIncomeLoading: false,
       });
     }
+  },
+
+  addOwnerships: async (data: IOwnerships) => {
+    set((state) => ({
+      ownerships: [...state.ownerships, data],
+    }));
+    notification.success({
+      message: "Ownership Added Successfully",
+    });
+  },
+  updateOwnerships: async (key: string, data: IOwnerships) => {
+    set((state) => ({
+      ownerships: state.ownerships.map((item) =>
+        item.ownership === key ? { ...item, ...data } : item
+      ),
+    }));
+    notification.success({
+      message: "Ownership Updated Successfully",
+    });
+  },
+
+  fetchOwnerships: async () => {
+    set((state) => ({
+      ownerships: state.ownerships,
+    }));
+  },
+
+  removeOwnerships: async (key: string) => {
+    set((state) => ({
+      ownerships: state.ownerships.filter((item) => item.ownership !== key),
+    }));
+    notification.success({
+      message: "Ownership Removed Successfully",
+    });
   },
 }));
 

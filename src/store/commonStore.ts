@@ -168,6 +168,13 @@ interface ILoanPurpose {
   creditScore: string;
   status: "A" | "I";
 }
+interface ICultLoanPurpose {
+  description: string;
+  creditScore: string;
+  status: "A" | "I";
+  code: string;
+  productCode: string;
+}
 
 interface IFloodsFactor {
   code: string;
@@ -228,6 +235,14 @@ interface IOwnership {
   description: string;
   status: "A" | "I";
   creditScore: string;
+}
+
+interface IMarketCheck {
+  code: string;
+  description: string;
+  status: "A" | "I";
+  creditScore: string;
+  productCode: string;
 }
 interface ICommonState {
   operators: IOperator[];
@@ -366,6 +381,14 @@ interface ICommonState {
   ownershipLoading: boolean;
   ownershipError: string | null;
 
+  cultLoanPurposes: ICultLoanPurpose[];
+  cultLoanPurposesLoading: boolean;
+  cultLoanPurposesError: string | null;
+
+  marketCheck: IMarketCheck[];
+  marketCheckLoading: boolean;
+  marketCheckError: string | null;
+
   fetchOperators: () => Promise<void>;
   fetchECIBReport: (cnic: string) => Promise<void>;
   fetchOrganizationType: () => Promise<void>;
@@ -401,6 +424,8 @@ interface ICommonState {
   fetchSalary: (productCode: string) => Promise<void>;
   fetchRepeatCustomersWithProdCode: (productCode: string) => Promise<void>;
   fetchOwnership: (productCode: string) => Promise<void>;
+  fetchCultLoanPurposes: (productCode: string) => Promise<void>;
+  fetchMarketCheck: (productCode: string) => Promise<void>;
 }
 
 type TPersist = (
@@ -562,6 +587,14 @@ const useCommonStore = create<ICommonState>(
       ownership: [],
       ownershipLoading: false,
       ownershipError: null,
+
+      cultLoanPurposes: [],
+      cultLoanPurposesLoading: false,
+      cultLoanPurposesError: null,
+
+      marketCheck: [],
+      marketCheckLoading: false,
+      marketCheckError: null,
 
       fetchOperators: async () => {
         set({ operatorLoading: true, operatorError: null });
@@ -1102,6 +1135,38 @@ const useCommonStore = create<ICommonState>(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
           set({ ownershipError: error.message, ownershipLoading: false });
+        }
+      },
+
+      fetchCultLoanPurposes: async (productCode: string) => {
+        set({ cultLoanPurposesLoading: true, cultLoanPurposesError: null });
+        try {
+          const response = await API.get(
+            `/mobixCamsCommon/v1/loan-purposes/products/${productCode}`
+          );
+          set({
+            cultLoanPurposes: response.data,
+            cultLoanPurposesLoading: false,
+          });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({
+            cultLoanPurposesError: error.message,
+            cultLoanPurposesLoading: false,
+          });
+        }
+      },
+
+      fetchMarketCheck: async (productCode: string) => {
+        set({ marketCheckLoading: true, marketCheckError: null });
+        try {
+          const response = await API.get(
+            `/mobixCamsCommon/v1/field-verifications/products/${productCode}`
+          );
+          set({ marketCheck: response.data, marketCheckLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({ marketCheckError: error.message, marketCheckLoading: false });
         }
       },
     }),

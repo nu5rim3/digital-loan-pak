@@ -33,7 +33,7 @@ const SelectUser: React.FC = () => {
     return (
         <div className="bg-[url('/img/bg.svg')]">
             <Content className='flex flex-col justify-between h-screen'>
-                <div className='flex flex-row'>
+                <div className='flex flex-row h-full'>
                     <div className='flex flex-1/2'>
                         <div className='flex flex-col w-full'>
                             <img src={Logo} alt='digital-loan' style={{ width: 300 }} className='mb-5' />
@@ -49,7 +49,7 @@ const SelectUser: React.FC = () => {
                         </div>
                     </div>
                     <div className='flex flex-1/2 bg-blue-100 justify-center'>
-                        <div className='flex flex-col justify-center p-4'>
+                        <div className='flex flex-col justify-center p-4 h-full'>
                             <Title level={3} className="text-center pb-6">
                                 Select Your User Role
                             </Title>
