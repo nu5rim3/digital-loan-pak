@@ -17,6 +17,7 @@ const LiabilityAffidavit = lazy(() => import('./LiabilityAffidavit'))
 const GoldFacilityApplication = lazy(() => import('./GoldFacilityApplication/GoldFacilityApplication'))
 const CashFlow = lazy(() => import('./CashFlow'))
 const LoanApplication = lazy(() => import('./LoanApplication'))
+const ExceptionalApproval = lazy(() => import('./ExceptionalApproval'))
 
 interface StatusProps {
     isCompleted: string;
@@ -87,6 +88,8 @@ const LoanDaashboard: React.FC = () => {
                 return <CashFlow />;
             case 'credit-scoring':
                 return <div>Credit Scoring</div>;
+            case 'exceptional-approval':
+                return <ExceptionalApproval />;
             case 'customer-acknowledgement':
                 return <div>Customer Acknowledgement</div>;
             case 'guarantor-acknowledgement':
@@ -219,6 +222,18 @@ const LoanDaashboard: React.FC = () => {
             "lastModifiedBy": null,
             "lastModifiedDate": null,
             "id": 11,
+            "section": "exceptional-approval",
+            "isMandatory": "0",
+            "completed": "1",
+            "enabled": null,
+            "status": "A"
+        },
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2022-08-09T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 12,
             "section": "customer-acknowledgement",
             "isMandatory": "1",
             "completed": "1",
@@ -231,7 +246,7 @@ const LoanDaashboard: React.FC = () => {
             "creationDate": "2024-07-11T09:24:51.357+00:00",
             "lastModifiedBy": null,
             "lastModifiedDate": null,
-            "id": 12,
+            "id": 13,
             "section": "term-deposit",
             "isMandatory": "0",
             "completed": "1",

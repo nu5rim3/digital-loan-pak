@@ -17,6 +17,25 @@ interface IExceptionalApprovalPayload {
   categoryDec: string;
 }
 
+interface IApproval {
+  idx: string;
+  appraisalIdx: string;
+  type: string;
+  category: string;
+  categoryDec: string;
+  remark: string;
+  roleCode: string;
+  role: string;
+  status: string;
+  createdBy: string;
+  creationDate: number;
+  lastModifiedBy: string;
+  lastModifiedDate: number;
+  actionPerson: string | null;
+  actionDate: number | null;
+  comments: string | null;
+}
+
 interface IApprovalState {
   exceptionalApprovalCategories: IExceptionalApprovalCategory[];
   exceptionalApprovalCategoriesLoading: boolean;
@@ -26,10 +45,21 @@ interface IApprovalState {
   appraisalApprovalLoading: boolean;
   appraisalApprovalError: string | null;
 
+  ExceptionalApprovalPerson: null;
+  ExceptionalApprovalPersonLoading: boolean;
+  ExceptionalApprovalPersonError: null;
+
+  approvals: IApproval[];
+  approvalsLoading: boolean;
+  approvalsError: string | null;
+
   fetchExceptionalApprovalCategories: () => Promise<void>;
   requestExceptionalApproval: (
     payload: IExceptionalApprovalPayload
   ) => Promise<void>;
+  fetchExceptionalApprovalPerson: (category: string) => Promise<void>;
+  fetchApprovals: (appraisalIdx: string) => Promise<void>;
+  deleteApproval: (idx: string) => Promise<void>;
 }
 
 const useApprovalStore = create<IApprovalState>((set) => ({
@@ -40,6 +70,14 @@ const useApprovalStore = create<IApprovalState>((set) => ({
   appraisalApprovalResponse: null,
   appraisalApprovalLoading: false,
   appraisalApprovalError: null,
+
+  ExceptionalApprovalPerson: null,
+  ExceptionalApprovalPersonLoading: false,
+  ExceptionalApprovalPersonError: null,
+
+  approvals: [],
+  approvalsLoading: false,
+  approvalsError: null,
 
   fetchExceptionalApprovalCategories: async () => {
     set({
@@ -79,6 +117,70 @@ const useApprovalStore = create<IApprovalState>((set) => ({
         appraisalApprovalLoading: false,
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        appraisalApprovalError: error.message,
+        appraisalApprovalLoading: false,
+      });
+    }
+  },
+
+  fetchExceptionalApprovalPerson: async (category: string) => {
+    set({
+      ExceptionalApprovalPersonLoading: true,
+      ExceptionalApprovalPersonError: null,
+    });
+
+    try {
+      const response = await API.get(
+        `/mobixCamsCommon/v1/exceptional-approval-categories/${category}`
+      );
+      set({
+        ExceptionalApprovalPerson: response.data,
+        ExceptionalApprovalPersonLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        ExceptionalApprovalPersonError: error.message,
+        ExceptionalApprovalPersonLoading: false,
+      });
+    }
+  },
+
+  fetchApprovals: async (appraisalIdx: string) => {
+    set({
+      approvalsLoading: true,
+      approvalsError: null,
+    });
+
+    try {
+      const response = await API.get(
+        `/mobixCamsApproval/v1/approvals/appraisal/${appraisalIdx}`
+      );
+      set({
+        approvals: response.data,
+        approvalsLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        approvalsError: error.message,
+        approvalsLoading: false,
+      });
+    }
+  },
+
+  deleteApproval: async (idx: string) => {
+    set({
+      appraisalApprovalLoading: true,
+      appraisalApprovalError: null,
+    });
+    try {
+      await APIAuth.put(`/mobixCamsApproval/v1/approvals/appraisal/${idx}/inactive`);
+      set({
+        appraisalApprovalLoading: false,
+      });
     } catch (error: any) {
       set({
         appraisalApprovalError: error.message,
