@@ -1,40 +1,13 @@
-import { Form, Select, Button } from "antd";
-import TextArea from "antd/es/input/TextArea";
+import { Button, Form, Modal, Select, Input } from "antd";
 import { Controller, UseFormReturn } from "react-hook-form";
+import { ExceptionalApprovalFormData, ExceptionalApprovalPersonResponse, ExceptionalApprovalRole } from "./types";
+import TextArea from "antd/es/input/TextArea";
+import { useEffect } from "react";
 import CommonModal from "../../../../../components/common/modal/commonModal";
 import useApprovalStore from "../../../../../store/approvalStore";
 import { PlusOutlined, UndoOutlined } from "@ant-design/icons";
-import { useEffect } from "react";
 
-interface ExceptionalApprovalFormData {
-  exceptionalApprovalCategory: string;
-  approvePerson: string;
-  remark: string;
-}
-
-interface Role {
-  code: string;
-  description: string;
-  status: string;
-  roleName: string;
-  createdBy?: string;
-  creationDate?: string;
-}
-
-interface ExceptionalApprovalRole {
-  role: Role;
-  description: string;
-  status: string;
-}
-
-interface ExceptionalApprovalPersonResponse {
-  code: string;
-  description: string;
-  status: string;
-  exceptionalApprovalRoles: ExceptionalApprovalRole[];
-}
-
-interface AddRecordsModalProps {
+interface ExceptionalApprovalModalProps {
   mode: "save" | "update" | "remove";
   isModalOpen: boolean;
   closeModal: () => void;
@@ -42,7 +15,8 @@ interface AddRecordsModalProps {
   onSubmit: (data: ExceptionalApprovalFormData) => void;
 }
 
-const AddRecordsModal: React.FC<AddRecordsModalProps> = ({
+
+const ExceptionalApprovalModal: React.FC<ExceptionalApprovalModalProps> = ({
   mode,
   isModalOpen,
   closeModal,
@@ -212,27 +186,41 @@ const AddRecordsModal: React.FC<AddRecordsModalProps> = ({
         </div>
 
         <div className="flex flex-row-reverse gap-3">
-          <Button
-            type="default"
-            onClick={handleClear}
-            danger
-            icon={<UndoOutlined />}
-            disabled={appraisalApprovalLoading || mode === "remove"}
-          >
-            Clear
-          </Button>
-          <Button
-            type="primary"
-            htmlType="submit"
-            icon={<PlusOutlined />}
-            loading={appraisalApprovalLoading}
-          >
-            {mode === "save" ? "Add" : mode === "update" ? "Update" : "Remove"}
-          </Button>
+          {mode === "remove" ? (
+            <Button
+              type="default"
+              htmlType="submit"
+              icon={<PlusOutlined />}
+              loading={appraisalApprovalLoading}
+              danger
+            >
+              Remove
+            </Button>
+          ) : (
+            <>
+              <Button
+                type="default"
+                onClick={handleClear}
+                danger
+                icon={<UndoOutlined />}
+                disabled={appraisalApprovalLoading}
+              >
+                Clear
+              </Button>
+              <Button
+                type="primary"
+                htmlType="submit"
+                icon={<PlusOutlined />}
+                loading={appraisalApprovalLoading}
+              >
+                {mode === "save" ? "Add" : "Update"}
+              </Button>
+            </>
+          )}
         </div>
       </Form>
     </CommonModal>
   );
 };
 
-export default AddRecordsModal;
+export default ExceptionalApprovalModal; 

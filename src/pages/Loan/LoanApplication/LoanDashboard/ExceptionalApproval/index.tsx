@@ -3,97 +3,13 @@ import React, { useEffect, useState } from "react";
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import AddRecordsModal from "./AddRecordsModal";
+import DetailsCard from "./DetailsCard";
+import ExceptionalApprovalModal from "./ExceptionalApprovalModal";
 import useApprovalStore from "../../../../../store/approvalStore";
 import { useParams } from "react-router-dom";
-
-interface ExceptionalApprovalFormData {
-  exceptionalApprovalCategory: string;
-  approvePerson: string;
-  remark: string;
-}
-
-interface ExceptionalApprovalRecord {
-  idx: string;
-  appraisalIdx: string;
-  type: string;
-  category: string;
-  categoryDec: string;
-  remark: string;
-  roleCode: string;
-  role: string;
-  status: string;
-  createdBy: string;
-  creationDate: number;
-  lastModifiedBy: string;
-  lastModifiedDate: number;
-  actionPerson: string | null;
-  actionDate: number | null;
-  comments: string | null;
-}
-
-interface ExceptionalApprovalPersonResponse {
-  code: string;
-  description: string;
-  status: string;
-  exceptionalApprovalRoles: Array<{
-    role: {
-      code: string;
-      description: string;
-      status: string;
-      roleName: string;
-    };
-    description: string;
-    status: string;
-  }>;
-}
-
-const schema = yup.object().shape({
-  exceptionalApprovalCategory: yup
-    .string()
-    .required("Exceptional Approval Method is required"),
-  approvePerson: yup.string().required("Approve Person is required"),
-  remark: yup.string().required("Comment is required"),
-});
+import { ExceptionalApprovalFormData, ExceptionalApprovalRecord, ExceptionalApprovalPersonResponse, schema } from "./types";
 
 interface ExceptionalApprovalProps {}
-
-const DetailsCard: React.FC<{
-  detail: ExceptionalApprovalRecord;
-  onEdit: () => void;
-  onRemove: () => void;
-  dataArray: any[];
-}> = ({ detail, onEdit, onRemove, dataArray }) => (
-  <Card>
-    <div className="flex justify-end gap-1">
-      <Button
-        type="default"
-        size="small"
-        icon={<EditOutlined />}
-        onClick={onEdit}
-      />
-      <Button
-        type="default"
-        size="small"
-        icon={<DeleteOutlined />}
-        onClick={onRemove}
-        danger
-      />
-    </div>
-    <Descriptions column={1}>
-      <Descriptions.Item label="Approval Category">
-        {detail.categoryDec ?? "-"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Approve Person">
-        {detail.role ?? "-"}
-      </Descriptions.Item>
-      <Descriptions.Item label="Comment">
-        {detail.remark ?? "-"}
-      </Descriptions.Item>
-    </Descriptions>
-  </Card>
-);
 
 const ExceptionalApproval: React.FC<ExceptionalApprovalProps> = () => {
   const { appId } = useParams();
@@ -208,20 +124,20 @@ const ExceptionalApproval: React.FC<ExceptionalApprovalProps> = () => {
             <Empty description="No Exceptional Approvals Added" />
           ) : (
             <div className="grid grid-cols-3 gap-3">
-              {approvals.map((record) => (
+              {approvals.map((detail) => (
                 <DetailsCard
-                  key={record.idx}
-                  detail={record}
-                  onEdit={() => openModal("update", record)}
-                  onRemove={() => openModal("remove", record)}
-                  dataArray={[]}
+                  key={detail.idx}
+                  detail={detail}
+                  onEdit={() => openModal("update", detail)}
+                  onRemove={() => openModal("remove", detail)}
+                  dataArray={approvals}
                 />
               ))}
             </div>
           )}
         </div>
 
-        <AddRecordsModal
+        <ExceptionalApprovalModal
           mode={mode}
           isModalOpen={isModalOpen}
           closeModal={closeModal}
