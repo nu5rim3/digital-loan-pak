@@ -30,13 +30,12 @@ const FormLoanAppliaction: React.FC = () => {
     const navigate = useNavigate()
     const { control, formState: { errors }, handleSubmit, reset, watch, setValue } = useForm({
         resolver: yupResolver(schema), defaultValues: {
-            acresOwned: '0'
-            , acresRented: '0'
-            , acresTotal: '0'
-            , loanLimitRabi: '0'
-            , loanLimitKharif: '0'
-            , loanLimitTotal: '0',
-            sourceOfIncome: 'Agricultural Income'
+            acresOwned: '0',
+            acresRented: '0',
+            acresTotal: '0',
+            loanLimitRabi: '0',
+            loanLimitKharif: '0',
+            loanLimitTotal: '0',
         }
     });
 
@@ -55,7 +54,8 @@ const FormLoanAppliaction: React.FC = () => {
         fetchJobs, fetchDistanceForResidenceOrWork, fetchSalary, fetchRepeatCustomersWithProdCode, fetchBusinessOwnership,
         fetchRepeatCustomers, fetchOwnership, fetchIrrigation, fetchFloodsFactor, fetchProofOfCultivation, fetchAgriMethods, fetchCultLoanPurposes,
         fetchMarketCheck } = useCommonStore()
-    const { ownerships, product, fetchProduct, addOwnerships, updateOwnerships, removeOwnerships } = useCreditStore()
+
+    const { businessIncomeList, ownerships, product, fetchProduct, addOwnerships, updateOwnerships, removeOwnerships, addSalaryIncome, addBusinessIncome } = useCreditStore()
 
     const openModal = (mode: 'save' | 'update' | 'remove', details: IOwnerships | null = null) => {
         setMode(mode);
@@ -67,7 +67,7 @@ const FormLoanAppliaction: React.FC = () => {
             ownerSetValue('amount', details.amount);
             ownerSetValue('totalAmount', details.totalAmount ?? '0.00');
         } else {
-            reset();
+            ownerReset();
         }
     };
 
@@ -76,7 +76,25 @@ const FormLoanAppliaction: React.FC = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = (data: any) => {
         console.log(data);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const actionMap: any = {
+            'Salary Income': () => addSalaryIncome(appId ?? '', data),
+            'Agricultural Income': () => console.log('Agricultural Income: ', data),
+            'Business Income': () => addBusinessIncome(data),
+            'Live Stock Income': () => console.log('Live Stock Income: ', data),
+        }
+        const action = actionMap[data.sourceOfIncome] ?? '';
+        if (action) {
+            action().finally(() => {
+                // reset();
+                // navigate(cleanUrl);
+            });
+        } else {
+            // navigate(cleanUrl);
+        }
     }
+
+    console.log('businessIncomeList', businessIncomeList);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onOwnerSubmit = (data: any) => {
@@ -261,7 +279,6 @@ const FormLoanAppliaction: React.FC = () => {
                                                 [
                                                     { label: 'Agricultural Income', value: 'Agricultural Income' },
                                                     { label: 'Business Income', value: 'Business Income' },
-                                                    { label: 'Rental Income', value: 'Rental Income' },
                                                     { label: 'Salary Income', value: 'Salary Income' },
                                                     { label: 'Live Stock Income', value: 'Live Stock Income' }
                                                 ]
@@ -272,157 +289,184 @@ const FormLoanAppliaction: React.FC = () => {
                             </Form.Item>
                         </div>
                         {sourceOfIncome === 'Business Income' && (
-                            <Card title={"Business Details"} size='small'>
-                                <div className='grid grid-cols-4 gap-3'>
-                                    <Form.Item label="Business Name" name="bnsName" validateStatus={errors.bnsName ? 'error' : ''} help={errors.bnsName?.message} required>
-                                        <Controller
-                                            name="bnsName"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <Input
-                                                    {...field}
-                                                    placeholder="Business Name"
-                                                />
-                                            )}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Nature Of Business" name="natureOfBns" validateStatus={errors.natureOfBns ? 'error' : ''} help={errors.natureOfBns?.message} required>
-                                        <Controller
-                                            name="natureOfBns"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <Select
-                                                    {...field}
-                                                    placeholder="Select Nature of Business"
-                                                    loading={natureOfBusinessLoading}
-                                                    options={natureOfBusiness.map((item) => ({ label: item.description, value: item.description }))}
-                                                />
-                                            )}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Previous Experience In Business" name="prevExpInBns" validateStatus={errors.prevExpInBns ? 'error' : ''} help={errors.prevExpInBns?.message} required>
-                                        <Controller
-                                            name="prevExpInBns"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <Select
-                                                    {...field}
-                                                    placeholder="Previous Experience In Business"
-                                                    options={[
-                                                        // add up to 10 years
-                                                        { label: '1 Year', value: '1Y' },
-                                                        { label: '2 Years', value: '2Y' },
-                                                        { label: '3 Years', value: '3Y' },
-                                                        { label: '4 Years', value: '4Y' },
-                                                        { label: '5 Years', value: '5Y' },
-                                                        { label: '6 Years', value: '6Y' },
-                                                        { label: '7 Years', value: '7Y' },
-                                                    ]}
-                                                />
-                                            )}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Own Of Business Place" name="ownOfBnsPlace" validateStatus={errors.ownOfBnsPlace ? 'error' : ''} help={errors.ownOfBnsPlace?.message} required>
-                                        <Controller
-                                            name="ownOfBnsPlace"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <Select
-                                                    {...field}
-                                                    placeholder="Select Own of Business Place"
-                                                    loading={businessOwnershipLoading}
-                                                    options={businessOwnership.map((item) => ({ label: item.description, value: item.description }))}
-                                                />
-                                            )}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Cost Of Business" name="costOfBns" validateStatus={errors.costOfBns ? 'error' : ''} help={errors.costOfBns?.message} required>
-                                        <Controller
-                                            name="costOfBns"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <Input
-                                                    {...field}
-                                                    placeholder="Cost Of Business"
-                                                />
-                                            )}
-                                        />
-                                    </Form.Item>
+                            <div className='flex flex-col gap-3'>
+                                <Card title={"Business Details"} size='small'>
+                                    <div className='grid grid-cols-4 gap-3'>
+                                        <Form.Item label="Business Name" name="bnsName" validateStatus={errors.bnsName ? 'error' : ''} help={errors.bnsName?.message} required>
+                                            <Controller
+                                                name="bnsName"
+                                                control={control}
+                                                render={({ field }) => (
+                                                    <Input
+                                                        {...field}
+                                                        placeholder="Business Name"
+                                                    />
+                                                )}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label="Nature Of Business" name="natureOfBns" validateStatus={errors.natureOfBns ? 'error' : ''} help={errors.natureOfBns?.message} required>
+                                            <Controller
+                                                name="natureOfBns"
+                                                control={control}
+                                                render={({ field }) => (
+                                                    <Select
+                                                        {...field}
+                                                        placeholder="Select Nature of Business"
+                                                        loading={natureOfBusinessLoading}
+                                                        options={natureOfBusiness.map((item) => ({ label: item.description, value: item.description }))}
+                                                    />
+                                                )}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label="Previous Experience In Business" name="prevExpInBns" validateStatus={errors.prevExpInBns ? 'error' : ''} help={errors.prevExpInBns?.message} required>
+                                            <Controller
+                                                name="prevExpInBns"
+                                                control={control}
+                                                render={({ field }) => (
+                                                    <Select
+                                                        {...field}
+                                                        placeholder="Previous Experience In Business"
+                                                        options={[
+                                                            // add up to 10 years
+                                                            { label: '1 Year', value: '1Y' },
+                                                            { label: '2 Years', value: '2Y' },
+                                                            { label: '3 Years', value: '3Y' },
+                                                            { label: '4 Years', value: '4Y' },
+                                                            { label: '5 Years', value: '5Y' },
+                                                            { label: '6 Years', value: '6Y' },
+                                                            { label: '7 Years', value: '7Y' },
+                                                        ]}
+                                                    />
+                                                )}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label="Own Of Business Place" name="ownOfBnsPlace" validateStatus={errors.ownOfBnsPlace ? 'error' : ''} help={errors.ownOfBnsPlace?.message} required>
+                                            <Controller
+                                                name="ownOfBnsPlace"
+                                                control={control}
+                                                render={({ field }) => (
+                                                    <Select
+                                                        {...field}
+                                                        placeholder="Select Own of Business Place"
+                                                        loading={businessOwnershipLoading}
+                                                        options={businessOwnership.map((item) => ({ label: item.description, value: item.description }))}
+                                                    />
+                                                )}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label="Cost Of Business" name="costOfBns" validateStatus={errors.costOfBns ? 'error' : ''} help={errors.costOfBns?.message} required>
+                                            <Controller
+                                                name="costOfBns"
+                                                control={control}
+                                                render={({ field }) => (
+                                                    <InputNumber
+                                                        className='w-full'
+                                                        {...field}
+                                                        placeholder="Cost Of Business"
+                                                        defaultValue='0'
+                                                        formatter={(value) =>
+                                                            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
+                                                        }
+                                                        parser={(value) =>
+                                                            value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
+                                                        }
+                                                        step={0.01}
+                                                        min={0}
+                                                        stringMode
+                                                        prefix="Rs."
+                                                    />
+                                                )}
+                                            />
+                                        </Form.Item>
 
-                                    <Form.Item label="Phone Number" name="phoneNo" validateStatus={errors.phoneNo ? 'error' : ''} help={errors.phoneNo?.message} required>
-                                        <Controller
-                                            name="phoneNo"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <Input
-                                                    {...field}
-                                                    placeholder="Phone Number"
-                                                />
-                                            )}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Business Address" name="bnsAddress" validateStatus={errors.bnsAddress ? 'error' : ''} help={errors.bnsAddress?.message} required>
-                                        <Controller
-                                            name="bnsAddress"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <Input.TextArea
-                                                    {...field}
-                                                    placeholder="Business Address"
-                                                />
-                                            )}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Description" name="description" validateStatus={errors.description ? 'error' : ''} help={errors.description?.message} required>
-                                        <Controller
-                                            name="description"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <Input.TextArea
-                                                    {...field}
-                                                    placeholder="Description"
-                                                />
-                                            )}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Repeat Customer" name="repeatCustomer" validateStatus={errors.repeatCustomer ? 'error' : ''} help={errors.repeatCustomer?.message} required>
-                                        <Controller
-                                            name="repeatCustomer"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <Select
-                                                    {...field}
-                                                    placeholder="Select Repeat Customer"
-                                                    loading={repeatCustomersLoading}
-                                                    options={repeatCustomers.map((item) => ({ label: item.description, value: item.description }))}
-                                                />
-                                            )}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Business Ratings" name="bnsRatings" validateStatus={errors.bnsRatings ? 'error' : ''} help={errors.bnsRatings?.message} required>
-                                        <Controller
-                                            name="bnsRatings"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <Input
-                                                    {...field}
-                                                    placeholder="Business Ratings"
-                                                />
-                                            )}
-                                        />
-                                    </Form.Item>
+                                        <Form.Item label="Phone Number" name="phoneNo" validateStatus={errors.phoneNo ? 'error' : ''} help={errors.phoneNo?.message} required>
+                                            <Controller
+                                                name="phoneNo"
+                                                control={control}
+                                                render={({ field }) => (
+                                                    <Input
+                                                        {...field}
+                                                        placeholder="Phone Number"
+                                                    />
+                                                )}
+                                            />
+                                        </Form.Item>
 
-                                </div>
-                            </Card>
+                                        <Form.Item label="Repeat Customer" name="repeatCustomer" validateStatus={errors.repeatCustomer ? 'error' : ''} help={errors.repeatCustomer?.message} required>
+                                            <Controller
+                                                name="repeatCustomer"
+                                                control={control}
+                                                render={({ field }) => (
+                                                    <Select
+                                                        {...field}
+                                                        placeholder="Select Repeat Customer"
+                                                        loading={repeatCustomersLoading}
+                                                        options={repeatCustomers.map((item) => ({ label: item.description, value: item.description }))}
+                                                    />
+                                                )}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label="Business Ratings" name="bnsRatings" validateStatus={errors.bnsRatings ? 'error' : ''} help={errors.bnsRatings?.message} required>
+                                            <Controller
+                                                name="bnsRatings"
+                                                control={control}
+                                                render={({ field }) => (
+                                                    <Input
+                                                        {...field}
+                                                        placeholder="Business Ratings"
+                                                    />
+                                                )}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label="Business Address" name="bnsAddress" validateStatus={errors.bnsAddress ? 'error' : ''} help={errors.bnsAddress?.message} required>
+                                            <Controller
+                                                name="bnsAddress"
+                                                control={control}
+                                                render={({ field }) => (
+                                                    <Input.TextArea
+                                                        {...field}
+                                                        placeholder="Business Address"
+                                                    />
+                                                )}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label="Description" name="description" validateStatus={errors.description ? 'error' : ''} help={errors.description?.message} required>
+                                            <Controller
+                                                name="description"
+                                                control={control}
+                                                render={({ field }) => (
+                                                    <Input.TextArea
+                                                        {...field}
+                                                        placeholder="Description"
+                                                    />
+                                                )}
+                                            />
+                                        </Form.Item>
+
+                                    </div>
+                                    {/* TODO: formSubmit and add the detail to business detail array */}
+                                    <div className='flex'>
+                                        <Button type='primary' icon={<SaveOutlined />} htmlType='submit'>
+                                            Save Business
+                                        </Button>
+                                        <Button type='default' className='ml-2' icon={<UndoOutlined />} onClick={() => reset()} danger>
+                                            Reset
+                                        </Button>
+                                    </div>
+                                </Card>
+                                <Card size='small' title={<span>Business Details List</span>}>
+                                    <Empty description='No Business Details Found' />
+                                    {/* TODO: show as edit remove card list of business detail array */}
+                                    {/* <BusinessDetailsCard /> */}
+                                </Card>
+                            </div>
                         )}
                         {sourceOfIncome === 'Agricultural Income' && (
                             <Card title={"Agricultural  Details"} size='small'>
 
                                 <div className='flex flex-col gap-3'>
                                     <Card size='small' title={
-                                        // <Typography.Title type='secondary' level={5}>
                                         <span className='text-gray-600'>Nature Of The Borrower</span>
-                                        // {/* </Typography.Title> */}
                                     }>
                                         <div className='grid grid-cols-3 gap-3'>
                                             <Form.Item label="Nature Of The Borrower" name="natureOfTheBorrower" validateStatus={errors.natureOfTheBorrower ? 'error' : ''} help={errors.natureOfTheBorrower?.message} required>
@@ -616,7 +660,7 @@ const FormLoanAppliaction: React.FC = () => {
                                                         <Select
                                                             {...field}
                                                             placeholder="Select a District"
-                                                            options={getDistrict()} // Replace with your district options
+                                                            options={getDistrict()}
                                                         />
                                                     )}
                                                 />
@@ -1145,7 +1189,6 @@ const FormLoanAppliaction: React.FC = () => {
                                                     )}
                                                 />
                                             </Form.Item>
-                                            {/* policyExpiredDate */}
                                             <Form.Item label="Policy Expired Date" name="policyExpiredDate" validateStatus={errors.policyExpiredDate ? 'error' : ''} help={errors.policyExpiredDate?.message} required>
                                                 <Controller
                                                     name="policyExpiredDate"
@@ -1612,4 +1655,19 @@ const DetailsCard: React.FC<{ detail: IOwnerships; onEdit: () => void; onRemove:
     </Card>
 );
 
+
+// const BusinessDetailsCard: React.FC<{ detail: IOwnerships; onEdit: () => void; onRemove: () => void; }> = ({ detail, onEdit, onRemove }) => (
+//     <Card>
+//         <div className="flex justify-end gap-1">
+//             <Button type="default" size="small" icon={<EditOutlined />} onClick={onEdit} />
+//             <Button type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
+//         </div>
+//         <Descriptions column={1}>
+//             <Descriptions.Item label="Ownership">{detail.ownership ?? '-'}</Descriptions.Item>
+//             <Descriptions.Item label="Quantity">{detail.qty ?? '-'}</Descriptions.Item>
+//             <Descriptions.Item label="Per Amount">{formatCurrency(Number(detail.amount)) ?? '0.00'}</Descriptions.Item>
+//             <Descriptions.Item label="Total Amount">{formatCurrency(Number(detail.totalAmount)) ?? '0.00'}</Descriptions.Item>
+//         </Descriptions>
+//     </Card>
+// );
 export default FormLoanAppliaction

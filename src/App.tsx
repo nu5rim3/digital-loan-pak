@@ -36,7 +36,7 @@ const CustomerDetails = lazy(() => import('./pages/Loan/LoanApplication/LoanDash
 const GuarantorDetail = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard/Guarantor/GuarantorDetails'))
 const WitnessDetails = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard/Witness/WitnessDetails'))
 const BusinessIntroducers = lazy(() => import('./pages/AccessAndPermission/Roles'))
-const FormLoanAppliaction = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard/LoanApplication/FormLoanAppliaction'))
+const LoanFormApplication = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard/LoanApplication/LoanFormApplication'))
 
 
 const tenet = import.meta.env.VITE_TENET;
@@ -181,7 +181,7 @@ const App: React.FC = () => {
                     <Route path="application/:appId/customer" element={<CustomerDetails />} />
                     <Route path="application/:appId/guarantor" element={<GuarantorDetail />} />
                     <Route path="application/:appId/witness" element={<WitnessDetails />} />
-                    <Route path="application/:appId/loan-application" element={<FormLoanAppliaction />} />
+                    <Route path="application/:appId/loan-application" element={<LoanFormApplication />} />
                   </Route>
                 </Route>
               </Routes>

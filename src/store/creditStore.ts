@@ -142,7 +142,7 @@ export interface ICashFlowData {
   bnsOrAgriExpenses: IFinancialEntry[];
 }
 
-interface IBusinessIncome {
+export interface IBusinessIncome {
   appraisalId: string;
   idx?: string;
   profession: string;
@@ -232,8 +232,8 @@ interface IAgricultureIncome {
   creationDate?: string;
 }
 
-interface ISalaryIncome {
-  appraisalId: string;
+export interface ISalaryIncome {
+  appraisalId?: string;
   idx?: string;
   profession: string;
   sourceOfIncome: string;
@@ -248,7 +248,7 @@ interface ISalaryIncome {
   contactNo: string;
   residenceOrWorking: string;
   proofOfSalary: string;
-  repeatCustomer: string;
+  repeatCustomer: string | undefined;
   status?: string;
   createdBy?: string;
   creationDate?: string;
@@ -315,6 +315,8 @@ interface ICreditState {
   salaryIncomeError: string | null;
 
   ownerships: IOwnerships[];
+
+  businessIncomeList: IBusinessIncome[];
 
   fetachGoldLoanAppDetails: (appId: string) => Promise<void>;
   addGoldLoanAppDetails: (data: IGoldLoanAppDetails) => Promise<void>;
@@ -389,7 +391,13 @@ interface ICreditState {
   fetchProductDefinition: (prodCode: string) => Promise<void>;
 
   fetchBusinessIncome: (appId: string) => Promise<void>;
-  addBusinessIncome: (appId: string, data: IBusinessIncome) => Promise<void>;
+  addBusinessIncome: (data: IBusinessIncome) => Promise<void>;
+  removeBusinessIncome: (key: string) => Promise<void>;
+  updateBusinessIncomeList: (
+    key: string,
+    data: IBusinessIncome
+  ) => Promise<void>;
+  saveBusinessIncome: (appId: string, data: IBusinessIncome[]) => Promise<void>;
   updateBusinessIncome: (appId: string, data: IBusinessIncome) => Promise<void>;
 
   fetchAgricultureIncome: (appId: string) => Promise<void>;
@@ -471,6 +479,8 @@ const useCreditStore = create<ICreditState>((set) => ({
   salaryIncomeError: null,
 
   ownerships: [],
+
+  businessIncomeList: [],
 
   fetachGoldLoanAppDetails: async (appId: string) => {
     set({ goldLoanAppDetailsLoading: true });
@@ -968,7 +978,38 @@ const useCreditStore = create<ICreditState>((set) => ({
     }
   },
 
-  addBusinessIncome: async (appId: string, data: IBusinessIncome) => {
+  addBusinessIncome: async (data: IBusinessIncome) => {
+    set((state) => ({
+      businessIncomeList: [...state.businessIncomeList, data],
+    }));
+    notification.success({
+      message: "Business Income Added Successfully",
+    });
+  },
+
+  removeBusinessIncome: async (key: string) => {
+    set((state) => ({
+      businessIncomeList: state.businessIncomeList.filter(
+        (item) => item.idx !== key
+      ),
+    }));
+    notification.success({
+      message: "Business Income Removed Successfully",
+    });
+  },
+
+  updateBusinessIncomeList: async (key: string, data: IBusinessIncome) => {
+    set((state) => ({
+      businessIncomeList: state.businessIncomeList.map((item) =>
+        item.idx === key ? { ...item, ...data } : item
+      ),
+    }));
+    notification.success({
+      message: "Business Income Updated Successfully",
+    });
+  },
+
+  saveBusinessIncome: async (appId: string, data: IBusinessIncome[]) => {
     set({ businessIncomeLoading: true });
     try {
       await APIAuth.post(
