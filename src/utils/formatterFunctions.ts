@@ -32,6 +32,7 @@ export function kebabToTitleCase(str: string): string {
 }
 
 export function formatCamelCase(str: string): string {
+  if (!str) return "-";
   return str
     .split(" ")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))

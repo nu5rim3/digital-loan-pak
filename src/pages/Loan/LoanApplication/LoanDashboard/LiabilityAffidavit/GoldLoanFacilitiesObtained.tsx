@@ -63,11 +63,14 @@ const GoldLoanFacilitiesObtained: React.FC<IGoldLoanFacilitiesObtained> = () => 
     useEffect(() => {
         if (!isModalOpen) {
             fetchGoldLoanFacilities(appId ?? '')
-        } else {
-            fetchBanks()
         }
     }, [isModalOpen, fetchGoldLoanFacilities, appId, fetchBanks])
 
+
+    useEffect(() => {
+        fetchBanks()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return (
         <>
@@ -76,7 +79,7 @@ const GoldLoanFacilitiesObtained: React.FC<IGoldLoanFacilitiesObtained> = () => 
                     Add Gold Loan Facility
                 </Button>
             </div>
-            {goldLoanFacilitiesLoading ? (
+            {goldLoanFacilitiesLoading || bankLoading ? (
                 <Empty description="Loading..." />
             ) : (
                 <>
@@ -160,6 +163,7 @@ const GoldLoanFacilitiesObtained: React.FC<IGoldLoanFacilitiesObtained> = () => 
     )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const DetailsCard: React.FC<{ detail: IGoldLoanFacilities; onEdit: () => void; onRemove: () => void; dataArray: any[] }> = ({ detail, onEdit, onRemove, dataArray }) => (
     <Card>
         <div className="flex justify-end gap-1">

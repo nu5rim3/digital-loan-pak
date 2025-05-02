@@ -78,13 +78,14 @@ const TermDepositPlaced: React.FC<ITermDeposit> = () => {
     useEffect(() => {
         if (!isModalOpen) {
             fetchTermDepositByAppId(appId ?? '')
-        } else {
-            if (banks.length === 0) {
-                fetchBanks()
-            }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [appId, fetchTermDepositByAppId, fetchBanks])
+
+    useEffect(() => {
+        fetchBanks()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return (
         <>
@@ -266,6 +267,7 @@ const TermDepositPlaced: React.FC<ITermDeposit> = () => {
     )
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const DetailsCard: React.FC<{ detail: ITermDepositPlaced; onEdit: () => void; onRemove: () => void; dataArray: any[] }> = ({ detail, onEdit, onRemove, dataArray }) => (
     <Card>
         <div className="flex justify-end gap-1">
