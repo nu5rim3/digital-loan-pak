@@ -120,6 +120,7 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                         <Controller
                             name="sourceOfIncome"
                             control={control}
+                            disabled
                             render={({ field }) => (
                                 <Select
                                     {...field}

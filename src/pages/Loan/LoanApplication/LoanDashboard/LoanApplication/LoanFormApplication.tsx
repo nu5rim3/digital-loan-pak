@@ -2,6 +2,8 @@ import { Breadcrumb, Card, Form, Select } from 'antd'
 import React, { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import SalaryIncome from './Forms/SalaryIncome'
+import AgricultureIncome from './Forms/AgricultureIncome'
+import BusinessIncome from './Forms/BusinessIncome'
 
 const LoanFormApplication: React.FC = () => {
 
@@ -50,6 +52,15 @@ const LoanFormApplication: React.FC = () => {
 
                 {
                     sourceOfIncome === 'Salary Income' && <SalaryIncome sourceOfIncome={sourceOfIncome} resetSourceOfIncome={resetSourceOfIncome} />
+                }
+                {
+                    sourceOfIncome === 'Agricultural Income' && <AgricultureIncome sourceOfIncome={sourceOfIncome} resetSourceOfIncome={resetSourceOfIncome} />
+                }
+                {
+                    sourceOfIncome === 'Business Income' && <BusinessIncome sourceOfIncome={sourceOfIncome} resetSourceOfIncome={resetSourceOfIncome} />
+                }
+                {
+                    sourceOfIncome === 'Live Stock Income' && <></>
                 }
 
             </Card>

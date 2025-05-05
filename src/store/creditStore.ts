@@ -143,8 +143,9 @@ export interface ICashFlowData {
 }
 
 export interface IBusinessIncome {
-  appraisalId: string;
+  appraisalId?: string;
   idx?: string;
+  _idx?: string;
   profession: string;
   sourceOfIncome: string;
   purposeOfLoan: string;
@@ -174,7 +175,7 @@ export interface IOwnerships {
 }
 
 interface IAgricultureIncome {
-  appraisalId: string;
+  appraisalId?: string;
   idx?: string;
   profession: string;
   sourceOfIncome: string;
@@ -392,11 +393,13 @@ interface ICreditState {
 
   fetchBusinessIncome: (appId: string) => Promise<void>;
   addBusinessIncome: (data: IBusinessIncome) => Promise<void>;
-  removeBusinessIncome: (key: string) => Promise<void>;
+  removeBusinessIncome: (index: number) => Promise<void>;
   updateBusinessIncomeList: (
-    key: string,
+    _idx: string,
     data: IBusinessIncome
   ) => Promise<void>;
+  loadBusinessIncomeList: () => Promise<void>;
+  resetBusinessIncomeList: () => Promise<void>;
   saveBusinessIncome: (appId: string, data: IBusinessIncome[]) => Promise<void>;
   updateBusinessIncome: (appId: string, data: IBusinessIncome) => Promise<void>;
 
@@ -418,6 +421,7 @@ interface ICreditState {
   updateOwnerships: (key: string, data: IOwnerships) => Promise<void>;
   fetchOwnerships: () => Promise<void>;
   removeOwnerships: (key: string) => Promise<void>;
+  resetOwnerships: () => Promise<void>;
 }
 
 const useCreditStore = create<ICreditState>((set) => ({
@@ -987,10 +991,10 @@ const useCreditStore = create<ICreditState>((set) => ({
     });
   },
 
-  removeBusinessIncome: async (key: string) => {
+  removeBusinessIncome: async (index: number) => {
     set((state) => ({
       businessIncomeList: state.businessIncomeList.filter(
-        (item) => item.idx !== key
+        (item, _index) => _index !== index
       ),
     }));
     notification.success({
@@ -998,15 +1002,27 @@ const useCreditStore = create<ICreditState>((set) => ({
     });
   },
 
-  updateBusinessIncomeList: async (key: string, data: IBusinessIncome) => {
+  updateBusinessIncomeList: async (_idx: string, data: IBusinessIncome) => {
     set((state) => ({
       businessIncomeList: state.businessIncomeList.map((item) =>
-        item.idx === key ? { ...item, ...data } : item
+        item._idx === _idx ? { ...item, ...data } : item
       ),
     }));
     notification.success({
       message: "Business Income Updated Successfully",
     });
+  },
+
+  loadBusinessIncomeList: async () => {
+    set((state) => ({
+      businessIncomeList: state.businessIncomeList,
+    }));
+  },
+
+  resetBusinessIncomeList: async () => {
+    set(() => ({
+      businessIncomeList: [],
+    }));
   },
 
   saveBusinessIncome: async (appId: string, data: IBusinessIncome[]) => {
@@ -1211,6 +1227,12 @@ const useCreditStore = create<ICreditState>((set) => ({
     notification.success({
       message: "Ownership Removed Successfully",
     });
+  },
+
+  resetOwnerships: async () => {
+    set(() => ({
+      ownerships: [],
+    }));
   },
 }));
 
