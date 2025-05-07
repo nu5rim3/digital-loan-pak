@@ -61,12 +61,9 @@ export default function DashboardSelection() {
                                 hoverable
                                 cover={
                                     <div className="relative h-32 flex justify-center items-center">
-                                        <img alt={dashboard.name} src={dashboard.image} className="w-full h-full object-cover" />
-                                        {loading && selected === dashboard.id && (
-                                            <div className="absolute inset-0 flex justify-center items-center bg-white bg-opacity-50">
-                                                <Spin size="large" />
-                                            </div>
-                                        )}
+                                        <Spin spinning={loading && selected === dashboard.id}>
+                                            <img alt={dashboard.name} src={dashboard.image} className="w-full h-full object-cover" />
+                                        </Spin>
                                     </div>
                                 }
                                 onClick={() => handleSelect(dashboard.id)}

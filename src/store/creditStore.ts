@@ -174,7 +174,7 @@ export interface IOwnerships {
   lastModifiedDate?: string;
 }
 
-interface IAgricultureIncome {
+export interface IAgricultureIncome {
   appraisalId?: string;
   idx?: string;
   profession: string;
@@ -257,6 +257,53 @@ export interface ISalaryIncome {
   lastModifiedDate?: string;
 }
 
+export interface ILiveStockIncome {
+  appraisalId?: string;
+  idx?: string;
+  profession: string;
+  sourceOfIncome: string;
+  purposeOfLoan: string;
+  animalOrCrop: string;
+  buffaloes: string;
+  cows: string;
+  bulls: string;
+  collateral: string;
+  claimLodged: string;
+  animalTagging: string;
+  borrowerDistrict: string;
+  sowodo: string;
+  loanTenure: string;
+  insCompany: string;
+  policyIssuedDate: string;
+  policyExpiredDate: string;
+  receiptNo: string;
+  premiumRate: string;
+  floodsFactor: string;
+  irrigation: string;
+  methods: string;
+  proofOfCult: string;
+  expInCult: string;
+  agriSecured: string;
+  marketCheck: string;
+  natureOfTheBorrower: string;
+  ownOfLand: string;
+}
+
+export interface IOtherIncome {
+  appraisalId?: string;
+  idx?: string;
+  profession: string;
+  sourceOfIncome: string;
+  purposeOfLoan: string;
+  incomeCategory: string;
+  description: string;
+  status?: string;
+  createdBy?: string;
+  creationDate?: string;
+  lastModifiedBy?: string;
+  lastModifiedDate?: string;
+}
+
 interface ICreditState {
   goldLoanAppDetails: IGoldLoanAppDetails[];
   goldLoanAppDetailsLoading: boolean;
@@ -318,6 +365,14 @@ interface ICreditState {
   ownerships: IOwnerships[];
 
   businessIncomeList: IBusinessIncome[];
+
+  liveStockIncome: ILiveStockIncome[];
+  liveStockIncomeLoading: boolean;
+  liveStockIncomeError: string | null;
+
+  otherIncome: IOtherIncome[];
+  otherIncomeLoading: boolean;
+  otherIncomeError: string | null;
 
   fetachGoldLoanAppDetails: (appId: string) => Promise<void>;
   addGoldLoanAppDetails: (data: IGoldLoanAppDetails) => Promise<void>;
@@ -400,7 +455,7 @@ interface ICreditState {
   ) => Promise<void>;
   loadBusinessIncomeList: () => Promise<void>;
   resetBusinessIncomeList: () => Promise<void>;
-  saveBusinessIncome: (appId: string, data: IBusinessIncome[]) => Promise<void>;
+  saveBusinessIncome: (appId: string, data: IBusinessIncome) => Promise<void>;
   updateBusinessIncome: (appId: string, data: IBusinessIncome) => Promise<void>;
 
   fetchAgricultureIncome: (appId: string) => Promise<void>;
@@ -422,6 +477,17 @@ interface ICreditState {
   fetchOwnerships: () => Promise<void>;
   removeOwnerships: (key: string) => Promise<void>;
   resetOwnerships: () => Promise<void>;
+
+  addLiveStockIncome: (appId: string, data: ILiveStockIncome) => Promise<void>;
+  updateLiveStockIncome: (
+    appId: string,
+    data: ILiveStockIncome
+  ) => Promise<void>;
+  fetchLiveStockIncome: (appId: string) => Promise<void>;
+
+  fetchOtherIncome: (appId: string) => Promise<void>;
+  addOtherIncome: (appId: string, data: IOtherIncome) => Promise<void>;
+  updateOtherIncome: (appId: string, data: IOtherIncome) => Promise<void>;
 }
 
 const useCreditStore = create<ICreditState>((set) => ({
@@ -485,6 +551,14 @@ const useCreditStore = create<ICreditState>((set) => ({
   ownerships: [],
 
   businessIncomeList: [],
+
+  liveStockIncome: [],
+  liveStockIncomeLoading: false,
+  liveStockIncomeError: null,
+
+  otherIncome: [],
+  otherIncomeLoading: false,
+  otherIncomeError: null,
 
   fetachGoldLoanAppDetails: async (appId: string) => {
     set({ goldLoanAppDetailsLoading: true });
@@ -1025,7 +1099,7 @@ const useCreditStore = create<ICreditState>((set) => ({
     }));
   },
 
-  saveBusinessIncome: async (appId: string, data: IBusinessIncome[]) => {
+  saveBusinessIncome: async (appId: string, data: IBusinessIncome) => {
     set({ businessIncomeLoading: true });
     try {
       await APIAuth.post(
@@ -1140,7 +1214,7 @@ const useCreditStore = create<ICreditState>((set) => ({
         `/mobixCamsCredit/v1/credit/loan/app/sal/${appId}`
       );
       set({
-        salaryIncome: response.data,
+        salaryIncome: [response.data],
         salaryIncomeLoading: false,
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1233,6 +1307,134 @@ const useCreditStore = create<ICreditState>((set) => ({
     set(() => ({
       ownerships: [],
     }));
+  },
+
+  // live stock
+  addLiveStockIncome: async (appId: string, data: ILiveStockIncome) => {
+    set({ liveStockIncomeLoading: true });
+    try {
+      await APIAuth.post(
+        `/mobixCamsCredit/v1/credit/loan/app/stk/${appId}`,
+        data
+      );
+      set(() => ({
+        liveStockIncomeLoading: false,
+      }));
+      notification.success({
+        message: "Live Stock Income Added Successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        liveStockIncomeError: error.message,
+        liveStockIncomeLoading: false,
+      });
+    }
+  },
+
+  updateLiveStockIncome: async (appId: string, data: ILiveStockIncome) => {
+    set({ liveStockIncomeLoading: true });
+    try {
+      await APIAuth.put(
+        `/mobixCamsCredit/v1/credit/loan/app/stk/${appId}`,
+        data
+      );
+      set(() => ({
+        liveStockIncomeLoading: false,
+      }));
+      notification.success({
+        message: "Live Stock Income Updated Successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        liveStockIncomeError: error.message,
+        liveStockIncomeLoading: false,
+      });
+    }
+  },
+
+  fetchLiveStockIncome: async (appId: string) => {
+    set({ liveStockIncomeLoading: true });
+    try {
+      const response = await API.get(
+        `/mobixCamsCredit/v1/credit/loan/app/stk/${appId}`
+      );
+      set({
+        liveStockIncome: [response.data],
+        liveStockIncomeLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        liveStockIncomeError: error.message,
+        liveStockIncomeLoading: false,
+      });
+    }
+  },
+
+  fetchOtherIncome: async (appId: string) => {
+    set({ otherIncomeLoading: true });
+    try {
+      const response = await API.get(
+        `/mobixCamsCredit/v1/credit/loan/app/oth/${appId}`
+      );
+      set({
+        otherIncome: response.data,
+        otherIncomeLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        otherIncomeError: error.message,
+        otherIncomeLoading: false,
+      });
+    }
+  },
+
+  addOtherIncome: async (appId: string, data: IOtherIncome) => {
+    set({ otherIncomeLoading: true });
+    try {
+      const response = await APIAuth.post(
+        `/mobixCamsCredit/v1/credit/loan/app/oth/${appId}`,
+        data
+      );
+      set((state) => ({
+        otherIncome: [...state.otherIncome, response.data],
+        otherIncomeLoading: false,
+      }));
+      notification.success({
+        message: "Other Income Added Successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        otherIncomeError: error.message,
+        otherIncomeLoading: false,
+      });
+    }
+  },
+
+  updateOtherIncome: async (appId: string, data: IOtherIncome) => {
+    set({ otherIncomeLoading: true });
+    try {
+      await APIAuth.put(
+        `/mobixCamsCredit/v1/credit/loan/app/oth/${appId}`,
+        data
+      );
+      set(() => ({
+        otherIncomeLoading: false,
+      }));
+      notification.success({
+        message: "Other Income Updated Successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        otherIncomeError: error.message,
+        otherIncomeLoading: false,
+      });
+    }
   },
 }));
 

@@ -33,13 +33,13 @@ const schema = yup.object().shape({
     ownCNIC: yup.string().required('Owner CNIC is required'),
     ownAddress: yup.string().required('Owner address is required'),
     ownContact: yup.string().required('Owner contact number is required'),
-    acresOwned: yup.number().typeError('Acres owned must be a number').required('Acres owned is required'),
-    acresRented: yup.number().typeError('Acres rented must be a number').required('Acres rented is required'),
-    acresTotal: yup.number().typeError('Total acres must be a number').required('Total acres are required'),
-    acresOfRabi: yup.number().typeError('Acres of Rabi must be a number').required('Acres of Rabi are required'),
+    acresOwned: yup.string().typeError('Acres owned must be a number').required('Acres owned is required'),
+    acresRented: yup.string().typeError('Acres rented must be a number').required('Acres rented is required'),
+    acresTotal: yup.string().typeError('Total acres must be a number').required('Total acres are required'),
+    acresOfRabi: yup.string().typeError('Acres of Rabi must be a number').required('Acres of Rabi are required'),
     rabiHarvestingDate: yup.string().required('Rabi harvesting date is required'),
     rabiCultivationDate: yup.string().required('Rabi cultivation date is required'),
-    acresOfKharif: yup.number().typeError('Acres of Kharif must be a number').required('Acres of Kharif are required'),
+    acresOfKharif: yup.string().typeError('Acres of Kharif must be a number').required('Acres of Kharif are required'),
     kharifHarvestingDate: yup.string().required('Kharif harvesting date is required'),
     kharifCultivationDate: yup.string().required('Kharif cultivation date is required'),
     ownLandLoc: yup.string().required('Location of owned land is required'),
@@ -49,9 +49,9 @@ const schema = yup.object().shape({
     cropsName: yup.string(),
     landDetails: yup.string(),
     comment: yup.string(),
-    loanLimitRabi: yup.number().typeError('Loan limit for Rabi must be a number').required(),
-    loanLimitKharif: yup.number().typeError('Loan limit for Kharif must be a number').required(),
-    loanLimitTotal: yup.number().typeError('Total loan limit must be a number').required(),
+    loanLimitRabi: yup.string().typeError('Loan limit for Rabi must be a number').required(),
+    loanLimitKharif: yup.string().typeError('Loan limit for Kharif must be a number').required(),
+    loanLimitTotal: yup.string().typeError('Total loan limit must be a number').required(),
     purposeOfLoan: yup.string().required('Purpose of loan is required'),
     floodsFactor: yup.string().required('Floods factor is required'),
     irrigation: yup.string().required('Irrigation method is required'),
@@ -64,15 +64,15 @@ const schema = yup.object().shape({
     policyIssuedDate: yup.string().required('Policy issued date is required'),
     policyExpiredDate: yup.string().required('Policy expired date is required'),
     receiptNo: yup.string().required('Receipt number is required'),
-    premiumRate: yup.number().typeError('Premium rate must be a number').required(),
-    premiumRateForSugar: yup.number().typeError('Premium rate for sugar must be a number').required(),
+    premiumRate: yup.string().typeError('Premium rate must be a number').required(),
+    premiumRateForSugar: yup.string().typeError('Premium rate for sugar must be a number').required(),
     evidance: yup.string().required('Evidence is required'),
     claimLodged: yup.string().required('Claim lodged is required'),
     otherInfo1: yup.string(),
     otherInfo2: yup.string(),
     otherInfo3: yup.string(),
     assets: yup.array().required('Assets are required'),
-    totAssetsValue: yup.number().typeError('Total assets value must be a number').required('Total assets value is required'),
+    totAssetsValue: yup.string().typeError('Total assets value must be a number').required('Total assets value is required'),
     rabiCrop: yup.string().required('Rabi crop is required'),
     kharifCrop: yup.string().required('Kharif crop is required'),
     khasra: yup.string().required('Khasra number is required'),
@@ -93,7 +93,7 @@ const schema = yup.object().shape({
 const schema2 = yup.object().shape({
     ownership: yup.string().required('Ownership is required'),
     // qty cannot add negative value or zero
-    qty: yup.number().typeError('Quantity must be a number').positive('Quantity must be greater than 0').required('Quantity is required'),
+    qty: yup.string().required('Quantity is required').default('0'),
     totalAmount: yup.string().required('Total Amount is required'),
     amount: yup.string().required('Amount is required'),
 });
@@ -109,12 +109,6 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
     const navigate = useNavigate()
     const { control, formState: { errors }, handleSubmit, reset, setValue, watch } = useForm({
         resolver: yupResolver(schema), defaultValues: {
-            acresOwned: 0,
-            acresRented: 0,
-            acresTotal: 0,
-            loanLimitRabi: 0,
-            loanLimitKharif: 0,
-            loanLimitTotal: 0,
             isAgriSecured: false,
             loanTenure: '360'
         }
@@ -123,7 +117,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
     const { control: ownerControl, formState: { errors: ownerError }, handleSubmit: ownerSubmit, reset: ownerReset, watch: ownerWatch, setValue: ownerSetValue } = useForm({
         resolver: yupResolver(schema2), defaultValues: {
             amount: '0.00',
-            qty: 1,
+            qty: '0',
             totalAmount: '0.00',
         }
     });
@@ -138,6 +132,8 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
     const onSubmit = (data: any) => {
         console.log(data);
         // TODO: add the call for agriculture income got and
+
+        delete data.isAgriSecured
         addAgricultureIncome(appId ?? '', data).finally(onReset)
     }
 
@@ -175,7 +171,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
         setIsModalOpen(true);
         if (details) {
             ownerSetValue('ownership', details.ownership);
-            ownerSetValue('qty', Number(details.qty));
+            ownerSetValue('qty', details.qty);
             ownerSetValue('amount', details.amount);
             ownerSetValue('totalAmount', details.totalAmount ?? '0.00');
         } else {
@@ -246,17 +242,16 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
     useEffect(() => {
         if (ownerships.length > 0) {
             const totalAmount = ownerships.reduce((acc, item) => acc + parseFloat(item.totalAmount ?? '0'), 0);
-            setValue('totAssetsValue', totalAmount);
+            setValue('totAssetsValue', totalAmount.toString());
         } else {
-            setValue('totAssetsValue', 0);
+            setValue('totAssetsValue', '0');
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ownerships])
 
-    console.log('errors', errors);
     return (
 
-        <Card title={"Agricultural  Details"} size='small'>
+        <Card title={"Agricultural Income Details"} size='small'>
             <Form layout='vertical' onFinish={handleSubmit(onSubmit)} >
                 <div className='flex flex-col gap-3'>
                     <Card size='small' title={<span className='text-gray-600'>Nature Of The Borrower</span>}>
@@ -774,6 +769,18 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                     )}
                                 />
                             </Form.Item>
+                            <Form.Item label="Crops Name" name="cropsName" validateStatus={errors.cropsName ? 'error' : ''} help={errors.cropsName?.message} required>
+                                <Controller
+                                    name="cropsName"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Input
+                                            {...field}
+                                            placeholder="Crops Name"
+                                        />
+                                    )}
+                                />
+                            </Form.Item>
                             <Form.Item label="Land Details" name="landDetails" validateStatus={errors.landDetails ? 'error' : ''} help={errors.landDetails?.message} required>
                                 <Controller
                                     name="landDetails"
@@ -813,7 +820,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                             {...field}
                                             placeholder="Select Purpose of Cultivation Loan"
                                             loading={cultLoanPurposesLoading}
-                                            options={cultLoanPurposes.map((item) => ({ label: formatName(item.description), value: item.description }))}
+                                            options={cultLoanPurposes.map((item) => ({ label: formatName(item.description), value: item.code }))}
                                         />
                                     )}
                                 />
@@ -828,7 +835,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                             {...field}
                                             placeholder="Select Repeat Customer"
                                             loading={repeatCustomersLoading}
-                                            options={repeatCustomers.map((item) => ({ label: item.description, value: item.description }))}
+                                            options={repeatCustomers.map((item) => ({ label: item.description, value: item.code }))}
                                         />
                                     )}
                                 />
@@ -843,7 +850,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                             {...field}
                                             placeholder="Select Irrigation"
                                             loading={irrigationLoading}
-                                            options={irrigation.map((item) => ({ label: item.description, value: item.description }))}
+                                            options={irrigation.map((item) => ({ label: item.description, value: item.code }))}
                                         />
                                     )}
                                 />
@@ -858,7 +865,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                             {...field}
                                             placeholder="Select Floods Factor"
                                             loading={floodsFactorLoading}
-                                            options={floodsFactor.map((item) => ({ label: item.description, value: item.description }))}
+                                            options={floodsFactor.map((item) => ({ label: item.description, value: item.code }))}
                                         />
                                     )}
                                 />
@@ -873,7 +880,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                             {...field}
                                             placeholder="Select Proof Of Cultivation"
                                             loading={proofOfCultivationLoading}
-                                            options={proofOfCultivation.map((item) => ({ label: item.description, value: item.description }))}
+                                            options={proofOfCultivation.map((item) => ({ label: item.description, value: item.code }))}
                                         />
                                     )}
                                 />
@@ -888,7 +895,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                             {...field}
                                             placeholder="Select Agriculturing Methods"
                                             loading={agriMethodsLoading}
-                                            options={agriMethods.map((item) => ({ label: item.description, value: item.description }))}
+                                            options={agriMethods.map((item) => ({ label: item.description, value: item.code }))}
                                         />
                                     )}
                                 />
@@ -903,7 +910,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                             {...field}
                                             placeholder="Select Market Check"
                                             loading={marketCheckLoading}
-                                            options={marketCheck.map((item) => ({ label: item.description, value: item.description }))}
+                                            options={marketCheck.map((item) => ({ label: item.description, value: item.code }))}
                                         />
                                     )}
                                 />

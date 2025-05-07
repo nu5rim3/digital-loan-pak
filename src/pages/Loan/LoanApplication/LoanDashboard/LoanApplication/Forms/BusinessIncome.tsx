@@ -1,21 +1,17 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import * as yup from 'yup'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Card, Descriptions, Empty, Form, Input, InputNumber, Select, } from 'antd';
+import { Button, Card, Form, Input, InputNumber, Select, } from 'antd';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { formatName, formatPhoneNumber, formatSentence } from '../../../../../../utils/formatterFunctions';
+import { formatName, formatPhoneNumber } from '../../../../../../utils/formatterFunctions';
 import useCommonStore from '../../../../../../store/commonStore';
 import useCreditStore, { IBusinessIncome } from '../../../../../../store/creditStore';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
-    SaveOutlined,
     UndoOutlined,
     CaretLeftOutlined,
-    EditOutlined,
-    DeleteOutlined,
-    PlusOutlined
+    SaveOutlined
 } from '@ant-design/icons';
-import { v4 as uuidv4 } from 'uuid';
 
 interface IBusinessIncomeProps {
     sourceOfIncome: string
@@ -38,28 +34,10 @@ const schema = yup.object().shape({
     repeatCustomer: yup.string().required('Repeat Customer is required'),
 })
 
-const initialValues: IBusinessIncome = {
-    profession: '',
-    sourceOfIncome: 'Business Income',
-    purposeOfLoan: '',
-    bnsName: '',
-    natureOfBns: '',
-    bnsAddress: '',
-    phoneNo: '',
-    description: '',
-    prevExpInBns: '',
-    ownOfBnsPlace: '',
-    costOfBns: '0.00',
-    bnsRatings: '',
-    repeatCustomer: ''
-}
-
 const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, sourceOfIncome }) => {
 
     const { appId } = useParams()
     const navigate = useNavigate()
-    const [mode, setMode] = useState<'add' | 'update' | 'remove'>('add');
-    const [selectedDetail, setSelectedDetail] = useState<IBusinessIncome | null>(null);
 
     const { control, formState: { errors }, handleSubmit, reset, setValue } = useForm({
         resolver: yupResolver(schema)
@@ -70,44 +48,13 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
         facilityPurpose, facilityPurposeLoading, fetchFacilityPurpose, fetchBusinessOwnership,
         fetchRepeatCustomers } = useCommonStore()
 
-    const { businessIncomeLoading, businessIncomeList, addBusinessIncome, removeBusinessIncome, updateBusinessIncomeList, saveBusinessIncome, loadBusinessIncomeList, resetBusinessIncomeList } = useCreditStore()
+    const { saveBusinessIncome, resetBusinessIncomeList } = useCreditStore()
 
     const onSubmit = (data: IBusinessIncome) => {
-        if (mode === 'update' && selectedDetail) {
-            updateBusinessIncomeList(selectedDetail._idx ?? '', data).finally(() => loadBusinessIncomeList())
-            setMode('add')
-        } else if (mode === 'add') {
-            const _data = { ...data, _idx: uuidv4() }
-            addBusinessIncome(_data).finally(() => loadBusinessIncomeList())
-        }
-        onFormRest()
-    }
-
-    const onFormRest = () => {
-        reset(initialValues)
-        setMode('add')
-    }
-
-    const onReset = () => {
-        resetSourceOfIncome()
-        reset(initialValues)
-        setMode('add')
-    }
-
-    const onSubmitList = () => {
-        saveBusinessIncome(appId ?? '', businessIncomeList).finally(() => {
+        saveBusinessIncome(appId ?? '', data).finally(() => {
             resetSourceOfIncome()
-            reset(initialValues)
-            setMode('add')
             navigate(-1)
-            resetBusinessIncomeList()
         })
-    }
-
-    const onClickEditItem = (detail: IBusinessIncome) => {
-        setMode('update')
-        setSelectedDetail(detail)
-        reset(detail);
     }
 
 
@@ -125,7 +72,7 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
     return (
         <>
             <div className='flex flex-col gap-3'>
-                <Card title={"Business Details"} size='small'>
+                <Card title={"Business Income Details"} size='small'>
                     <Form layout='vertical' className='w-full' onFinish={handleSubmit(onSubmit)}>
                         <div className='grid grid-cols-4 gap-3'>
                             <Form.Item label="Profession" name="profession" validateStatus={errors.profession ? 'error' : ''} help={errors.profession?.message} required>
@@ -205,7 +152,7 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
                                             {...field}
                                             placeholder="Select Nature of Business"
                                             loading={natureOfBusinessLoading}
-                                            options={natureOfBusiness.map((item) => ({ label: item.description, value: item.description }))}
+                                            options={natureOfBusiness.map((item) => ({ label: item.description, value: item.code }))}
                                         />
                                     )}
                                 />
@@ -241,7 +188,7 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
                                             {...field}
                                             placeholder="Select Own of Business Place"
                                             loading={businessOwnershipLoading}
-                                            options={businessOwnership.map((item) => ({ label: item.description, value: item.description }))}
+                                            options={businessOwnership.map((item) => ({ label: item.description, value: item.code }))}
                                         />
                                     )}
                                 />
@@ -295,7 +242,7 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
                                             {...field}
                                             placeholder="Select Repeat Customer"
                                             loading={repeatCustomersLoading}
-                                            options={repeatCustomers.map((item) => ({ label: item.description, value: item.description }))}
+                                            options={repeatCustomers.map((item) => ({ label: item.description, value: item.code }))}
                                         />
                                     )}
                                 />
@@ -340,58 +287,22 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
 
                         </div>
                         <div className='flex'>
-                            <Button type='primary' icon={<PlusOutlined />} htmlType='submit'>
-                                {formatSentence(mode)} Business
+                            <Button type='default' icon={<CaretLeftOutlined />} onClick={() => navigate(-1)} className='mr-2'>
+                                Back
                             </Button>
-                            <Button type='default' className='ml-2' icon={<UndoOutlined />} onClick={onFormRest} danger>
+                            <Button type='primary' icon={<SaveOutlined />} htmlType='submit'>
+                                Save Business
+                            </Button>
+                            <Button type='default' className='ml-2' icon={<UndoOutlined />} onClick={() => reset()} danger>
                                 Reset
                             </Button>
                         </div>
                     </Form>
                 </Card>
-                <Card size='small' title={<span>Business Details List</span>}>
-                    {
-                        businessIncomeList.length === 0 ? <Empty description='No Business Details Found' /> :
-                            <div className='grid grid-cols-3 gap-3'>
-                                {
-                                    businessIncomeList.map((detail, index) => (
-                                        <BusinessDetailsCard key={index} detail={detail} onEdit={() => onClickEditItem(detail)} onRemove={() => removeBusinessIncome(index)} />
-                                    ))
-                                }
-                            </div>
-                    }
-                </Card>
-
-                <div className='flex justify-start'>
-                    <Button type='default' icon={<CaretLeftOutlined />} onClick={() => navigate(-1)} className='ml-2'>
-                        Back
-                    </Button>
-                    <Button type='primary' icon={<SaveOutlined />} onClick={onSubmitList} className='ml-2' loading={businessIncomeLoading} disabled={businessIncomeList.length === 0}>
-                        Save Business Income List
-                    </Button>
-                    <Button type='default' icon={<UndoOutlined />} onClick={onReset} className='ml-2' danger>
-                        Reset
-                    </Button>
-                </div>
             </div>
         </>
 
     )
 }
-
-const BusinessDetailsCard: React.FC<{ detail: IBusinessIncome; onEdit: () => void; onRemove: () => void; }> = ({ detail, onEdit, onRemove }) => (
-    <Card>
-        <div className="flex justify-end gap-1">
-            <Button type="default" size="small" icon={<EditOutlined />} onClick={onEdit} />
-            <Button type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
-        </div>
-        <Descriptions column={1}>
-            <Descriptions.Item label="Business Name">{detail.bnsName}</Descriptions.Item>
-            <Descriptions.Item label="Business Phone">{detail.phoneNo}</Descriptions.Item>
-            <Descriptions.Item label="Nature Of Business">{detail.natureOfBns}</Descriptions.Item>
-            <Descriptions.Item label="Business Ratings">{detail.bnsRatings}</Descriptions.Item>
-        </Descriptions>
-    </Card>
-);
 
 export default BusinessIncome

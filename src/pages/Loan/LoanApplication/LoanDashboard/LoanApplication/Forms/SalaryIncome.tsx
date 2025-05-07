@@ -9,7 +9,6 @@ import useCreditStore from '../../../../../../store/creditStore';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
     SaveOutlined,
-    FileTextOutlined,
     UndoOutlined,
     CaretLeftOutlined,
 } from '@ant-design/icons';
@@ -292,10 +291,6 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                     <Button type='default' className='ml-3' danger icon={<UndoOutlined />} onClick={onRestFrom}>
                         Reset
                     </Button>
-                    <Button type='link' className='ml-3' icon={<FileTextOutlined />} onClick={() => { }}>
-                        Add Other Income Details
-                    </Button>
-
                 </div>
             </Form>
         </Card>
