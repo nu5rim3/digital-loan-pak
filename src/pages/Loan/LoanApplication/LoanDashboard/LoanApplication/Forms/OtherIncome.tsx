@@ -3,7 +3,7 @@ import * as yup from 'yup'
 import { Controller, useForm } from 'react-hook-form'
 import { Button, Card, Form, Input, Select } from 'antd';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { formatName } from '../../../../../../utils/formatterFunctions';
+import { formatName, formatSentence } from '../../../../../../utils/formatterFunctions';
 import useCommonStore from '../../../../../../store/commonStore';
 import useCreditStore, { IOtherIncome } from '../../../../../../store/creditStore';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -80,7 +80,7 @@ const OtherIncome: React.FC<IOtherIncomeProps> = ({ sourceOfIncome, resetSourceO
 
 
     return (
-        <Card size='small' title={"Salary Income Details"}>
+        <Card size='small' title={"Other Income Details"}>
             <Form layout='vertical' onFinish={handleSubmit(onSubmit)} >
                 <div className='grid grid-cols-4 gap-3'>
                     <Form.Item label="Profession" name="profession" validateStatus={errors.profession ? 'error' : ''} help={errors.profession?.message} required>
@@ -169,7 +169,7 @@ const OtherIncome: React.FC<IOtherIncomeProps> = ({ sourceOfIncome, resetSourceO
                 <div className='pt-5'>
                     <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
                     <Button type='primary' className='ml-3' htmlType='submit' icon={<SaveOutlined />} loading={otherIncomeLoading}>
-                        {mode === 'save' ? 'Submit' : 'Update'}
+                        {formatSentence(mode)} Other Income
                     </Button>
                     <Button type='default' className='ml-3' danger icon={<UndoOutlined />} onClick={onRest}>
                         Reset

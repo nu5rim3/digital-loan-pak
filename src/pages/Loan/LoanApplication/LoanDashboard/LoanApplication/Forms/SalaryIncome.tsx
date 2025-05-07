@@ -313,7 +313,7 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                 <div className='pt-5'>
                     <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
                     <Button type='primary' className='ml-3' htmlType='submit' icon={<SaveOutlined />} loading={salaryIncomeLoading}>
-                        {formatSentence(mode)} Salary
+                        {formatSentence(mode)} Sala ry
                     </Button>
                     <Button type='default' className='ml-3' danger icon={<UndoOutlined />} onClick={onRestFrom}>
                         Reset
