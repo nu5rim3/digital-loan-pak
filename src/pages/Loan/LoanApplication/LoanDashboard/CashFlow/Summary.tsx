@@ -22,7 +22,6 @@ const Summary: React.FC = () => {
     }, [product])
 
     const onSubmitCashFlow = () => {
-        console.log('data',)
         const data: ICashFlowData = {
             appraisalId: appId ?? '',
             grossSalaryIncome: grossSalaryIncome?.toString() ?? '0',

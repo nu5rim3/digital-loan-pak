@@ -19,8 +19,6 @@ const LoanFormApplication: React.FC = () => {
         setSourceOfIncome(null)
     }
 
-    console.log('state', state)
-
     useEffect(() => {
         if (state?.sourceOfIncome) {
             setSourceOfIncome(state.sourceOfIncome)

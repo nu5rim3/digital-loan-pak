@@ -41,9 +41,7 @@ const OtherIncome: React.FC<IOtherIncomeProps> = ({ sourceOfIncome, resetSourceO
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
-        //
         if (mode === 'save') {
-            console.log(data)
             addOtherIncome(appId ?? '', data).finally(() => {
                 onRest()
                 navigate(-1)
@@ -51,7 +49,6 @@ const OtherIncome: React.FC<IOtherIncomeProps> = ({ sourceOfIncome, resetSourceO
         }
         else if (mode === 'update') {
             const _data = { ...updateData, ...data }
-            console.log('_data', _data)
             updateOtherIncome(updateData?.idx ?? '', _data).finally(() => {
                 onRest()
                 navigate(-1)
