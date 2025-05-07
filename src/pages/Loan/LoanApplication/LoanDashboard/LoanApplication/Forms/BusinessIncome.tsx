@@ -3,7 +3,7 @@ import * as yup from 'yup'
 import { Controller, useForm } from 'react-hook-form'
 import { Button, Card, Form, Input, InputNumber, Select, } from 'antd';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { formatName, formatPhoneNumber } from '../../../../../../utils/formatterFunctions';
+import { formatName, formatPhoneNumber, formatSentence } from '../../../../../../utils/formatterFunctions';
 import useCommonStore from '../../../../../../store/commonStore';
 import useCreditStore, { IBusinessIncome } from '../../../../../../store/creditStore';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -16,6 +16,8 @@ import {
 interface IBusinessIncomeProps {
     sourceOfIncome: string
     resetSourceOfIncome: () => void
+    mode: 'save' | 'update'
+    updateData: IBusinessIncome | null
 }
 
 const schema = yup.object().shape({
@@ -34,7 +36,7 @@ const schema = yup.object().shape({
     repeatCustomer: yup.string().required('Repeat Customer is required'),
 })
 
-const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, sourceOfIncome }) => {
+const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, sourceOfIncome, mode, updateData }) => {
 
     const { appId } = useParams()
     const navigate = useNavigate()
@@ -48,13 +50,21 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
         facilityPurpose, facilityPurposeLoading, fetchFacilityPurpose, fetchBusinessOwnership,
         fetchRepeatCustomers } = useCommonStore()
 
-    const { saveBusinessIncome, resetBusinessIncomeList } = useCreditStore()
+    const { saveBusinessIncome, resetBusinessIncomeList, updateBusinessIncome } = useCreditStore()
 
     const onSubmit = (data: IBusinessIncome) => {
-        saveBusinessIncome(appId ?? '', data).finally(() => {
-            resetSourceOfIncome()
-            navigate(-1)
-        })
+        if (mode === 'save') {
+            saveBusinessIncome(appId ?? '', data).finally(() => {
+                resetSourceOfIncome()
+                navigate(-1)
+            })
+        } else if (mode === 'update') {
+            const _data = { ...updateData, ...data }
+            updateBusinessIncome(updateData?.idx ?? '', _data).finally(() => {
+                resetSourceOfIncome()
+                navigate(-1)
+            })
+        }
     }
 
 
@@ -66,6 +76,27 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
         resetBusinessIncomeList()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [appId])
+
+    useEffect(() => {
+        if (mode === 'update' && updateData) {
+            setValue('profession', updateData.profession)
+            setValue('sourceOfIncome', sourceOfIncome)
+            setValue('purposeOfLoan', updateData.purposeOfLoan)
+            setValue('bnsName', updateData.bnsName)
+            setValue('natureOfBns', updateData.natureOfBns)
+            setValue('prevExpInBns', updateData.prevExpInBns)
+            setValue('ownOfBnsPlace', updateData.ownOfBnsPlace)
+            setValue('costOfBns', updateData.costOfBns)
+            setValue('phoneNo', updateData.phoneNo)
+            setValue('repeatCustomer', updateData.repeatCustomer)
+            setValue('bnsRatings', updateData.bnsRatings)
+            setValue('bnsAddress', updateData.bnsAddress)
+            setValue('description', updateData.description)
+
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mode])
+
 
 
 
@@ -291,7 +322,7 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
                                 Back
                             </Button>
                             <Button type='primary' icon={<SaveOutlined />} htmlType='submit'>
-                                Save Business
+                                {formatSentence(mode)} Business
                             </Button>
                             <Button type='default' className='ml-2' icon={<UndoOutlined />} onClick={() => reset()} danger>
                                 Reset

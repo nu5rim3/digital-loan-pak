@@ -5,11 +5,10 @@ import { Button, Card, Descriptions, Empty, Form, Input, InputNumber, Select, Ta
 import { yupResolver } from '@hookform/resolvers/yup';
 import { formatCNIC, formatCurrency, formatName, formatPhoneNumber, formatSentence, getDistrict } from '../../../../../../utils/formatterFunctions';
 import useCommonStore from '../../../../../../store/commonStore';
-import useCreditStore, { IOwnerships } from '../../../../../../store/creditStore';
+import useCreditStore, { IAgricultureIncome, IOwnerships } from '../../../../../../store/creditStore';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
     SaveOutlined,
-    FileTextOutlined,
     UndoOutlined,
     CaretLeftOutlined,
     EditOutlined,
@@ -21,6 +20,8 @@ import CommonModal from '../../../../../../components/common/modal/commonModal';
 interface IAgricultureIncomeForm {
     sourceOfIncome: string
     resetSourceOfIncome: () => void
+    formMode: 'save' | 'update'
+    updateData: IAgricultureIncome | null
 }
 
 const schema = yup.object().shape({
@@ -99,7 +100,7 @@ const schema2 = yup.object().shape({
 });
 
 
-const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, resetSourceOfIncome }) => {
+const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, resetSourceOfIncome, formMode, updateData }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [mode, setMode] = useState<'save' | 'update' | 'remove'>('save');
@@ -126,15 +127,21 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
         facilityPurpose, facilityPurposeLoading, fetchFacilityPurpose, fetchRepeatCustomersWithProdCode, fetchOwnership, fetchIrrigation, fetchFloodsFactor, fetchProofOfCultivation, fetchAgriMethods, fetchCultLoanPurposes,
         fetchMarketCheck } = useCommonStore()
 
-    const { agricultureIncomeLoading, ownerships, product, fetchProduct, addOwnerships, updateOwnerships, removeOwnerships, resetOwnerships, addAgricultureIncome } = useCreditStore()
+    const { agricultureIncomeLoading, ownerships, product, fetchProduct, addOwnerships, updateOwnerships, removeOwnerships, addOwnershipsList, resetOwnerships, addAgricultureIncome, updateAgricultureIncome } = useCreditStore()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = (data: any) => {
         console.log(data);
-        // TODO: add the call for agriculture income got and
+        if (formMode === 'save') {
 
-        delete data.isAgriSecured
-        addAgricultureIncome(appId ?? '', data).finally(onReset)
+
+            delete data.isAgriSecured
+            addAgricultureIncome(appId ?? '', data).finally(onReset)
+        } else if (formMode === 'update') {
+            delete data.isAgriSecured
+            const _data = { ...updateData, ...data }
+            updateAgricultureIncome(updateData?.idx ?? '', _data).finally(onReset)
+        }
     }
 
     useEffect(() => {
@@ -146,7 +153,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
 
     useEffect(() => {
         setValue('sourceOfIncome', sourceOfIncome)
-        const productCode = 'ZA'//product?.pTrhdLType ?? ''
+        const productCode = product?.pTrhdLType ?? ''
         if (product?.pTrhdLType) {
             fetchOwnership(productCode)
             fetchIrrigation(productCode)
@@ -157,6 +164,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
             fetchMarketCheck(productCode)
             fetchRepeatCustomersWithProdCode(productCode)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const onReset = () => {
@@ -248,6 +256,47 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [ownerships])
+
+    useEffect(() => {
+        if (mode === 'update' && updateData) {
+            setValue('profession', updateData.profession)
+            setValue('sourceOfIncome', updateData.sourceOfIncome)
+            setValue('purposeOfLoan', updateData.purposeOfLoan)
+            setValue('natureOfTheBorrower', updateData.natureOfTheBorrower)
+            setValue('ownOfCult', updateData.ownOfCult)
+            setValue('ownOfLand', updateData.ownOfLand)
+            setValue('ownName', updateData.ownName)
+            setValue('ownCNIC', updateData.ownCNIC)
+            setValue('ownAddress', updateData.ownAddress)
+            setValue('ownContact', updateData.ownContact)
+            setValue('acresOwned', updateData.acresOwned)
+            setValue('acresRented', updateData.acresRented)
+            setValue('acresTotal', updateData.acresTotal)
+            setValue('rabiCrop', updateData.rabiCrop)
+            setValue('kharifCrop', updateData.kharifCrop)
+            setValue('acresOfRabi', updateData.acresOfRabi)
+            setValue('acresOfKharif', updateData.acresOfKharif)
+            setValue('rabiHarvestingDate', updateData.rabiHarvestingDate)
+            setValue('rabiCultivationDate', updateData.rabiCultivationDate)
+            setValue('kharifHarvestingDate', updateData.kharifHarvestingDate)
+            setValue('kharifCultivationDate', updateData.kharifCultivationDate)
+            setValue('ownLandLoc', updateData.ownLandLoc)
+            setValue('rentedLandLoc', updateData.rentedLandLoc)
+            setValue('district', updateData.district)
+            setValue('borrowerDistrict', updateData.borrowerDistrict)
+            if (updateData.assets) {
+                setValue('assets', updateData.assets)
+                addOwnershipsList(updateData.assets)
+            }
+            if (updateData.agriSecured === '') {
+                setValue('isAgriSecured', false)
+            } else {
+                setValue('isAgriSecured', true)
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [formMode])
+
 
     return (
 
@@ -1206,13 +1255,10 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                     <div className='pt-5'>
                         <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
                         <Button type='primary' className='ml-3' htmlType='submit' icon={<SaveOutlined />} loading={agricultureIncomeLoading}>
-                            Submit
+                            {formatSentence(formMode)} Agriculture
                         </Button>
                         <Button type='default' className='ml-3' danger icon={<UndoOutlined />} onClick={onReset}>
                             Reset
-                        </Button>
-                        <Button type='link' className='ml-3' icon={<FileTextOutlined />} onClick={() => { }}>
-                            Add Other Income Details
                         </Button>
 
                     </div>

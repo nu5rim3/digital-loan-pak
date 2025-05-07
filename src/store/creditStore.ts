@@ -231,6 +231,8 @@ export interface IAgricultureIncome {
   status?: string;
   createdBy?: string;
   creationDate?: string;
+  rabiCrop: string;
+  kharifCrop: string;
 }
 
 export interface ISalaryIncome {
@@ -473,6 +475,7 @@ interface ICreditState {
   updateSalaryIncome: (appId: string, data: ISalaryIncome) => Promise<void>;
 
   addOwnerships: (data: IOwnerships) => Promise<void>;
+  addOwnershipsList: (data: IOwnerships[]) => Promise<void>;
   updateOwnerships: (key: string, data: IOwnerships) => Promise<void>;
   fetchOwnerships: () => Promise<void>;
   removeOwnerships: (key: string) => Promise<void>;
@@ -1068,7 +1071,7 @@ const useCreditStore = create<ICreditState>((set) => ({
   removeBusinessIncome: async (index: number) => {
     set((state) => ({
       businessIncomeList: state.businessIncomeList.filter(
-        (item, _index) => _index !== index
+        (_, _index) => _index !== index
       ),
     }));
     notification.success({
@@ -1286,6 +1289,12 @@ const useCreditStore = create<ICreditState>((set) => ({
     notification.success({
       message: "Ownership Updated Successfully",
     });
+  },
+
+  addOwnershipsList: async (data: IOwnerships[]) => {
+    set(() => ({
+      ownerships: data,
+    }));
   },
 
   fetchOwnerships: async () => {

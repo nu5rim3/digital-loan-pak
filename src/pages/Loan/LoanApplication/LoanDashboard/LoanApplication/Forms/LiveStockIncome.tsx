@@ -3,9 +3,9 @@ import * as yup from 'yup'
 import { Controller, useForm } from 'react-hook-form'
 import { Button, Card, Form, Input, Select, Checkbox } from 'antd';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { formatName, getDistrict } from '../../../../../../utils/formatterFunctions';
+import { formatName, formatSentence, getDistrict } from '../../../../../../utils/formatterFunctions';
 import useCommonStore from '../../../../../../store/commonStore';
-import useCreditStore from '../../../../../../store/creditStore';
+import useCreditStore, { ILiveStockIncome } from '../../../../../../store/creditStore';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
     SaveOutlined,
@@ -17,6 +17,8 @@ import {
 interface ILiveStockIncomeProps {
     sourceOfIncome: string;
     resetSourceOfIncome: () => void;
+    mode: 'save' | 'update';
+    updateData: ILiveStockIncome | null;
 }
 
 const schema = yup.object().shape({
@@ -53,7 +55,7 @@ const schema = yup.object().shape({
     natureOfTheBorrower: yup.string().required('Nature of the Borrower is required'),
     ownOfLand: yup.string().required('Ownership of Land is required'),
 });
-const LiveStockIncome: React.FC<ILiveStockIncomeProps> = ({ sourceOfIncome, resetSourceOfIncome }) => {
+const LiveStockIncome: React.FC<ILiveStockIncomeProps> = ({ sourceOfIncome, resetSourceOfIncome, mode, updateData }) => {
 
     const { appId } = useParams();
     const navigate = useNavigate();
@@ -68,17 +70,26 @@ const LiveStockIncome: React.FC<ILiveStockIncomeProps> = ({ sourceOfIncome, rese
         facilityPurpose, facilityPurposeLoading, fetchFacilityPurpose, fetchRepeatCustomersWithProdCode, fetchOwnership, fetchIrrigation, fetchFloodsFactor, fetchProofOfCultivation, fetchAgriMethods,
         fetchMarketCheck } = useCommonStore()
 
-    const { liveStockIncomeLoading, fetchProduct, product, addLiveStockIncome } = useCreditStore()
+    const { liveStockIncomeLoading, fetchProduct, product, addLiveStockIncome, updateLiveStockIncome } = useCreditStore()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = (data: any) => {
-        console.log(data);
+
         delete data.isAgriSecured
-        addLiveStockIncome(appId ?? '', data).finally(() => {
-            reset()
-            resetSourceOfIncome()
-            navigate(-1)
-        })
+        if (mode === 'save') {
+            addLiveStockIncome(appId ?? '', data).finally(() => {
+                reset()
+                resetSourceOfIncome()
+                navigate(-1)
+            })
+        } else if (mode === 'update') {
+            const _data = { ...updateData, ...data }
+            updateLiveStockIncome(updateData?.idx ?? '', _data).finally(() => {
+                reset()
+                resetSourceOfIncome()
+                navigate(-1)
+            })
+        }
     }
 
     const onRest = () => {
@@ -90,7 +101,7 @@ const LiveStockIncome: React.FC<ILiveStockIncomeProps> = ({ sourceOfIncome, rese
         setValue('sourceOfIncome', sourceOfIncome)
         fetchFacilityPurpose()
         fetchProduct(appId ?? '')
-        const productCode = 'ZA'//product?.pTrhdLType ?? ''
+        const productCode = product?.pTrhdLType ?? ''
         if (product?.pTrhdLType) {
             fetchOwnership(productCode)
             fetchIrrigation(productCode)
@@ -104,6 +115,45 @@ const LiveStockIncome: React.FC<ILiveStockIncomeProps> = ({ sourceOfIncome, rese
     }, [appId])
 
     const isAgriSecured = watch('isAgriSecured');
+
+    useEffect(() => {
+        if (mode === 'update' && updateData) {
+            setValue('profession', updateData.profession)
+            setValue('sourceOfIncome', updateData.sourceOfIncome)
+            setValue('purposeOfLoan', updateData.purposeOfLoan)
+            setValue('animalOrCrop', updateData.animalOrCrop)
+            setValue('buffaloes', updateData.buffaloes)
+            setValue('cows', updateData.cows)
+            setValue('bulls', updateData.bulls)
+            setValue('collateral', updateData.collateral)
+            setValue('claimLodged', updateData.claimLodged)
+            setValue('animalTagging', updateData.animalTagging)
+            setValue('borrowerDistrict', updateData.borrowerDistrict)
+            setValue('sowodo', updateData.sowodo)
+            setValue('loanTenure', updateData.loanTenure)
+            setValue('insCompany', updateData.insCompany)
+            setValue('policyIssuedDate', updateData.policyIssuedDate)
+            setValue('policyExpiredDate', updateData.policyExpiredDate)
+            setValue('receiptNo', updateData.receiptNo)
+            setValue('premiumRate', updateData.premiumRate)
+            setValue('floodsFactor', updateData.floodsFactor)
+            setValue('irrigation', updateData.irrigation)
+            setValue('methods', updateData.methods)
+            setValue('proofOfCult', updateData.proofOfCult)
+            setValue('expInCult', updateData.expInCult)
+            setValue('agriSecured', updateData.agriSecured ?? '')
+            if (updateData.agriSecured === '') {
+                setValue('isAgriSecured', false)
+            } else {
+                setValue('isAgriSecured', true)
+            }
+            setValue('marketCheck', updateData.marketCheck ?? '')
+            setValue('natureOfTheBorrower', updateData.natureOfTheBorrower ?? '')
+            setValue('ownOfLand', updateData.ownOfLand ?? '')
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mode])
+
 
     return (
         <Card title="Live Stock Income Details" size='small'>
@@ -219,7 +269,7 @@ const LiveStockIncome: React.FC<ILiveStockIncomeProps> = ({ sourceOfIncome, rese
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Sowodo" name="sowodo" validateStatus={errors.sowodo ? 'error' : ''} help={errors.sowodo?.message} required>
+                    <Form.Item label="O/ WO/ DO s" name="sowodo" validateStatus={errors.sowodo ? 'error' : ''} help={errors.sowodo?.message} required>
                         <Controller
                             name="sowodo"
                             control={control}
@@ -572,7 +622,7 @@ const LiveStockIncome: React.FC<ILiveStockIncomeProps> = ({ sourceOfIncome, rese
                         Back
                     </Button>
                     <Button type="primary" icon={<SaveOutlined />} htmlType="submit" className='mr-2' loading={liveStockIncomeLoading}>
-                        Save
+                        {formatSentence(mode)} Livestock
                     </Button>
                     <Button type="default" icon={<UndoOutlined />} onClick={onRest} danger >
                         Reset

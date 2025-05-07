@@ -66,16 +66,16 @@ const LoanFormApplication: React.FC = () => {
                 </Form>
 
                 {
-                    sourceOfIncome === 'Salary Income' && <SalaryIncome sourceOfIncome={sourceOfIncome} resetSourceOfIncome={resetSourceOfIncome} />
+                    sourceOfIncome === 'Salary Income' && <SalaryIncome sourceOfIncome={sourceOfIncome} resetSourceOfIncome={resetSourceOfIncome} mode={mode} updateData={mode === 'update' ? state.salaryIncome : null} />
                 }
                 {
-                    sourceOfIncome === 'Agricultural Income' && <AgricultureIncome sourceOfIncome={sourceOfIncome} resetSourceOfIncome={resetSourceOfIncome} />
+                    sourceOfIncome === 'Agricultural Income' && <AgricultureIncome sourceOfIncome={sourceOfIncome} resetSourceOfIncome={resetSourceOfIncome} formMode={mode} updateData={mode === 'update' ? state.agricultureIncome : null} />
                 }
                 {
-                    sourceOfIncome === 'Business Income' && <BusinessIncome sourceOfIncome={sourceOfIncome} resetSourceOfIncome={resetSourceOfIncome} />
+                    sourceOfIncome === 'Business Income' && <BusinessIncome sourceOfIncome={sourceOfIncome} resetSourceOfIncome={resetSourceOfIncome} mode={mode} updateData={mode === 'update' ? state.businessIncome : null} />
                 }
                 {
-                    sourceOfIncome === 'Live Stock Income' && <LiveStockIncome sourceOfIncome={sourceOfIncome} resetSourceOfIncome={resetSourceOfIncome} />
+                    sourceOfIncome === 'Live Stock Income' && <LiveStockIncome sourceOfIncome={sourceOfIncome} resetSourceOfIncome={resetSourceOfIncome} mode={mode} updateData={mode === 'update' ? state.liveStockIncome : null} />
                 }
                 {
                     sourceOfIncome === 'Other Income' && <OtherIncome sourceOfIncome={sourceOfIncome} resetSourceOfIncome={resetSourceOfIncome} mode={mode} updateData={mode === 'update' ? state.otherIncome : null} />

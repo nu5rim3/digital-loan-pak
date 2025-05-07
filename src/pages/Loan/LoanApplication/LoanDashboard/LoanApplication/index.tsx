@@ -39,6 +39,7 @@ const LoanApplication: React.FC = () => {
             fetchOtherIncome(appId ?? '')
         }
 
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [sourceOfIncome])
 
     const onSelectedRemove = () => {
@@ -97,7 +98,9 @@ const LoanApplication: React.FC = () => {
                 <div className='grid grid-cols-4 gap-3'>
                     {businessIncome.map((item) => (
                         <BusinessDetailsCard detail={item}
-                            onEdit={() => { }}
+                            onEdit={() => {
+                                navigate('loan-application', { state: { sourceOfIncome, businessIncome: item, mode: 'update' } })
+                            }}
                             onRemove={() => setSelectedIdx(item.idx ?? '')}
                             onSelectedRemove={onSelectedRemove}
                         />
@@ -136,7 +139,9 @@ const LoanApplication: React.FC = () => {
                 <div className='grid grid-cols-4 gap-3'>
                     {salaryIncome.map((item) => (
                         <SalaryDetailsCard detail={item}
-                            onEdit={() => { }}
+                            onEdit={() => {
+                                navigate('loan-application', { state: { sourceOfIncome, salaryIncome: item, mode: 'update' } })
+                            }}
                             onRemove={() => setSelectedIdx(item.idx ?? '')}
                             onSelectedRemove={onSelectedRemove}
                         />
@@ -155,7 +160,9 @@ const LoanApplication: React.FC = () => {
                 <div className='grid grid-cols-4 gap-3'>
                     {liveStockIncome.map((item) => (
                         <LiveStockDetailsCard detail={item}
-                            onEdit={() => { }}
+                            onEdit={() => {
+                                navigate('loan-application', { state: { sourceOfIncome, liveStockIncome: item, mode: 'update' } })
+                            }}
                             onRemove={() => setSelectedIdx(item.idx ?? '')}
                             onSelectedRemove={onSelectedRemove}
                         />
