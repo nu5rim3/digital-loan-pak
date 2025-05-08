@@ -72,8 +72,10 @@ const useCustomerStore = create<ICustomerState>((set) => ({
   fetchCustomerByCNIC: async (cnic: string) => {
     set({ customerLoading: true, customerError: null });
     try {
-      const response = await API.get(`/customer/${cnic}`);
-      set({ selectedCustomer: response.data, customerLoading: false });
+      const response = await API.get(
+        `/mobixCamsClientele/v1/clienteles/identifiers/${cnic}`
+      );
+      set({ selectedCustomer: response.data?.data, customerLoading: false });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({ customerError: error.message, customerLoading: false });

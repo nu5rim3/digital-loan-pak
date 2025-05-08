@@ -38,8 +38,8 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
 
     const [searchValue, setSearchValue] = useState('');
 
-    const { customer, customerLoading, addCustomer, fetchCustomerByCNIC, resetCustomer } = useCustomerStore();
-    const { guarantor, guarantorLoading, addGuarantor, fetchGuarantorByCNIC } = useGuarantorStore()
+    const { selectedCustomer, customer, customerLoading, addCustomer, fetchCustomerByCNIC, resetCustomer } = useCustomerStore();
+    const { selectedGuarantor, guarantor, guarantorLoading, addGuarantor, fetchGuarantorByCNIC } = useGuarantorStore()
     const { operatorLoading, operators, fetchOperators } = useCommonStore();
     const { loan } = useLoanStore();
     // const navigate = useNavigate();
@@ -112,6 +112,32 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    useEffect(() => {
+        if (type === 'C' && selectedCustomer) {
+            setValue("name", selectedCustomer?.fullName?.split(' ')[0] || '');
+            setValue("initals", selectedCustomer?.fullName?.split(' ')[1] || '');
+            setValue("surname", selectedCustomer?.fullName?.split(' ')[2] || '');
+            setValue("telcoProvider", selectedCustomer?.telcoProvider || '');
+            setValue("contactNumber", selectedCustomer?.contactNumber || '');
+            setValue("identificationType", selectedCustomer?.identificationType || '');
+            setValue("identificationNumber", selectedCustomer?.identificationNumber || '');
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedCustomer])
+
+    useEffect(() => {
+        if (type === 'G' && selectedGuarantor) {
+            setValue("name", selectedGuarantor?.fullName?.split(' ')[0] || '');
+            setValue("initals", selectedGuarantor?.fullName?.split(' ')[1] || '');
+            setValue("surname", selectedGuarantor?.fullName?.split(' ')[2] || '');
+            setValue("telcoProvider", selectedGuarantor?.telcoProvider || '');
+            setValue("contactNumber", selectedGuarantor?.contactNumber || '');
+            setValue("identificationType", selectedGuarantor?.identificationType || '');
+            setValue("identificationNumber", selectedGuarantor?.identificationNumber || '');
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedGuarantor])
 
     return (
         <Card title={`${type === 'C' ? 'Customer' : 'Guarantor'} Onboarding`}>
