@@ -225,6 +225,8 @@ interface IStackholderState {
     incId: string,
     incomeDetails: IIncomeDetails
   ) => Promise<void>;
+
+  // getUserByCNIC: (cnic: string) => Promise<void>;
 }
 
 const useStakeholderStore = create<IStackholderState>((set) => ({

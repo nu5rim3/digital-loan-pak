@@ -96,12 +96,12 @@ const LoanApplication: React.FC = () => {
         },
         {
             key: '3',
-            applicationId: "APP0000000000001",
+            applicationId: "APP0000000066623",
             cusName: 'Shabira',
             loanType: 'Gold Loan',
             loanAmount: '100000',
             status: 'F',
-            cidx: 'CLI0000000000003'
+            cidx: 'CLI0000000103833'
         },
         {
             key: '4',

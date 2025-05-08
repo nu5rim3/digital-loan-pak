@@ -57,7 +57,7 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
             addSalaryIncome(appId ?? '', data).finally(() => navigate(-1))
         } else if (mode === 'update') {
             const _data = { ...updateData, ...data }
-            updateSalaryIncome(updateData?.idx ?? '', _data).finally(() => navigate(-1))
+            updateSalaryIncome(appId ?? '', _data).finally(() => navigate(-1))
         }
     }
 
@@ -313,7 +313,7 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                 <div className='pt-5'>
                     <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
                     <Button type='primary' className='ml-3' htmlType='submit' icon={<SaveOutlined />} loading={salaryIncomeLoading}>
-                        {formatSentence(mode)} Sala ry
+                        {formatSentence(mode)} Salary
                     </Button>
                     <Button type='default' className='ml-3' danger icon={<UndoOutlined />} onClick={onRestFrom}>
                         Reset

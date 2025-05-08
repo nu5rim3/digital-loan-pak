@@ -269,7 +269,7 @@ const LiveStockIncome: React.FC<ILiveStockIncomeProps> = ({ sourceOfIncome, rese
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="O/ WO/ DO s" name="sowodo" validateStatus={errors.sowodo ? 'error' : ''} help={errors.sowodo?.message} required>
+                    <Form.Item label="SO/ WO/ DO s" name="sowodo" validateStatus={errors.sowodo ? 'error' : ''} help={errors.sowodo?.message} required>
                         <Controller
                             name="sowodo"
                             control={control}
