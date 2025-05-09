@@ -15,7 +15,7 @@ const Landing: React.FC = () => {
   }
 
   return (
-    <div className="bg-[url('/img/bg.svg')] h-screen">
+    <div className="h-screen">
       <Content className='flex flex-col h-screen'>
         <div className='flex justify-center '>
           <img src={Logo1} alt='digital-loan' style={{ width: 500 }} />
