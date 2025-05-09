@@ -1,4 +1,4 @@
-import { Button, Form, Modal, Select, Input } from "antd";
+import { Button, Form, Select } from "antd";
 import { Controller, UseFormReturn } from "react-hook-form";
 import { ExceptionalApprovalFormData, ExceptionalApprovalPersonResponse, ExceptionalApprovalRole } from "./types";
 import TextArea from "antd/es/input/TextArea";
@@ -37,7 +37,6 @@ const ExceptionalApprovalModal: React.FC<ExceptionalApprovalModalProps> = ({
     control,
     handleSubmit,
     formState: { errors },
-    setValue,
     reset,
     watch,
   } = formMethods;
@@ -106,9 +105,8 @@ const ExceptionalApprovalModal: React.FC<ExceptionalApprovalModalProps> = ({
 
   return (
     <CommonModal
-      title={`${
-        mode === "save" ? "Add" : mode === "update" ? "Update" : "Remove"
-      } Term Deposit`}
+      title={`${mode === "save" ? "Add" : mode === "update" ? "Update" : "Remove"
+        } Term Deposit`}
       centered={true}
       footer={true}
       open={isModalOpen}

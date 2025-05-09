@@ -1,7 +1,7 @@
-import { Button, Card, Descriptions, Empty, Spin } from "antd";
+import { Button, Empty, Spin } from "antd";
 import React, { useEffect, useState } from "react";
-import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { useForm, UseFormReturn } from "react-hook-form";
+import { PlusOutlined } from "@ant-design/icons";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import DetailsCard from "./DetailsCard";
 import ExceptionalApprovalModal from "./ExceptionalApprovalModal";
@@ -9,7 +9,8 @@ import useApprovalStore from "../../../../../store/approvalStore";
 import { useParams } from "react-router-dom";
 import { ExceptionalApprovalFormData, ExceptionalApprovalRecord, ExceptionalApprovalPersonResponse, schema } from "./types";
 
-interface ExceptionalApprovalProps {}
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface ExceptionalApprovalProps { }
 
 const ExceptionalApproval: React.FC<ExceptionalApprovalProps> = () => {
   const { appId } = useParams();
@@ -26,7 +27,6 @@ const ExceptionalApproval: React.FC<ExceptionalApprovalProps> = () => {
     exceptionalApprovalCategories,
     ExceptionalApprovalPerson,
     requestExceptionalApproval,
-    appraisalApprovalLoading,
     deleteApproval,
   } = useApprovalStore();
 
