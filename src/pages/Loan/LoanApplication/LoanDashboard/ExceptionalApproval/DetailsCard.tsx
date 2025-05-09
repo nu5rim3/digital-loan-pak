@@ -30,7 +30,7 @@ interface DetailsCardProps {
   dataArray: any[];
 }
 
-const DetailsCard: React.FC<DetailsCardProps> = ({ detail, onEdit, onRemove, dataArray }) => (
+const DetailsCard: React.FC<DetailsCardProps> = ({ detail, onRemove }) => (
   <Card>
     <div className="flex justify-end gap-1">
       <Button
