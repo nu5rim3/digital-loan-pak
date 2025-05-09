@@ -126,7 +126,7 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Purpose Of Loan" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
+                    <Form.Item label="Purpose of Loan" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
                         <Controller
                             name="purposeOfLoan"
                             control={control}
@@ -142,7 +142,7 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Source Of Income" name="sourceOfIncome" validateStatus={errors.sourceOfIncome ? 'error' : ''} help={errors.sourceOfIncome?.message} required>
+                    <Form.Item label="Source of Income" name="sourceOfIncome" validateStatus={errors.sourceOfIncome ? 'error' : ''} help={errors.sourceOfIncome?.message} required>
                         <Controller
                             name="sourceOfIncome"
                             control={control}
@@ -225,7 +225,7 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Type Of Job" name="typeOfJob" validateStatus={errors.typeOfJob ? 'error' : ''} help={errors.typeOfJob?.message} required>
+                    <Form.Item label="Type of Job" name="typeOfJob" validateStatus={errors.typeOfJob ? 'error' : ''} help={errors.typeOfJob?.message} required>
                         <Controller
                             name="typeOfJob"
                             control={control}
@@ -239,7 +239,7 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Nature Of Employment" name="natureOfEmp" validateStatus={errors.natureOfEmp ? 'error' : ''} help={errors.natureOfEmp?.message} required>
+                    <Form.Item label="Nature of Employment" name="natureOfEmp" validateStatus={errors.natureOfEmp ? 'error' : ''} help={errors.natureOfEmp?.message} required>
                         <Controller
                             name="natureOfEmp"
                             control={control}
@@ -281,7 +281,7 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Proof Of Salary" name="proofOfSalary" validateStatus={errors.proofOfSalary ? 'error' : ''} help={errors.proofOfSalary?.message} required>
+                    <Form.Item label="Proof of Salary" name="proofOfSalary" validateStatus={errors.proofOfSalary ? 'error' : ''} help={errors.proofOfSalary?.message} required>
                         <Controller
                             name="proofOfSalary"
                             control={control}

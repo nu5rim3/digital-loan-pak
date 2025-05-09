@@ -46,7 +46,7 @@ const LoanFormApplication: React.FC = () => {
             <Card title={"Loan Application"} className='mt-3'>
 
                 <Form className='w-1/4' layout='vertical'>
-                    <Form.Item label="Source Of Income">
+                    <Form.Item label="Source of Income">
                         <Select
                             className='w-1/4'
                             placeholder="Select Income Source"

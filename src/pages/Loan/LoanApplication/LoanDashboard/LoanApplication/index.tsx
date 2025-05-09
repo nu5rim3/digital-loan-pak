@@ -68,7 +68,7 @@ const LoanApplication: React.FC = () => {
         <>
             <div className='flex justify-between'>
                 <Form className='w-1/4' layout='vertical'>
-                    <Form.Item label="Source Of Income">
+                    <Form.Item label="Source of Income">
                         <Select
                             className='w-1/4'
                             placeholder="Select Income Source"
@@ -214,7 +214,7 @@ const BusinessDetailsCard: React.FC<{ detail: IBusinessIncome; onEdit: () => voi
         <Descriptions column={1}>
             <Descriptions.Item label="Business Name">{detail.bnsName}</Descriptions.Item>
             <Descriptions.Item label="Business Phone">{detail.phoneNo}</Descriptions.Item>
-            <Descriptions.Item label="Cost Of Business">{formatCurrency(Number(detail.costOfBns))}</Descriptions.Item>
+            <Descriptions.Item label="Cost of Business">{formatCurrency(Number(detail.costOfBns))}</Descriptions.Item>
             <Descriptions.Item label="Business Ratings">{detail.bnsRatings ?? '-'}</Descriptions.Item>
         </Descriptions>
     </Card>

@@ -4,6 +4,8 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Logo1 from '../../../assets/full_logo_white.png';
 import Logo2 from '../../../assets/logo.png';
+// import lolclogo from '../../../assets/LOLC_ICON.png'
+// import lolclogo2 from '../../../assets/LOLC_ISLAMIC.png'
 import { ItemType as SideItemType } from 'antd/es/menu/interface';
 import useUserStore from '../../../store/userStore';
 
@@ -164,7 +166,7 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
     };
     return (
         <Sider
-            collapsible
+            // collapsible
             collapsed={collapsed}
             onCollapse={handleCollapse}
             width={280}
@@ -182,6 +184,13 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
                 onOpenChange={handleOpenChange} // Ensures only one submenu stays open
                 items={filteredMenu}
             />
+            {/* <div className='flex flex-1 bg-red-500 h-fill'>
+                hi
+            </div> */}
+            {/* <img style={{
+                maxWidth: '60%',
+                maxHeight: '100%'
+            }} src={!collapsed ? lolclogo2 : lolclogo} /> */}
         </Sider>
     )
 }

@@ -303,7 +303,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
         <Card title={"Agricultural Income Details"} size='small'>
             <Form layout='vertical' onFinish={handleSubmit(onSubmit)} >
                 <div className='flex flex-col gap-3'>
-                    <Card size='small' title={<span className='text-gray-600'>Nature Of The Borrower</span>}>
+                    <Card size='small' title={<span className='text-gray-600'>Nature of The Borrower</span>}>
                         <div className='grid grid-cols-3 gap-3'>
                             <Form.Item label="Profession" name="profession" validateStatus={errors.profession ? 'error' : ''} help={errors.profession?.message} required>
                                 <Controller
@@ -324,7 +324,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                     )}
                                 />
                             </Form.Item>
-                            <Form.Item label="Purpose Of Loan" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
+                            <Form.Item label="Purpose of Loan" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
                                 <Controller
                                     name="purposeOfLoan"
                                     control={control}
@@ -340,7 +340,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                     )}
                                 />
                             </Form.Item>
-                            <Form.Item label="Source Of Income" name="sourceOfIncome" validateStatus={errors.sourceOfIncome ? 'error' : ''} help={errors.sourceOfIncome?.message} required>
+                            <Form.Item label="Source of Income" name="sourceOfIncome" validateStatus={errors.sourceOfIncome ? 'error' : ''} help={errors.sourceOfIncome?.message} required>
                                 <Controller
                                     name="sourceOfIncome"
                                     control={control}
@@ -361,7 +361,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                     )}
                                 />
                             </Form.Item>
-                            <Form.Item label="Nature Of The Borrower" name="natureOfTheBorrower" validateStatus={errors.natureOfTheBorrower ? 'error' : ''} help={errors.natureOfTheBorrower?.message} required>
+                            <Form.Item label="Nature of The Borrower" name="natureOfTheBorrower" validateStatus={errors.natureOfTheBorrower ? 'error' : ''} help={errors.natureOfTheBorrower?.message} required>
                                 <Controller
                                     name="natureOfTheBorrower"
                                     control={control}
@@ -394,14 +394,14 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                     )}
                                 />
                             </Form.Item>
-                            <Form.Item label="Ownership Of Land" name="ownOfLand" validateStatus={errors.ownOfLand ? 'error' : ''} help={errors.ownOfLand?.message} required>
+                            <Form.Item label="Ownership of Land" name="ownOfLand" validateStatus={errors.ownOfLand ? 'error' : ''} help={errors.ownOfLand?.message} required>
                                 <Controller
                                     name="ownOfLand"
                                     control={control}
                                     render={({ field }) => (
                                         <Select
                                             {...field}
-                                            placeholder="Select a Ownership Of Land"
+                                            placeholder="Select a Ownership of Land"
                                             options={[
                                                 { label: 'Owned', value: 'OWNED' },
                                                 { label: 'Rented', value: 'RENTED' },
@@ -599,7 +599,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                                 )}
                                             />
                                         </Form.Item>
-                                        <Form.Item label="Acres Of Rabi" name="acresOfRabi" validateStatus={errors.acresOfRabi ? 'error' : ''} help={errors.acresOfRabi?.message} required>
+                                        <Form.Item label="Acres of Rabi" name="acresOfRabi" validateStatus={errors.acresOfRabi ? 'error' : ''} help={errors.acresOfRabi?.message} required>
                                             <Controller
                                                 name="acresOfRabi"
                                                 control={control}
@@ -607,7 +607,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                                     <InputNumber
                                                         className='w-full'
                                                         {...field}
-                                                        placeholder="Acres Of Rabi"
+                                                        placeholder="Acres of Rabi"
                                                     />
                                                 )}
                                             />
@@ -656,7 +656,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                                 )}
                                             />
                                         </Form.Item>
-                                        <Form.Item label="Acres Of Kharif" name="acresOfKharif" validateStatus={errors.acresOfKharif ? 'error' : ''} help={errors.acresOfKharif?.message} required>
+                                        <Form.Item label="Acres of Kharif" name="acresOfKharif" validateStatus={errors.acresOfKharif ? 'error' : ''} help={errors.acresOfKharif?.message} required>
                                             <Controller
                                                 name="acresOfKharif"
                                                 control={control}
@@ -664,7 +664,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                                     <InputNumber
                                                         className='w-full'
                                                         {...field}
-                                                        placeholder="Acres Of Kharif"
+                                                        placeholder="Acres of Kharif"
                                                     />
                                                 )}
                                             />
@@ -860,7 +860,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                     <Card size='small' title={<span>Basic Information</span>}>
                         <div className='grid grid-cols-3 gap-3'>
 
-                            <Form.Item label="Purpose Of Cultivation Loan" name="purposeOfCultLoan" validateStatus={errors.purposeOfCultLoan ? 'error' : ''} help={errors.purposeOfCultLoan?.message} required>
+                            <Form.Item label="Purpose of Cultivation Loan" name="purposeOfCultLoan" validateStatus={errors.purposeOfCultLoan ? 'error' : ''} help={errors.purposeOfCultLoan?.message} required>
                                 <Controller
                                     name="purposeOfCultLoan"
                                     control={control}
@@ -920,14 +920,14 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                 />
                             </Form.Item>
 
-                            <Form.Item label="Proof Of Cultivation" name="proofOfCult" validateStatus={errors.proofOfCult ? 'error' : ''} help={errors.proofOfCult?.message} required>
+                            <Form.Item label="Proof of Cultivation" name="proofOfCult" validateStatus={errors.proofOfCult ? 'error' : ''} help={errors.proofOfCult?.message} required>
                                 <Controller
                                     name="proofOfCult"
                                     control={control}
                                     render={({ field }) => (
                                         <Select
                                             {...field}
-                                            placeholder="Select Proof Of Cultivation"
+                                            placeholder="Select Proof of Cultivation"
                                             loading={proofOfCultivationLoading}
                                             options={proofOfCultivation.map((item) => ({ label: item.description, value: item.code }))}
                                         />

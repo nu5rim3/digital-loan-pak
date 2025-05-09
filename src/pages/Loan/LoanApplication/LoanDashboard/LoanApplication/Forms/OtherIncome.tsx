@@ -102,7 +102,7 @@ const OtherIncome: React.FC<IOtherIncomeProps> = ({ sourceOfIncome, resetSourceO
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Purpose Of Loan" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
+                    <Form.Item label="Purpose of Loan" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
                         <Controller
                             name="purposeOfLoan"
                             control={control}
@@ -118,7 +118,7 @@ const OtherIncome: React.FC<IOtherIncomeProps> = ({ sourceOfIncome, resetSourceO
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Source Of Income" name="sourceOfIncome" validateStatus={errors.sourceOfIncome ? 'error' : ''} help={errors.sourceOfIncome?.message} required>
+                    <Form.Item label="Source of Income" name="sourceOfIncome" validateStatus={errors.sourceOfIncome ? 'error' : ''} help={errors.sourceOfIncome?.message} required>
                         <Controller
                             name="sourceOfIncome"
                             control={control}

@@ -125,7 +125,7 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
                                     )}
                                 />
                             </Form.Item>
-                            <Form.Item label="Purpose Of Loan" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
+                            <Form.Item label="Purpose of Loan" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
                                 <Controller
                                     name="purposeOfLoan"
                                     control={control}
@@ -141,7 +141,7 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
                                     )}
                                 />
                             </Form.Item>
-                            <Form.Item label="Source Of Income" name="sourceOfIncome" validateStatus={errors.sourceOfIncome ? 'error' : ''} help={errors.sourceOfIncome?.message} required>
+                            <Form.Item label="Source of Income" name="sourceOfIncome" validateStatus={errors.sourceOfIncome ? 'error' : ''} help={errors.sourceOfIncome?.message} required>
                                 <Controller
                                     name="sourceOfIncome"
                                     control={control}
@@ -174,7 +174,7 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
                                     )}
                                 />
                             </Form.Item>
-                            <Form.Item label="Nature Of Business" name="natureOfBns" validateStatus={errors.natureOfBns ? 'error' : ''} help={errors.natureOfBns?.message} required>
+                            <Form.Item label="Nature of Business" name="natureOfBns" validateStatus={errors.natureOfBns ? 'error' : ''} help={errors.natureOfBns?.message} required>
                                 <Controller
                                     name="natureOfBns"
                                     control={control}
@@ -210,7 +210,7 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
                                     )}
                                 />
                             </Form.Item>
-                            <Form.Item label="Own Of Business Place" name="ownOfBnsPlace" validateStatus={errors.ownOfBnsPlace ? 'error' : ''} help={errors.ownOfBnsPlace?.message} required>
+                            <Form.Item label="Own of Business Place" name="ownOfBnsPlace" validateStatus={errors.ownOfBnsPlace ? 'error' : ''} help={errors.ownOfBnsPlace?.message} required>
                                 <Controller
                                     name="ownOfBnsPlace"
                                     control={control}
@@ -224,7 +224,7 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
                                     )}
                                 />
                             </Form.Item>
-                            <Form.Item label="Cost Of Business" name="costOfBns" validateStatus={errors.costOfBns ? 'error' : ''} help={errors.costOfBns?.message} required>
+                            <Form.Item label="Cost of Business" name="costOfBns" validateStatus={errors.costOfBns ? 'error' : ''} help={errors.costOfBns?.message} required>
                                 <Controller
                                     name="costOfBns"
                                     control={control}
@@ -232,7 +232,7 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
                                         <InputNumber
                                             className='w-full'
                                             {...field}
-                                            placeholder="Cost Of Business"
+                                            placeholder="Cost of Business"
                                             defaultValue='0'
                                             formatter={(value) =>
                                                 `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
@@ -303,14 +303,14 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
                                     )}
                                 />
                             </Form.Item>
-                            <Form.Item label="Description Of Business" name="description" validateStatus={errors.description ? 'error' : ''} help={errors.description?.message} required>
+                            <Form.Item label="Description of Business" name="description" validateStatus={errors.description ? 'error' : ''} help={errors.description?.message} required>
                                 <Controller
                                     name="description"
                                     control={control}
                                     render={({ field }) => (
                                         <Input.TextArea
                                             {...field}
-                                            placeholder="Description Of Business"
+                                            placeholder="Description of Business"
                                         />
                                     )}
                                 />
