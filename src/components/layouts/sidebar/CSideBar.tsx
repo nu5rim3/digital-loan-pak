@@ -186,10 +186,15 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
             <Menu
                 mode='inline'
                 theme='dark'
-                // defaultSelectedKeys={['1']}
                 openKeys={openKeys}
-                onOpenChange={handleOpenChange} // Ensures only one submenu stays open
+                onOpenChange={handleOpenChange}
                 items={filteredMenu}
+                onSelect={() => {
+                    if (!collapsed) {
+                        handleCollapse(!collapsed)
+                    }
+                }
+                }
             />
 
             <div
