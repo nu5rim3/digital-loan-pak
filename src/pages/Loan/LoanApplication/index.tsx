@@ -15,7 +15,7 @@ const { Content } = Layout
 const LoanApplication: React.FC = () => {
 
     const navigate = useNavigate();
-    const { loading, addLoan } = useLoanStore();
+    const { loan, loading, addLoan, fetchLoans } = useLoanStore();
     const { resetCustomer } = useCustomerStore()
 
     const columns = [
@@ -165,6 +165,7 @@ const LoanApplication: React.FC = () => {
 
     const onChange = (key: string) => {
         console.log('key', key);
+        fetchLoans(key, "Heshan.Pe");
     }
 
     const newLoanHandler = async () => {
@@ -180,6 +181,8 @@ const LoanApplication: React.FC = () => {
         })
     };
 
+    console.log('loan', loan);
+
     return (
         <Content>
             <Card title="Loan Request">
@@ -194,7 +197,7 @@ const LoanApplication: React.FC = () => {
                     items={[
                         {
                             label: `Pending`,
-                            key: '1',
+                            key: 'PENDING',
                             children:
                                 <>
                                     <SearchBar />
@@ -205,7 +208,7 @@ const LoanApplication: React.FC = () => {
                         },
                         {
                             label: `Return`,
-                            key: '2',
+                            key: 'RETURNED',
                             children:
                                 <>
                                     <SearchBar />
@@ -215,7 +218,7 @@ const LoanApplication: React.FC = () => {
                         },
                         {
                             label: `Completed`,
-                            key: '3',
+                            key: 'COMPLETED',
                             children:
                                 <>
                                     <SearchBar />

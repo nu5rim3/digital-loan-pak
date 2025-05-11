@@ -143,7 +143,7 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
         <Card title={`${type === 'C' ? 'Customer' : 'Guarantor'} Onboarding`}>
             <Form layout="vertical">
                 <div>
-                    <Form.Item label={`Search ${type === 'C' ? 'Customer' : 'Guarantor'}  using CNIC`}>
+                    <Form.Item label={`Search By ${type === 'C' ? 'Customer' : 'Guarantor'} CNIC`}>
                         <Space.Compact className='flex-1'>
                             <Search
                                 value={searchValue}
@@ -173,7 +173,7 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                             />
                         </Form.Item>
 
-                        <Form.Item label="Initals" validateStatus={errors.initals ? "error" : ""} help={errors.initals?.message} required>
+                        <Form.Item label="initials" validateStatus={errors.initals ? "error" : ""} help={errors.initals?.message} required>
                             <Controller
                                 name="initals"
                                 control={control}

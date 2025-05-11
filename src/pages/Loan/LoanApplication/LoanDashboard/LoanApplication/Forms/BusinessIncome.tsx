@@ -205,6 +205,11 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
                                                 { label: '5 Years', value: '5Y' },
                                                 { label: '6 Years', value: '6Y' },
                                                 { label: '7 Years', value: '7Y' },
+                                                { label: '8 Years', value: '8Y' },
+                                                { label: '9 Years', value: '9Y' },
+                                                { label: '10 Years', value: '10Y' },
+                                                { label: '10 Years +', value: '10Y+' },
+
                                             ]}
                                         />
                                     )}

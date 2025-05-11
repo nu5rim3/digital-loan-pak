@@ -101,7 +101,7 @@ interface ILoanState {
   termDepositPlacedLoading: boolean;
   termDepositPlacedError: string | null;
 
-  fetchLoans: () => Promise<void>;
+  fetchLoans: (status: string, username: string) => Promise<void>;
   fetchLoanById: (id: number) => Promise<void>;
   addLoan: (loan: ILoan) => Promise<void>;
   updateLoan: (id: number, updatedLoan: ILoan) => Promise<void>;
@@ -160,15 +160,13 @@ const useLoanStore = create<ILoanState>((set) => ({
   termDepositPlacedLoading: false,
   termDepositPlacedError: null,
 
-  fetchLoans: async () => {
+  fetchLoans: async (status: string, username: string) => {
     set({ loading: true, error: null });
     try {
-      const response = await API.get("/");
+      const response = await API.get(
+        `/mobixCamsLoan/v1/appraisals/${status}/user/${username}?unit=&client=MOBILE`
+      );
       set({ loans: response.data, loading: false });
-      notification.success({
-        type: "success",
-        message: "Loans fetched successfully",
-      });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);

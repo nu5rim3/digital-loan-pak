@@ -133,6 +133,7 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
                                     <Input
                                         {...field}
                                         placeholder="Enter Contact Number"
+                                        type='number'
                                         maxLength={11}
                                         onChange={(e) => setValue('phoneNo', formatPhoneNumber(e.target.value), { shouldValidate: true })}
                                     />

@@ -1038,11 +1038,11 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
                                 { label: '8 Years', value: '8Y' },
                                 { label: '9 Years', value: '9Y' },
                                 { label: '10 Years', value: '10Y' },
+                                { label: '10 Years +', value: '10Y+' },
                             ]}
                                 onChange={(e) => {
                                     setValue("years", e)
                                     setValue("durOfCurrLoc", `${e}, ${getValues('months')}`)
-
                                 }}
                             />
                         }

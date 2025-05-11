@@ -21,10 +21,10 @@ import BankDetails from '../../../../../components/common/stakeHolder/BankDetail
 // ✅ Validation Schema
 const schema = yup.object().shape({
     appraisalID: yup.string(),
-    stkOrgType: yup.string().required("Orgination Type is required"),
+    stkOrgType: yup.string().required("Organization Type is required"),
     stkCNic: yup.string().required("CNIC is required"),
     stkCNicIssuedDate: yup.string().required("CNIC Issued Date is required"),
-    stkCNicExpDate: yup.string().required("CNIC Exp Date is required"),
+    stkCNicExpDate: yup.string().required("CNIC Expired Date is required"),
     stkCNicStatus: yup.string().required("CNIC Status is required"),
     stkCusName: yup.string().required("Customer Name is required"),
     stkInitials: yup.string().required("Initials is required"),
@@ -33,8 +33,8 @@ const schema = yup.object().shape({
     stkDob: yup.string().required("Date of Birth is required"),
     stkAge: yup.string().required("Age is required"),
     stkGender: yup.string().required("Gender is required"),
-    stkMaritialStatus: yup.string().required("Maritial Status is required"),
-    stkMaritialComment: yup.string().required("Maritial Comment is required"),
+    stkMaritialStatus: yup.string().required("Marital Status is required"),
+    stkMaritialComment: yup.string().required("Marital Comment is required"),
     stkTitle: yup.string().required("Title is required"),
     stkFatherOrHusName: yup.string().required("Father or Husband Name is required"),
     stkEduLevel: yup.string().required("Education Level is required"),
@@ -142,7 +142,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                 <div className='pb-5'>
                     <TrialCalculation />
                 </div>
-                <Card title={'Customer Detail'}>
+                <Card title={'Customer Details'}>
                     <Form layout="vertical">
                         <div className="grid grid-cols-4 gap-3">
                             <Form.Item label="Full Name">
@@ -247,7 +247,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                     <Controller
                                         name="stkCNicStatus"
                                         control={control}
-                                        render={({ field }) => <Select {...field} placeholder="Select an CNIC Status" allowClear loading={cnicStausLoading} options={cnicStaus.map((item) => ({
+                                        render={({ field }) => <Select {...field} placeholder="Select a CNIC Status" allowClear loading={cnicStausLoading} options={cnicStaus.map((item) => ({
                                             label: item.description,
                                             value: item.code
                                         }))}>
@@ -276,11 +276,11 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                         render={({ field }) => <Input {...field} placeholder="Enter CNIC Issued Date" type='date' />}
                                     />
                                 </Form.Item>
-                                <Form.Item label="CNIC Exp Date" validateStatus={errors.stkCNicExpDate ? "error" : ""} help={errors.stkCNicExpDate?.message} required>
+                                <Form.Item label="CNIC Expired Date" validateStatus={errors.stkCNicExpDate ? "error" : ""} help={errors.stkCNicExpDate?.message} required>
                                     <Controller
                                         name="stkCNicExpDate"
                                         control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter CNIC Exp Date" type='date' />}
+                                        render={({ field }) => <Input {...field} placeholder="Enter CNIC Expired Date" type='date' />}
                                     />
                                 </Form.Item>
 
@@ -316,7 +316,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                         }
                                     />
                                 </Form.Item>
-                                <Form.Item label="Orgination Type" validateStatus={errors.stkOrgType ? "error" : ""} help={errors.stkOrgType?.message} required>
+                                <Form.Item label="Organization Type" validateStatus={errors.stkOrgType ? "error" : ""} help={errors.stkOrgType?.message} required>
                                     <Controller
                                         name="stkOrgType"
                                         control={control}
@@ -347,7 +347,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                         }
                                     />
                                 </Form.Item>
-                                <Form.Item label="Maritial Status" validateStatus={errors.stkMaritialStatus ? "error" : ""} help={errors.stkMaritialStatus?.message} required>
+                                <Form.Item label="Marital Status" validateStatus={errors.stkMaritialStatus ? "error" : ""} help={errors.stkMaritialStatus?.message} required>
                                     <Controller
                                         name="stkMaritialStatus"
                                         control={control}
@@ -362,15 +362,15 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                                     { value: 'W', label: 'Widow' },
                                                     { value: 'I', label: 'Widower' },
                                                 ]}
-                                                placeholder="Select Maritial Status" />
+                                                placeholder="Select Marital Status" />
                                         }
                                     />
                                 </Form.Item>
-                                <Form.Item label="Maritial Comment" validateStatus={errors.stkMaritialComment ? "error" : ""} help={errors.stkMaritialComment?.message} required>
+                                <Form.Item label="Marital Comment" validateStatus={errors.stkMaritialComment ? "error" : ""} help={errors.stkMaritialComment?.message} required>
                                     <Controller
                                         name="stkMaritialComment"
                                         control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Maritial Comment" />}
+                                        render={({ field }) => <Input {...field} placeholder="Enter Marital Comment" />}
                                     />
                                 </Form.Item>
 
@@ -491,11 +491,11 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                         render={({ field }) => <Input {...field} placeholder="Enter Physical Disability Description" />}
                                     />
                                 </Form.Item>
-                                <Form.Item label="Geo Location" validateStatus={errors.geoLocation ? "error" : ""} help={errors.geoLocation?.message}>
+                                <Form.Item label="Geographic Location" validateStatus={errors.geoLocation ? "error" : ""} help={errors.geoLocation?.message}>
                                     <Controller
                                         name="geoLocation"
                                         control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Geo Location" />}
+                                        render={({ field }) => <Input {...field} placeholder="Enter Geographic Location" />}
                                     />
                                 </Form.Item>
                                 <Form.Item label="Employee Number" validateStatus={errors.stkEmpNo ? "error" : ""} help={errors.stkEmpNo?.message}>
