@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Input, Select, DatePicker } from "antd";
+import { Form, Input, InputNumber, Select, DatePicker } from "antd";
 import { Control, Controller } from "react-hook-form";
 import { FormValues } from "../types";
 
@@ -8,29 +8,45 @@ interface PropertyMortgageFormProps {
   errors: Record<string, any>;
 }
 
-const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({ control, errors }) => {
+const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
+  control,
+  errors,
+}) => {
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Property Mortgage Details</h3>
+        <h3 className="text-lg font-semibold mb-4">Property Details</h3>
         <div className="grid grid-cols-3 gap-4">
-          <Form.Item label="Type" required>
+          <Form.Item
+            label="Type"
+            required
+            validateStatus={errors.propertyType ? "error" : ""}
+            help={errors.propertyType?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
             <Controller
-              name="type"
+              name="propertyType"
               control={control}
               render={({ field }) => (
                 <Select {...field} placeholder="Select Type">
                   <Select.Option value="residential">Residential</Select.Option>
                   <Select.Option value="commercial">Commercial</Select.Option>
                   <Select.Option value="industrial">Industrial</Select.Option>
+                  <Select.Option value="land">Land</Select.Option>
                 </Select>
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Ownership" required>
+          <Form.Item
+            label="Ownership"
+            required
+            validateStatus={errors.propertyOwnership ? "error" : ""}
+            help={errors.propertyOwnership?.message}
+          >
             <Controller
-              name="ownership"
+              name="propertyOwnership"
               control={control}
               render={({ field }) => (
                 <Select {...field} placeholder="Select Ownership">
@@ -41,128 +57,42 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({ control, er
             />
           </Form.Item>
 
-          <Form.Item label="Sub Type" required>
+          <Form.Item
+            label="Location"
+            required
+            validateStatus={errors.propertyLocation ? "error" : ""}
+            help={errors.propertyLocation?.message}
+          >
             <Controller
-              name="subType"
+              name="propertyLocation"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Sub Type">
-                  <Select.Option value="apartment">Apartment</Select.Option>
-                  <Select.Option value="house">House</Select.Option>
-                  <Select.Option value="plot">Plot</Select.Option>
-                </Select>
+                <Input {...field} placeholder="Enter Location" />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Bond Type" required>
+          <Form.Item
+            label="Area"
+            required
+            validateStatus={errors.propertyArea ? "error" : ""}
+            help={errors.propertyArea?.message}
+          >
             <Controller
-              name="bondType"
+              name="propertyArea"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Bond Type">
-                  <Select.Option value="registered">Registered</Select.Option>
-                  <Select.Option value="unregistered">Unregistered</Select.Option>
-                </Select>
+                <Input {...field} placeholder="Enter Area" />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Property Type" required>
-            <Controller
-              name="propertyType"
-              control={control}
-              render={({ field }) => (
-                <Select {...field} placeholder="Select Property Type">
-                  <Select.Option value="residential">Residential</Select.Option>
-                  <Select.Option value="commercial">Commercial</Select.Option>
-                  <Select.Option value="industrial">Industrial</Select.Option>
-                </Select>
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item label="Property Address" required>
-            <Controller
-              name="propertyAddress"
-              control={control}
-              render={({ field }) => (
-                <Input.TextArea {...field} placeholder="Enter Property Address" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item label="Loan Agreement No" required>
-            <Controller
-              name="loanAgreementNo"
-              control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter Loan Agreement No" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item label="Loan Reference No" required>
-            <Controller
-              name="loanReferenceNo"
-              control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter Loan Reference No" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item label="Property Value" required>
-            <Controller
-              name="propertyValue"
-              control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter Property Value" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item label="MV" required>
-            <Controller
-              name="mv"
-              control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter MV" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item label="CR Number" required>
-            <Controller
-              name="crNumber"
-              control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter CR Number" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item label="Sale Price" required>
-            <Controller
-              name="salePrice"
-              control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter Sale Price" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item label="FSV" required>
-            <Controller
-              name="fsv"
-              control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter FSV" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item label="Municipality" required>
+          <Form.Item
+            label="Municipality"
+            required
+            validateStatus={errors.municipality ? "error" : ""}
+            help={errors.municipality?.message}
+          >
             <Controller
               name="municipality"
               control={control}
@@ -171,13 +101,101 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({ control, er
               )}
             />
           </Form.Item>
-
-          <Form.Item label="Date of Reg" required>
+          <Form.Item
+            label="Market Value"
+            required
+            validateStatus={errors.propertyMarketValue ? "error" : ""}
+            help={errors.propertyMarketValue?.message}
+          >
             <Controller
-              name="dateOfReg"
+              name="propertyMarketValue"
               control={control}
               render={({ field }) => (
-                <DatePicker {...field} className="w-full" />
+                <InputNumber
+                  {...field}
+                  style={{ width: "100%" }}
+                  placeholder="Enter Market Value"
+                  formatter={(value) =>
+                    `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
+                  parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="FSV"
+            required
+            validateStatus={errors.propertyFSV ? "error" : ""}
+            help={errors.propertyFSV?.message}
+          >
+            <Controller
+              name="propertyFSV"
+              control={control}
+              render={({ field }) => (
+                <InputNumber
+                  {...field}
+                  style={{ width: "100%" }}
+                  placeholder="Enter FSV"
+                  formatter={(value) =>
+                    `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
+                  parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Property Value"
+            required
+            validateStatus={errors.propertyValue ? "error" : ""}
+            help={errors.propertyValue?.message}
+          >
+            <Controller
+              name="propertyValue"
+              control={control}
+              render={({ field }) => (
+                <InputNumber
+                  {...field}
+                  style={{ width: "100%" }}
+                  placeholder="Enter Property Value"
+                  formatter={(value) =>
+                    `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
+                  parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Description"
+            required
+            validateStatus={errors.propertyDescription ? "error" : ""}
+            help={errors.propertyDescription?.message}
+          >
+            <Controller
+              name="propertyDescription"
+              control={control}
+              render={({ field }) => (
+                <Input.TextArea {...field} placeholder="Enter Description" />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Address"
+            required
+            validateStatus={errors.propertyAddress ? "error" : ""}
+            help={errors.propertyAddress?.message}
+          >
+            <Controller
+              name="propertyAddress"
+              control={control}
+              render={({ field }) => (
+                <Input.TextArea {...field} placeholder="Enter Address" />
               )}
             />
           </Form.Item>
@@ -187,4 +205,4 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({ control, er
   );
 };
 
-export default PropertyMortgageForm; 
+export default PropertyMortgageForm;

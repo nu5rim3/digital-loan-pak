@@ -1,6 +1,6 @@
 import React from "react";
-import { Form, Input, Select, DatePicker } from "antd";
-import { Control, Controller } from "react-hook-form";
+import { Form, Input, InputNumber, Select, DatePicker } from "antd";
+import { Controller, Control } from "react-hook-form";
 import { FormValues } from "../types";
 
 interface VehicleFormProps {
@@ -14,48 +14,73 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-4">Vehicle Details</h3>
         <div className="grid grid-cols-3 gap-4">
-          <Form.Item label="Type" required>
+          <Form.Item
+            label="Type"
+            required
+            validateStatus={errors.vehicleType ? "error" : ""}
+            help={errors.vehicleType?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
             <Controller
-              name="type"
+              name="vehicleType"
               control={control}
               render={({ field }) => (
                 <Select {...field} placeholder="Select Type">
                   <Select.Option value="car">Car</Select.Option>
                   <Select.Option value="truck">Truck</Select.Option>
-                  <Select.Option value="van">Van</Select.Option>
                   <Select.Option value="bus">Bus</Select.Option>
+                  <Select.Option value="motorcycle">Motorcycle</Select.Option>
                 </Select>
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Ownership" required>
+          <Form.Item
+            label="Ownership"
+            required
+            validateStatus={errors.vehicleOwnership ? "error" : ""}
+            help={errors.vehicleOwnership?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
             <Controller
-              name="ownership"
+              name="vehicleOwnership"
               control={control}
               render={({ field }) => (
                 <Select {...field} placeholder="Select Ownership">
-                  <Select.Option value="owned">Owned</Select.Option>
-                  <Select.Option value="leased">Leased</Select.Option>
-                  <Select.Option value="financed">Financed</Select.Option>
+                  <Select.Option value="individual">Individual</Select.Option>
+                  <Select.Option value="company">Company</Select.Option>
                 </Select>
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Supplier" required>
+          <Form.Item
+            label="Supplier"
+            required
+            validateStatus={errors.vehicleSupplier ? "error" : ""}
+            help={errors.vehicleSupplier?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
             <Controller
-              name="supplier"
+              name="vehicleSupplier"
               control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter Supplier" />
-              )}
+              render={({ field }) => <Input {...field} placeholder="Enter Supplier" />}
             />
           </Form.Item>
 
-          <Form.Item label="Condition" required>
+          <Form.Item
+            label="Condition"
+            required
+            validateStatus={errors.vehicleCondition ? "error" : ""}
+            help={errors.vehicleCondition?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
             <Controller
-              name="condition"
+              name="vehicleCondition"
               control={control}
               render={({ field }) => (
                 <Select {...field} placeholder="Select Condition">
@@ -66,141 +91,191 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item label="Vehicle Category" required>
+          <Form.Item
+            label="Category"
+            required
+            validateStatus={errors.vehicleCategory ? "error" : ""}
+            help={errors.vehicleCategory?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
             <Controller
               name="vehicleCategory"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Vehicle Category">
-                  <Select.Option value="passenger">Passenger</Select.Option>
-                  <Select.Option value="commercial">Commercial</Select.Option>
-                  <Select.Option value="industrial">Industrial</Select.Option>
+                <Select {...field} placeholder="Select Category">
+                  <Select.Option value="sedan">Sedan</Select.Option>
+                  <Select.Option value="suv">SUV</Select.Option>
+                  <Select.Option value="hatchback">Hatchback</Select.Option>
+                  <Select.Option value="pickup">Pickup</Select.Option>
                 </Select>
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Make" required>
+          <Form.Item
+            label="Make"
+            required
+            validateStatus={errors.vehicleMake ? "error" : ""}
+            help={errors.vehicleMake?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
             <Controller
-              name="make"
+              name="vehicleMake"
+              control={control}
+              render={({ field }) => <Input {...field} placeholder="Enter Make" />}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Model"
+            required
+            validateStatus={errors.vehicleModel ? "error" : ""}
+            help={errors.vehicleModel?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="vehicleModel"
+              control={control}
+              render={({ field }) => <Input {...field} placeholder="Enter Model" />}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Engine No"
+            required
+            validateStatus={errors.vehicleEngineNo ? "error" : ""}
+            help={errors.vehicleEngineNo?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="vehicleEngineNo"
+              control={control}
+              render={({ field }) => <Input {...field} placeholder="Enter Engine No" />}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Serial No"
+            required
+            validateStatus={errors.vehicleSerialNo ? "error" : ""}
+            help={errors.vehicleSerialNo?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="vehicleSerialNo"
+              control={control}
+              render={({ field }) => <Input {...field} placeholder="Enter Serial No" />}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Description"
+            required
+            validateStatus={errors.vehicleDescription ? "error" : ""}
+            help={errors.vehicleDescription?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="vehicleDescription"
+              control={control}
+              render={({ field }) => <Input.TextArea {...field} placeholder="Enter Description" />}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Market Value"
+            required
+            validateStatus={errors.vehicleMV ? "error" : ""}
+            help={errors.vehicleMV?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="vehicleMV"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Make">
-                  <Select.Option value="toyota">Toyota</Select.Option>
-                  <Select.Option value="honda">Honda</Select.Option>
-                  <Select.Option value="suzuki">Suzuki</Select.Option>
-                  <Select.Option value="mitsubishi">Mitsubishi</Select.Option>
-                </Select>
+                <InputNumber
+                  {...field}
+                  style={{ width: "100%" }}
+                  placeholder="Enter Market Value"
+                  formatter={(value) => `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                  parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Model" required>
+          <Form.Item
+            label="Bond No"
+            required
+            validateStatus={errors.vehicleBondNo ? "error" : ""}
+            help={errors.vehicleBondNo?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
             <Controller
-              name="model"
+              name="vehicleBondNo"
+              control={control}
+              render={({ field }) => <Input {...field} placeholder="Enter Bond No" />}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Bond Value"
+            required
+            validateStatus={errors.vehicleBondValue ? "error" : ""}
+            help={errors.vehicleBondValue?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="vehicleBondValue"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter Model" />
+                <InputNumber
+                  {...field}
+                  style={{ width: "100%" }}
+                  placeholder="Enter Bond Value"
+                  formatter={(value) => `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                  parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Engine No">
+          <Form.Item
+            label="Valued By"
+            required
+            validateStatus={errors.vehicleValuedBy ? "error" : ""}
+            help={errors.vehicleValuedBy?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
             <Controller
-              name="engineNo"
+              name="vehicleValuedBy"
               control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter Engine No" />
-              )}
+              render={({ field }) => <Input {...field} placeholder="Enter Valued By" />}
             />
           </Form.Item>
 
-          <Form.Item label="Serial or Chasis No">
+          <Form.Item
+            label="Date of First Registration"
+            required
+            validateStatus={errors.vehicleDateOfFirstReg ? "error" : ""}
+            help={errors.vehicleDateOfFirstReg?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
             <Controller
-              name="serialOrChasisNo"
-              control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter Serial or Chasis No" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item label="Description">
-            <Controller
-              name="description"
-              control={control}
-              render={({ field }) => (
-                <Input.TextArea {...field} placeholder="Enter Description" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item label="MV">
-            <Controller
-              name="mv"
-              control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter MV" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item label="Registration No">
-            <Controller
-              name="registrationNo"
-              control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter Registration No" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item label="Year of Manufacture">
-            <Controller
-              name="yearOfManufacture"
-              control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter Year of Manufacture" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item label="Registration Book No">
-            <Controller
-              name="registrationBookNo"
-              control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter Registration Book No" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item label="Book Received Date">
-            <Controller
-              name="bookReceivedDate"
+              name="vehicleDateOfFirstReg"
               control={control}
               render={({ field }) => (
                 <DatePicker {...field} className="w-full" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item label="CR Released Date">
-            <Controller
-              name="crReleasedDate"
-              control={control}
-              render={({ field }) => (
-                <DatePicker {...field} className="w-full" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item label="Valued By">
-            <Controller
-              name="valuedBy"
-              control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter Valued By" />
               )}
             />
           </Form.Item>

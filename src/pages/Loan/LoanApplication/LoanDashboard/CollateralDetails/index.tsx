@@ -1,98 +1,120 @@
-import React from "react";
-import { Form, Select, Input } from "antd";
-import { useForm, Controller } from "react-hook-form";
+import React, { useState, useEffect } from "react";
+import { Button, App, Row, Col } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import { FormValues, CollateralDetailsProps, validationSchema } from "./types";
+import DetailsCard from "./components/DetailsCard";
+import CollateralFormModal from "./components/CollateralFormModal";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { schema, FormValues, CollateralDetailsProps } from "./types";
-import VehicleForm from "./components/VehicleForm";
-import MachineryForm from "./components/MachineryForm";
-import SavingsForm from "./components/SavingsForm";
-import BankGuaranteeForm from "./components/BankGuaranteeForm";
-import LandStockForm from "./components/LandStockForm";
-import PropertyMortgageForm from "./components/PropertyMortgageForm";
-import { LeaseProductForm } from "./components/LeaseProductForm";
+import { v4 as uuidv4 } from 'uuid';
 
-const CollateralDetails: React.FC<CollateralDetailsProps> = ({
-  productCategory = "LOAN",
-}) => {
-  const {
-    control,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<FormValues>({
-    resolver: yupResolver(schema),
+const CollateralDetails: React.FC<CollateralDetailsProps> = () => {
+  const [formData, setFormData] = useState<FormValues[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [shouldCloseModal, setShouldCloseModal] = useState(false);
+  const [currentFormData, setCurrentFormData] = useState<FormValues | null>(null);
+
+  const formMethods = useForm<FormValues>({
+    resolver: yupResolver(validationSchema),
+    mode: "onChange",
     defaultValues: {
-      productCategory,
-    },
+      securityType: "",
+    }
   });
 
-  const securityType = watch("securityType");
+  useEffect(() => {
+    if (shouldCloseModal) {
+      closeModal();
+      setShouldCloseModal(false);
+    }
+  }, [formData, shouldCloseModal]);
 
-  const onSubmit = (data: FormValues) => {
-    console.log(data);
+  const openModal = (mode: "save" | "update", data?: FormValues) => {
+    setIsEditing(mode === "update");
+    if (data) {
+      setEditingId(data.id || null);
+      setCurrentFormData(data);
+      formMethods.reset(data);
+    } else {
+      setEditingId(null);
+      setCurrentFormData(null);
+      formMethods.reset({ securityType: "" });
+    }
+    setIsModalOpen(true);
   };
 
-  const renderLoanProductForm = () => {
-    switch (securityType) {
-      case "VEHICLE":
-        return <VehicleForm control={control} errors={errors} />;
-      case "MACHINERY_AND_EQUIPMENT":
-        return <MachineryForm control={control} errors={errors} />;
-      case "SAVINGS":
-        return <SavingsForm control={control} errors={errors} />;
-      case "BANK_GUARANTEE":
-        return <BankGuaranteeForm control={control} errors={errors} />;
-      case "LAND_STOCK":
-        return <LandStockForm control={control} errors={errors} />;
-      case "PROPERTY_MORTGAGE":
-        return <PropertyMortgageForm control={control} errors={errors} />;
-      default:
-        return null;
+  const closeModal = () => {
+    formMethods.reset({ securityType: "" });
+    setEditingId(null);
+    setCurrentFormData(null);
+    setIsModalOpen(false);
+  };
+
+  const handleSubmit = async (data: FormValues) => {
+    try {
+      console.log("Submitting data:", data);
+      
+      if (isEditing && editingId) {
+        const updatedFormData = formData.map(item => 
+          item.id === editingId ? { ...data, id: editingId } : item
+        );
+        setFormData(updatedFormData);
+        console.log("Updated form data:", updatedFormData);
+      } else {
+        const newData = { ...data, id: uuidv4() };
+        const updatedData = [...formData, newData];
+        setFormData(updatedData);
+        console.log("Added new data:", updatedData);
+      }
+      closeModal();
+    } catch (error) {
+      console.error("Failed to save collateral details:", error);
     }
   };
 
+  const handleUpdate = (index: number) => {
+    const dataToEdit = formData[index];
+    openModal("update", dataToEdit);
+  };
+
+  const handleDelete = (index: number) => {
+    const newData = formData.filter((_, i) => i !== index);
+    setFormData(newData);
+  };
+
   return (
-    <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
-      {productCategory === "LOAN" && (
-        <div className="bg-white p-6 rounded-lg shadow mb-6">
-          <h3 className="text-lg font-semibold mb-4">Basic Info</h3>
-          <div className="grid grid-cols-3 gap-4">
-            <Form.Item label="Category">
-              <Input value={"Individual"} disabled />
-            </Form.Item>
-
-            <Form.Item label="Security Type" required>
-              <Controller
-                name="securityType"
-                control={control}
-                render={({ field }) => (
-                  <Select {...field} placeholder="Select Security Type">
-                    <Select.Option value="VEHICLE">Vehicle</Select.Option>
-                    <Select.Option value="MACHINERY_AND_EQUIPMENT">
-                      Machinery and Equipment
-                    </Select.Option>
-                    <Select.Option value="SAVINGS">Savings</Select.Option>
-                    <Select.Option value="BANK_GUARANTEE">
-                      Bank Guarantee
-                    </Select.Option>
-                    <Select.Option value="LAND_STOCK">Land Stock</Select.Option>
-                    <Select.Option value="PROPERTY_MORTGAGE">
-                      Property Mortgage
-                    </Select.Option>
-                  </Select>
-                )}
-              />
-            </Form.Item>
-          </div>
+    <App>
+      <div>
+        <div className="flex justify-end mb-6">
+          <Button icon={<PlusOutlined />} type="primary" onClick={() => openModal("save")}>
+            Add Collateral
+          </Button>
         </div>
-      )}
 
-      {productCategory === "LEASE" ? (
-        <LeaseProductForm control={control} errors={errors} />
-      ) : (
-        renderLoanProductForm()
-      )}
-    </Form>
+        <Row gutter={[16, 16]}>
+          {formData.map((data, index) => (
+            <Col xs={24} sm={12} md={8} key={data.id || index}>
+              <DetailsCard
+                data={data}
+                securityType={data.securityType || ""}
+                onUpdate={() => handleUpdate(index)}
+                onDelete={() => handleDelete(index)}
+              />
+            </Col>
+          ))}
+        </Row>
+
+        <CollateralFormModal
+          open={isModalOpen}
+          onClose={closeModal}
+          onSave={handleSubmit}
+          isEdit={isEditing}
+          initialData={currentFormData}
+        />
+      </div>
+    </App>
   );
 };
 

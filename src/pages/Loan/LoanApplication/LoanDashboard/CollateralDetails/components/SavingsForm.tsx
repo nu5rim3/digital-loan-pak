@@ -14,9 +14,16 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-4">Savings Details</h3>
         <div className="grid grid-cols-3 gap-4">
-          <Form.Item label="Type" required>
+          <Form.Item 
+            label="Type" 
+            required
+            validateStatus={errors.savingsType ? "error" : ""}
+            help={errors.savingsType?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
             <Controller
-              name="type"
+              name="savingsType"
               control={control}
               render={({ field }) => (
                 <Select {...field} placeholder="Select Type">
@@ -28,21 +35,32 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item label="Ownership" required>
+          <Form.Item 
+            label="Ownership" 
+            required
+            validateStatus={errors.savingsOwnership ? "error" : ""}
+            help={errors.savingsOwnership?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
             <Controller
-              name="ownership"
+              name="savingsOwnership"
               control={control}
               render={({ field }) => (
                 <Select {...field} placeholder="Select Ownership">
                   <Select.Option value="individual">Individual</Select.Option>
-                  <Select.Option value="joint">Joint</Select.Option>
                   <Select.Option value="company">Company</Select.Option>
                 </Select>
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Savings No" required>
+          <Form.Item 
+            label="Savings No" 
+            required
+            validateStatus={errors.savingsNo ? "error" : ""}
+            help={errors.savingsNo?.message}
+          >
             <Controller
               name="savingsNo"
               control={control}
@@ -52,19 +70,29 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item label="Savings Build Up Value" required>
+          <Form.Item 
+            label="Build Up Value" 
+            required
+            validateStatus={errors.savingsBuildUpValue ? "error" : ""}
+            help={errors.savingsBuildUpValue?.message}
+          >
             <Controller
               name="savingsBuildUpValue"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter Savings Build Up Value" />
+                <Input {...field} placeholder="Enter Build Up Value" />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Amount" required>
+          <Form.Item 
+            label="Amount" 
+            required
+            validateStatus={errors.savingsAmount ? "error" : ""}
+            help={errors.savingsAmount?.message}
+          >
             <Controller
-              name="amount"
+              name="savingsAmount"
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Amount" />
@@ -72,9 +100,14 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item label="Matching One" required>
+          <Form.Item 
+            label="Matching One" 
+            required
+            validateStatus={errors.savingsMatchingOne ? "error" : ""}
+            help={errors.savingsMatchingOne?.message}
+          >
             <Controller
-              name="matchingOne"
+              name="savingsMatchingOne"
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Matching One" />
@@ -82,9 +115,14 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item label="Company" required>
+          <Form.Item 
+            label="Company" 
+            required
+            validateStatus={errors.savingsCompany ? "error" : ""}
+            help={errors.savingsCompany?.message}
+          >
             <Controller
-              name="company"
+              name="savingsCompany"
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Company" />

@@ -14,9 +14,16 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-4">Machinery Details</h3>
         <div className="grid grid-cols-3 gap-4">
-          <Form.Item label="Type" required>
+          <Form.Item 
+            label="Type" 
+            required
+            validateStatus={errors.machineryType ? "error" : ""}
+            help={errors.machineryType?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
             <Controller
-              name="type"
+              name="machineryType"
               control={control}
               render={({ field }) => (
                 <Select {...field} placeholder="Select Type">
@@ -29,9 +36,14 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item label="Ownership" required>
+          <Form.Item 
+            label="Ownership" 
+            required
+            validateStatus={errors.machineryOwnership ? "error" : ""}
+            help={errors.machineryOwnership?.message}
+          >
             <Controller
-              name="ownership"
+              name="machineryOwnership"
               control={control}
               render={({ field }) => (
                 <Select {...field} placeholder="Select Ownership">
@@ -43,9 +55,14 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item label="Supplier" required>
+          <Form.Item 
+            label="Supplier" 
+            required
+            validateStatus={errors.machinerySupplier ? "error" : ""}
+            help={errors.machinerySupplier?.message}
+          >
             <Controller
-              name="supplier"
+              name="machinerySupplier"
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Supplier" />
@@ -53,9 +70,14 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item label="Condition" required>
+          <Form.Item 
+            label="Condition" 
+            required
+            validateStatus={errors.machineryCondition ? "error" : ""}
+            help={errors.machineryCondition?.message}
+          >
             <Controller
-              name="condition"
+              name="machineryCondition"
               control={control}
               render={({ field }) => (
                 <Select {...field} placeholder="Select Condition">
@@ -66,9 +88,14 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item label="Vehicle Category" required>
+          <Form.Item 
+            label="Vehicle Category" 
+            required
+            validateStatus={errors.machineryCategory ? "error" : ""}
+            help={errors.machineryCategory?.message}
+          >
             <Controller
-              name="vehicleCategory"
+              name="machineryCategory"
               control={control}
               render={({ field }) => (
                 <Select {...field} placeholder="Select Vehicle Category">
@@ -80,9 +107,14 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item label="Make" required>
+          <Form.Item 
+            label="Make" 
+            required
+            validateStatus={errors.machineryMake ? "error" : ""}
+            help={errors.machineryMake?.message}
+          >
             <Controller
-              name="make"
+              name="machineryMake"
               control={control}
               render={({ field }) => (
                 <Select {...field} placeholder="Select Make">
@@ -95,9 +127,14 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item label="Model" required>
+          <Form.Item 
+            label="Model" 
+            required
+            validateStatus={errors.machineryModel ? "error" : ""}
+            help={errors.machineryModel?.message}
+          >
             <Controller
-              name="model"
+              name="machineryModel"
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Model" />
@@ -105,9 +142,13 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item label="Engine No">
+          <Form.Item 
+            label="Engine No"
+            validateStatus={errors.machineryEngineNo ? "error" : ""}
+            help={errors.machineryEngineNo?.message}
+          >
             <Controller
-              name="engineNo"
+              name="machineryEngineNo"
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Engine No" />
@@ -115,9 +156,13 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item label="Serial or Chasis No">
+          <Form.Item 
+            label="Serial or Chasis No"
+            validateStatus={errors.machinerySerialNo ? "error" : ""}
+            help={errors.machinerySerialNo?.message}
+          >
             <Controller
-              name="serialOrChasisNo"
+              name="machinerySerialNo"
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Serial or Chasis No" />
@@ -125,9 +170,13 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item label="Description">
+          <Form.Item 
+            label="Description"
+            validateStatus={errors.machineryDescription ? "error" : ""}
+            help={errors.machineryDescription?.message}
+          >
             <Controller
-              name="description"
+              name="machineryDescription"
               control={control}
               render={({ field }) => (
                 <Input.TextArea {...field} placeholder="Enter Description" />
@@ -135,9 +184,13 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item label="MV">
+          <Form.Item 
+            label="MV"
+            validateStatus={errors.machineryMV ? "error" : ""}
+            help={errors.machineryMV?.message}
+          >
             <Controller
-              name="mv"
+              name="machineryMV"
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter MV" />
@@ -145,9 +198,13 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item label="Bond No">
+          <Form.Item 
+            label="Bond No"
+            validateStatus={errors.machineryBondNo ? "error" : ""}
+            help={errors.machineryBondNo?.message}
+          >
             <Controller
-              name="bondNo"
+              name="machineryBondNo"
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Bond No" />
@@ -155,9 +212,13 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item label="Bond Value">
+          <Form.Item 
+            label="Bond Value"
+            validateStatus={errors.machineryBondValue ? "error" : ""}
+            help={errors.machineryBondValue?.message}
+          >
             <Controller
-              name="bondValue"
+              name="machineryBondValue"
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Bond Value" />
@@ -165,9 +226,13 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item label="Valued By">
+          <Form.Item 
+            label="Valued By"
+            validateStatus={errors.machineryValuedBy ? "error" : ""}
+            help={errors.machineryValuedBy?.message}
+          >
             <Controller
-              name="valuedBy"
+              name="machineryValuedBy"
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Valued By" />
@@ -175,9 +240,13 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item label="Date of 1st Reg">
+          <Form.Item 
+            label="Date of 1st Reg"
+            validateStatus={errors.machineryDateOfFirstReg ? "error" : ""}
+            help={errors.machineryDateOfFirstReg?.message}
+          >
             <Controller
-              name="dateOfFirstReg"
+              name="machineryDateOfFirstReg"
               control={control}
               render={({ field }) => (
                 <DatePicker {...field} className="w-full" />
