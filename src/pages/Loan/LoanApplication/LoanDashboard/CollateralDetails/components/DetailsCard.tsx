@@ -2,6 +2,7 @@ import React from "react";
 import { Card, Descriptions, Button, Space } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { FormValues } from "../types";
+import dayjs from 'dayjs';
 
 interface DetailsCardProps {
   data: FormValues;
@@ -46,8 +47,8 @@ const DetailsCard: React.FC<DetailsCardProps> = ({
             <Descriptions.Item label="Type">{data.bankGuaranteeType}</Descriptions.Item>
             <Descriptions.Item label="Institution">{data.institutionName}</Descriptions.Item>
             <Descriptions.Item label="Value">{data.guaranteeValue}</Descriptions.Item>
-            <Descriptions.Item label="Start Date">{data.startDate?.toString()}</Descriptions.Item>
-            <Descriptions.Item label="Expiry Date">{data.expiryDate?.toString()}</Descriptions.Item>
+            <Descriptions.Item label="Start Date">{dayjs(data.startDate).format('YYYY-MM-DD')}</Descriptions.Item>
+            <Descriptions.Item label="Expiry Date">{dayjs(data.expiryDate).format('YYYY-MM-DD')}</Descriptions.Item>
           </>
         );
       case "PROPERTY_MORTGAGE":

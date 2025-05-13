@@ -2,6 +2,7 @@ import React from "react";
 import { Form, Input, Select, DatePicker } from "antd";
 import { Control, Controller } from "react-hook-form";
 import { FormValues } from "../types";
+import dayjs from 'dayjs';
 
 interface MachineryFormProps {
   control: Control<FormValues>;
@@ -14,8 +15,8 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-4">Machinery Details</h3>
         <div className="grid grid-cols-3 gap-4">
-          <Form.Item 
-            label="Type" 
+          <Form.Item
+            label="Type"
             required
             validateStatus={errors.machineryType ? "error" : ""}
             help={errors.machineryType?.message}
@@ -36,8 +37,8 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
-            label="Ownership" 
+          <Form.Item
+            label="Ownership"
             required
             validateStatus={errors.machineryOwnership ? "error" : ""}
             help={errors.machineryOwnership?.message}
@@ -55,8 +56,8 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
-            label="Supplier" 
+          <Form.Item
+            label="Supplier"
             required
             validateStatus={errors.machinerySupplier ? "error" : ""}
             help={errors.machinerySupplier?.message}
@@ -70,8 +71,8 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
-            label="Condition" 
+          <Form.Item
+            label="Condition"
             required
             validateStatus={errors.machineryCondition ? "error" : ""}
             help={errors.machineryCondition?.message}
@@ -88,8 +89,8 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
-            label="Vehicle Category" 
+          <Form.Item
+            label="Vehicle Category"
             required
             validateStatus={errors.machineryCategory ? "error" : ""}
             help={errors.machineryCategory?.message}
@@ -107,8 +108,8 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
-            label="Make" 
+          <Form.Item
+            label="Make"
             required
             validateStatus={errors.machineryMake ? "error" : ""}
             help={errors.machineryMake?.message}
@@ -127,8 +128,8 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
-            label="Model" 
+          <Form.Item
+            label="Model"
             required
             validateStatus={errors.machineryModel ? "error" : ""}
             help={errors.machineryModel?.message}
@@ -142,7 +143,7 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
+          <Form.Item
             label="Engine No"
             validateStatus={errors.machineryEngineNo ? "error" : ""}
             help={errors.machineryEngineNo?.message}
@@ -156,7 +157,7 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
+          <Form.Item
             label="Serial or Chasis No"
             validateStatus={errors.machinerySerialNo ? "error" : ""}
             help={errors.machinerySerialNo?.message}
@@ -170,7 +171,7 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
+          <Form.Item
             label="Description"
             validateStatus={errors.machineryDescription ? "error" : ""}
             help={errors.machineryDescription?.message}
@@ -184,7 +185,7 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
+          <Form.Item
             label="MV"
             validateStatus={errors.machineryMV ? "error" : ""}
             help={errors.machineryMV?.message}
@@ -198,7 +199,7 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
+          <Form.Item
             label="Bond No"
             validateStatus={errors.machineryBondNo ? "error" : ""}
             help={errors.machineryBondNo?.message}
@@ -212,7 +213,7 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
+          <Form.Item
             label="Bond Value"
             validateStatus={errors.machineryBondValue ? "error" : ""}
             help={errors.machineryBondValue?.message}
@@ -226,7 +227,7 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
+          <Form.Item
             label="Valued By"
             validateStatus={errors.machineryValuedBy ? "error" : ""}
             help={errors.machineryValuedBy?.message}
@@ -240,7 +241,7 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
+          <Form.Item
             label="Date of 1st Reg"
             validateStatus={errors.machineryDateOfFirstReg ? "error" : ""}
             help={errors.machineryDateOfFirstReg?.message}
@@ -249,7 +250,14 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
               name="machineryDateOfFirstReg"
               control={control}
               render={({ field }) => (
-                <DatePicker {...field} className="w-full" />
+                <DatePicker
+                  className="w-full"
+                  format="YYYY-MM-DD"
+                  value={field.value ? dayjs(field.value) : null}
+                  onChange={(date) => {
+                    field.onChange(date);
+                  }}
+                />
               )}
             />
           </Form.Item>

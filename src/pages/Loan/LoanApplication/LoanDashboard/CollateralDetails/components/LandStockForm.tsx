@@ -2,6 +2,7 @@ import React from "react";
 import { Form, Input, Select, DatePicker } from "antd";
 import { Control, Controller } from "react-hook-form";
 import { FormValues } from "../types";
+import dayjs from 'dayjs';
 
 interface LandStockFormProps {
   control: Control<FormValues>;
@@ -14,8 +15,8 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-4">Land/Stock Details</h3>
         <div className="grid grid-cols-3 gap-4">
-          <Form.Item 
-            label="Type" 
+          <Form.Item
+            label="Type"
             required
             validateStatus={errors.landStockType ? "error" : ""}
             help={errors.landStockType?.message}
@@ -34,8 +35,8 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
-            label="Ownership" 
+          <Form.Item
+            label="Ownership"
             required
             validateStatus={errors.landStockOwnership ? "error" : ""}
             help={errors.landStockOwnership?.message}
@@ -52,8 +53,8 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
-            label="Deed Transfer No" 
+          <Form.Item
+            label="Deed Transfer No"
             required
             validateStatus={errors.landStockDeedTransferNo ? "error" : ""}
             help={errors.landStockDeedTransferNo?.message}
@@ -67,8 +68,8 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
-            label="Agreement No" 
+          <Form.Item
+            label="Agreement No"
             required
             validateStatus={errors.landStockAgreementNo ? "error" : ""}
             help={errors.landStockAgreementNo?.message}
@@ -82,8 +83,8 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
-            label="Lessor Name" 
+          <Form.Item
+            label="Lessor Name"
             required
             validateStatus={errors.landStockLessorName ? "error" : ""}
             help={errors.landStockLessorName?.message}
@@ -97,8 +98,8 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
-            label="Security Date" 
+          <Form.Item
+            label="Security Date"
             required
             validateStatus={errors.landStockSecurityDate ? "error" : ""}
             help={errors.landStockSecurityDate?.message}
@@ -107,13 +108,20 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
               name="landStockSecurityDate"
               control={control}
               render={({ field }) => (
-                <DatePicker {...field} className="w-full" />
+                <DatePicker
+                  className="w-full"
+                  format="YYYY-MM-DD"
+                  value={field.value ? dayjs(field.value) : null}
+                  onChange={(date) => {
+                    field.onChange(date);
+                  }}
+                />
               )}
             />
           </Form.Item>
 
-          <Form.Item 
-            label="Security Type" 
+          <Form.Item
+            label="Security Type"
             required
             validateStatus={errors.landStockSecurityType ? "error" : ""}
             help={errors.landStockSecurityType?.message}
@@ -131,8 +139,8 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
-            label="Description" 
+          <Form.Item
+            label="Description"
             required
             validateStatus={errors.landStockDescription ? "error" : ""}
             help={errors.landStockDescription?.message}
@@ -146,8 +154,8 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
-            label="Bond No" 
+          <Form.Item
+            label="Bond No"
             required
             validateStatus={errors.landStockBondNo ? "error" : ""}
             help={errors.landStockBondNo?.message}
@@ -161,8 +169,8 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
-            label="Market Value" 
+          <Form.Item
+            label="Market Value"
             required
             validateStatus={errors.landStockMarketValue ? "error" : ""}
             help={errors.landStockMarketValue?.message}
@@ -176,8 +184,8 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
-            label="FSV" 
+          <Form.Item
+            label="FSV"
             required
             validateStatus={errors.landStockFSV ? "error" : ""}
             help={errors.landStockFSV?.message}

@@ -2,21 +2,25 @@ import React from "react";
 import { Form, Input, Select, DatePicker, Checkbox } from "antd";
 import { Control, Controller } from "react-hook-form";
 import { FormValues } from "../types";
+import dayjs from "dayjs";
 
 interface LeaseProductFormProps {
   control: Control<FormValues>;
   errors: Record<string, any>;
 }
 
-export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({ control, errors }) => {
+export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
+  control,
+  errors,
+}) => {
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-4">Equipment Details</h3>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-4 gap-4">
           <Form.Item label="Equipment Type" required>
             <Controller
-              name="equipmentType"
+              name="vehicleType"
               control={control}
               render={({ field }) => (
                 <Select {...field} placeholder="Select Equipment Type">
@@ -30,17 +34,19 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({ control, err
 
           <Form.Item label="Cost" required>
             <Controller
-              name="cost"
+              name="vehicleMV"
               control={control}
               render={({ field }) => (
                 <Input {...field} type="number" placeholder="Enter Cost" />
               )}
             />
           </Form.Item>
-
+        </div>
+        
+        <div className="grid grid-cols-4 gap-4">
           <Form.Item label="Supplier Code" required>
             <Controller
-              name="supplierCode"
+              name="vehicleSupplier"
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Supplier Code" />
@@ -50,7 +56,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({ control, err
 
           <Form.Item label="Equipment Name" required>
             <Controller
-              name="equipmentName"
+              name="vehicleDescription"
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Equipment Name" />
@@ -60,7 +66,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({ control, err
 
           <Form.Item label="Condition" required>
             <Controller
-              name="condition"
+              name="vehicleCondition"
               control={control}
               render={({ field }) => (
                 <Select {...field} placeholder="Select Condition">
@@ -73,7 +79,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({ control, err
 
           <Form.Item label="Category" required>
             <Controller
-              name="category"
+              name="vehicleCategory"
               control={control}
               render={({ field }) => (
                 <Select {...field} placeholder="Select Category">
@@ -102,7 +108,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({ control, err
 
           <Form.Item label="Manufacturer" required>
             <Controller
-              name="manufacturer"
+              name="vehicleMake"
               control={control}
               render={({ field }) => (
                 <Select {...field} placeholder="Select Manufacturer">
@@ -117,7 +123,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({ control, err
 
           <Form.Item label="Model" required>
             <Controller
-              name="model"
+              name="vehicleModel"
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Model" />
@@ -127,27 +133,35 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({ control, err
 
           <Form.Item label="Engine Capacity CC" required>
             <Controller
-              name="engineCapacityCC"
+              name="vehicleEngineNo"
               control={control}
               render={({ field }) => (
-                <Input {...field} type="number" placeholder="Enter Engine Capacity CC" />
+                <Input
+                  {...field}
+                  type="number"
+                  placeholder="Enter Engine Capacity CC"
+                />
               )}
             />
           </Form.Item>
 
           <Form.Item label="Engine Capacity HP" required>
             <Controller
-              name="engineCapacityHP"
+              name="vehicleSerialNo"
               control={control}
               render={({ field }) => (
-                <Input {...field} type="number" placeholder="Enter Engine Capacity HP" />
+                <Input
+                  {...field}
+                  type="number"
+                  placeholder="Enter Engine Capacity HP"
+                />
               )}
             />
           </Form.Item>
 
           <Form.Item label="Engine No" required>
             <Controller
-              name="engineNo"
+              name="vehicleEngineNo"
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Engine No" />
@@ -157,7 +171,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({ control, err
 
           <Form.Item label="Chasis No" required>
             <Controller
-              name="chasisNo"
+              name="vehicleSerialNo"
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Chasis No" />
@@ -167,7 +181,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({ control, err
 
           <Form.Item label="Vehicle No" required>
             <Controller
-              name="vehicleNo"
+              name="vehicleBondNo"
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Vehicle No" />
@@ -177,7 +191,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({ control, err
 
           <Form.Item label="Province" required>
             <Controller
-              name="province"
+              name="vehicleOwnership"
               control={control}
               render={({ field }) => (
                 <Select {...field} placeholder="Select Province">
@@ -192,7 +206,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({ control, err
 
           <Form.Item label="Registration Book No" required>
             <Controller
-              name="registrationBookNo"
+              name="vehicleBondNo"
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Registration Book No" />
@@ -202,37 +216,54 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({ control, err
 
           <Form.Item label="Registration Date" required>
             <Controller
-              name="registrationDate"
+              name="vehicleDateOfFirstReg"
               control={control}
               render={({ field }) => (
-                <DatePicker {...field} className="w-full" />
+                <DatePicker
+                  className="w-full"
+                  format="YYYY-MM-DD"
+                  value={field.value ? dayjs(field.value) : null}
+                  onChange={(date) => {
+                    field.onChange(date);
+                  }}
+                />
               )}
             />
           </Form.Item>
 
           <Form.Item label="Duplicate Key">
             <Controller
-              name="duplicateKey"
+              name="vehicleValuedBy"
               control={control}
               render={({ field }) => (
-                <Checkbox {...field} checked={field.value} />
+                <Checkbox
+                  checked={field.value === "true"}
+                  onChange={(e) =>
+                    field.onChange(e.target.checked ? "true" : "false")
+                  }
+                />
               )}
             />
           </Form.Item>
 
           <Form.Item label="Only Working Key Available">
             <Controller
-              name="onlyWorkingKeyAvailable"
+              name="vehicleValuedBy"
               control={control}
               render={({ field }) => (
-                <Checkbox {...field} checked={field.value} />
+                <Checkbox
+                  checked={field.value === "true"}
+                  onChange={(e) =>
+                    field.onChange(e.target.checked ? "true" : "false")
+                  }
+                />
               )}
             />
           </Form.Item>
 
           <Form.Item label="Only Internal Values MV">
             <Controller
-              name="onlyInternalValuesMV"
+              name="vehicleMV"
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Only Internal Values MV" />
@@ -242,10 +273,13 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({ control, err
 
           <Form.Item label="Only Internal Values FSV">
             <Controller
-              name="onlyInternalValuesFSV"
+              name="vehicleBondValue"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter Only Internal Values FSV" />
+                <Input
+                  {...field}
+                  placeholder="Enter Only Internal Values FSV"
+                />
               )}
             />
           </Form.Item>
@@ -253,4 +287,4 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({ control, err
       </div>
     </div>
   );
-}; 
+};

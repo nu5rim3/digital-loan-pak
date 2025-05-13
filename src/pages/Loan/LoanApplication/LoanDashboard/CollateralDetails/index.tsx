@@ -8,10 +8,13 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { v4 as uuidv4 } from 'uuid';
 
+// TODO: This will be replaced with global state later
+const productCategory = "LEASE" as const;
+
 const CollateralDetails: React.FC<CollateralDetailsProps> = () => {
-  const [formData, setFormData] = useState<FormValues[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState<FormValues[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [shouldCloseModal, setShouldCloseModal] = useState(false);
   const [currentFormData, setCurrentFormData] = useState<FormValues | null>(null);
@@ -54,19 +57,15 @@ const CollateralDetails: React.FC<CollateralDetailsProps> = () => {
 
   const handleSubmit = async (data: FormValues) => {
     try {
-      console.log("Submitting data:", data);
-      
       if (isEditing && editingId) {
-        const updatedFormData = formData.map(item => 
+        const updatedFormData = formData.map(item =>
           item.id === editingId ? { ...data, id: editingId } : item
         );
         setFormData(updatedFormData);
-        console.log("Updated form data:", updatedFormData);
       } else {
         const newData = { ...data, id: uuidv4() };
         const updatedData = [...formData, newData];
         setFormData(updatedData);
-        console.log("Added new data:", updatedData);
       }
       closeModal();
     } catch (error) {
@@ -112,6 +111,7 @@ const CollateralDetails: React.FC<CollateralDetailsProps> = () => {
           onSave={handleSubmit}
           isEdit={isEditing}
           initialData={currentFormData}
+          productCategory={productCategory}
         />
       </div>
     </App>

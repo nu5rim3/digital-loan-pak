@@ -2,6 +2,7 @@ import React from "react";
 import { Form, Input, InputNumber, Select, DatePicker } from "antd";
 import { Controller, Control } from "react-hook-form";
 import { FormValues } from "../types";
+import dayjs from 'dayjs';
 
 interface BankGuaranteeFormProps {
   control: Control<FormValues>;
@@ -75,6 +76,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
               )}
             />
           </Form.Item>
+          
           <Form.Item
             label="Start Date"
             required
@@ -87,7 +89,14 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
               name="startDate"
               control={control}
               render={({ field }) => (
-                <DatePicker {...field} className="w-full" />
+                <DatePicker
+                  className="w-full"
+                  format="YYYY-MM-DD"
+                  value={field.value ? dayjs(field.value) : null}
+                  onChange={(date) => {
+                    field.onChange(date);
+                  }}
+                />
               )}
             />
           </Form.Item>
@@ -104,7 +113,14 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
               name="expiryDate"
               control={control}
               render={({ field }) => (
-                <DatePicker {...field} className="w-full" />
+                <DatePicker
+                  className="w-full"
+                  format="YYYY-MM-DD"
+                  value={field.value ? dayjs(field.value) : null}
+                  onChange={(date) => {
+                    field.onChange(date);
+                  }}
+                />
               )}
             />
           </Form.Item>

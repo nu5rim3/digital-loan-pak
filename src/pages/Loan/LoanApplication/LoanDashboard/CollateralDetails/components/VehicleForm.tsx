@@ -2,6 +2,7 @@ import React from "react";
 import { Form, Input, InputNumber, Select, DatePicker } from "antd";
 import { Controller, Control } from "react-hook-form";
 import { FormValues } from "../types";
+import dayjs from 'dayjs';
 
 interface VehicleFormProps {
   control: Control<FormValues>;
@@ -127,6 +128,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               render={({ field }) => <Input {...field} placeholder="Enter Make" />}
             />
           </Form.Item>
+
           <Form.Item
             label="Model"
             required
@@ -275,7 +277,14 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               name="vehicleDateOfFirstReg"
               control={control}
               render={({ field }) => (
-                <DatePicker {...field} className="w-full" />
+                <DatePicker
+                  className="w-full"
+                  format="YYYY-MM-DD"
+                  value={field.value ? dayjs(field.value) : null}
+                  onChange={(date) => {
+                    field.onChange(date);
+                  }}
+                />
               )}
             />
           </Form.Item>
