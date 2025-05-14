@@ -26,7 +26,7 @@ const DetailsCard: React.FC<DetailsCardProps> = ({
             <Descriptions.Item label="Make">{data.vehicleMake}</Descriptions.Item>
             <Descriptions.Item label="Model">{data.vehicleModel}</Descriptions.Item>
             <Descriptions.Item label="Engine No">{data.vehicleEngineNo}</Descriptions.Item>
-            <Descriptions.Item label="Serial No">{data.vehicleSerialNo}</Descriptions.Item>
+            <Descriptions.Item label="Serial No">{data.vehicleChassisNo}</Descriptions.Item>
             <Descriptions.Item label="Market Value">{data.vehicleMV}</Descriptions.Item>
           </>
         );

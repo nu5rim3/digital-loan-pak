@@ -147,7 +147,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
 
           <Form.Item label="Engine Capacity HP" required>
             <Controller
-              name="vehicleSerialNo"
+              name="vehicleChassisNo"
               control={control}
               render={({ field }) => (
                 <Input
@@ -169,12 +169,12 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
             />
           </Form.Item>
 
-          <Form.Item label="Chasis No" required>
+          <Form.Item label="Chassis No" required>
             <Controller
-              name="vehicleSerialNo"
+              name="vehicleChassisNo"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter Chasis No" />
+                <Input {...field} placeholder="Enter Chassis No" />
               )}
             />
           </Form.Item>

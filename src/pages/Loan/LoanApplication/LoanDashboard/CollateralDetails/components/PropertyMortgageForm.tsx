@@ -1,7 +1,8 @@
 import React from "react";
-import { Form, Input, InputNumber, Select } from "antd";
+import { Form, Input, InputNumber, Select, DatePicker } from "antd";
 import { Control, Controller } from "react-hook-form";
 import { FormValues } from "../types";
+import dayjs from 'dayjs';
 
 interface PropertyMortgageFormProps {
   control: Control<FormValues>;
@@ -40,10 +41,34 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
           </Form.Item>
 
           <Form.Item
+            label="Sub Type"
+            required
+            validateStatus={errors.propertySubType ? "error" : ""}
+            help={errors.propertySubType?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="propertySubType"
+              control={control}
+              render={({ field }) => (
+                <Select {...field} placeholder="Select Sub Type">
+                  <Select.Option value="apartment">Apartment</Select.Option>
+                  <Select.Option value="house">House</Select.Option>
+                  <Select.Option value="villa">Villa</Select.Option>
+                  <Select.Option value="plot">Plot</Select.Option>
+                </Select>
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
             label="Ownership"
             required
             validateStatus={errors.propertyOwnership ? "error" : ""}
             help={errors.propertyOwnership?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
           >
             <Controller
               name="propertyOwnership"
@@ -58,54 +83,287 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
           </Form.Item>
 
           <Form.Item
-            label="Location"
+            label="Bond Type"
             required
-            validateStatus={errors.propertyLocation ? "error" : ""}
-            help={errors.propertyLocation?.message}
+            validateStatus={errors.propertyBondType ? "error" : ""}
+            help={errors.propertyBondType?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
           >
             <Controller
-              name="propertyLocation"
+              name="propertyBondType"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter Location" />
+                <Select {...field} placeholder="Select Bond Type">
+                  <Select.Option value="type1">Type 1</Select.Option>
+                  <Select.Option value="type2">Type 2</Select.Option>
+                </Select>
               )}
             />
           </Form.Item>
 
           <Form.Item
-            label="Area"
+            label="Property Type"
             required
-            validateStatus={errors.propertyArea ? "error" : ""}
-            help={errors.propertyArea?.message}
+            validateStatus={errors.propertyPropertyType ? "error" : ""}
+            help={errors.propertyPropertyType?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
           >
             <Controller
-              name="propertyArea"
+              name="propertyPropertyType"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter Area" />
+                <Select {...field} placeholder="Select Property Type">
+                  <Select.Option value="type1">Type 1</Select.Option>
+                  <Select.Option value="type2">Type 2</Select.Option>
+                </Select>
               )}
             />
           </Form.Item>
 
           <Form.Item
-            label="Municipality"
+            label="Bond No"
             required
-            validateStatus={errors.municipality ? "error" : ""}
-            help={errors.municipality?.message}
+            validateStatus={errors.propertyBondNo ? "error" : ""}
+            help={errors.propertyBondNo?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
           >
             <Controller
-              name="municipality"
+              name="propertyBondNo"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter Municipality" />
+                <Input {...field} placeholder="Enter Bond No" />
               )}
             />
           </Form.Item>
+
+          <Form.Item
+            label="Bond Date"
+            required
+            validateStatus={errors.propertyBondDate ? "error" : ""}
+            help={errors.propertyBondDate?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="propertyBondDate"
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  className="w-full"
+                  format="YYYY-MM-DD"
+                  value={field.value ? dayjs(field.value) : null}
+                  onChange={(date) => {
+                    field.onChange(date);
+                  }}
+                />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Deed No/Grant No/Title Certificate No"
+            required
+            validateStatus={errors.propertyDeedNo ? "error" : ""}
+            help={errors.propertyDeedNo?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="propertyDeedNo"
+              control={control}
+              render={({ field }) => (
+                <Input {...field} placeholder="Enter Deed No" />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Bond Value"
+            required
+            validateStatus={errors.propertyBondValue ? "error" : ""}
+            help={errors.propertyBondValue?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="propertyBondValue"
+              control={control}
+              render={({ field }) => (
+                <InputNumber
+                  {...field}
+                  style={{ width: "100%" }}
+                  placeholder="Enter Bond Value"
+                  formatter={(value) => `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                  parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Survey Plan No"
+            required
+            validateStatus={errors.propertySurveyPlanNo ? "error" : ""}
+            help={errors.propertySurveyPlanNo?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="propertySurveyPlanNo"
+              control={control}
+              render={({ field }) => (
+                <Input {...field} placeholder="Enter Survey Plan No" />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="POA"
+            required
+            validateStatus={errors.propertyPOA ? "error" : ""}
+            help={errors.propertyPOA?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="propertyPOA"
+              control={control}
+              render={({ field }) => (
+                <Select {...field} placeholder="Select POA">
+                  <Select.Option value="yes">Yes</Select.Option>
+                  <Select.Option value="no">No</Select.Option>
+                </Select>
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="POA Number"
+            required
+            validateStatus={errors.propertyPOANumber ? "error" : ""}
+            help={errors.propertyPOANumber?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="propertyPOANumber"
+              control={control}
+              render={({ field }) => (
+                <Input {...field} placeholder="Enter POA Number" />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Company"
+            required
+            validateStatus={errors.propertyCompany ? "error" : ""}
+            help={errors.propertyCompany?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="propertyCompany"
+              control={control}
+              render={({ field }) => (
+                <Select {...field} placeholder="Select Company">
+                  <Select.Option value="company1">Company 1</Select.Option>
+                  <Select.Option value="company2">Company 2</Select.Option>
+                </Select>
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Lawyer Name"
+            required
+            validateStatus={errors.propertyLawyerName ? "error" : ""}
+            help={errors.propertyLawyerName?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="propertyLawyerName"
+              control={control}
+              render={({ field }) => (
+                <Input {...field} placeholder="Enter Lawyer Name" />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Title Insurance"
+            required
+            validateStatus={errors.propertyTitleInsurance ? "error" : ""}
+            help={errors.propertyTitleInsurance?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="propertyTitleInsurance"
+              control={control}
+              render={({ field }) => (
+                <Select {...field} placeholder="Select Title Insurance">
+                  <Select.Option value="yes">Yes</Select.Option>
+                  <Select.Option value="no">No</Select.Option>
+                </Select>
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Insurance of Building"
+            required
+            validateStatus={errors.propertyInsuranceOfBuilding ? "error" : ""}
+            help={errors.propertyInsuranceOfBuilding?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="propertyInsuranceOfBuilding"
+              control={control}
+              render={({ field }) => (
+                <Select {...field} placeholder="Select Insurance of Building">
+                  <Select.Option value="yes">Yes</Select.Option>
+                  <Select.Option value="no">No</Select.Option>
+                </Select>
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Insurance Value"
+            required
+            validateStatus={errors.propertyInsuranceValue ? "error" : ""}
+            help={errors.propertyInsuranceValue?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="propertyInsuranceValue"
+              control={control}
+              render={({ field }) => (
+                <InputNumber
+                  {...field}
+                  style={{ width: "100%" }}
+                  placeholder="Enter Insurance Value"
+                  formatter={(value) => `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                  parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                />
+              )}
+            />
+          </Form.Item>
+
           <Form.Item
             label="Market Value"
             required
             validateStatus={errors.propertyMarketValue ? "error" : ""}
             help={errors.propertyMarketValue?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
           >
             <Controller
               name="propertyMarketValue"
@@ -115,9 +373,7 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
                   {...field}
                   style={{ width: "100%" }}
                   placeholder="Enter Market Value"
-                  formatter={(value) =>
-                    `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                  }
+                  formatter={(value) => `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
                 />
               )}
@@ -129,6 +385,8 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
             required
             validateStatus={errors.propertyFSV ? "error" : ""}
             help={errors.propertyFSV?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
           >
             <Controller
               name="propertyFSV"
@@ -138,9 +396,7 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
                   {...field}
                   style={{ width: "100%" }}
                   placeholder="Enter FSV"
-                  formatter={(value) =>
-                    `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                  }
+                  formatter={(value) => `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
                 />
               )}
@@ -148,54 +404,18 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
           </Form.Item>
 
           <Form.Item
-            label="Property Value"
+            label="LOT No"
             required
-            validateStatus={errors.propertyValue ? "error" : ""}
-            help={errors.propertyValue?.message}
+            validateStatus={errors.propertyLotNo ? "error" : ""}
+            help={errors.propertyLotNo?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
           >
             <Controller
-              name="propertyValue"
+              name="propertyLotNo"
               control={control}
               render={({ field }) => (
-                <InputNumber
-                  {...field}
-                  style={{ width: "100%" }}
-                  placeholder="Enter Property Value"
-                  formatter={(value) =>
-                    `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                  }
-                  parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
-                />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Description"
-            required
-            validateStatus={errors.propertyDescription ? "error" : ""}
-            help={errors.propertyDescription?.message}
-          >
-            <Controller
-              name="propertyDescription"
-              control={control}
-              render={({ field }) => (
-                <Input.TextArea {...field} placeholder="Enter Description" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Address"
-            required
-            validateStatus={errors.propertyAddress ? "error" : ""}
-            help={errors.propertyAddress?.message}
-          >
-            <Controller
-              name="propertyAddress"
-              control={control}
-              render={({ field }) => (
-                <Input.TextArea {...field} placeholder="Enter Address" />
+                <Input {...field} placeholder="Enter LOT No" />
               )}
             />
           </Form.Item>

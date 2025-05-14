@@ -15,76 +15,98 @@ export interface FormValues {
   vehicleMake?: string;
   vehicleModel?: string;
   vehicleEngineNo?: string;
-  vehicleSerialNo?: string;
+  vehicleChassisNo?: string;
   vehicleDescription?: string;
+  vehicleRegistrationNo?: string;
   vehicleMV?: string;
-  vehicleBondNo?: string;
-  vehicleBondValue?: string;
-  vehicleValuedBy?: string;
+  vehicleFSV?: string;
+  vehicleYearManufacture?: string;
   vehicleDateOfFirstReg?: Date;
+  vehicleRegBookNo?: string;
+  vehicleBookReceivedDate?: Date;
+  vehicleCRReleasedDate?: Date;
 
   // Machinery fields
   machineryType?: string;
   machineryOwnership?: string;
   machinerySupplier?: string;
-  machineryCondition?: string;
-  machineryCategory?: string;
-  machineryMake?: string;
+  machineryDescription?: string;
+  machineryMV?: string;
+  machineryFSV?: string;
   machineryModel?: string;
   machineryEngineNo?: string;
   machinerySerialNo?: string;
-  machineryDescription?: string;
-  machineryMV?: string;
+  machineryCondition?: string;
   machineryBondNo?: string;
   machineryBondValue?: string;
   machineryValuedBy?: string;
-  machineryDateOfFirstReg?: Date;
 
   // Bank Guarantee fields
   bankGuaranteeType?: string;
   bankGuaranteeOwnership?: string;
-  startDate?: Date;
-  expiryDate?: Date;
-  referenceNoInstitution?: string;
-  referenceNoIndividual?: string;
-  valueOfGuarantee?: string;
-  guaranteedTo?: string;
+  // LOFIN fields
+  fdNo?: string;
+  fdValue?: string;
+  startDate?: string;
+  expiryDate?: string;
+  referenceNo?: string;
   guaranteeValue?: string;
+  guaranteedTo?: string;
+  // Ondemand fields
   institutionName?: string;
+  dateOfExpiry?: string;
+  referenceNoOndemand?: string;
+  valueOfGuarantee?: string;
+  renewedBy?: string;
 
   // Property Mortgage fields
   propertyType?: string;
+  propertySubType?: string;
   propertyOwnership?: string;
-  propertyLocation?: string;
-  propertyArea?: string;
+  propertyBondType?: string;
+  propertyPropertyType?: string;
+  propertyBondNo?: string;
+  propertyBondDate?: string;
+  propertyDeedNo?: string;
+  propertyBondValue?: string;
+  propertySurveyPlanNo?: string;
+  propertyPOA?: string;
+  propertyPOANumber?: string;
+  propertyCompany?: string;
+  propertyLawyerName?: string;
+  propertyTitleInsurance?: string;
+  propertyInsuranceOfBuilding?: string;
+  propertyInsuranceValue?: string;
   propertyMarketValue?: string;
   propertyFSV?: string;
-  propertyDescription?: string;
-  propertyAddress?: string;
-  municipality?: string;
-  propertyValue?: string;
+  propertyLotNo?: string;
 
   // Savings fields
   savingsType?: string;
+  savingsSubType?: string;
   savingsOwnership?: string;
+  savingsFDNo?: string;
+  savingsAmount?: string;
+  savingsMaturityDate?: string;
+  savingsCompany?: string;
+  savingsDescription?: string;
   savingsNo?: string;
   savingsBuildUpValue?: string;
-  savingsAmount?: string;
-  savingsMatchingOne?: string;
-  savingsCompany?: string;
 
   // Land Stock fields
   landStockType?: string;
+  landStockSubType?: string;
   landStockOwnership?: string;
-  landStockDeedTransferNo?: string;
-  landStockAgreementNo?: string;
-  landStockLessorName?: string;
-  landStockSecurityDate?: Date;
-  landStockSecurityType?: string;
-  landStockDescription?: string;
-  landStockBondNo?: string;
   landStockMarketValue?: string;
   landStockFSV?: string;
+  landStockBondNo?: string;
+  landStockDeedTransferNo?: string;
+  landStockAgreementNo?: string;
+  landStockLawyerName?: string;
+  landStockDescription?: string;
+  landStockCategory?: string;
+  landStockSecurityDate?: Date;
+  landStockSecurityType?: string;
 }
 
 export const validationSchema = yup.object().shape({
@@ -123,9 +145,9 @@ export const validationSchema = yup.object().shape({
     is: "VEHICLE",
     then: (schema) => schema.required("Engine No is required"),
   }),
-  vehicleSerialNo: yup.string().when("securityType", {
+  vehicleChassisNo: yup.string().when("securityType", {
     is: "VEHICLE",
-    then: (schema) => schema.required("Serial No is required"),
+    then: (schema) => schema.required("Chassis No is required"),
   }),
   vehicleDescription: yup.string().when("securityType", {
     is: "VEHICLE",
@@ -135,21 +157,29 @@ export const validationSchema = yup.object().shape({
     is: "VEHICLE",
     then: (schema) => schema.required("MV is required"),
   }),
-  vehicleBondNo: yup.string().when("securityType", {
+  vehicleFSV: yup.string().when("securityType", {
     is: "VEHICLE",
-    then: (schema) => schema.required("Bond No is required"),
+    then: (schema) => schema.required("FSV is required"),
   }),
-  vehicleBondValue: yup.string().when("securityType", {
+  vehicleYearManufacture: yup.string().when("securityType", {
     is: "VEHICLE",
-    then: (schema) => schema.required("Bond Value is required"),
-  }),
-  vehicleValuedBy: yup.string().when("securityType", {
-    is: "VEHICLE",
-    then: (schema) => schema.required("Valued By is required"),
+    then: (schema) => schema.required("Year of Manufacture is required"),
   }),
   vehicleDateOfFirstReg: yup.date().when("securityType", {
     is: "VEHICLE",
     then: (schema) => schema.required("Date of First Registration is required"),
+  }),
+  vehicleRegBookNo: yup.string().when("securityType", {
+    is: "VEHICLE",
+    then: (schema) => schema.required("Registration Book No is required"),
+  }),
+  vehicleBookReceivedDate: yup.date().when("securityType", {
+    is: "VEHICLE",
+    then: (schema) => schema.required("Book Received Date is required"),
+  }),
+  vehicleCRReleasedDate: yup.date().when("securityType", {
+    is: "VEHICLE",
+    then: (schema) => schema.required("CR Released Date is required"),
   }),
 
   // Machinery fields
@@ -165,54 +195,28 @@ export const validationSchema = yup.object().shape({
     is: "MACHINERY",
     then: (schema) => schema.required("Supplier is required"),
   }),
+  machineryDescription: yup.string(),
+  machineryMV: yup.string().when("securityType", {
+    is: "MACHINERY",
+    then: (schema) => schema.required("Market Value is required"),
+  }),
+  machineryFSV: yup.string().when("securityType", {
+    is: "MACHINERY",
+    then: (schema) => schema.required("FSV is required"),
+  }),
+  machineryModel: yup.string(),
+  machineryEngineNo: yup.string(),
+  machinerySerialNo: yup.string().when("securityType", {
+    is: "MACHINERY",
+    then: (schema) => schema.required("Serial No/Chassis No is required"),
+  }),
   machineryCondition: yup.string().when("securityType", {
     is: "MACHINERY",
     then: (schema) => schema.required("Condition is required"),
   }),
-  machineryCategory: yup.string().when("securityType", {
-    is: "MACHINERY",
-    then: (schema) => schema.required("Category is required"),
-  }),
-  machineryMake: yup.string().when("securityType", {
-    is: "MACHINERY",
-    then: (schema) => schema.required("Make is required"),
-  }),
-  machineryModel: yup.string().when("securityType", {
-    is: "MACHINERY",
-    then: (schema) => schema.required("Model is required"),
-  }),
-  machineryEngineNo: yup.string().when("securityType", {
-    is: "MACHINERY",
-    then: (schema) => schema.required("Engine No is required"),
-  }),
-  machinerySerialNo: yup.string().when("securityType", {
-    is: "MACHINERY",
-    then: (schema) => schema.required("Serial No is required"),
-  }),
-  machineryDescription: yup.string().when("securityType", {
-    is: "MACHINERY",
-    then: (schema) => schema.required("Description is required"),
-  }),
-  machineryMV: yup.string().when("securityType", {
-    is: "MACHINERY",
-    then: (schema) => schema.required("MV is required"),
-  }),
-  machineryBondNo: yup.string().when("securityType", {
-    is: "MACHINERY",
-    then: (schema) => schema.required("Bond No is required"),
-  }),
-  machineryBondValue: yup.string().when("securityType", {
-    is: "MACHINERY",
-    then: (schema) => schema.required("Bond Value is required"),
-  }),
-  machineryValuedBy: yup.string().when("securityType", {
-    is: "MACHINERY",
-    then: (schema) => schema.required("Valued By is required"),
-  }),
-  machineryDateOfFirstReg: yup.date().when("securityType", {
-    is: "MACHINERY",
-    then: (schema) => schema.required("Date of First Registration is required"),
-  }),
+  machineryBondNo: yup.string(),
+  machineryBondValue: yup.string(),
+  machineryValuedBy: yup.string(),
 
   // Bank Guarantee fields
   bankGuaranteeType: yup.string().when("securityType", {
@@ -223,37 +227,55 @@ export const validationSchema = yup.object().shape({
     is: "BANK_GUARANTEE",
     then: (schema) => schema.required("Ownership is required"),
   }),
-  startDate: yup.date().when("securityType", {
-    is: "BANK_GUARANTEE",
-    then: (schema) => schema.required("Start Date is required"),
+  // LOFIN fields validation
+  fdNo: yup.string().when(["securityType", "bankGuaranteeType"], {
+    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "LOFIN",
+    then: (schema) => schema,
   }),
-  expiryDate: yup.date().when("securityType", {
-    is: "BANK_GUARANTEE",
-    then: (schema) => schema.required("Expiry Date is required"),
+  fdValue: yup.string().when(["securityType", "bankGuaranteeType"], {
+    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "LOFIN",
+    then: (schema) => schema,
   }),
-  referenceNoInstitution: yup.string().when("securityType", {
-    is: "BANK_GUARANTEE",
-    then: (schema) => schema.required("Reference No (Institution) is required"),
+  startDate: yup.string().when(["securityType", "bankGuaranteeType"], {
+    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "LOFIN",
+    then: (schema) => schema,
   }),
-  referenceNoIndividual: yup.string().when("securityType", {
-    is: "BANK_GUARANTEE",
-    then: (schema) => schema.required("Reference No (Individual) is required"),
+  expiryDate: yup.string().when(["securityType", "bankGuaranteeType"], {
+    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "LOFIN",
+    then: (schema) => schema,
   }),
-  valueOfGuarantee: yup.string().when("securityType", {
-    is: "BANK_GUARANTEE",
-    then: (schema) => schema.required("Value of Guarantee is required"),
+  referenceNo: yup.string().when(["securityType", "bankGuaranteeType"], {
+    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "LOFIN",
+    then: (schema) => schema,
   }),
-  guaranteedTo: yup.string().when("securityType", {
-    is: "BANK_GUARANTEE",
-    then: (schema) => schema.required("Guaranteed To is required"),
+  guaranteeValue: yup.string().when(["securityType", "bankGuaranteeType"], {
+    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "LOFIN",
+    then: (schema) => schema,
   }),
-  guaranteeValue: yup.string().when("securityType", {
-    is: "BANK_GUARANTEE",
-    then: (schema) => schema.required("Guarantee Value is required"),
+  guaranteedTo: yup.string().when(["securityType", "bankGuaranteeType"], {
+    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "LOFIN",
+    then: (schema) => schema,
   }),
-  institutionName: yup.string().when("securityType", {
-    is: "BANK_GUARANTEE",
-    then: (schema) => schema.required("Institution Name is required"),
+  // Ondemand fields validation
+  institutionName: yup.string().when(["securityType", "bankGuaranteeType"], {
+    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "ONDEMAND",
+    then: (schema) => schema,
+  }),
+  dateOfExpiry: yup.string().when(["securityType", "bankGuaranteeType"], {
+    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "ONDEMAND",
+    then: (schema) => schema,
+  }),
+  referenceNoOndemand: yup.string().when(["securityType", "bankGuaranteeType"], {
+    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "ONDEMAND",
+    then: (schema) => schema,
+  }),
+  valueOfGuarantee: yup.string().when(["securityType", "bankGuaranteeType"], {
+    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "ONDEMAND",
+    then: (schema) => schema,
+  }),
+  renewedBy: yup.string().when(["securityType", "bankGuaranteeType"], {
+    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "ONDEMAND",
+    then: (schema) => schema,
   }),
 
   // Property Mortgage fields
@@ -261,17 +283,69 @@ export const validationSchema = yup.object().shape({
     is: "PROPERTY_MORTGAGE",
     then: (schema) => schema.required("Type is required"),
   }),
+  propertySubType: yup.string().when("securityType", {
+    is: "PROPERTY_MORTGAGE",
+    then: (schema) => schema.required("Sub Type is required"),
+  }),
   propertyOwnership: yup.string().when("securityType", {
     is: "PROPERTY_MORTGAGE",
     then: (schema) => schema.required("Ownership is required"),
   }),
-  propertyLocation: yup.string().when("securityType", {
+  propertyBondType: yup.string().when("securityType", {
     is: "PROPERTY_MORTGAGE",
-    then: (schema) => schema.required("Location is required"),
+    then: (schema) => schema.required("Bond Type is required"),
   }),
-  propertyArea: yup.string().when("securityType", {
+  propertyPropertyType: yup.string().when("securityType", {
     is: "PROPERTY_MORTGAGE",
-    then: (schema) => schema.required("Area is required"),
+    then: (schema) => schema.required("Property Type is required"),
+  }),
+  propertyBondNo: yup.string().when("securityType", {
+    is: "PROPERTY_MORTGAGE",
+    then: (schema) => schema.required("Bond No is required"),
+  }),
+  propertyBondDate: yup.string().when("securityType", {
+    is: "PROPERTY_MORTGAGE",
+    then: (schema) => schema.required("Bond Date is required"),
+  }),
+  propertyDeedNo: yup.string().when("securityType", {
+    is: "PROPERTY_MORTGAGE",
+    then: (schema) => schema.required("Deed No/Grant No/Title Certificate No is required"),
+  }),
+  propertyBondValue: yup.string().when("securityType", {
+    is: "PROPERTY_MORTGAGE",
+    then: (schema) => schema.required("Bond Value is required"),
+  }),
+  propertySurveyPlanNo: yup.string().when("securityType", {
+    is: "PROPERTY_MORTGAGE",
+    then: (schema) => schema.required("Survey Plan No is required"),
+  }),
+  propertyPOA: yup.string().when("securityType", {
+    is: "PROPERTY_MORTGAGE",
+    then: (schema) => schema.required("POA is required"),
+  }),
+  propertyPOANumber: yup.string().when("securityType", {
+    is: "PROPERTY_MORTGAGE",
+    then: (schema) => schema.required("POA Number is required"),
+  }),
+  propertyCompany: yup.string().when("securityType", {
+    is: "PROPERTY_MORTGAGE",
+    then: (schema) => schema.required("Company is required"),
+  }),
+  propertyLawyerName: yup.string().when("securityType", {
+    is: "PROPERTY_MORTGAGE",
+    then: (schema) => schema.required("Lawyer Name is required"),
+  }),
+  propertyTitleInsurance: yup.string().when("securityType", {
+    is: "PROPERTY_MORTGAGE",
+    then: (schema) => schema.required("Title Insurance is required"),
+  }),
+  propertyInsuranceOfBuilding: yup.string().when("securityType", {
+    is: "PROPERTY_MORTGAGE",
+    then: (schema) => schema.required("Insurance of Building is required"),
+  }),
+  propertyInsuranceValue: yup.string().when("securityType", {
+    is: "PROPERTY_MORTGAGE",
+    then: (schema) => schema.required("Insurance Value is required"),
   }),
   propertyMarketValue: yup.string().when("securityType", {
     is: "PROPERTY_MORTGAGE",
@@ -281,21 +355,9 @@ export const validationSchema = yup.object().shape({
     is: "PROPERTY_MORTGAGE",
     then: (schema) => schema.required("FSV is required"),
   }),
-  propertyDescription: yup.string().when("securityType", {
+  propertyLotNo: yup.string().when("securityType", {
     is: "PROPERTY_MORTGAGE",
-    then: (schema) => schema.required("Description is required"),
-  }),
-  propertyAddress: yup.string().when("securityType", {
-    is: "PROPERTY_MORTGAGE",
-    then: (schema) => schema.required("Property Address is required"),
-  }),
-  municipality: yup.string().when("securityType", {
-    is: "PROPERTY_MORTGAGE",
-    then: (schema) => schema.required("Municipality is required"),
-  }),
-  propertyValue: yup.string().when("securityType", {
-    is: "PROPERTY_MORTGAGE",
-    then: (schema) => schema.required("Property Value is required"),
+    then: (schema) => schema.required("LOT No is required"),
   }),
 
   // Savings fields
@@ -303,67 +365,55 @@ export const validationSchema = yup.object().shape({
     is: "SAVINGS",
     then: (schema) => schema.required("Type is required"),
   }),
+  savingsSubType: yup.string().when("securityType", {
+    is: "SAVINGS",
+    then: (schema) => schema,
+  }),
   savingsOwnership: yup.string().when("securityType", {
     is: "SAVINGS",
     then: (schema) => schema.required("Ownership is required"),
   }),
-  savingsNo: yup.string().when("securityType", {
+  savingsFDNo: yup.string().when("securityType", {
     is: "SAVINGS",
-    then: (schema) => schema.required("Savings No is required"),
-  }),
-  savingsBuildUpValue: yup.string().when("securityType", {
-    is: "SAVINGS",
-    then: (schema) => schema.required("Build Up Value is required"),
+    then: (schema) => schema,
   }),
   savingsAmount: yup.string().when("securityType", {
     is: "SAVINGS",
-    then: (schema) => schema.required("Amount is required"),
+    then: (schema) => schema,
   }),
-  savingsMatchingOne: yup.string().when("securityType", {
+  savingsMaturityDate: yup.string().when("securityType", {
     is: "SAVINGS",
-    then: (schema) => schema.required("Matching One is required"),
+    then: (schema) => schema,
   }),
   savingsCompany: yup.string().when("securityType", {
     is: "SAVINGS",
-    then: (schema) => schema.required("Company is required"),
+    then: (schema) => schema,
+  }),
+  savingsDescription: yup.string().when("securityType", {
+    is: "SAVINGS",
+    then: (schema) => schema,
+  }),
+  savingsNo: yup.string().when("securityType", {
+    is: "SAVINGS",
+    then: (schema) => schema,
+  }),
+  savingsBuildUpValue: yup.string().when("securityType", {
+    is: "SAVINGS",
+    then: (schema) => schema,
   }),
 
-  // Land Stock fields
+  // Land Stock fields validation
   landStockType: yup.string().when("securityType", {
     is: "LAND_STOCK",
     then: (schema) => schema.required("Type is required"),
   }),
+  landStockSubType: yup.string().when("securityType", {
+    is: "LAND_STOCK",
+    then: (schema) => schema,
+  }),
   landStockOwnership: yup.string().when("securityType", {
     is: "LAND_STOCK",
     then: (schema) => schema.required("Ownership is required"),
-  }),
-  landStockDeedTransferNo: yup.string().when("securityType", {
-    is: "LAND_STOCK",
-    then: (schema) => schema.required("Deed Transfer No is required"),
-  }),
-  landStockAgreementNo: yup.string().when("securityType", {
-    is: "LAND_STOCK",
-    then: (schema) => schema.required("Agreement No is required"),
-  }),
-  landStockLessorName: yup.string().when("securityType", {
-    is: "LAND_STOCK",
-    then: (schema) => schema.required("Lessor Name is required"),
-  }),
-  landStockSecurityDate: yup.date().when("securityType", {
-    is: "LAND_STOCK",
-    then: (schema) => schema.required("Security Date is required"),
-  }),
-  landStockSecurityType: yup.string().when("securityType", {
-    is: "LAND_STOCK",
-    then: (schema) => schema.required("Security Type is required"),
-  }),
-  landStockDescription: yup.string().when("securityType", {
-    is: "LAND_STOCK",
-    then: (schema) => schema.required("Description is required"),
-  }),
-  landStockBondNo: yup.string().when("securityType", {
-    is: "LAND_STOCK",
-    then: (schema) => schema.required("Bond No is required"),
   }),
   landStockMarketValue: yup.string().when("securityType", {
     is: "LAND_STOCK",
@@ -372,5 +422,37 @@ export const validationSchema = yup.object().shape({
   landStockFSV: yup.string().when("securityType", {
     is: "LAND_STOCK",
     then: (schema) => schema.required("FSV is required"),
+  }),
+  landStockBondNo: yup.string().when("securityType", {
+    is: "LAND_STOCK",
+    then: (schema) => schema,
+  }),
+  landStockDeedTransferNo: yup.string().when("securityType", {
+    is: "LAND_STOCK",
+    then: (schema) => schema,
+  }),
+  landStockAgreementNo: yup.string().when("securityType", {
+    is: "LAND_STOCK",
+    then: (schema) => schema,
+  }),
+  landStockLawyerName: yup.string().when("securityType", {
+    is: "LAND_STOCK",
+    then: (schema) => schema,
+  }),
+  landStockDescription: yup.string().when("securityType", {
+    is: "LAND_STOCK",
+    then: (schema) => schema,
+  }),
+  landStockCategory: yup.string().when("securityType", {
+    is: "LAND_STOCK",
+    then: (schema) => schema.required("Category is required"),
+  }),
+  landStockSecurityDate: yup.date().when("securityType", {
+    is: "LAND_STOCK",
+    then: (schema) => schema.required("Security Date is required"),
+  }),
+  landStockSecurityType: yup.string().when("securityType", {
+    is: "LAND_STOCK",
+    then: (schema) => schema.required("Security Type is required"),
   }),
 }); 

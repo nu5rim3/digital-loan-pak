@@ -36,10 +36,31 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
           </Form.Item>
 
           <Form.Item
+            label="Sub Type"
+            validateStatus={errors.landStockSubType ? "error" : ""}
+            help={errors.landStockSubType?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="landStockSubType"
+              control={control}
+              render={({ field }) => (
+                <Select {...field} placeholder="Select Sub Type">
+                  <Select.Option value="type1">Type 1</Select.Option>
+                  <Select.Option value="type2">Type 2</Select.Option>
+                </Select>
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
             label="Ownership"
             required
             validateStatus={errors.landStockOwnership ? "error" : ""}
             help={errors.landStockOwnership?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
           >
             <Controller
               name="landStockOwnership"
@@ -54,10 +75,61 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
           </Form.Item>
 
           <Form.Item
-            label="Deed Transfer No"
+            label="Market Value"
             required
+            validateStatus={errors.landStockMarketValue ? "error" : ""}
+            help={errors.landStockMarketValue?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="landStockMarketValue"
+              control={control}
+              render={({ field }) => (
+                <Input {...field} placeholder="Enter Market Value" />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="FSV"
+            required
+            validateStatus={errors.landStockFSV ? "error" : ""}
+            help={errors.landStockFSV?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="landStockFSV"
+              control={control}
+              render={({ field }) => (
+                <Input {...field} placeholder="Enter FSV" />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Bond No"
+            validateStatus={errors.landStockBondNo ? "error" : ""}
+            help={errors.landStockBondNo?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="landStockBondNo"
+              control={control}
+              render={({ field }) => (
+                <Input {...field} placeholder="Enter Bond No" />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Deed Transfer No"
             validateStatus={errors.landStockDeedTransferNo ? "error" : ""}
             help={errors.landStockDeedTransferNo?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
           >
             <Controller
               name="landStockDeedTransferNo"
@@ -70,9 +142,10 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
 
           <Form.Item
             label="Agreement No"
-            required
             validateStatus={errors.landStockAgreementNo ? "error" : ""}
             help={errors.landStockAgreementNo?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
           >
             <Controller
               name="landStockAgreementNo"
@@ -84,16 +157,53 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
           </Form.Item>
 
           <Form.Item
-            label="Lessor Name"
-            required
-            validateStatus={errors.landStockLessorName ? "error" : ""}
-            help={errors.landStockLessorName?.message}
+            label="Lawyer Name"
+            validateStatus={errors.landStockLawyerName ? "error" : ""}
+            help={errors.landStockLawyerName?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
           >
             <Controller
-              name="landStockLessorName"
+              name="landStockLawyerName"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter Lessor Name" />
+                <Input {...field} placeholder="Enter Lawyer Name" />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Description"
+            validateStatus={errors.landStockDescription ? "error" : ""}
+            help={errors.landStockDescription?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="landStockDescription"
+              control={control}
+              render={({ field }) => (
+                <Input.TextArea {...field} placeholder="Enter Description" />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Category"
+            required
+            validateStatus={errors.landStockCategory ? "error" : ""}
+            help={errors.landStockCategory?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="landStockCategory"
+              control={control}
+              render={({ field }) => (
+                <Select {...field} placeholder="Select Category">
+                  <Select.Option value="category1">Category 1</Select.Option>
+                  <Select.Option value="category2">Category 2</Select.Option>
+                </Select>
               )}
             />
           </Form.Item>
@@ -103,6 +213,8 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
             required
             validateStatus={errors.landStockSecurityDate ? "error" : ""}
             help={errors.landStockSecurityDate?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
           >
             <Controller
               name="landStockSecurityDate"
@@ -125,6 +237,8 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
             required
             validateStatus={errors.landStockSecurityType ? "error" : ""}
             help={errors.landStockSecurityType?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
           >
             <Controller
               name="landStockSecurityType"
@@ -135,66 +249,6 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
                   <Select.Option value="pledge">Pledge</Select.Option>
                   <Select.Option value="hypothecation">Hypothecation</Select.Option>
                 </Select>
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Description"
-            required
-            validateStatus={errors.landStockDescription ? "error" : ""}
-            help={errors.landStockDescription?.message}
-          >
-            <Controller
-              name="landStockDescription"
-              control={control}
-              render={({ field }) => (
-                <Input.TextArea {...field} placeholder="Enter Description" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Bond No"
-            required
-            validateStatus={errors.landStockBondNo ? "error" : ""}
-            help={errors.landStockBondNo?.message}
-          >
-            <Controller
-              name="landStockBondNo"
-              control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter Bond No" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Market Value"
-            required
-            validateStatus={errors.landStockMarketValue ? "error" : ""}
-            help={errors.landStockMarketValue?.message}
-          >
-            <Controller
-              name="landStockMarketValue"
-              control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter Market Value" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="FSV"
-            required
-            validateStatus={errors.landStockFSV ? "error" : ""}
-            help={errors.landStockFSV?.message}
-          >
-            <Controller
-              name="landStockFSV"
-              control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter FSV" />
               )}
             />
           </Form.Item>

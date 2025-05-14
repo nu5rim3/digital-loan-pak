@@ -68,7 +68,12 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
             <Controller
               name="vehicleSupplier"
               control={control}
-              render={({ field }) => <Input {...field} placeholder="Enter Supplier" />}
+              render={({ field }) => (
+                <Select {...field} placeholder="Select Supplier">
+                  <Select.Option value="supplier1">Supplier 1</Select.Option>
+                  <Select.Option value="supplier2">Supplier 2</Select.Option>
+                </Select>
+              )}
             />
           </Form.Item>
 
@@ -93,7 +98,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
           </Form.Item>
 
           <Form.Item
-            label="Category"
+            label="Vehicle Category"
             required
             validateStatus={errors.vehicleCategory ? "error" : ""}
             help={errors.vehicleCategory?.message}
@@ -125,7 +130,14 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
             <Controller
               name="vehicleMake"
               control={control}
-              render={({ field }) => <Input {...field} placeholder="Enter Make" />}
+              render={({ field }) => (
+                <Select {...field} placeholder="Select Make">
+                  <Select.Option value="toyota">Toyota</Select.Option>
+                  <Select.Option value="honda">Honda</Select.Option>
+                  <Select.Option value="suzuki">Suzuki</Select.Option>
+                  <Select.Option value="mitsubishi">Mitsubishi</Select.Option>
+                </Select>
+              )}
             />
           </Form.Item>
 
@@ -140,13 +152,17 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
             <Controller
               name="vehicleModel"
               control={control}
-              render={({ field }) => <Input {...field} placeholder="Enter Model" />}
+              render={({ field }) => (
+                <Select {...field} placeholder="Select Model">
+                  <Select.Option value="model1">Model 1</Select.Option>
+                  <Select.Option value="model2">Model 2</Select.Option>
+                </Select>
+              )}
             />
           </Form.Item>
 
           <Form.Item
             label="Engine No"
-            required
             validateStatus={errors.vehicleEngineNo ? "error" : ""}
             help={errors.vehicleEngineNo?.message}
             labelCol={{ span: 24 }}
@@ -160,23 +176,21 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
           </Form.Item>
 
           <Form.Item
-            label="Serial No"
-            required
-            validateStatus={errors.vehicleSerialNo ? "error" : ""}
-            help={errors.vehicleSerialNo?.message}
+            label="Chassis No"
+            validateStatus={errors.vehicleChassisNo ? "error" : ""}
+            help={errors.vehicleChassisNo?.message}
             labelCol={{ span: 24 }}
             wrapperCol={{ span: 24 }}
           >
             <Controller
-              name="vehicleSerialNo"
+              name="vehicleChassisNo"
               control={control}
-              render={({ field }) => <Input {...field} placeholder="Enter Serial No" />}
+              render={({ field }) => <Input {...field} placeholder="Enter Chassis No" />}
             />
           </Form.Item>
 
           <Form.Item
             label="Description"
-            required
             validateStatus={errors.vehicleDescription ? "error" : ""}
             help={errors.vehicleDescription?.message}
             labelCol={{ span: 24 }}
@@ -190,8 +204,35 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
           </Form.Item>
 
           <Form.Item
-            label="Market Value"
-            required
+            label="Registration No"
+            validateStatus={errors.vehicleRegistrationNo ? "error" : ""}
+            help={errors.vehicleRegistrationNo?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="vehicleRegistrationNo"
+              control={control}
+              render={({ field }) => <Input {...field} placeholder="Enter Registration No" />}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Year of Manufacture"
+            validateStatus={errors.vehicleYearManufacture ? "error" : ""}
+            help={errors.vehicleYearManufacture?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="vehicleYearManufacture"
+              control={control}
+              render={({ field }) => <Input {...field} placeholder="Enter Year of Manufacture" />}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="MV"
             validateStatus={errors.vehicleMV ? "error" : ""}
             help={errors.vehicleMV?.message}
             labelCol={{ span: 24 }}
@@ -204,7 +245,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
                 <InputNumber
                   {...field}
                   style={{ width: "100%" }}
-                  placeholder="Enter Market Value"
+                  placeholder="Enter MV"
                   formatter={(value) => `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
                 />
@@ -213,36 +254,20 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
           </Form.Item>
 
           <Form.Item
-            label="Bond No"
-            required
-            validateStatus={errors.vehicleBondNo ? "error" : ""}
-            help={errors.vehicleBondNo?.message}
+            label="FSV"
+            validateStatus={errors.vehicleFSV ? "error" : ""}
+            help={errors.vehicleFSV?.message}
             labelCol={{ span: 24 }}
             wrapperCol={{ span: 24 }}
           >
             <Controller
-              name="vehicleBondNo"
-              control={control}
-              render={({ field }) => <Input {...field} placeholder="Enter Bond No" />}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Bond Value"
-            required
-            validateStatus={errors.vehicleBondValue ? "error" : ""}
-            help={errors.vehicleBondValue?.message}
-            labelCol={{ span: 24 }}
-            wrapperCol={{ span: 24 }}
-          >
-            <Controller
-              name="vehicleBondValue"
+              name="vehicleFSV"
               control={control}
               render={({ field }) => (
                 <InputNumber
                   {...field}
                   style={{ width: "100%" }}
-                  placeholder="Enter Bond Value"
+                  placeholder="Enter FSV"
                   formatter={(value) => `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
                 />
@@ -251,23 +276,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
           </Form.Item>
 
           <Form.Item
-            label="Valued By"
-            required
-            validateStatus={errors.vehicleValuedBy ? "error" : ""}
-            help={errors.vehicleValuedBy?.message}
-            labelCol={{ span: 24 }}
-            wrapperCol={{ span: 24 }}
-          >
-            <Controller
-              name="vehicleValuedBy"
-              control={control}
-              render={({ field }) => <Input {...field} placeholder="Enter Valued By" />}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Date of First Registration"
-            required
+            label="Date of 1st Reg"
             validateStatus={errors.vehicleDateOfFirstReg ? "error" : ""}
             help={errors.vehicleDateOfFirstReg?.message}
             labelCol={{ span: 24 }}
@@ -275,6 +284,66 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
           >
             <Controller
               name="vehicleDateOfFirstReg"
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  className="w-full"
+                  format="YYYY-MM-DD"
+                  value={field.value ? dayjs(field.value) : null}
+                  onChange={(date) => {
+                    field.onChange(date);
+                  }}
+                />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Reg Book No"
+            validateStatus={errors.vehicleRegBookNo ? "error" : ""}
+            help={errors.vehicleRegBookNo?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="vehicleRegBookNo"
+              control={control}
+              render={({ field }) => <Input {...field} placeholder="Enter Reg Book No" />}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Book Received Date"
+            validateStatus={errors.vehicleBookReceivedDate ? "error" : ""}
+            help={errors.vehicleBookReceivedDate?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="vehicleBookReceivedDate"
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  className="w-full"
+                  format="YYYY-MM-DD"
+                  value={field.value ? dayjs(field.value) : null}
+                  onChange={(date) => {
+                    field.onChange(date);
+                  }}
+                />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="CR Released Date"
+            validateStatus={errors.vehicleCRReleasedDate ? "error" : ""}
+            help={errors.vehicleCRReleasedDate?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="vehicleCRReleasedDate"
               control={control}
               render={({ field }) => (
                 <DatePicker
