@@ -109,6 +109,35 @@ export interface FormValues {
   landStockSecurityType?: string;
 }
 
+export interface LeaseProductFormValues {
+  // Equipment Details
+  equipmentCost: string;
+  equipmentType: string;
+  supplierCode: string;
+  equipmentName: string;
+  condition: string;
+  category: string;
+  depreciationCode: string;
+
+  // Vehicle Details
+  vehicleType: string;
+  manufacturer: string;
+  model: string;
+  engineCapacityCC: string;
+  engineCapacityHP: string;
+  engineNo?: string;
+  chassisNo?: string;
+  vehicleNo?: string;
+  registrationDate?: string;
+  duplicateKey?: string;
+  registrationBookNo?: string;
+  registrationYear?: string;
+  internalMV?: string;
+  internalFSV?: string;
+  insuranceCompany: string;
+  referenceNo: string;
+}
+
 export const validationSchema = yup.object().shape({
   securityType: yup.string().required("Security Type is required"),
 
@@ -229,52 +258,66 @@ export const validationSchema = yup.object().shape({
   }),
   // LOFIN fields validation
   fdNo: yup.string().when(["securityType", "bankGuaranteeType"], {
-    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "LOFIN",
+    is: (securityType: string, type: string) =>
+      securityType === "BANK_GUARANTEE" && type === "LOFIN",
     then: (schema) => schema,
   }),
   fdValue: yup.string().when(["securityType", "bankGuaranteeType"], {
-    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "LOFIN",
+    is: (securityType: string, type: string) =>
+      securityType === "BANK_GUARANTEE" && type === "LOFIN",
     then: (schema) => schema,
   }),
   startDate: yup.string().when(["securityType", "bankGuaranteeType"], {
-    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "LOFIN",
+    is: (securityType: string, type: string) =>
+      securityType === "BANK_GUARANTEE" && type === "LOFIN",
     then: (schema) => schema,
   }),
   expiryDate: yup.string().when(["securityType", "bankGuaranteeType"], {
-    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "LOFIN",
+    is: (securityType: string, type: string) =>
+      securityType === "BANK_GUARANTEE" && type === "LOFIN",
     then: (schema) => schema,
   }),
   referenceNo: yup.string().when(["securityType", "bankGuaranteeType"], {
-    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "LOFIN",
+    is: (securityType: string, type: string) =>
+      securityType === "BANK_GUARANTEE" && type === "LOFIN",
     then: (schema) => schema,
   }),
   guaranteeValue: yup.string().when(["securityType", "bankGuaranteeType"], {
-    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "LOFIN",
+    is: (securityType: string, type: string) =>
+      securityType === "BANK_GUARANTEE" && type === "LOFIN",
     then: (schema) => schema,
   }),
   guaranteedTo: yup.string().when(["securityType", "bankGuaranteeType"], {
-    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "LOFIN",
+    is: (securityType: string, type: string) =>
+      securityType === "BANK_GUARANTEE" && type === "LOFIN",
     then: (schema) => schema,
   }),
   // Ondemand fields validation
   institutionName: yup.string().when(["securityType", "bankGuaranteeType"], {
-    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "ONDEMAND",
+    is: (securityType: string, type: string) =>
+      securityType === "BANK_GUARANTEE" && type === "ONDEMAND",
     then: (schema) => schema,
   }),
   dateOfExpiry: yup.string().when(["securityType", "bankGuaranteeType"], {
-    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "ONDEMAND",
+    is: (securityType: string, type: string) =>
+      securityType === "BANK_GUARANTEE" && type === "ONDEMAND",
     then: (schema) => schema,
   }),
-  referenceNoOndemand: yup.string().when(["securityType", "bankGuaranteeType"], {
-    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "ONDEMAND",
-    then: (schema) => schema,
-  }),
+  referenceNoOndemand: yup
+    .string()
+    .when(["securityType", "bankGuaranteeType"], {
+      is: (securityType: string, type: string) =>
+        securityType === "BANK_GUARANTEE" && type === "ONDEMAND",
+      then: (schema) => schema,
+    }),
   valueOfGuarantee: yup.string().when(["securityType", "bankGuaranteeType"], {
-    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "ONDEMAND",
+    is: (securityType: string, type: string) =>
+      securityType === "BANK_GUARANTEE" && type === "ONDEMAND",
     then: (schema) => schema,
   }),
   renewedBy: yup.string().when(["securityType", "bankGuaranteeType"], {
-    is: (securityType: string, type: string) => securityType === "BANK_GUARANTEE" && type === "ONDEMAND",
+    is: (securityType: string, type: string) =>
+      securityType === "BANK_GUARANTEE" && type === "ONDEMAND",
     then: (schema) => schema,
   }),
 
@@ -309,7 +352,8 @@ export const validationSchema = yup.object().shape({
   }),
   propertyDeedNo: yup.string().when("securityType", {
     is: "PROPERTY_MORTGAGE",
-    then: (schema) => schema.required("Deed No/Grant No/Title Certificate No is required"),
+    then: (schema) =>
+      schema.required("Deed No/Grant No/Title Certificate No is required"),
   }),
   propertyBondValue: yup.string().when("securityType", {
     is: "PROPERTY_MORTGAGE",
@@ -455,4 +499,4 @@ export const validationSchema = yup.object().shape({
     is: "LAND_STOCK",
     then: (schema) => schema.required("Security Type is required"),
   }),
-}); 
+});
