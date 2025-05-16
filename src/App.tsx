@@ -17,7 +17,7 @@ const LoginPage = lazy(() => import('./pages/Login'))
 const LandingPage = lazy(() => import('./pages/Landing'))
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 // const Accounts = lazy(() => import('./pages/AccessAndPermission/Accounts'))
-// const Members = lazy(() => import('./pages/AccessAndPermission/Members'))
+const Members = lazy(() => import('./pages/AccessAndPermission/Members'))
 // const Roles = lazy(() => import('./pages/AccessAndPermission/Roles'))
 // const Group = lazy(() => import('./pages/ApprovalAndRatification/Group'))
 // const User = lazy(() => import('./pages/ApprovalAndRatification/User'))
@@ -35,7 +35,7 @@ const GuarantorOnboarding = lazy(() => import('./pages/Users/Guarantors/Guaranto
 const CustomerDetails = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard/Customer/CustomerDetails'))
 const GuarantorDetail = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard/Guarantor/GuarantorDetails'))
 const WitnessDetails = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard/Witness/WitnessDetails'))
-const BusinessIntroducers = lazy(() => import('./pages/AccessAndPermission/Roles'))
+const BusinessIntroducers = lazy(() => import('./pages/AccessAndPermission/BusinessIntroducer'))
 const LoanFormApplication = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard/LoanApplication/LoanFormApplication'))
 
 
