@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 import useStakeholderStore from '../../../../../store/stakeholderStore';
 import useCommonStore from '../../../../../store/commonStore';
-import { formatCNIC } from '../../../../../utils/formatterFunctions';
+import { formatCNIC, formatName } from '../../../../../utils/formatterFunctions';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import useCustomerStore from '../../../../../store/customerStore';
 import { CaretLeftOutlined, EditOutlined, UndoOutlined } from '@ant-design/icons';
@@ -197,7 +197,7 @@ const CustomerDetails: React.FC = () => {
                                 name="stkCNicStatus"
                                 control={control}
                                 render={({ field }) => <Select {...field} placeholder="Select a CNIC Status" allowClear loading={cnicStausLoading} options={cnicStaus.map((item) => ({
-                                    label: item.description,
+                                    label: formatName(item.description),
                                     value: item.code
                                 }))}>
                                 </Select>}
@@ -273,7 +273,7 @@ const CustomerDetails: React.FC = () => {
                                 control={control}
                                 render={({ field }) =>
                                     <Select {...field} placeholder="Select an Organization" allowClear loading={organizationTypeLoading} options={organizationType.map((item) => ({
-                                        label: item.description,
+                                        label: formatName(item.description),
                                         value: item.code
                                     }))}>
                                     </Select>
@@ -289,7 +289,7 @@ const CustomerDetails: React.FC = () => {
                                         {...field}
                                         allowClear
                                         options={educationLevel.map((item) => ({
-                                            label: item.description,
+                                            label: formatName(item.description),
                                             value: item.code
                                         }))}
                                         placeholder="Select Education Level"
@@ -369,7 +369,7 @@ const CustomerDetails: React.FC = () => {
                                         {...field}
                                         allowClear
                                         options={headOfFamily.map((item) => ({
-                                            label: item.description,
+                                            label: formatName(item.description),
                                             value: item.code
                                         }))}
                                         placeholder="Select Head of Family"
@@ -386,7 +386,7 @@ const CustomerDetails: React.FC = () => {
                                     {...field}
                                     allowClear
                                     options={healthCondition.map((item) => ({
-                                        label: item.description,
+                                        label: formatName(item.description),
                                         value: item.code
                                     }))}
                                     placeholder="Select Health Condition"

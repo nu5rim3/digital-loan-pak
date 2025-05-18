@@ -7,7 +7,7 @@ import { CloseCircleOutlined, SaveOutlined, UndoOutlined } from "@ant-design/ico
 import useCommonStore from "../../../store/commonStore";
 import useCustomerStore from "../../../store/customerStore";
 import useLoanStore from "../../../store/loanStore";
-import { formatCNIC } from "../../../utils/formatterFunctions";
+import { formatCNIC, formatPhoneNumber } from "../../../utils/formatterFunctions";
 import useGuarantorStore from "../../../store/guarantorStore";
 // import { useNavigate } from "react-router-dom";
 const { Search } = Input;
@@ -208,7 +208,13 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                             <Controller
                                 name="contactNumber"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter contact number" />}
+                                render={({ field }) =>
+                                    <Input {...field} placeholder="Enter contact number"
+                                        type='number'
+                                        maxLength={11}
+                                        onChange={(e) => setValue('contactNumber', formatPhoneNumber(e.target.value), { shouldValidate: true })}
+                                    />
+                                }
                             />
                         </Form.Item>
                         <Form.Item label="Identification Type" validateStatus={errors.identificationType ? "error" : ""} help={errors.identificationType?.message} required>

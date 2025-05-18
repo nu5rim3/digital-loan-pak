@@ -47,18 +47,18 @@ export interface IProduct {
   pTrhdTr: string;
   pTrhdLocCost: string;
   pTrhdStmYn: string;
-  pTrhdStmPer: string | null;
-  pTrhdStmDuty: string | null;
+  pTrhdStmPer?: string | null;
+  pTrhdStmDuty?: string | null;
   pTrhdCurCode: string;
   pTrhdInvTax: string;
   pTrhdBus: string;
   pTrhdInvTaxRt: string;
   pTrhdCrib: string;
   pTrhdFlexi: string;
-  pTrhdBsCd: string | null;
-  pTrhdBsTr: string | null;
-  pTrhdMgTr: string | null;
-  pTrhdReSeq: string | null;
+  pTrhdBsCd?: string | null;
+  pTrhdBsTr?: string | null;
+  pTrhdMgTr?: string | null;
+  pTrhdReSeq?: string | null;
   pTrhdCustTyp: string;
   pTrhdReward: string;
   pTrhdLCode: string | null;
@@ -306,6 +306,108 @@ export interface IOtherIncome {
   lastModifiedDate?: string;
 }
 
+export interface ITrailCalulation {
+  pMode: string;
+  pUser: string;
+  pFacilityType: string;
+  pTrhdMe: string;
+  pTrhdLType: string;
+  pTrhdMethod: string;
+  pTrhdBrh: string;
+  pTrhdTerm: string;
+  pTrhdNoPre: string;
+  pTrhdNoDw: string;
+  pTrhdTr: string;
+  pTrhdLocCost: string;
+  pTrhdStmYn: string;
+  pTrhdStmPer1: string;
+  pTrhdStmDuty1?: string;
+  pTrhdCurCode: string;
+  pTrhdInvTax: string;
+  pTrhdBus: string;
+  pTrhdInvTaxRt: string;
+  pTrhdCrib: string;
+  pTrhdFlexi: string;
+  pTrhdBsCd: string;
+  pTrhdBsTr: string;
+  pTrhdMgTr: string;
+  pTrhdReSeq: string;
+  pTrhdCustTyp: string;
+  pTrhdReward: string;
+  pTrhdLCode: string;
+  pTrhdQuo: string;
+  pTrhdStmPer: string;
+  pTrhdStmDuty?: string;
+  pTrhdStmApp: string;
+  pTrhdInsuCoverFlg: string;
+  pTrhdInsuCoverAmt: string;
+  pTrhdIntrType: string;
+  pTrhdRewardPre: string;
+  pTrhdRewardType: string;
+  pTrhdRewardBusagent: string;
+  pTrhdRewardAddMethod: string;
+  pTrhdSplitReward: string;
+  pInsuOption: string;
+  pInsuAddCrit: string;
+  pTrhdColMeth: string;
+  prevLoanProd?: string;
+  prevLoanContractNo?: string | null;
+  prevLoanOutstanding?: string | null;
+  countOfRollOver?: string | null;
+  pTrtx?: {
+    trtxTrx?: string;
+    trtxAmt?: string;
+    trtxAddcrit?: string;
+    trtxCalMethod?: string;
+    prtbMndFlg?: string;
+  }[];
+  pStru: {
+    struSeq: string;
+    struPrds: string;
+    amount: string;
+  }[];
+}
+
+export interface ITrailCalulationResponse {
+  code: string;
+  object: {
+    tcNo: string;
+    code: string;
+    message: string;
+    detail: string;
+  };
+  message: string;
+}
+
+export interface ITrailCalulationDetailsPayload {
+  tcNo: string;
+  mode: "T" | "P";
+}
+
+export interface ITrailCalulationDetailsResponse {
+  code: string;
+  object: {
+    tcNo: string;
+    code: string;
+    message: string;
+    detail: string;
+    totalReceivable: string;
+    loanAmount: string;
+    downPayment: string;
+    facilityDetails: {
+      seq: string;
+      term: string;
+      instalment: string;
+    }[];
+    trtx: {
+      trtxTrx: string;
+      trtxAmt: string;
+      trtxAddcrit: string;
+      trtxCalMethod: string;
+    }[];
+  };
+}
+
 interface ICreditState {
   goldLoanAppDetails: IGoldLoanAppDetails[];
   goldLoanAppDetailsLoading: boolean;
@@ -375,6 +477,14 @@ interface ICreditState {
   otherIncome: IOtherIncome[];
   otherIncomeLoading: boolean;
   otherIncomeError: string | null;
+
+  trailCalulation: ITrailCalulationResponse | null;
+  trailCalulationLoading: boolean;
+  trailCalulationError: string | null;
+
+  trailCalulationDetails: ITrailCalulationDetailsResponse | null;
+  trailCalulationDetailsLoading: boolean;
+  trailCalulationDetailsError: string | null;
 
   fetachGoldLoanAppDetails: (appId: string) => Promise<void>;
   addGoldLoanAppDetails: (data: IGoldLoanAppDetails) => Promise<void>;
@@ -491,6 +601,15 @@ interface ICreditState {
   fetchOtherIncome: (appId: string) => Promise<void>;
   addOtherIncome: (appId: string, data: IOtherIncome) => Promise<void>;
   updateOtherIncome: (appId: string, data: IOtherIncome) => Promise<void>;
+
+  sendTrailCalulation: (
+    data: ITrailCalulation
+  ) => Promise<ITrailCalulationResponse>;
+
+  fetchTrailCalulation: (
+    tcNo: string,
+    mode: "T" | "P"
+  ) => Promise<ITrailCalulationDetailsResponse | undefined>;
 }
 
 const useCreditStore = create<ICreditState>((set) => ({
@@ -562,6 +681,14 @@ const useCreditStore = create<ICreditState>((set) => ({
   otherIncome: [],
   otherIncomeLoading: false,
   otherIncomeError: null,
+
+  trailCalulation: null,
+  trailCalulationLoading: false,
+  trailCalulationError: null,
+
+  trailCalulationDetails: null,
+  trailCalulationDetailsLoading: false,
+  trailCalulationDetailsError: null,
 
   fetachGoldLoanAppDetails: async (appId: string) => {
     set({ goldLoanAppDetailsLoading: true });
@@ -1442,6 +1569,54 @@ const useCreditStore = create<ICreditState>((set) => ({
       set({
         otherIncomeError: error.message,
         otherIncomeLoading: false,
+      });
+    }
+  },
+
+  // /mobixCamsCredit/v1/credit/tc/cal
+  sendTrailCalulation: async (data: ITrailCalulation) => {
+    set({ trailCalulationLoading: true });
+    try {
+      const response = await APIAuth.post(
+        `/mobixCamsCredit/v1/credit/tc/cal`,
+        data
+      );
+
+      set({
+        trailCalulation: response.data,
+        trailCalulationLoading: false,
+      });
+
+      return response.data;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        trailCalulationError: error.message,
+        trailCalulationLoading: false,
+      });
+    }
+  },
+
+  // /mobixCamsCredit/v1/credit/tc/getTCDetails
+  fetchTrailCalulation: async (
+    tcNo: string,
+    mode: "T" | "P"
+  ): Promise<ITrailCalulationDetailsResponse | undefined> => {
+    set({ trailCalulationDetailsLoading: true });
+    try {
+      const response = await API.get(
+        `/mobixCamsCredit/v1/credit/tc/getTCDetails/${tcNo}/${mode}`
+      );
+      set({
+        trailCalulationDetails: response.data,
+        trailCalulationDetailsLoading: false,
+      });
+      return response.data;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        trailCalulationDetailsError: error.message,
+        trailCalulationDetailsLoading: false,
       });
     }
   },

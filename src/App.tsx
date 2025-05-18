@@ -153,7 +153,7 @@ const App: React.FC = () => {
                     path="users/*"
                     element={
                       <PrivateRoute allowedRoles={
-                        ["ADMIN", "BHO", "VIEWER"]
+                        ["ADMIN", "BHO", "CRO"]
                       } />}>
                     <Route path="customer" element={<CustomerOnboarding />} />
                     <Route path="customers" element={<Customers />} />
@@ -172,7 +172,7 @@ const App: React.FC = () => {
                     path="loan/*"
                     element={
                       <PrivateRoute allowedRoles={
-                        ["ADMIN", "BHO", "VIEWER"]
+                        ["ADMIN", "BHO", "CRO"]
                       } />}>
                     <Route path="application" element={<LoanApplication />} />
                     {/* <Route path="application/:appId" element={<LoanDashboard />} /> */}

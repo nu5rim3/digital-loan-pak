@@ -142,7 +142,7 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
             icon: <RocketOutlined />,
             label: 'Loan Application',
             key: '6',
-            roles: ["ADMIN", 'BHO'],
+            roles: ["ADMIN", 'BHO', 'CRO'],
             children: [
                 {
                     label: 'Loan Request',
@@ -177,7 +177,7 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
         >
             <div className="flex justify-center items-center py-2 font-bold text-xl">
                 {
-                    collapsed ? <img src={Logo2} alt='digital-me' style={{ width: 60 }} /> : <img src={Logo1} alt='digital-me' style={{ width: 200 }} />
+                    collapsed ? <img src={Logo2} alt='digital-me' style={{ width: 45 }} /> : <img src={Logo1} alt='digital-me' style={{ width: 200 }} />
                 }
             </div>
             <div className='flex justify-end'>

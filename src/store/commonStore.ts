@@ -244,6 +244,44 @@ interface IMarketCheck {
   creditScore: string;
   productCode: string;
 }
+interface IFacilityType {
+  code: string;
+  description: string;
+  status: "A" | "I";
+}
+interface IProductType {
+  prodCode: string;
+  prodCurrency: string;
+  prodName: string;
+  applicableCat: string;
+  prodCat: string;
+  prodCatDesc: string;
+  calMethod: string;
+  calMethodDesc: string;
+  defaultCalMethod: string;
+  rewardFlag: string;
+  rewardType: string | null;
+  rewardDefaultValue: string | null;
+  maxRewardAmt: string | null;
+  rewardRate: string;
+  rewardAddCriteria: string | null;
+  prodFlag1: string;
+  prodFlag2: string;
+  generalInfo: string | null;
+  specialCharges: string | null;
+  tcSubTypes: string | null;
+  appSubTypes: string | null;
+  calMethods: string | null;
+}
+
+interface ISubProductType {
+  prodCode: string;
+  currency: string;
+  subTypeCode: string;
+  subTypeDesc: string;
+  subTypeStatus: string;
+  subTypeDefault: string;
+}
 interface ICommonState {
   operators: IOperator[];
   operatorLoading: boolean;
@@ -389,6 +427,18 @@ interface ICommonState {
   marketCheckLoading: boolean;
   marketCheckError: string | null;
 
+  facilityTypes: IFacilityType[];
+  facilityTypesLoading: boolean;
+  facilityTypesError: string | null;
+
+  productTypes: IProductType[];
+  productTypesLoading: boolean;
+  productTypesError: string | null;
+
+  subProductTypes: ISubProductType[];
+  subProductTypesLoading: boolean;
+  subProductTypesError: string | null;
+
   fetchOperators: () => Promise<void>;
   fetchECIBReport: (cnic: string) => Promise<void>;
   fetchOrganizationType: () => Promise<void>;
@@ -426,6 +476,9 @@ interface ICommonState {
   fetchOwnership: (productCode: string) => Promise<void>;
   fetchCultLoanPurposes: (productCode: string) => Promise<void>;
   fetchMarketCheck: (productCode: string) => Promise<void>;
+  fetchFacilityTypes: () => Promise<void>;
+  fetchProductTypes: (facilityCode: string) => Promise<void>;
+  fetchSubProductTypes: (prodCode: string) => Promise<void>;
 }
 
 type TPersist = (
@@ -595,6 +648,18 @@ const useCommonStore = create<ICommonState>(
       marketCheck: [],
       marketCheckLoading: false,
       marketCheckError: null,
+
+      facilityTypes: [],
+      facilityTypesLoading: false,
+      facilityTypesError: null,
+
+      productTypes: [],
+      productTypesLoading: false,
+      productTypesError: null,
+
+      subProductTypes: [],
+      subProductTypesLoading: false,
+      subProductTypesError: null,
 
       fetchOperators: async () => {
         set({ operatorLoading: true, operatorError: null });
@@ -1167,6 +1232,55 @@ const useCommonStore = create<ICommonState>(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
           set({ marketCheckError: error.message, marketCheckLoading: false });
+        }
+      },
+
+      // /mobixCamsCommon/v1/facility-types
+      fetchFacilityTypes: async () => {
+        set({ facilityTypesLoading: true, facilityTypesError: null });
+        try {
+          const response = await API.get("/mobixCamsCommon/v1/facility-types");
+          set({ facilityTypes: response.data, facilityTypesLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({
+            facilityTypesError: error.message,
+            facilityTypesLoading: false,
+          });
+        }
+      },
+
+      // /mobixCamsLoan/v1/loans/product-all/{id}
+      fetchProductTypes: async (facilityCode: string) => {
+        set({ productTypesLoading: true, productTypesError: null });
+        try {
+          const response = await API.get(
+            `/mobixCamsLoan/v1/loans/product-all/${facilityCode}`
+          );
+          set({ productTypes: response.data, productTypesLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({ productTypesError: error.message, productTypesLoading: false });
+        }
+      },
+
+      // /mobixCamsLoan/v1/loans/sub-product/{id}
+      fetchSubProductTypes: async (prodCode: string) => {
+        set({ subProductTypesLoading: true, subProductTypesError: null });
+        try {
+          const response = await API.get(
+            `/mobixCamsLoan/v1/loans/sub-product/${prodCode}`
+          );
+          set({
+            subProductTypes: response.data,
+            subProductTypesLoading: false,
+          });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({
+            subProductTypesError: error.message,
+            subProductTypesLoading: false,
+          });
         }
       },
     }),
