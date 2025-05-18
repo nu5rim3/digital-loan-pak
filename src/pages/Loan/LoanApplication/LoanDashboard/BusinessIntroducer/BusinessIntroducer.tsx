@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, Form, Input, Select, message } from "antd";
 import { SaveOutlined } from "@ant-design/icons";
 import { API, APIAuth } from "../../../../../services/api";
-import axios from "axios";
 
 type Employee = {
   empNo: string;
@@ -19,12 +18,12 @@ const BusinessIntroducerForm: React.FC = () => {
     const fetchEmployees = async () => {
       setLoading(true);
       try {
-        const res = await 
-        // axios.get(
-        //   "https://pomicroapiuat.lolc.com.pk/mobixCamsCommon/v1/employees"
-        // );
+        const res = await
+          // axios.get(
+          //   "https://pomicroapiuat.lolc.com.pk/mobixCamsCommon/v1/employees"
+          // );
 
-        APIAuth.get('/mobixCamsCommon/v1/employees');
+          APIAuth.get('/mobixCamsCommon/v1/employees');
         setEmployees(res.data || []);
       } catch (err) {
         message.error("Failed to fetch employees");

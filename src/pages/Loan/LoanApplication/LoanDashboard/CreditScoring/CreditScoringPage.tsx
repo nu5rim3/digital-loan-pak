@@ -8,14 +8,12 @@ import {
   Button,
   Collapse,
   message,
-  Row,
-  Col,
   Input,
   Tag,
   InputNumber,
 } from "antd";
 import axios from "axios";
-import { API, APIAuth } from "../../../../../services/api";
+import { APIAuth } from "../../../../../services/api";
 
 const { Panel } = Collapse;
 
@@ -184,7 +182,7 @@ const CreditScoringPage: React.FC<{
   return (
     <Card title="Credit Scoring">
       <Form layout="vertical" form={form} onFinish={onFinish}>
-      <div className="grid grid-cols-3 gap-x-5 gap-y-2">
+        <div className="grid grid-cols-3 gap-x-5 gap-y-2">
           {[
             {
               label: "Business Ownership",
@@ -228,31 +226,31 @@ const CreditScoringPage: React.FC<{
               data: dropdowns.residence,
               field: "description",
             },
-          ].map((item, i) => (
-              <Form.Item
-                label={item.label}
-                name={item.name}
-                rules={[{ required: true }]}
-              >
-                <Select
-                  options={item.data?.map((x: any) => ({
-                    label: x[item.field],
-                    value: x.code,
-                  }))}
-                />
-              </Form.Item>
+          ].map((item) => (
+            <Form.Item
+              label={item.label}
+              name={item.name}
+              rules={[{ required: true }]}
+            >
+              <Select
+                options={item.data?.map((x: any) => ({
+                  label: x[item.field],
+                  value: x.code,
+                }))}
+              />
+            </Form.Item>
           ))}
-      </div>
+        </div>
         {/* <Row gutter={16}> */}
         {/* </Row> */}
         <Button type="primary" htmlType="submit" loading={loading} block>
-        Get Credit Score
+          Get Credit Score
         </Button>
       </Form>
       {result && (
         <Card className="mt-6" title="Scoring Result">
-                    <Form layout="vertical">
-                    <div className="grid grid-cols-2  gap-x-5 gap-y-0">
+          <Form layout="vertical">
+            <div className="grid grid-cols-2  gap-x-5 gap-y-0">
 
               <Form.Item label="Total Score">
                 <Input value={result.totalScore} disabled />
@@ -285,49 +283,49 @@ const CreditScoringPage: React.FC<{
                   {result.eligibility}
                 </Tag>
               </Form.Item>
-                    </div>
-                    </Form>
+            </div>
+          </Form>
 
           <Collapse className="mt-4">
             <Panel header="Details of Customer" key="1">
-                <Form layout="vertical">
+              <Form layout="vertical">
                 <div className="grid grid-cols-2 gap-x-5 gap-y-1">
-                    
-                {customerDetailsFields.map((field) => (
+
+                  {customerDetailsFields.map((field) => (
                     <Form.Item label={field.label}>
                       <Input
                         value={result.customerDetails[field.key]}
                         disabled
                       />
                     </Form.Item>
-                ))}
+                  ))}
                 </div>
-                </Form>
+              </Form>
             </Panel>
             <Panel header="Details of Customer's Business" key="2">
-            <Form layout="vertical">
-            <div className="grid grid-cols-2 gap-x-5 gap-y-1">
-                {businessDetailsFields.map((field) => (
+              <Form layout="vertical">
+                <div className="grid grid-cols-2 gap-x-5 gap-y-1">
+                  {businessDetailsFields.map((field) => (
                     <Form.Item label={field.label}>
                       <Input
                         value={result.businessDetails[field.key]}
                         disabled
                       />
                     </Form.Item>
-                ))}
+                  ))}
                 </div></Form>
             </Panel>
             <Panel header="Initial Details of Customer" key="3">
-            <Form layout="vertical">
-            <div className="grid grid-cols-2 gap-x-5 gap-y-1">
-                {initialCustomerDetailsFields.map((field) => (
+              <Form layout="vertical">
+                <div className="grid grid-cols-2 gap-x-5 gap-y-1">
+                  {initialCustomerDetailsFields.map((field) => (
                     <Form.Item label={field.label}>
                       <Input
                         value={result.initialCustomerDetails[field.key]}
                         disabled
                       />
                     </Form.Item>
-                ))}
+                  ))}
                 </div></Form>
             </Panel>
           </Collapse>

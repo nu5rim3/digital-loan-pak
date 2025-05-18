@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Table, Input, Button, Select, Tag, Card, message, Modal } from 'antd';
-import { SearchOutlined, ReloadOutlined, PlusOutlined, EditOutlined, StopOutlined } from '@ant-design/icons';
-import axios from 'axios';
+import { SearchOutlined, ReloadOutlined, PlusOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import CreateModal from './CreateModal';
 import { APIAuth } from '../../../services/api';
@@ -154,23 +153,23 @@ const BusinessIntroducerPage: React.FC = () => {
     //   ),
     // },
     {
-        title: 'Action',
-        render: (_: any, record: any) => (
-          <>
-            {record.status === 'I' ? (
-              <Link onClick={() => confirmAction(record, 'A')}>Activate</Link>
-            ) : (
-              <>
-                <Link onClick={() => { setEditRecord(record); setShowCreateModal(true); }}>Update</Link>
-                <span style={{ margin: '0 8px' }}>|</span>
-                <Link onClick={() => confirmAction(record, 'I')} type="danger">
-                  Deactivate
-                </Link>
-              </>
-            )}
-          </>
-        ),
-      }
+      title: 'Action',
+      render: (_: any, record: any) => (
+        <>
+          {record.status === 'I' ? (
+            <Link onClick={() => confirmAction(record, 'A')}>Activate</Link>
+          ) : (
+            <>
+              <Link onClick={() => { setEditRecord(record); setShowCreateModal(true); }}>Update</Link>
+              <span style={{ margin: '0 8px' }}>|</span>
+              <Link onClick={() => confirmAction(record, 'I')} type="danger">
+                Deactivate
+              </Link>
+            </>
+          )}
+        </>
+      ),
+    }
   ];
 
   return (
