@@ -366,11 +366,11 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                                             render={({ field }) => <Input {...field} placeholder="Enter Customer Code" />}
                                         />
                                     </Form.Item>
-                                    <Form.Item label="Group Reference Number" validateStatus={errors.stkGrpRefNo ? "error" : ""} help={errors.stkGrpRefNo?.message}>
+                                    <Form.Item label="Group/Reference Number" validateStatus={errors.stkGrpRefNo ? "error" : ""} help={errors.stkGrpRefNo?.message}>
                                         <Controller
                                             name="stkGrpRefNo"
                                             control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Group Reference Number" />}
+                                            render={({ field }) => <Input {...field} placeholder="Enter Group/Reference Number" />}
                                         />
                                     </Form.Item>
                                     <Form.Item label="Status" validateStatus={errors.status ? "error" : ""} help={errors.status?.message} hidden>

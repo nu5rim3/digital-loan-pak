@@ -37,7 +37,7 @@ const schema = yup.object().shape({
     stkMaritialComment: yup.string().required("Marital Comment is required"),
     stkTitle: yup.string().required("Title is required"),
     stkFatherOrHusName: yup.string().required("Father or Husband Name is required"),
-    stkEduLevel: yup.string().required("Education Level is required"),
+    stkEduLevel: yup.string().required("Education Qualification is required"),
     stkPhysDisability: yup.string().required("Physical Disability is required"),
     relationship: yup.string().required("Relationship is required"),
     headOfFamily: yup.string().required("Head of Family is required"),
@@ -329,7 +329,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                         }
                                     />
                                 </Form.Item>
-                                <Form.Item label="Education Level" validateStatus={errors.stkEduLevel ? "error" : ""} help={errors.stkEduLevel?.message} required>
+                                <Form.Item label="Education Qualification" validateStatus={errors.stkEduLevel ? "error" : ""} help={errors.stkEduLevel?.message} required>
                                     <Controller
                                         name="stkEduLevel"
                                         control={control}
@@ -341,7 +341,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                                     label: item.description,
                                                     value: item.code
                                                 }))}
-                                                placeholder="Select Education Level"
+                                                placeholder="Select Education Qualification"
                                                 loading={educationLevelLoading}
                                             />
                                         }
@@ -404,11 +404,11 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                         render={({ field }) => <Input {...field} placeholder="Enter Customer Code" />}
                                     />
                                 </Form.Item>
-                                <Form.Item label="Group Reference Number" validateStatus={errors.stkGrpRefNo ? "error" : ""} help={errors.stkGrpRefNo?.message}>
+                                <Form.Item label="Group/Reference Number" validateStatus={errors.stkGrpRefNo ? "error" : ""} help={errors.stkGrpRefNo?.message}>
                                     <Controller
                                         name="stkGrpRefNo"
                                         control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Group Reference Number" />}
+                                        render={({ field }) => <Input {...field} placeholder="Enter Group/Reference Number" />}
                                     />
                                 </Form.Item>
                                 <Form.Item label="Status" validateStatus={errors.status ? "error" : ""} help={errors.status?.message} hidden>

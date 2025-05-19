@@ -114,7 +114,7 @@ const BankDetails: React.FC<IBankDetails> = ({ stkId }) => {
                 footer={true}
                 open={isModalOpen}
                 onClose={closeModal}
-                title={`${mode === 'create' ? 'Create' : 'Update'} Other Details`}
+                title={`${mode === 'create' ? 'Create' : 'Update'} Post Dated Cheque Details`}
                 size="medium"
             >
                 <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>

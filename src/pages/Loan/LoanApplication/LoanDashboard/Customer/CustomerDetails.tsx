@@ -31,7 +31,7 @@ const schema = yup.object().shape({
     stkMaritialComment: yup.string().required("Marital Comment is required"),
     stkTitle: yup.string().required("Title is required"),
     stkFatherOrHusName: yup.string().required("Father or Husband Name is required"),
-    stkEduLevel: yup.string().required("Education Level is required"),
+    stkEduLevel: yup.string().required("Education Qualification is required"),
     stkPhysDisability: yup.string().required("Physical Disability is required"),
     headOfFamily: yup.string().required("Head of Family is required"),
     healthCondition: yup.string().required("Health Condition is required"),
@@ -280,7 +280,7 @@ const CustomerDetails: React.FC = () => {
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="Education Level" validateStatus={errors.stkEduLevel ? "error" : ""} help={errors.stkEduLevel?.message} required>
+                        <Form.Item label="Education Qualification" validateStatus={errors.stkEduLevel ? "error" : ""} help={errors.stkEduLevel?.message} required>
                             <Controller
                                 name="stkEduLevel"
                                 control={control}
@@ -292,7 +292,7 @@ const CustomerDetails: React.FC = () => {
                                             label: formatName(item.description),
                                             value: item.code
                                         }))}
-                                        placeholder="Select Education Level"
+                                        placeholder="Select Education Qualification"
                                         loading={educationLevelLoading}
                                     />
                                 }
@@ -332,7 +332,7 @@ const CustomerDetails: React.FC = () => {
                                 render={({ field }) => <Input {...field} placeholder="Enter Father or Husband Name" />}
                             />
                         </Form.Item>
-                        <Form.Item label="Number of Dependents" validateStatus={errors.stkNumOfDependents ? "error" : ""} help={errors.stkNumOfDependents?.message} hidden>
+                        <Form.Item label="Number of Dependents" validateStatus={errors.stkNumOfDependents ? "error" : ""} help={errors.stkNumOfDependents?.message}>
                             <Controller
                                 name="stkNumOfDependents"
                                 control={control}
@@ -353,11 +353,11 @@ const CustomerDetails: React.FC = () => {
                                 render={({ field }) => <Input {...field} placeholder="Enter Customer Code" value={field.value || ''} />}
                             />
                         </Form.Item>
-                        <Form.Item label="Group Reference Number" validateStatus={errors.stkGrpRefNo ? "error" : ""} help={errors.stkGrpRefNo?.message}>
+                        <Form.Item label="Group/Reference Number" validateStatus={errors.stkGrpRefNo ? "error" : ""} help={errors.stkGrpRefNo?.message}>
                             <Controller
                                 name="stkGrpRefNo"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Group Reference Number" value={field.value || ''} />}
+                                render={({ field }) => <Input {...field} placeholder="Enter Group/Reference Number" value={field.value || ''} />}
                             />
                         </Form.Item>
                         <Form.Item label="Head of Family" validateStatus={errors.headOfFamily ? "error" : ""} help={errors.headOfFamily?.message} required>

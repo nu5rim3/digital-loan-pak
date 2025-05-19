@@ -20,9 +20,9 @@ const schema = yup.object().shape({
     prefLang: yup.string().required('Preferred Language is required'),
     sector: yup.string().required('Sector is required'),
     subSector: yup.string().required('Sub Sector is required'),
-    savingsReq: yup.string().required('Savings Required is required'),
+    savingsReq: yup.string().required('Saving Account is required'),
     whtDec: yup.string().required('WHT Declaration is required'),
-    poliExpo: yup.string().required('Policy Exposure is required')
+    poliExpo: yup.string().required('Politically Exposed is required')
 });
 
 
@@ -204,40 +204,40 @@ const OtherDetails: React.FC<IOtherDetails> = ({ stkId }) => {
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="Savings Required" validateStatus={errors.savingsReq ? 'error' : ''} help={errors.savingsReq?.message} required>
+                        <Form.Item label="Savings Account" validateStatus={errors.savingsReq ? 'error' : ''} help={errors.savingsReq?.message} required>
                             <Controller
                                 name="savingsReq"
                                 control={control}
                                 render={({ field }) =>
                                     <Select
                                         {...field}
-                                        placeholder="Savings Required"
+                                        placeholder="Savings Account"
                                         options={[{ label: 'Yes', value: 'Y' }, { label: 'No', value: 'N' }]}
                                     />
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="Policy Exposure" validateStatus={errors.poliExpo ? 'error' : ''} help={errors.poliExpo?.message} required>
+                        <Form.Item label="Politically Exposed Person" validateStatus={errors.poliExpo ? 'error' : ''} help={errors.poliExpo?.message} required>
                             <Controller
                                 name="poliExpo"
                                 control={control}
                                 render={({ field }) =>
                                     <Select
                                         {...field}
-                                        placeholder="Policy Exposure"
+                                        placeholder="Politically Exposed Person"
                                         options={[{ label: 'Yes', value: 'Y' }, { label: 'No', value: 'N' }]}
                                     />
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="How did you know" validateStatus={errors.howDidYouKnow ? 'error' : ''} help={errors.howDidYouKnow?.message} required>
+                        <Form.Item label="How Did You Know About Us" validateStatus={errors.howDidYouKnow ? 'error' : ''} help={errors.howDidYouKnow?.message} required>
                             <Controller
                                 name="howDidYouKnow"
                                 control={control}
                                 render={({ field }) =>
                                     <Select
                                         {...field}
-                                        placeholder="How did you know"
+                                        placeholder="How Did You Know About Us"
                                         options={informationSources.map((info) => ({ label: formatSentence(info.description), value: info.code }))}
                                         loading={informationSourceLoading}
                                     />
@@ -281,8 +281,8 @@ const DetailsCard: React.FC<{ detail: IOtherInfo; onEdit: () => void; dataArray:
             <Descriptions.Item label="Occupation">{formatSentence(dataArray[1].filter((item: any) => item.code === detail.occupation)[0]?.description) ?? '-'}</Descriptions.Item>
             <Descriptions.Item label="Sector">{formatSentence(dataArray[2].filter((item: any) => item.code === detail.sector)[0]?.description) ?? '-'}</Descriptions.Item>
             <Descriptions.Item label="Sub Sector">{formatSentence(dataArray[3].filter((item: any) => item.code === detail.subSector)[0]?.description) ?? '-'}</Descriptions.Item>
-            <Descriptions.Item label="Savings Required">{detail.savingsReq === 'YES' ? 'Yes' : 'No'}</Descriptions.Item>
-            <Descriptions.Item label="Policy Exposure">{detail.poliExpo === 'Y' ? 'Yes' : 'No'}</Descriptions.Item>
+            <Descriptions.Item label="Savings Account">{detail.savingsReq === 'YES' ? 'Yes' : 'No'}</Descriptions.Item>
+            <Descriptions.Item label="Politically Exposed Person">{detail.poliExpo === 'Y' ? 'Yes' : 'No'}</Descriptions.Item>
             <Descriptions.Item label="How did you know">{formatSentence(dataArray[4].filter((item: any) => item.code === detail.howDidYouKnow)[0]?.description) ?? '-'}</Descriptions.Item>
             <Descriptions.Item label="WHT Declaration">{detail.whtDec ?? '-'}</Descriptions.Item>
 
