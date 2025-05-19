@@ -72,6 +72,7 @@ export function specialChargesByCode(code: string): string {
     P1: "Percentage without Max/Min",
     S: "Amount with Selection",
     S1: "Percentage with Selection",
+    M: "Amount with Max/Min",
   };
   return specialCharges[code] || "Unknown Charge";
 }

@@ -140,7 +140,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
         return (
             <>
                 <div className='pb-5'>
-                    <TrialCalculation />
+                    <TrialCalculation cliIdx={customers[0].idx ?? ''} />
                 </div>
                 <Card title={'Customer Details'}>
                     <Form layout="vertical">

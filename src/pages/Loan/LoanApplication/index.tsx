@@ -8,6 +8,7 @@ import useLoanStore from '../../../store/loanStore'
 import { mainURL } from '../../../App'
 import useCustomerStore from '../../../store/customerStore'
 import { PlusOutlined } from '@ant-design/icons';
+import useUserStore from '../../../store/userStore'
 
 const { Content } = Layout
 
@@ -15,8 +16,9 @@ const { Content } = Layout
 const LoanApplication: React.FC = () => {
 
     const navigate = useNavigate();
-    const { loan, loading, addLoan, fetchLoans } = useLoanStore();
+    const { loading, addLoan, fetchLoans } = useLoanStore();
     const { resetCustomer } = useCustomerStore()
+    const { user } = useUserStore()
 
     const columns = [
         {
@@ -87,7 +89,7 @@ const LoanApplication: React.FC = () => {
             loanType: 'Gold Loan',
             loanAmount: '100',
             status: 'C',
-            cidx: 'CLI0000000000003',
+            clidx: 'CLI0000000000003',
             createdDate: '2023-10-01'
         },
         {
@@ -97,7 +99,7 @@ const LoanApplication: React.FC = () => {
             loanType: 'Gold Loan',
             loanAmount: '100000',
             status: 'P',
-            cidx: 'CLI0000000000003',
+            clidx: 'CLI0000000000003',
             createdDate: '2023-10-01'
 
         },
@@ -108,7 +110,7 @@ const LoanApplication: React.FC = () => {
             loanType: 'Gold Loan',
             loanAmount: '100000',
             status: 'F',
-            cidx: 'CLI0000000103833',
+            clidx: 'CLI0000000103833',
             createdDate: '2023-10-01'
         },
         {
@@ -118,7 +120,7 @@ const LoanApplication: React.FC = () => {
             loanType: 'Gold Loan',
             loanAmount: '100000',
             status: 'C',
-            cidx: 'CLI0000000000003',
+            clidx: 'CLI0000000000003',
             createdDate: '2023-10-01'
         },
         {
@@ -128,7 +130,7 @@ const LoanApplication: React.FC = () => {
             loanType: 'Gold Loan',
             loanAmount: '1000',
             status: 'C',
-            cidx: 'CLI0000000000003',
+            clidx: 'CLI0000000000003',
             createdDate: '2023-10-01'
         },
         {
@@ -138,7 +140,7 @@ const LoanApplication: React.FC = () => {
             loanType: 'Gold Loan',
             loanAmount: '1054000',
             status: 'C',
-            cidx: 'CLI0000000103951',
+            clidx: 'CLI0000000103951',
             createdDate: '2023-10-01'
         },
         {
@@ -148,7 +150,7 @@ const LoanApplication: React.FC = () => {
             loanType: 'Gold Loan',
             loanAmount: '134000',
             status: 'F',
-            cidx: 'CLI0000000000003',
+            clidx: 'CLI0000000000003',
             createdDate: '2023-10-01'
         },
         {
@@ -158,14 +160,13 @@ const LoanApplication: React.FC = () => {
             loanType: 'Gold Loan',
             loanAmount: '6100000',
             status: 'C',
-            cidx: 'CLI0000000000003',
+            clidx: 'CLI0000000000003',
             createdDate: '2023-10-01'
         }
     ];
 
     const onChange = (key: string) => {
-        console.log('key', key);
-        fetchLoans(key, "Heshan.Pe");
+        fetchLoans(key, user?.idx ?? '');
     }
 
     const newLoanHandler = async () => {
@@ -180,8 +181,6 @@ const LoanApplication: React.FC = () => {
             resetCustomer();
         })
     };
-
-    console.log('loan', loan);
 
     return (
         <Content>

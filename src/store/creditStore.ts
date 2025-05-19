@@ -610,6 +610,13 @@ interface ICreditState {
     tcNo: string,
     mode: "T" | "P"
   ) => Promise<ITrailCalulationDetailsResponse | undefined>;
+
+  resetTrailCalculationDetails: () => Promise<void>;
+  saveTrailCalulation: (
+    appId: string,
+    cliId: string,
+    data: ITrailCalulation
+  ) => Promise<void>;
 }
 
 const useCreditStore = create<ICreditState>((set) => ({
@@ -1604,8 +1611,9 @@ const useCreditStore = create<ICreditState>((set) => ({
   ): Promise<ITrailCalulationDetailsResponse | undefined> => {
     set({ trailCalulationDetailsLoading: true });
     try {
-      const response = await API.get(
-        `/mobixCamsCredit/v1/credit/tc/getTCDetails/${tcNo}/${mode}`
+      const response = await APIAuth.post(
+        `/mobixCamsCredit/v1/credit/tc/getTCDetails`,
+        { tcNo, mode }
       );
       set({
         trailCalulationDetails: response.data,
@@ -1617,6 +1625,36 @@ const useCreditStore = create<ICreditState>((set) => ({
       set({
         trailCalulationDetailsError: error.message,
         trailCalulationDetailsLoading: false,
+      });
+    }
+  },
+
+  resetTrailCalculationDetails: async () =>
+    set(() => ({ trailCalulationDetails: null })),
+
+  // mobixCamsCredit/v1/credit/tc/{leadId}/cliIdx/{cliIdx}
+  saveTrailCalulation: async (
+    appId: string,
+    cliId: string,
+    data: ITrailCalulation
+  ) => {
+    set({ trailCalulationLoading: true });
+    try {
+      await APIAuth.post(
+        `/mobixCamsCredit/v1/credit/tc/${appId}/cliIdx/${cliId}`,
+        data
+      );
+      set(() => ({
+        trailCalulationLoading: false,
+      }));
+      notification.success({
+        message: "Trail Calculation Saved Successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        trailCalulationError: error.message,
+        trailCalulationLoading: false,
       });
     }
   },

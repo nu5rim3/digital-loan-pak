@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // ✅ FILE 1: BusinessIntroducerPage.tsx
 
 import React, { useEffect, useState } from 'react';

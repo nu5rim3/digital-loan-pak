@@ -4,13 +4,14 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form'
 
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { CalculatorOutlined, UndoOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { CalculatorOutlined, UndoOutlined, PlusOutlined, DeleteOutlined, SaveOutlined } from '@ant-design/icons';
 import useCommonStore from '../../../store/commonStore'
 import { formatCurrency, formatSentence } from '../../../utils/formatterFunctions'
 import useLoanStore from '../../../store/loanStore'
 import useUserStore from '../../../store/userStore'
 import { specialChargesByCode } from '../../../utils/loanStats'
 import useCreditStore, { ITrailCalulationResponse } from '../../../store/creditStore'
+import { useParams } from 'react-router-dom'
 
 const schema = yup.object().shape({
     productFacility: yup.string().required('Type of Facility is required'),
@@ -29,9 +30,9 @@ const schema = yup.object().shape({
         .min(0, 'Terms must be greater than or equal to 0'),
     markup: yup
         .number()
-        .typeError('Markup must be a number')
-        .required('Markup is required')
-        .min(0, 'Markup must be greater than or equal to 0'),
+        .typeError('Markup rate must be a number')
+        .required('Markup rate is required')
+        .min(0, 'Markup rate must be greater than or equal to 0'),
     irr: yup.string(),
     calculationMethod: yup.string().required('Calculation Method is required'),
     paymentFrequency: yup.string().when('calculationMethod', {
@@ -88,7 +89,16 @@ const schema = yup.object().shape({
     ),
 });
 
-const TrialCalculation: React.FC = () => {
+
+interface ISaveTrialCalculation {
+    cliIdx: string;
+}
+
+const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx }) => {
+    const { appId } = useParams()
+    const [isSaveShow, setIsSaveShow] = useState(false);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [calculationPayload, setCalculationPayload] = useState<any | null>(null);
     const [validationSchema, setValidationSchema] = useState(schema);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selectedProductType, setSelectedProductType] = useState<any | null>(null);
@@ -134,11 +144,10 @@ const TrialCalculation: React.FC = () => {
 
     const { productDetails, productDetailsLoading, fetchProductDetails, resetProductDetails } = useLoanStore()
     const { user } = useUserStore()
-    const { trailCalulationDetails, trailCalulationDetailsLoading, trailCalulation, trailCalulationLoading, sendTrailCalulation, fetchTrailCalulation } = useCreditStore()
+    const { trailCalulationDetails, trailCalulationDetailsLoading, trailCalulationLoading, sendTrailCalulation, fetchTrailCalulation, resetTrailCalculationDetails, saveTrailCalulation } = useCreditStore()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = (data: any) => {
-        console.log('form data: ', data);
 
         const __data = {
             "pFacilityType": data.productFacility ?? '', // facility type code
@@ -151,7 +160,7 @@ const TrialCalculation: React.FC = () => {
             "pTrhdTerm": data.trems ?? '', // // term
             "pTrhdNoPre": "0",  // "0"
             "pTrhdNoDw": "0",
-            "pTrhdTr": "54",
+            "pTrhdTr": data.markup ?? '0', //makeup rate
             "pTrhdLocCost": data.loanAmount ?? '0', // loan amount
             "pTrhdStmYn": "N", // "N"
             "pTrhdStmPer1": "0",
@@ -182,7 +191,7 @@ const TrialCalculation: React.FC = () => {
             "pInsuOption": "",
             "pTrhdStmPer": '',
             "pInsuAddCrit": "",
-            "pTrhdColMeth": calculationMethod ?? '', // payment frequency code
+            "pTrhdColMeth": calculationMethod === 'B' ? data.paymentFrequency : '', // payment frequency code
             "pStru": calculationMethod === 'S' ? data.structuredPayment : [], // TODO: stucture payment
             "pTrhdDep": data.leaseKeyMoney ?? '', // "" Lease Key Money
             "pTrtx": productDetails?.specialCharges.map((item) => ({
@@ -194,21 +203,21 @@ const TrialCalculation: React.FC = () => {
             })) ?? [],
         }
 
-        console.log('post data: ', __data);
         sendTrailCalulation(__data).then((res: ITrailCalulationResponse) => {
             if (res.code === '000') {
                 notification.success({
                     message: 'Success',
                     description: 'Trail Calculation Success',
                 })
-
-                fetchTrailCalulation(trailCalulation?.object.tcNo ?? '', 'T')
-
+                setCalculationPayload(__data ?? null)
+                fetchTrailCalulation(res?.object.tcNo ?? '', 'T')
+                setIsSaveShow(true)
             } else if (res.code === '999') {
                 notification.error({
                     message: res.object?.message,
                     description: res.object?.detail,
                 })
+                setIsSaveShow(false)
             }
 
         }).catch((err) => {
@@ -216,13 +225,13 @@ const TrialCalculation: React.FC = () => {
                 message: err.message ?? 'Something went wrong',
             })
         })
-
-
     }
 
     const onRestHandle = () => {
         reset();
         resetProductDetails()
+        resetTrailCalculationDetails()
+        setIsSaveShow(false)
     }
 
     useEffect(() => {
@@ -297,10 +306,10 @@ const TrialCalculation: React.FC = () => {
                         .default(Number(productDetails?.generalInfo.defaultTerm)),
                     markup: yup
                         .number()
-                        .typeError('Markup must be a number')
-                        .required('Markup is required')
-                        .min(Number(productDetails?.generalInfo.minRate), `Markup must be at least ${productDetails?.generalInfo.minRate}`)
-                        .max(Number(productDetails?.generalInfo.maxRate), `Markup must be at most ${productDetails?.generalInfo.maxRate}`)
+                        .typeError('Markup rate must be a number')
+                        .required('Markup rate is required')
+                        .min(Number(productDetails?.generalInfo.minRate), `Markup rate must be at least ${productDetails?.generalInfo.minRate}`)
+                        .max(Number(productDetails?.generalInfo.maxRate), `Markup rate must be at most ${productDetails?.generalInfo.maxRate}`)
                         .default(Number(productDetails?.generalInfo.defaultRate)),
 
                 }),
@@ -311,6 +320,10 @@ const TrialCalculation: React.FC = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [productDetails, selectedSubProductType, selectedProductType]);
+
+    const saveCalculationHandle = () => {
+        saveTrailCalulation(appId ?? '', cliIdx, calculationPayload)
+    }
 
     return (
         <div>
@@ -426,12 +439,12 @@ const TrialCalculation: React.FC = () => {
                             />
                         </Form.Item>
 
-                        <Form.Item label={'Interest Rate'} validateStatus={errors.markup ? "error" : ""} help={errors.markup?.message} required>
+                        <Form.Item label={'Markup Rate'} validateStatus={errors.markup ? "error" : ""} help={errors.markup?.message} required>
                             <Controller
                                 name="markup"
                                 control={control}
                                 render={({ field }) => (
-                                    <Input {...field} placeholder="Enter Interest Rate" />
+                                    <Input {...field} placeholder="Enter Markup Rate" />
                                 )}
                             />
                         </Form.Item>
@@ -743,9 +756,13 @@ const TrialCalculation: React.FC = () => {
                                 {
                                     productDetails?.specialCharges.map((item, index) => (
                                         <Card key={index} size='small' title={`${specialChargesByCode(item?.prtbCalMetod)}`} extra={
-                                            <Checkbox checked={item?.prtbMndFlg === '1'} disabled={item?.prtbMndFlg === '1'} onChange={() => {
-                                                console.log('checked', item?.prtbCalMetod)
-                                            }} />
+                                            <Checkbox
+                                                checked={item?.prtbMndFlg === '1'}
+                                                disabled={item?.prtbMndFlg === '1'}
+                                                onChange={() => {
+                                                    console.log('checked', item?.prtbCalMetod)
+                                                }}
+                                            />
                                         }>
                                             <Descriptions column={1} key={index}>
                                                 <Descriptions.Item label="Method">{specialChargesByCode(item?.prtbCalMetod)}</Descriptions.Item>
@@ -769,32 +786,41 @@ const TrialCalculation: React.FC = () => {
                             }}
                             hidden={trailCalulationDetails === null}
                         >
-
-                            <Card size='small' title={'Installment Details'} hidden={trailCalulationDetails?.object?.facilityDetails === undefined}>
-                                <Descriptions column={3}>
+                            <div className='grid grid-cols-2 gap-3'>
+                                <Card size='small' title={'Installment Details'} className='mb-3' hidden={trailCalulationDetails?.object?.facilityDetails === undefined}>
                                     {
                                         trailCalulationDetails?.object?.facilityDetails.map((item, index) => (
-                                            <div key={index}>
-                                                <Descriptions.Item label={`Sequence`}>{item.seq}</Descriptions.Item>
+                                            <Descriptions column={3} key={index} className='mb-2'>
+                                                <Descriptions.Item label="Sequence">{item.seq}</Descriptions.Item>
                                                 <Descriptions.Item label={`Trems`}>{item.term}</Descriptions.Item>
-                                                <Descriptions.Item label={`Installment`}>
-                                                    <Tag color='red'><b>{formatCurrency(Number(item.instalment ?? 0))}</b></Tag>
+                                                <Descriptions.Item label={`Installment Amount`}>
+                                                    <Tag color='green'><b>{formatCurrency(Number(item.instalment ?? 0))}</b></Tag>
                                                 </Descriptions.Item>
-
-                                            </div>
+                                            </Descriptions>
                                         ))
                                     }
+                                </Card>
+
+                                <Card size='small' title={'Applied Charges Details'} className='mb-3' hidden={trailCalulationDetails?.object?.facilityDetails === undefined}>
+                                    {
+                                        trailCalulationDetails?.object?.trtx.map((item, index) => (
+                                            <Descriptions column={2} key={index}>
+                                                <Descriptions.Item label="Method">{specialChargesByCode(item?.trtxTrx)}</Descriptions.Item>
+                                                <Descriptions.Item label="Charge Amount"><Tag color='green'><b>{formatCurrency(Number(item?.trtxAmt ?? 0))}</b></Tag></Descriptions.Item>
+                                            </Descriptions>
+                                        ))
+                                    }
+                                </Card>
+                            </div>
+                            <Card size='small' title={'Loan Calculation Details'} className='mb-3'>
+                                <Descriptions column={4}>
+                                    <Descriptions.Item label="TC Number">{trailCalulationDetails?.object.tcNo ?? '-'}</Descriptions.Item>
+                                    <Descriptions.Item label="Loan Amount"><Tag color='green'><b>{formatCurrency(Number(trailCalulationDetails?.object.loanAmount ?? 0))}</b></Tag></Descriptions.Item>
+                                    <Descriptions.Item label="Down Payment Amount"><Tag color='green'><b>{formatCurrency(Number(trailCalulationDetails?.object.downPayment ?? 0))}</b></Tag></Descriptions.Item>
+                                    <Descriptions.Item label="Total Receivable"><Tag color='green'><b>{formatCurrency(Number(trailCalulationDetails?.object.totalReceivable ?? 0))}</b></Tag></Descriptions.Item>
                                 </Descriptions>
+
                             </Card>
-                            <Descriptions column={4}>
-                                <Descriptions.Item label="Term">{'-'}</Descriptions.Item>
-                                <Descriptions.Item label="TC Number">{trailCalulationDetails?.object.tcNo ?? '-'}</Descriptions.Item>
-                                <Descriptions.Item label="Loan Amount"><Tag color='red'>{formatCurrency(Number(trailCalulationDetails?.object.loanAmount ?? 0))}</Tag></Descriptions.Item>
-                                <Descriptions.Item label="Down Payment Amount"><Tag color='red'><b>{formatCurrency(Number(trailCalulationDetails?.object.downPayment ?? 0))}</b></Tag></Descriptions.Item>
-                                <Descriptions.Item label="Total Receivable"><Tag color='red'><b>{formatCurrency(Number(trailCalulationDetails?.object.totalReceivable ?? 0))}</b></Tag></Descriptions.Item>
-                            </Descriptions>
-
-
                         </Card>
                     </div>
 
@@ -802,8 +828,13 @@ const TrialCalculation: React.FC = () => {
 
                     </div>
                     <div>
-                        <Button type="primary" htmlType="submit" className='mr-2' icon={<CalculatorOutlined />} loading={trailCalulationLoading || trailCalulationDetailsLoading}>
-                            Calculate
+                        <Button type="primary" className='mr-2' icon={<SaveOutlined />} loading={trailCalulationLoading} onClick={
+                            saveCalculationHandle
+                        } hidden={!isSaveShow}>
+                            Save Calculation
+                        </Button>
+                        <Button type="primary" htmlType="submit" className='mr-2' icon={<CalculatorOutlined />} loading={trailCalulationLoading || trailCalulationDetailsLoading} hidden={isSaveShow}>
+                            Trail Calculate
                         </Button>
                         <Button type="default" onClick={onRestHandle} className='mr-2' danger icon={<UndoOutlined />}>
                             Reset
