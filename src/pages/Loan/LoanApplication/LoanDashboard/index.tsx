@@ -296,18 +296,6 @@ const LoanDaashboard: React.FC = () => {
             "enabled": null,
             "status": "A"
         },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2024-07-11T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 15,
-            "section": "collateral-details",
-            "isMandatory": "0",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
     ]
 
     const items: CollapseProps['items'] = dummyLoanStatus && dummyLoanStatus.map((rule) => ({ //loanStatus
