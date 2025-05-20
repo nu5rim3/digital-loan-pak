@@ -1,14 +1,14 @@
 import React from 'react'
-import { Card, Divider, Layout, Tag } from 'antd'
+import { Button, Card, Divider, Layout, Tag, Tabs } from 'antd'
 import SearchBar from '../../../components/common/searchBar/SearchBar'
 import PaginatedTable from '../../../components/common/tables/PaginatedTable'
-// import SideDrawer from '../../../components/common/drawer/Drawer'
-// import CustomerOnboarding from './CustomerOnboarding'
 import { formatCurrency } from '../../../utils/formatterFunctions'
 import { useNavigate } from 'react-router-dom'
 import useLoanStore from '../../../store/loanStore'
 import { mainURL } from '../../../App'
 import useCustomerStore from '../../../store/customerStore'
+import { PlusOutlined } from '@ant-design/icons';
+import useUserStore from '../../../store/userStore'
 
 const { Content } = Layout
 
@@ -16,8 +16,9 @@ const { Content } = Layout
 const LoanApplication: React.FC = () => {
 
     const navigate = useNavigate();
-    const { loading, addLoan } = useLoanStore();
+    const { loading, addLoan, fetchLoans } = useLoanStore();
     const { resetCustomer } = useCustomerStore()
+    const { user } = useUserStore()
 
     const columns = [
         {
@@ -65,6 +66,11 @@ const LoanApplication: React.FC = () => {
             },
         },
         {
+            title: 'Created Date',
+            dataIndex: 'createdDate',
+            key: 'createdDate',
+        },
+        {
             title: 'Action',
             key: 'action',
             align: 'right',
@@ -83,7 +89,8 @@ const LoanApplication: React.FC = () => {
             loanType: 'Gold Loan',
             loanAmount: '100',
             status: 'C',
-            cidx: 'CLI0000000000003'
+            clidx: 'CLI0000000000003',
+            createdDate: '2023-10-01'
         },
         {
             key: '2',
@@ -92,16 +99,19 @@ const LoanApplication: React.FC = () => {
             loanType: 'Gold Loan',
             loanAmount: '100000',
             status: 'P',
-            cidx: 'CLI0000000000003'
+            clidx: 'CLI0000000000003',
+            createdDate: '2023-10-01'
+
         },
         {
             key: '3',
-            applicationId: "APP0000000000001",
+            applicationId: "APP0000000066623",
             cusName: 'Shabira',
             loanType: 'Gold Loan',
             loanAmount: '100000',
             status: 'F',
-            cidx: 'CLI0000000000003'
+            clidx: 'CLI0000000103833',
+            createdDate: '2023-10-01'
         },
         {
             key: '4',
@@ -110,7 +120,8 @@ const LoanApplication: React.FC = () => {
             loanType: 'Gold Loan',
             loanAmount: '100000',
             status: 'C',
-            cidx: 'CLI0000000000003'
+            clidx: 'CLI0000000000003',
+            createdDate: '2023-10-01'
         },
         {
             key: '5',
@@ -119,7 +130,8 @@ const LoanApplication: React.FC = () => {
             loanType: 'Gold Loan',
             loanAmount: '1000',
             status: 'C',
-            cidx: 'CLI0000000000003'
+            clidx: 'CLI0000000000003',
+            createdDate: '2023-10-01'
         },
         {
             key: '6',
@@ -128,7 +140,8 @@ const LoanApplication: React.FC = () => {
             loanType: 'Gold Loan',
             loanAmount: '1054000',
             status: 'C',
-            cidx: 'CLI0000000103951'
+            clidx: 'CLI0000000103951',
+            createdDate: '2023-10-01'
         },
         {
             key: '7',
@@ -137,7 +150,8 @@ const LoanApplication: React.FC = () => {
             loanType: 'Gold Loan',
             loanAmount: '134000',
             status: 'F',
-            cidx: 'CLI0000000000003'
+            clidx: 'CLI0000000000003',
+            createdDate: '2023-10-01'
         },
         {
             key: '8',
@@ -146,20 +160,14 @@ const LoanApplication: React.FC = () => {
             loanType: 'Gold Loan',
             loanAmount: '6100000',
             status: 'C',
-            cidx: 'CLI0000000000003'
+            clidx: 'CLI0000000000003',
+            createdDate: '2023-10-01'
         }
     ];
 
-    // const [open, setOpen] = useState(false);
-
-
-    // const showDrawer = () => {
-    //     setOpen(true);
-    // };
-
-    // const onClose = () => {
-    //     setOpen(false);
-    // };
+    const onChange = (key: string) => {
+        fetchLoans(key, user?.idx ?? '');
+    }
 
     const newLoanHandler = async () => {
         await addLoan({
@@ -177,17 +185,50 @@ const LoanApplication: React.FC = () => {
     return (
         <Content>
             <Card title="Loan Request">
-                <SearchBar action={newLoanHandler} actionLoading={loading} actionTitle='New Loan' />
 
-                <Divider />
 
-                <PaginatedTable columns={columns} data={dummyData} />
+                <Tabs
+                    onChange={onChange}
+                    type="card"
+                    tabBarExtraContent={{
+                        right: <Button type='primary' onClick={newLoanHandler} loading={loading} icon={<PlusOutlined />}>New Loan</Button>
+                    }}
+                    items={[
+                        {
+                            label: `Pending`,
+                            key: 'PENDING',
+                            children:
+                                <>
+                                    <SearchBar />
+                                    <Divider />
+                                    <PaginatedTable columns={columns} data={dummyData} />
+                                </>
+                            ,
+                        },
+                        {
+                            label: `Return`,
+                            key: 'RETURNED',
+                            children:
+                                <>
+                                    <SearchBar />
+                                    <Divider />
+                                    <PaginatedTable columns={columns} data={dummyData} />
+                                </>
+                        },
+                        {
+                            label: `Completed`,
+                            key: 'COMPLETED',
+                            children:
+                                <>
+                                    <SearchBar />
+                                    <Divider />
+                                    <PaginatedTable columns={columns} data={dummyData} />
+                                </>
+                        },
+                    ]}
+                />
             </Card>
 
-
-            {/* <SideDrawer title={'Create a New Loan'} visible={open} onClose={onClose} form={
-                <CustomerOnboarding />
-            } /> */}
         </Content>
     )
 }

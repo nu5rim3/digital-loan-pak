@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 import useStakeholderStore from '../../../../../store/stakeholderStore';
 import useCommonStore from '../../../../../store/commonStore';
-import { formatCNIC } from '../../../../../utils/formatterFunctions';
+import { formatCNIC, formatName } from '../../../../../utils/formatterFunctions';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import useCustomerStore from '../../../../../store/customerStore';
 import { CaretLeftOutlined, EditOutlined, UndoOutlined } from '@ant-design/icons';
@@ -15,10 +15,10 @@ import { getStakeholderByType } from '../../../../../utils/stakholderFunction';
 // ✅ Validation Schema
 const schema = yup.object().shape({
     appraisalID: yup.string(),
-    stkOrgType: yup.string().required("Orgination Type is required"),
+    stkOrgType: yup.string().required("Organization Type is required"),
     stkCNic: yup.string().required("CNIC is required"),
     stkCNicIssuedDate: yup.string().required("CNIC Issued Date is required"),
-    stkCNicExpDate: yup.string().required("CNIC Exp Date is required"),
+    stkCNicExpDate: yup.string().required("CNIC Expired Date is required"),
     stkCNicStatus: yup.string().required("CNIC Status is required"),
     stkCusName: yup.string().required("Customer Name is required"),
     stkInitials: yup.string().required("Initials is required"),
@@ -27,12 +27,12 @@ const schema = yup.object().shape({
     stkDob: yup.string().required("Date of Birth is required"),
     stkAge: yup.string().required("Age is required"),
     stkGender: yup.string().required("Gender is required"),
-    stkMaritialStatus: yup.string().required("Maritial Status is required"),
-    stkMaritialComment: yup.string().required("Maritial Comment is required"),
+    stkMaritialStatus: yup.string().required("Marital Status is required"),
+    stkMaritialComment: yup.string().required("Marital Comment is required"),
     stkTitle: yup.string().required("Title is required"),
     stkFatherOrHusName: yup.string().required("Father or Husband Name is required"),
-    stkEduLevel: yup.string().required("Education Level is required"),
-    stkPhysDisability: yup.string().required("Physical Disability is required"),
+    stkEduLevel: yup.string().required("Education Qualification is required"),
+    stkPhysDisability: yup.string().required("Description of Physical Disability  is required"),
     headOfFamily: yup.string().required("Head of Family is required"),
     healthCondition: yup.string().required("Health Condition is required"),
     stkSequence: yup.string(),
@@ -196,8 +196,8 @@ const CustomerDetails: React.FC = () => {
                             <Controller
                                 name="stkCNicStatus"
                                 control={control}
-                                render={({ field }) => <Select {...field} placeholder="Select an CNIC Status" allowClear loading={cnicStausLoading} options={cnicStaus.map((item) => ({
-                                    label: item.description,
+                                render={({ field }) => <Select {...field} placeholder="Select a CNIC Status" allowClear loading={cnicStausLoading} options={cnicStaus.map((item) => ({
+                                    label: formatName(item.description),
                                     value: item.code
                                 }))}>
                                 </Select>}
@@ -218,6 +218,15 @@ const CustomerDetails: React.FC = () => {
                                 />}
                             />
                         </Form.Item>
+
+                        <Form.Item label="Date of Birth" validateStatus={errors.stkDob ? "error" : ""} help={errors.stkDob?.message} required>
+                            <Controller
+                                name="stkDob"
+                                control={control}
+                                render={({ field }) => <Input {...field} placeholder="Enter Date of Birth" type='date' />}
+                            />
+                        </Form.Item>
+
                         <Form.Item label="CNIC Issued Date" validateStatus={errors.stkCNicIssuedDate ? "error" : ""} help={errors.stkCNicIssuedDate?.message} required>
                             <Controller
                                 name="stkCNicIssuedDate"
@@ -225,19 +234,12 @@ const CustomerDetails: React.FC = () => {
                                 render={({ field }) => <Input {...field} placeholder="Enter CNIC Issued Date" type='date' />}
                             />
                         </Form.Item>
-                        <Form.Item label="CNIC Exp Date" validateStatus={errors.stkCNicExpDate ? "error" : ""} help={errors.stkCNicExpDate?.message} required>
+
+                        <Form.Item label="CNIC Expired Date" validateStatus={errors.stkCNicExpDate ? "error" : ""} help={errors.stkCNicExpDate?.message} required>
                             <Controller
                                 name="stkCNicExpDate"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter CNIC Exp Date" type='date' />}
-                            />
-                        </Form.Item>
-
-                        <Form.Item label="Date of Birth" validateStatus={errors.stkDob ? "error" : ""} help={errors.stkDob?.message} required>
-                            <Controller
-                                name="stkDob"
-                                control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Date of Birth" type='date' />}
+                                render={({ field }) => <Input {...field} placeholder="Enter CNIC Expired Date" type='date' />}
                             />
                         </Form.Item>
                         <Form.Item label="Age" validateStatus={errors.stkAge ? "error" : ""} help={errors.stkAge?.message} required>
@@ -265,20 +267,20 @@ const CustomerDetails: React.FC = () => {
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="Orgination Type" validateStatus={errors.stkOrgType ? "error" : ""} help={errors.stkOrgType?.message} required>
+                        <Form.Item label="Organization Type" validateStatus={errors.stkOrgType ? "error" : ""} help={errors.stkOrgType?.message} required>
                             <Controller
                                 name="stkOrgType"
                                 control={control}
                                 render={({ field }) =>
                                     <Select {...field} placeholder="Select an Organization" allowClear loading={organizationTypeLoading} options={organizationType.map((item) => ({
-                                        label: item.description,
+                                        label: formatName(item.description),
                                         value: item.code
                                     }))}>
                                     </Select>
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="Education Level" validateStatus={errors.stkEduLevel ? "error" : ""} help={errors.stkEduLevel?.message} required>
+                        <Form.Item label="Education Qualification" validateStatus={errors.stkEduLevel ? "error" : ""} help={errors.stkEduLevel?.message} required>
                             <Controller
                                 name="stkEduLevel"
                                 control={control}
@@ -287,16 +289,16 @@ const CustomerDetails: React.FC = () => {
                                         {...field}
                                         allowClear
                                         options={educationLevel.map((item) => ({
-                                            label: item.description,
+                                            label: formatName(item.description),
                                             value: item.code
                                         }))}
-                                        placeholder="Select Education Level"
+                                        placeholder="Select Education Qualification"
                                         loading={educationLevelLoading}
                                     />
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="Maritial Status" validateStatus={errors.stkMaritialStatus ? "error" : ""} help={errors.stkMaritialStatus?.message} required>
+                        <Form.Item label="Marital Status" validateStatus={errors.stkMaritialStatus ? "error" : ""} help={errors.stkMaritialStatus?.message} required>
                             <Controller
                                 name="stkMaritialStatus"
                                 control={control}
@@ -311,15 +313,15 @@ const CustomerDetails: React.FC = () => {
                                             { value: 'W', label: 'Widow' },
                                             { value: 'I', label: 'Widower' },
                                         ]}
-                                        placeholder="Select Maritial Status" />
+                                        placeholder="Select Marital Status" />
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="Maritial Comment" validateStatus={errors.stkMaritialComment ? "error" : ""} help={errors.stkMaritialComment?.message} required>
+                        <Form.Item label="Marital Comment" validateStatus={errors.stkMaritialComment ? "error" : ""} help={errors.stkMaritialComment?.message} required>
                             <Controller
                                 name="stkMaritialComment"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Maritial Comment" />}
+                                render={({ field }) => <Input {...field} placeholder="Enter Marital Comment" />}
                             />
                         </Form.Item>
 
@@ -330,7 +332,7 @@ const CustomerDetails: React.FC = () => {
                                 render={({ field }) => <Input {...field} placeholder="Enter Father or Husband Name" />}
                             />
                         </Form.Item>
-                        <Form.Item label="Number of Dependents" validateStatus={errors.stkNumOfDependents ? "error" : ""} help={errors.stkNumOfDependents?.message} hidden>
+                        <Form.Item label="Number of Dependents" validateStatus={errors.stkNumOfDependents ? "error" : ""} help={errors.stkNumOfDependents?.message}>
                             <Controller
                                 name="stkNumOfDependents"
                                 control={control}
@@ -351,11 +353,11 @@ const CustomerDetails: React.FC = () => {
                                 render={({ field }) => <Input {...field} placeholder="Enter Customer Code" value={field.value || ''} />}
                             />
                         </Form.Item>
-                        <Form.Item label="Group Reference Number" validateStatus={errors.stkGrpRefNo ? "error" : ""} help={errors.stkGrpRefNo?.message}>
+                        <Form.Item label="Group/Reference Number" validateStatus={errors.stkGrpRefNo ? "error" : ""} help={errors.stkGrpRefNo?.message}>
                             <Controller
                                 name="stkGrpRefNo"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Group Reference Number" value={field.value || ''} />}
+                                render={({ field }) => <Input {...field} placeholder="Enter Group/Reference Number" value={field.value || ''} />}
                             />
                         </Form.Item>
                         <Form.Item label="Head of Family" validateStatus={errors.headOfFamily ? "error" : ""} help={errors.headOfFamily?.message} required>
@@ -367,7 +369,7 @@ const CustomerDetails: React.FC = () => {
                                         {...field}
                                         allowClear
                                         options={headOfFamily.map((item) => ({
-                                            label: item.description,
+                                            label: formatName(item.description),
                                             value: item.code
                                         }))}
                                         placeholder="Select Head of Family"
@@ -384,7 +386,7 @@ const CustomerDetails: React.FC = () => {
                                     {...field}
                                     allowClear
                                     options={healthCondition.map((item) => ({
-                                        label: item.description,
+                                        label: formatName(item.description),
                                         value: item.code
                                     }))}
                                     placeholder="Select Health Condition"
@@ -392,7 +394,7 @@ const CustomerDetails: React.FC = () => {
                                 />}
                             />
                         </Form.Item>
-                        <Form.Item label="Physical Disability" validateStatus={errors.stkPhysDisability ? "error" : ""} help={errors.stkPhysDisability?.message} required>
+                        <Form.Item label="Description of Physical Disability " validateStatus={errors.stkPhysDisability ? "error" : ""} help={errors.stkPhysDisability?.message} required>
                             <Controller
                                 name="stkPhysDisability"
                                 control={control}
@@ -405,16 +407,16 @@ const CustomerDetails: React.FC = () => {
                                             { value: 'true', label: 'Yes' },
                                             { value: 'false', label: 'No' },
                                         ]}
-                                        placeholder="Select Physical Disability"
+                                        placeholder="Select Description of Physical Disability "
                                     />
                                 )}
                             />
                         </Form.Item>
-                        <Form.Item label="Physical Disability Description" validateStatus={errors.stkPhysDisabilityDesce ? "error" : ""} help={errors.stkPhysDisabilityDesce?.message} hidden={physDisability === 'false'}>
+                        <Form.Item label="Description of Physical Disability  Description" validateStatus={errors.stkPhysDisabilityDesce ? "error" : ""} help={errors.stkPhysDisabilityDesce?.message} hidden={physDisability === 'false'}>
                             <Controller
                                 name="stkPhysDisabilityDesce"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Physical Disability Description" value={field.value || ''} />}
+                                render={({ field }) => <Input.TextArea {...field} placeholder="Enter Description of Physical Disability  Description" value={field.value || ''} />}
                             />
                         </Form.Item>
                         <Form.Item label="Geo Location" validateStatus={errors.geoLocation ? "error" : ""} help={errors.geoLocation?.message} required>

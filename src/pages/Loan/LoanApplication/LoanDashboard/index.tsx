@@ -9,8 +9,10 @@ import useStakeholderStore from '../../../../store/stakeholderStore';
 import { getStakeholderByType } from '../../../../utils/stakholderFunction';
 import { CaretLeftOutlined } from '@ant-design/icons';
 import useCustomerStore from '../../../../store/customerStore';
-import CustomerRiskProfiling from './CustomerRiskProfiling';
+import BusinessIntroducer from './BusinessIntroducer/BusinessIntroducer';
+import CreditScoringPage from './CreditScoring/CreditScoringPage';
 import CollateralDetails from './CollateralDetails';
+import CustomerRiskProfiling from './CustomerRiskProfiling';
 
 const CustomerDetailsView = lazy(() => import('./Customer/CustomerDetailsView'))
 const WitnessDetails = lazy(() => import('./Witness/WitnessDetails'))
@@ -89,8 +91,8 @@ const LoanDaashboard: React.FC = () => {
             case 'cash-flow':
                 return <CashFlow />;
             case 'credit-scoring':
-                return <div>Credit Scoring</div>;
-            case 'customer-risk-profiling':
+                return <CreditScoringPage appraisalId={appId ?? ''} productCode={'GOLD'} />;
+                case 'customer-risk-profiling':
                 return <CustomerRiskProfiling />;
             case 'exceptional-approval':
                 return <ExceptionalApproval />;
@@ -102,10 +104,10 @@ const LoanDaashboard: React.FC = () => {
                 return <div>Witness Acknowledgement</div>;
             case 'term-deposit':
                 return <div>Term Deposit</div>;
-            case 'business-introducer':
-                return <div>Business Introducer</div>;
-            case 'collateral-details':
+                case 'collateral-details':
                 return <CollateralDetails />;
+            case 'business-introducer':
+                return <BusinessIntroducer />;
             default:
                 return null;
         }
@@ -258,13 +260,37 @@ const LoanDaashboard: React.FC = () => {
             "enabled": null,
             "status": "A"
         },
+        // {
+        //     "createdBy": "SYSTEM",
+        //     "creationDate": "2024-07-11T09:24:51.357+00:00",
+        //     "lastModifiedBy": null,
+        //     "lastModifiedDate": null,
+        //     "id": 13,
+        //     "section": "term-deposit",
+        //     "isMandatory": "0",
+        //     "completed": "1",
+        //     "enabled": null,
+        //     "status": "A"
+        // },
         {
             "createdBy": "SYSTEM",
             "creationDate": "2024-07-11T09:24:51.357+00:00",
             "lastModifiedBy": null,
             "lastModifiedDate": null,
-            "id": 14,
-            "section": "term-deposit",
+            "id": 12,
+            "section": "business-introducer",
+            "isMandatory": "0",
+            "completed": "1",
+            "enabled": null,
+            "status": "A"
+        },
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2024-07-11T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 15,
+            "section": "collateral-details",
             "isMandatory": "0",
             "completed": "1",
             "enabled": null,

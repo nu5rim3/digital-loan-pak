@@ -31,7 +31,7 @@ const SelectUser: React.FC = () => {
     };
 
     return (
-        <div className="bg-[url('/img/bg.svg')]">
+        <div>
             <Content className='flex flex-col justify-between h-screen'>
                 <div className='flex flex-row h-full'>
                     <div className='flex flex-1/2'>

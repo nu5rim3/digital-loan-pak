@@ -123,14 +123,14 @@ const InsuranceRecipientCard: React.FC<IInsuranceRecipientCard> = ({ stkId }) =>
             >
                 <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
                     <div className='grid grid-cols-2 gap-3'>
-                        <Form.Item label="Recipient Name" validateStatus={errors.recipientName ? 'error' : ''} help={errors.recipientName?.message}>
+                        <Form.Item label="Recipient Name" validateStatus={errors.recipientName ? 'error' : ''} help={errors.recipientName?.message} required>
                             <Controller
                                 name="recipientName"
                                 control={control}
                                 render={({ field }) => <Input {...field} placeholder="Recipient Name" />}
                             />
                         </Form.Item>
-                        <Form.Item label="CNIC" validateStatus={errors.cNicNo ? 'error' : ''} help={errors.cNicNo?.message}>
+                        <Form.Item label="CNIC" validateStatus={errors.cNicNo ? 'error' : ''} help={errors.cNicNo?.message} required>
                             <Controller
                                 name="cNicNo"
                                 control={control}
@@ -144,7 +144,7 @@ const InsuranceRecipientCard: React.FC<IInsuranceRecipientCard> = ({ stkId }) =>
                                 />}
                             />
                         </Form.Item>
-                        <Form.Item label="Contact Number" validateStatus={errors.phoneNo ? 'error' : ''} help={errors.phoneNo?.message}>
+                        <Form.Item label="Contact Number" validateStatus={errors.phoneNo ? 'error' : ''} help={errors.phoneNo?.message} required>
                             <Controller
                                 name="phoneNo"
                                 control={control}
@@ -153,12 +153,13 @@ const InsuranceRecipientCard: React.FC<IInsuranceRecipientCard> = ({ stkId }) =>
                                         {...field}
                                         placeholder="Enter Contact Number"
                                         maxLength={11}
+                                        type='number'
                                         onChange={(e) => setValue('phoneNo', formatPhoneNumber(e.target.value), { shouldValidate: true })}
                                     />
                                 )}
                             />
                         </Form.Item>
-                        <Form.Item label="Relationship" validateStatus={errors.relationship ? 'error' : ''} help={errors.relationship?.message}>
+                        <Form.Item label="Relationship" validateStatus={errors.relationship ? 'error' : ''} help={errors.relationship?.message} required>
                             <Controller
                                 name="relationship"
                                 control={control}

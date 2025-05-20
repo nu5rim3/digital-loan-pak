@@ -15,7 +15,7 @@ const options = [
 ];
 
 type SearchBarProps = {
-    action: () => void;
+    action?: () => void;
     actionLoading?: boolean;
     actionTitle?: string;
 };
@@ -45,7 +45,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ actionLoading, actionTitle, actio
     };
 
     const handleCreateNew = () => {
-        action()
+        if (action) {
+            action();
+        }
     };
 
     return (
@@ -71,7 +73,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ actionLoading, actionTitle, actio
             </Space.Compact>
 
             <div className='flex flex-1'></div>
-            <Button type="primary" onClick={handleCreateNew} icon={<PlusOutlined />} loading={actionLoading}>
+            <Button type="primary" onClick={handleCreateNew} icon={<PlusOutlined />} loading={actionLoading} hidden={action === undefined}>
                 {actionTitle}
             </Button>
         </div>

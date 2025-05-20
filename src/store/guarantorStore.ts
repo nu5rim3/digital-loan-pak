@@ -71,8 +71,10 @@ const useGuarantorStore = create<ICustomerState>((set) => ({
   fetchGuarantorByCNIC: async (cnic: string) => {
     set({ guarantorLoading: true, guarantorError: null });
     try {
-      const response = await API.get(`/customer/${cnic}`);
-      set({ selectedGuarantor: response.data, guarantorLoading: false });
+      const response = await API.get(
+        `/mobixCamsClientele/v1/clienteles/identifiers/${cnic}`
+      );
+      set({ selectedGuarantor: response.data?.data, guarantorLoading: false });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({ guarantorError: error.message, guarantorLoading: false });

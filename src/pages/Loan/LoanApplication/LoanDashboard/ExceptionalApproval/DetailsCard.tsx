@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Button, Card, Descriptions } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
 import React from "react";
@@ -25,6 +26,7 @@ interface DetailsCardProps {
   detail: ExceptionalApprovalRecord;
   onEdit: () => void;
   onRemove: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dataArray: any[];
 }
 

@@ -33,6 +33,77 @@ interface ILoanResponse {
   creationDate: string;
 }
 
+export interface IProductDetails {
+  prodCode: string;
+  prodCurrency: string;
+  prodName: string;
+  applicableCat: string;
+  prodCat: string;
+  prodCatDesc: string;
+  calMethod: string;
+  calMethodDesc: string;
+  defaultCalMethod: string;
+  rewardFlag: string;
+  rewardType: string | null;
+  rewardDefaultValue: string | null;
+  maxRewardAmt: string | null;
+  rewardRate: string;
+  rewardAddCriteria: string | null;
+  prodFlag1: string;
+  prodFlag2: string;
+  generalInfo: {
+    applicableCat: string;
+    currencyCode: string;
+    defaultLoanAmt: string;
+    defaultRate: string;
+    defaultTerm: string;
+    maxLoanAmt: string;
+    maxRate: string;
+    maxTerm: string;
+    minLoanAmt: string;
+    minRate: string;
+    minTerm: string;
+    penalOdIntRate: string;
+    prodCode: string;
+    prodSubCode: string;
+    refCode: string;
+    status: string;
+  };
+  specialCharges: {
+    baseOnCode: string;
+    baseOnDesc: string;
+    criteriaCode: string;
+    criteriaDesc: string;
+    currencyCode: string;
+    prodCode: string;
+    prtbAccrualBasisFlag: string;
+    prtbApplicableType: string;
+    prtbBnhCode: string;
+    prtbCalAmt: string;
+    prtbCalMetod: string;
+    prtbChargeMaxVal: string | null;
+    prtbChargeMinVal: string | null;
+    prtbMaxAmt: string;
+    prtbMinAmt: string;
+    prtbMndFlg: string;
+    prtbProportionateFlag: string;
+    prtbTrx: string;
+    prtxProdSub: string;
+  }[];
+  tcSubTypes: string[];
+  appSubTypes: {
+    prodCode: string;
+    currencyCode: string;
+    appOrgCode: string;
+    appOrgDesc: string;
+    appStatus: string;
+  }[];
+  calMethods: {
+    calMethodCode: string;
+    calMethodDesc: string;
+  }[];
+}
+
 export interface ILoanStatus {
   createdBy: string;
   creationDate: string;
@@ -101,7 +172,11 @@ interface ILoanState {
   termDepositPlacedLoading: boolean;
   termDepositPlacedError: string | null;
 
-  fetchLoans: () => Promise<void>;
+  productDetails: IProductDetails | null;
+  productDetailsLoading: boolean;
+  productDetailsError: string | null;
+
+  fetchLoans: (status: string, username: string) => Promise<void>;
   fetchLoanById: (id: number) => Promise<void>;
   addLoan: (loan: ILoan) => Promise<void>;
   updateLoan: (id: number, updatedLoan: ILoan) => Promise<void>;
@@ -134,6 +209,15 @@ interface ILoanState {
     termDepositeData: ITermDepositPlaced
   ) => Promise<void>;
   deleteTermDepositPlaced: (tdId: string) => Promise<void>;
+
+  fetchProductDetails: (
+    productCode: string,
+    subProductCode: string,
+    refCode: string,
+    currencyCode: string
+  ) => Promise<void>;
+
+  resetProductDetails: () => void;
 }
 
 const useLoanStore = create<ILoanState>((set) => ({
@@ -160,15 +244,17 @@ const useLoanStore = create<ILoanState>((set) => ({
   termDepositPlacedLoading: false,
   termDepositPlacedError: null,
 
-  fetchLoans: async () => {
+  productDetails: null,
+  productDetailsLoading: false,
+  productDetailsError: null,
+
+  fetchLoans: async (status: string, username: string) => {
     set({ loading: true, error: null });
     try {
-      const response = await API.get("/");
+      const response = await API.get(
+        `/mobixCamsLoan/v1/appraisals/${status}/user/${username}?unit=&client=MOBILE`
+      );
       set({ loans: response.data, loading: false });
-      notification.success({
-        type: "success",
-        message: "Loans fetched successfully",
-      });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);
@@ -517,6 +603,39 @@ const useLoanStore = create<ILoanState>((set) => ({
         termDepositPlacedLoading: false,
       });
     }
+  },
+
+  fetchProductDetails: async (
+    productCode: string,
+    subProductCode: string,
+    refCode: string,
+    currencyCode: string
+  ) => {
+    set({ productDetailsLoading: true, productDetailsError: null });
+    try {
+      const response = await API.get(
+        `/mobixCamsLoan/v1/loans/product/${productCode}/${subProductCode}/${refCode}/${currencyCode}`
+      );
+      set({
+        productDetails: response.data,
+        productDetailsLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      set({
+        productDetailsError: error.message,
+        productDetailsLoading: false,
+      });
+    }
+  },
+
+  resetProductDetails: () => {
+    set({
+      productDetails: null,
+      productDetailsLoading: false,
+      productDetailsError: null,
+    });
   },
 }));
 

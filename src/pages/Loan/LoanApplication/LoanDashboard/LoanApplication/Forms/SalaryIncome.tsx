@@ -3,13 +3,12 @@ import * as yup from 'yup'
 import { Controller, useForm } from 'react-hook-form'
 import { Button, Card, Form, Input, Select } from 'antd';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { formatName, formatPhoneNumber } from '../../../../../../utils/formatterFunctions';
+import { formatName, formatPhoneNumber, formatSentence } from '../../../../../../utils/formatterFunctions';
 import useCommonStore from '../../../../../../store/commonStore';
-import useCreditStore from '../../../../../../store/creditStore';
+import useCreditStore, { ISalaryIncome } from '../../../../../../store/creditStore';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
     SaveOutlined,
-    FileTextOutlined,
     UndoOutlined,
     CaretLeftOutlined,
 } from '@ant-design/icons';
@@ -17,6 +16,8 @@ import {
 interface ISalaryIncomeForm {
     sourceOfIncome: string
     resetSourceOfIncome: () => void
+    mode: 'save' | 'update'
+    updateData: ISalaryIncome | null
 }
 
 const schema = yup.object().shape({
@@ -36,7 +37,7 @@ const schema = yup.object().shape({
     repeatCustomer: yup.string(),
 });
 
-const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSourceOfIncome }) => {
+const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSourceOfIncome, mode, updateData }) => {
     const { appId } = useParams()
     const navigate = useNavigate()
     const { control, formState: { errors }, handleSubmit, reset, setValue } = useForm({
@@ -48,11 +49,16 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
         facilityPurpose, facilityPurposeLoading, fetchFacilityPurpose, fetchNatureOfBusiness, fetchNatureOfEmployment,
         fetchJobs, fetchDistanceForResidenceOrWork, fetchSalary, fetchRepeatCustomersWithProdCode } = useCommonStore()
 
-    const { salaryIncomeLoading, product, fetchProduct, addSalaryIncome } = useCreditStore()
+    const { salaryIncomeLoading, product, fetchProduct, addSalaryIncome, updateSalaryIncome } = useCreditStore()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = (data: any) => {
-        addSalaryIncome(appId ?? '', data).finally(() => navigate(-1))
+        if (mode === 'save') {
+            addSalaryIncome(appId ?? '', data).finally(() => navigate(-1))
+        } else if (mode === 'update') {
+            const _data = { ...updateData, ...data }
+            updateSalaryIncome(appId ?? '', _data).finally(() => navigate(-1))
+        }
     }
 
     useEffect(() => {
@@ -77,6 +83,26 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
     }
 
 
+    useEffect(() => {
+        if (mode === 'update' && updateData) {
+            setValue('profession', updateData.profession)
+            setValue('sourceOfIncome', updateData.sourceOfIncome)
+            setValue('purposeOfLoan', updateData.purposeOfLoan)
+            setValue('employer', updateData.employer)
+            setValue('typeOfBusiness', updateData.typeOfBusiness)
+            setValue('designation', updateData.designation)
+            setValue('currEmpPeriod', updateData.currEmpPeriod)
+            setValue('empAddress', updateData.empAddress)
+            setValue('typeOfJob', updateData.typeOfJob)
+            setValue('natureOfEmp', updateData.natureOfEmp)
+            setValue('contactNo', updateData.contactNo)
+            setValue('residenceOrWorking', updateData.residenceOrWorking)
+            setValue('proofOfSalary', updateData.proofOfSalary)
+            setValue('repeatCustomer', updateData.repeatCustomer)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mode])
+
     return (
         <Card size='small' title={"Salary Income Details"}>
             <Form layout='vertical' onFinish={handleSubmit(onSubmit)} >
@@ -100,7 +126,7 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Purpose Of Loan" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
+                    <Form.Item label="Purpose of Loan" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
                         <Controller
                             name="purposeOfLoan"
                             control={control}
@@ -116,10 +142,11 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Source Of Income" name="sourceOfIncome" validateStatus={errors.sourceOfIncome ? 'error' : ''} help={errors.sourceOfIncome?.message} required>
+                    <Form.Item label="Source of Income" name="sourceOfIncome" validateStatus={errors.sourceOfIncome ? 'error' : ''} help={errors.sourceOfIncome?.message} required>
                         <Controller
                             name="sourceOfIncome"
                             control={control}
+                            disabled
                             render={({ field }) => (
                                 <Select
                                     {...field}
@@ -198,7 +225,7 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Type Of Job" name="typeOfJob" validateStatus={errors.typeOfJob ? 'error' : ''} help={errors.typeOfJob?.message} required>
+                    <Form.Item label="Type of Job" name="typeOfJob" validateStatus={errors.typeOfJob ? 'error' : ''} help={errors.typeOfJob?.message} required>
                         <Controller
                             name="typeOfJob"
                             control={control}
@@ -212,7 +239,7 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Nature Of Employment" name="natureOfEmp" validateStatus={errors.natureOfEmp ? 'error' : ''} help={errors.natureOfEmp?.message} required>
+                    <Form.Item label="Nature of Employment" name="natureOfEmp" validateStatus={errors.natureOfEmp ? 'error' : ''} help={errors.natureOfEmp?.message} required>
                         <Controller
                             name="natureOfEmp"
                             control={control}
@@ -254,7 +281,7 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Proof Of Salary" name="proofOfSalary" validateStatus={errors.proofOfSalary ? 'error' : ''} help={errors.proofOfSalary?.message} required>
+                    <Form.Item label="Proof of Salary" name="proofOfSalary" validateStatus={errors.proofOfSalary ? 'error' : ''} help={errors.proofOfSalary?.message} required>
                         <Controller
                             name="proofOfSalary"
                             control={control}
@@ -286,15 +313,11 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                 <div className='pt-5'>
                     <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
                     <Button type='primary' className='ml-3' htmlType='submit' icon={<SaveOutlined />} loading={salaryIncomeLoading}>
-                        Submit
+                        {formatSentence(mode)} Salary
                     </Button>
                     <Button type='default' className='ml-3' danger icon={<UndoOutlined />} onClick={onRestFrom}>
                         Reset
                     </Button>
-                    <Button type='link' className='ml-3' icon={<FileTextOutlined />} onClick={() => { }}>
-                        Add Other Income Details
-                    </Button>
-
                 </div>
             </Form>
         </Card>

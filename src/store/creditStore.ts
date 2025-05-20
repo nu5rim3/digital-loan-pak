@@ -47,18 +47,18 @@ export interface IProduct {
   pTrhdTr: string;
   pTrhdLocCost: string;
   pTrhdStmYn: string;
-  pTrhdStmPer: string | null;
-  pTrhdStmDuty: string | null;
+  pTrhdStmPer?: string | null;
+  pTrhdStmDuty?: string | null;
   pTrhdCurCode: string;
   pTrhdInvTax: string;
   pTrhdBus: string;
   pTrhdInvTaxRt: string;
   pTrhdCrib: string;
   pTrhdFlexi: string;
-  pTrhdBsCd: string | null;
-  pTrhdBsTr: string | null;
-  pTrhdMgTr: string | null;
-  pTrhdReSeq: string | null;
+  pTrhdBsCd?: string | null;
+  pTrhdBsTr?: string | null;
+  pTrhdMgTr?: string | null;
+  pTrhdReSeq?: string | null;
   pTrhdCustTyp: string;
   pTrhdReward: string;
   pTrhdLCode: string | null;
@@ -86,8 +86,11 @@ export interface IProduct {
     trtxCalMethod: string;
     prtbMndFlg: string;
   }[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  pStru: any[];
+  pStru: {
+    struSeq: string;
+    struPrds: string;
+    struRent: string | null;
+  }[];
 }
 
 export interface IProductDefinition {
@@ -143,8 +146,9 @@ export interface ICashFlowData {
 }
 
 export interface IBusinessIncome {
-  appraisalId: string;
+  appraisalId?: string;
   idx?: string;
+  _idx?: string;
   profession: string;
   sourceOfIncome: string;
   purposeOfLoan: string;
@@ -173,8 +177,8 @@ export interface IOwnerships {
   lastModifiedDate?: string;
 }
 
-interface IAgricultureIncome {
-  appraisalId: string;
+export interface IAgricultureIncome {
+  appraisalId?: string;
   idx?: string;
   profession: string;
   sourceOfIncome: string;
@@ -230,6 +234,8 @@ interface IAgricultureIncome {
   status?: string;
   createdBy?: string;
   creationDate?: string;
+  rabiCrop: string;
+  kharifCrop: string;
 }
 
 export interface ISalaryIncome {
@@ -254,6 +260,158 @@ export interface ISalaryIncome {
   creationDate?: string;
   lastModifiedBy?: string;
   lastModifiedDate?: string;
+}
+
+export interface ILiveStockIncome {
+  appraisalId?: string;
+  idx?: string;
+  profession: string;
+  sourceOfIncome: string;
+  purposeOfLoan: string;
+  animalOrCrop: string;
+  buffaloes: string;
+  cows: string;
+  bulls: string;
+  collateral: string;
+  claimLodged: string;
+  animalTagging: string;
+  borrowerDistrict: string;
+  sowodo: string;
+  loanTenure: string;
+  insCompany: string;
+  policyIssuedDate: string;
+  policyExpiredDate: string;
+  receiptNo: string;
+  premiumRate: string;
+  floodsFactor: string;
+  irrigation: string;
+  methods: string;
+  proofOfCult: string;
+  expInCult: string;
+  agriSecured: string;
+  marketCheck: string;
+  natureOfTheBorrower: string;
+  ownOfLand: string;
+}
+
+export interface IOtherIncome {
+  appraisalId?: string;
+  idx?: string;
+  profession: string;
+  sourceOfIncome: string;
+  purposeOfLoan: string;
+  incomeCategory: string;
+  description: string;
+  status?: string;
+  createdBy?: string;
+  creationDate?: string;
+  lastModifiedBy?: string;
+  lastModifiedDate?: string;
+}
+
+export interface ISpecialCharge {
+  trtxTrx: string | undefined;
+  trtxAmt: string | undefined;
+  trtxAddcrit: string | undefined;
+  trtxCalMethod: string | undefined;
+  prtbMndFlg: string | undefined;
+}
+
+export interface ITrailCalulation {
+  tcNo?: string;
+  pMode: string;
+  pUser: string;
+  pFacilityType: string;
+  pTrhdMe: string;
+  pTrhdLType: string;
+  pTrhdMethod: string;
+  pTrhdBrh: string;
+  pTrhdTerm: string;
+  pTrhdNoPre: string;
+  pTrhdNoDw: string;
+  pTrhdTr: string;
+  pTrhdLocCost: string;
+  pTrhdStmYn: string;
+  pTrhdStmPer1: string;
+  pTrhdStmDuty1?: string;
+  pTrhdCurCode: string;
+  pTrhdInvTax: string;
+  pTrhdBus: string;
+  pTrhdInvTaxRt: string;
+  pTrhdCrib: string;
+  pTrhdFlexi: string;
+  pTrhdBsCd: string;
+  pTrhdBsTr: string;
+  pTrhdMgTr: string;
+  pTrhdReSeq: string;
+  pTrhdCustTyp: string;
+  pTrhdReward: string;
+  pTrhdLCode: string;
+  pTrhdQuo: string;
+  pTrhdStmPer: string;
+  pTrhdStmDuty?: string;
+  pTrhdStmApp: string;
+  pTrhdInsuCoverFlg: string;
+  pTrhdInsuCoverAmt: string;
+  pTrhdIntrType: string;
+  pTrhdRewardPre: string;
+  pTrhdRewardType: string;
+  pTrhdRewardBusagent: string;
+  pTrhdRewardAddMethod: string;
+  pTrhdSplitReward: string;
+  pInsuOption: string;
+  pInsuAddCrit: string;
+  pTrhdColMeth: string;
+  prevLoanProd?: string;
+  prevLoanContractNo?: string | null;
+  prevLoanOutstanding?: string | null;
+  countOfRollOver?: string | null;
+  pTrtx: ISpecialCharge[];
+  pStru: {
+    struSeq: number;
+    struPrds: string;
+    struRent: string;
+  }[];
+}
+
+export interface ITrailCalulationResponse {
+  code: string;
+  object: {
+    tcNo: string;
+    code: string;
+    message: string;
+    detail: string;
+  };
+  message: string;
+}
+
+export interface ITrailCalulationDetailsPayload {
+  tcNo: string;
+  mode: "T" | "P";
+}
+
+export interface ITrailCalulationDetailsResponse {
+  code: string;
+  object: {
+    tcNo: string;
+    code: string;
+    message: string;
+    detail: string;
+    totalReceivable: string;
+    loanAmount: string;
+    downPayment: string;
+    facilityDetails: {
+      seq: string;
+      term: string;
+      instalment: string;
+    }[];
+    trtx: {
+      trtxTrx: string;
+      trtxAmt: string;
+      trtxAddcrit: string;
+      trtxCalMethod: string;
+    }[];
+  };
 }
 
 interface ICreditState {
@@ -317,6 +475,26 @@ interface ICreditState {
   ownerships: IOwnerships[];
 
   businessIncomeList: IBusinessIncome[];
+
+  liveStockIncome: ILiveStockIncome[];
+  liveStockIncomeLoading: boolean;
+  liveStockIncomeError: string | null;
+
+  otherIncome: IOtherIncome[];
+  otherIncomeLoading: boolean;
+  otherIncomeError: string | null;
+
+  trailCalulation: ITrailCalulationResponse | null;
+  trailCalulationLoading: boolean;
+  trailCalulationError: string | null;
+
+  trailCalulationDetails: ITrailCalulationDetailsResponse | null;
+  trailCalulationDetailsLoading: boolean;
+  trailCalulationDetailsError: string | null;
+
+  trailCalucationData: ITrailCalulation | null;
+  trailCalucationDataLoading: boolean;
+  trailCalucationDataError: string | null;
 
   fetachGoldLoanAppDetails: (appId: string) => Promise<void>;
   addGoldLoanAppDetails: (data: IGoldLoanAppDetails) => Promise<void>;
@@ -392,12 +570,14 @@ interface ICreditState {
 
   fetchBusinessIncome: (appId: string) => Promise<void>;
   addBusinessIncome: (data: IBusinessIncome) => Promise<void>;
-  removeBusinessIncome: (key: string) => Promise<void>;
+  removeBusinessIncome: (index: number) => Promise<void>;
   updateBusinessIncomeList: (
-    key: string,
+    _idx: string,
     data: IBusinessIncome
   ) => Promise<void>;
-  saveBusinessIncome: (appId: string, data: IBusinessIncome[]) => Promise<void>;
+  loadBusinessIncomeList: () => Promise<void>;
+  resetBusinessIncomeList: () => Promise<void>;
+  saveBusinessIncome: (appId: string, data: IBusinessIncome) => Promise<void>;
   updateBusinessIncome: (appId: string, data: IBusinessIncome) => Promise<void>;
 
   fetchAgricultureIncome: (appId: string) => Promise<void>;
@@ -415,9 +595,40 @@ interface ICreditState {
   updateSalaryIncome: (appId: string, data: ISalaryIncome) => Promise<void>;
 
   addOwnerships: (data: IOwnerships) => Promise<void>;
+  addOwnershipsList: (data: IOwnerships[]) => Promise<void>;
   updateOwnerships: (key: string, data: IOwnerships) => Promise<void>;
   fetchOwnerships: () => Promise<void>;
   removeOwnerships: (key: string) => Promise<void>;
+  resetOwnerships: () => Promise<void>;
+
+  addLiveStockIncome: (appId: string, data: ILiveStockIncome) => Promise<void>;
+  updateLiveStockIncome: (
+    appId: string,
+    data: ILiveStockIncome
+  ) => Promise<void>;
+  fetchLiveStockIncome: (appId: string) => Promise<void>;
+
+  fetchOtherIncome: (appId: string) => Promise<void>;
+  addOtherIncome: (appId: string, data: IOtherIncome) => Promise<void>;
+  updateOtherIncome: (appId: string, data: IOtherIncome) => Promise<void>;
+
+  sendTrailCalulation: (
+    data: ITrailCalulation
+  ) => Promise<ITrailCalulationResponse>;
+
+  fetchTrailCalulation: (
+    tcNo: string,
+    mode: "T" | "P"
+  ) => Promise<ITrailCalulationDetailsResponse | undefined>;
+
+  resetTrailCalculationDetails: () => Promise<void>;
+  saveTrailCalulation: (
+    appId: string,
+    cliId: string,
+    data: ITrailCalulation
+  ) => Promise<void>;
+
+  fetchTrailCalulationDetailsByAppId: (appId: string) => Promise<void>;
 }
 
 const useCreditStore = create<ICreditState>((set) => ({
@@ -481,6 +692,26 @@ const useCreditStore = create<ICreditState>((set) => ({
   ownerships: [],
 
   businessIncomeList: [],
+
+  liveStockIncome: [],
+  liveStockIncomeLoading: false,
+  liveStockIncomeError: null,
+
+  otherIncome: [],
+  otherIncomeLoading: false,
+  otherIncomeError: null,
+
+  trailCalulation: null,
+  trailCalulationLoading: false,
+  trailCalulationError: null,
+
+  trailCalulationDetails: null,
+  trailCalulationDetailsLoading: false,
+  trailCalulationDetailsError: null,
+
+  trailCalucationData: null,
+  trailCalucationDataLoading: false,
+  trailCalucationDataError: null,
 
   fetachGoldLoanAppDetails: async (appId: string) => {
     set({ goldLoanAppDetailsLoading: true });
@@ -987,10 +1218,10 @@ const useCreditStore = create<ICreditState>((set) => ({
     });
   },
 
-  removeBusinessIncome: async (key: string) => {
+  removeBusinessIncome: async (index: number) => {
     set((state) => ({
       businessIncomeList: state.businessIncomeList.filter(
-        (item) => item.idx !== key
+        (_, _index) => _index !== index
       ),
     }));
     notification.success({
@@ -998,10 +1229,10 @@ const useCreditStore = create<ICreditState>((set) => ({
     });
   },
 
-  updateBusinessIncomeList: async (key: string, data: IBusinessIncome) => {
+  updateBusinessIncomeList: async (_idx: string, data: IBusinessIncome) => {
     set((state) => ({
       businessIncomeList: state.businessIncomeList.map((item) =>
-        item.idx === key ? { ...item, ...data } : item
+        item._idx === _idx ? { ...item, ...data } : item
       ),
     }));
     notification.success({
@@ -1009,7 +1240,19 @@ const useCreditStore = create<ICreditState>((set) => ({
     });
   },
 
-  saveBusinessIncome: async (appId: string, data: IBusinessIncome[]) => {
+  loadBusinessIncomeList: async () => {
+    set((state) => ({
+      businessIncomeList: state.businessIncomeList,
+    }));
+  },
+
+  resetBusinessIncomeList: async () => {
+    set(() => ({
+      businessIncomeList: [],
+    }));
+  },
+
+  saveBusinessIncome: async (appId: string, data: IBusinessIncome) => {
     set({ businessIncomeLoading: true });
     try {
       await APIAuth.post(
@@ -1124,7 +1367,7 @@ const useCreditStore = create<ICreditState>((set) => ({
         `/mobixCamsCredit/v1/credit/loan/app/sal/${appId}`
       );
       set({
-        salaryIncome: response.data,
+        salaryIncome: [response.data],
         salaryIncomeLoading: false,
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1198,6 +1441,12 @@ const useCreditStore = create<ICreditState>((set) => ({
     });
   },
 
+  addOwnershipsList: async (data: IOwnerships[]) => {
+    set(() => ({
+      ownerships: data,
+    }));
+  },
+
   fetchOwnerships: async () => {
     set((state) => ({
       ownerships: state.ownerships,
@@ -1211,6 +1460,237 @@ const useCreditStore = create<ICreditState>((set) => ({
     notification.success({
       message: "Ownership Removed Successfully",
     });
+  },
+
+  resetOwnerships: async () => {
+    set(() => ({
+      ownerships: [],
+    }));
+  },
+
+  // live stock
+  addLiveStockIncome: async (appId: string, data: ILiveStockIncome) => {
+    set({ liveStockIncomeLoading: true });
+    try {
+      await APIAuth.post(
+        `/mobixCamsCredit/v1/credit/loan/app/stk/${appId}`,
+        data
+      );
+      set(() => ({
+        liveStockIncomeLoading: false,
+      }));
+      notification.success({
+        message: "Live Stock Income Added Successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        liveStockIncomeError: error.message,
+        liveStockIncomeLoading: false,
+      });
+    }
+  },
+
+  updateLiveStockIncome: async (appId: string, data: ILiveStockIncome) => {
+    set({ liveStockIncomeLoading: true });
+    try {
+      await APIAuth.put(
+        `/mobixCamsCredit/v1/credit/loan/app/stk/${appId}`,
+        data
+      );
+      set(() => ({
+        liveStockIncomeLoading: false,
+      }));
+      notification.success({
+        message: "Live Stock Income Updated Successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        liveStockIncomeError: error.message,
+        liveStockIncomeLoading: false,
+      });
+    }
+  },
+
+  fetchLiveStockIncome: async (appId: string) => {
+    set({ liveStockIncomeLoading: true });
+    try {
+      const response = await API.get(
+        `/mobixCamsCredit/v1/credit/loan/app/stk/${appId}`
+      );
+      set({
+        liveStockIncome: [response.data],
+        liveStockIncomeLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        liveStockIncomeError: error.message,
+        liveStockIncomeLoading: false,
+      });
+    }
+  },
+
+  fetchOtherIncome: async (appId: string) => {
+    set({ otherIncomeLoading: true });
+    try {
+      const response = await API.get(
+        `/mobixCamsCredit/v1/credit/loan/app/oth/${appId}`
+      );
+      set({
+        otherIncome: response.data,
+        otherIncomeLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        otherIncomeError: error.message,
+        otherIncomeLoading: false,
+      });
+    }
+  },
+
+  addOtherIncome: async (appId: string, data: IOtherIncome) => {
+    set({ otherIncomeLoading: true });
+    try {
+      const response = await APIAuth.post(
+        `/mobixCamsCredit/v1/credit/loan/app/oth/${appId}`,
+        data
+      );
+      set((state) => ({
+        otherIncome: [...state.otherIncome, response.data],
+        otherIncomeLoading: false,
+      }));
+      notification.success({
+        message: "Other Income Added Successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        otherIncomeError: error.message,
+        otherIncomeLoading: false,
+      });
+    }
+  },
+
+  updateOtherIncome: async (appId: string, data: IOtherIncome) => {
+    set({ otherIncomeLoading: true });
+    try {
+      await APIAuth.put(
+        `/mobixCamsCredit/v1/credit/loan/app/oth/${appId}`,
+        data
+      );
+      set(() => ({
+        otherIncomeLoading: false,
+      }));
+      notification.success({
+        message: "Other Income Updated Successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        otherIncomeError: error.message,
+        otherIncomeLoading: false,
+      });
+    }
+  },
+
+  // /mobixCamsCredit/v1/credit/tc/cal
+  sendTrailCalulation: async (data: ITrailCalulation) => {
+    set({ trailCalulationLoading: true });
+    try {
+      const response = await APIAuth.post(
+        `/mobixCamsCredit/v1/credit/tc/cal`,
+        data
+      );
+
+      set({
+        trailCalulation: response.data,
+        trailCalulationLoading: false,
+      });
+
+      return response.data;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        trailCalulationError: error.message,
+        trailCalulationLoading: false,
+      });
+    }
+  },
+
+  // /mobixCamsCredit/v1/credit/tc/getTCDetails
+  fetchTrailCalulation: async (
+    tcNo: string,
+    mode: "T" | "P"
+  ): Promise<ITrailCalulationDetailsResponse | undefined> => {
+    set({ trailCalulationDetailsLoading: true });
+    try {
+      const response = await APIAuth.post(
+        `/mobixCamsCredit/v1/credit/tc/getTCDetails`,
+        { tcNo, mode }
+      );
+      set({
+        trailCalulationDetails: response.data,
+        trailCalulationDetailsLoading: false,
+      });
+      return response.data;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        trailCalulationDetailsError: error.message,
+        trailCalulationDetailsLoading: false,
+      });
+    }
+  },
+
+  resetTrailCalculationDetails: async () =>
+    set(() => ({ trailCalulationDetails: null })),
+
+  // mobixCamsCredit/v1/credit/tc/{leadId}/cliIdx/{cliIdx}
+  saveTrailCalulation: async (
+    appId: string,
+    cliId: string,
+    data: ITrailCalulation
+  ) => {
+    set({ trailCalulationLoading: true });
+    try {
+      await APIAuth.post(
+        `/mobixCamsCredit/v1/credit/tc/${appId}/cliIdx/${cliId}`,
+        data
+      );
+      set(() => ({
+        trailCalulationLoading: false,
+      }));
+      notification.success({
+        message: "Trial Calculation Saved Successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        trailCalulationError: error.message,
+        trailCalulationLoading: false,
+      });
+    }
+  },
+
+  // /mobixCamsCredit/v1/credit/tc/{appId}
+  fetchTrailCalulationDetailsByAppId: async (appId: string) => {
+    set({ trailCalucationDataLoading: true });
+    try {
+      const response = await API.get(`/mobixCamsCredit/v1/credit/tc/${appId}`);
+      set({
+        trailCalucationData: response.data,
+        trailCalucationDataLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        trailCalucationDataError: error.message,
+        trailCalucationDataLoading: false,
+      });
+    }
   },
 }));
 

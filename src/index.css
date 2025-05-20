@@ -13,3 +13,12 @@ body {
 #root {
   padding: 0px;
 }
+
+.ant-tabs-card .ant-tabs-tab-active {
+  background-color: #002140 !important;
+  border-color: #002140 !important;
+}
+
+.ant-tabs-card .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: white !important;
+}

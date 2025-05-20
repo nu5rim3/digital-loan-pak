@@ -69,6 +69,7 @@ const CHeader: React.FC<ICHeaderProps> = ({ collapsed, setCollapsed }) => {
         <div>
           <Button
             type="text"
+            hidden
             icon={collapsed ? <MenuUnfoldOutlined className='text-white' /> : <MenuFoldOutlined className='text-white' />}
             onClick={() => setCollapsed(!collapsed)}
           />

@@ -121,7 +121,7 @@ const IncomeDetails: React.FC<IIncomeDetail> = ({ stkId, subTitle }) => {
                 footer={true}
                 open={isModalOpen}
                 onClose={closeModal}
-                title={`${mode === 'create' ? 'Create' : 'Update'} Other Details`}
+                title={`${mode === 'create' ? 'Create' : 'Update'} Other Income Details`}
                 size="medium"
             >
                 <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>

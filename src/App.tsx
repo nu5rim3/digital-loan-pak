@@ -35,7 +35,7 @@ const GuarantorOnboarding = lazy(() => import('./pages/Users/Guarantors/Guaranto
 const CustomerDetails = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard/Customer/CustomerDetails'))
 const GuarantorDetail = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard/Guarantor/GuarantorDetails'))
 const WitnessDetails = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard/Witness/WitnessDetails'))
-const BusinessIntroducers = lazy(() => import('./pages/AccessAndPermission/Roles'))
+const BusinessIntroducers = lazy(() => import('./pages/AccessAndPermission/BusinessIntroducer'))
 const LoanFormApplication = lazy(() => import('./pages/Loan/LoanApplication/LoanDashboard/LoanApplication/LoanFormApplication'))
 
 
@@ -153,7 +153,7 @@ const App: React.FC = () => {
                     path="users/*"
                     element={
                       <PrivateRoute allowedRoles={
-                        ["ADMIN", "BHO", "VIEWER"]
+                        ["ADMIN", "BHO", "CRO"]
                       } />}>
                     <Route path="customer" element={<CustomerOnboarding />} />
                     <Route path="customers" element={<Customers />} />
@@ -172,7 +172,7 @@ const App: React.FC = () => {
                     path="loan/*"
                     element={
                       <PrivateRoute allowedRoles={
-                        ["ADMIN", "BHO", "VIEWER"]
+                        ["ADMIN", "BHO", "CRO"]
                       } />}>
                     <Route path="application" element={<LoanApplication />} />
                     {/* <Route path="application/:appId" element={<LoanDashboard />} /> */}

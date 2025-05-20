@@ -225,6 +225,8 @@ interface IStackholderState {
     incId: string,
     incomeDetails: IIncomeDetails
   ) => Promise<void>;
+
+  getStakeHolderByCNIC: (cnic: string) => Promise<void>;
 }
 
 const useStakeholderStore = create<IStackholderState>((set) => ({
@@ -747,6 +749,22 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({ incomeDetailsError: error.message, incomeDetailsLoading: false });
+    }
+  },
+
+  getStakeHolderByCNIC: async (cnic: string) => {
+    set({ stakeholderLoading: true, stakeholderError: null });
+    try {
+      const response = await API.get(
+        `/mobixCamsClientele/v1/clienteles/identifiers/${cnic}`
+      );
+      set({
+        stakeholder: response.data,
+        stakeholderLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ stakeholderError: error.message, stakeholderLoading: false });
     }
   },
 }));

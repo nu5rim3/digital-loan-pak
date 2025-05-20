@@ -105,9 +105,8 @@ const ExceptionalApprovalModal: React.FC<ExceptionalApprovalModalProps> = ({
 
   return (
     <CommonModal
-      title={`${
-        mode === "save" ? "Add" : mode === "update" ? "Update" : "Remove"
-      } Term Deposit`}
+      title={`${mode === "save" ? "Add" : mode === "update" ? "Update" : "Remove"
+        } Term Deposit`}
       centered={true}
       footer={true}
       open={isModalOpen}

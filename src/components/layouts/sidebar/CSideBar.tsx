@@ -1,9 +1,11 @@
-import { ApartmentOutlined, BlockOutlined, DeploymentUnitOutlined, GroupOutlined, NodeIndexOutlined, ProductOutlined, ProjectOutlined, RocketOutlined, RubyOutlined, UngroupOutlined, UsergroupAddOutlined, UserOutlined, UserSwitchOutlined, TeamOutlined } from '@ant-design/icons';
-import { Layout, Menu } from 'antd';
+import { ApartmentOutlined, BlockOutlined, DeploymentUnitOutlined, GroupOutlined, NodeIndexOutlined, ProductOutlined, ProjectOutlined, RocketOutlined, RubyOutlined, UngroupOutlined, UsergroupAddOutlined, UserOutlined, UserSwitchOutlined, TeamOutlined, PushpinOutlined, PushpinFilled } from '@ant-design/icons';
+import { Button, Layout, Menu } from 'antd';
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import Logo1 from '../../../assets/full_logo_white.png';
 import Logo2 from '../../../assets/logo.png';
+import lolclogo from '../../../assets/LOLC_ICON.png'
+import lolclogo2 from '../../../assets/LOLC_ISLAMIC.png'
 import { ItemType as SideItemType } from 'antd/es/menu/interface';
 import useUserStore from '../../../store/userStore';
 
@@ -140,7 +142,7 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
             icon: <RocketOutlined />,
             label: 'Loan Application',
             key: '6',
-            roles: ["ADMIN", 'BHO'],
+            roles: ["ADMIN", 'BHO', 'CRO'],
             children: [
                 {
                     label: 'Loan Request',
@@ -164,24 +166,54 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
     };
     return (
         <Sider
-            collapsible
+            // collapsible
             collapsed={collapsed}
             onCollapse={handleCollapse}
             width={280}
+            style={{
+                position: 'relative', // important for absolute positioning to work
+                height: '100vh', // ensure full height
+            }}
         >
             <div className="flex justify-center items-center py-2 font-bold text-xl">
                 {
-                    collapsed ? <img src={Logo2} alt='digital-me' style={{ width: 60 }} /> : <img src={Logo1} alt='digital-me' style={{ width: 200 }} />
+                    collapsed ? <img src={Logo2} alt='digital-me' style={{ width: 45 }} /> : <img src={Logo1} alt='digital-me' style={{ width: 200 }} />
                 }
+            </div>
+            <div className='flex justify-end'>
+                <Button icon={collapsed ? <PushpinOutlined /> : <PushpinFilled />} shape="circle" onClick={() => handleCollapse(!collapsed)}></Button>
             </div>
             <Menu
                 mode='inline'
                 theme='dark'
-                // defaultSelectedKeys={['1']}
                 openKeys={openKeys}
-                onOpenChange={handleOpenChange} // Ensures only one submenu stays open
+                onOpenChange={handleOpenChange}
                 items={filteredMenu}
+                onSelect={() => {
+                    if (!collapsed) {
+                        handleCollapse(!collapsed)
+                    }
+                }
+                }
             />
+
+            <div
+                style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: '0.5rem 0',
+                }}
+            >
+                <img
+                    style={{ maxWidth: '60%', maxHeight: '100%' }}
+                    src={!collapsed ? lolclogo2 : lolclogo}
+                />
+            </div>
+
         </Sider>
     )
 }

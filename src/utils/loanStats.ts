@@ -63,3 +63,16 @@ export function calculateLoanStats(data: any) {
     arrearsAmount,
   };
 }
+
+export function specialChargesByCode(code: string): string {
+  const specialCharges: { [key: string]: string } = {
+    A: "Amount with Max/Min",
+    A1: "Amount without Max/Min",
+    P: "Percentage with Max/Min",
+    P1: "Percentage without Max/Min",
+    S: "Amount with Selection",
+    S1: "Percentage with Selection",
+    M: "Amount with Max/Min",
+  };
+  return specialCharges[code] || "Unknown Charge";
+}
