@@ -55,4 +55,4 @@ const DetailsCard: React.FC<DetailsCardProps> = ({ detail, onRemove }) => (
   </Card>
 );
 
-export default DetailsCard; 
+export default DetailsCard;
