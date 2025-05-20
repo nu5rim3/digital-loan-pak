@@ -100,8 +100,8 @@ const LoanDaashboard: React.FC = () => {
                 return <div>Witness Acknowledgement</div>;
             case 'term-deposit':
                 return <div>Term Deposit</div>;
-                case 'business-introducer':
-                    return <BusinessIntroducer/>;
+            case 'business-introducer':
+                return <BusinessIntroducer />;
             default:
                 return null;
         }
@@ -243,18 +243,18 @@ const LoanDaashboard: React.FC = () => {
             "status": "A"
         },
 
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2024-07-11T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 13,
-            "section": "term-deposit",
-            "isMandatory": "0",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
+        // {
+        //     "createdBy": "SYSTEM",
+        //     "creationDate": "2024-07-11T09:24:51.357+00:00",
+        //     "lastModifiedBy": null,
+        //     "lastModifiedDate": null,
+        //     "id": 13,
+        //     "section": "term-deposit",
+        //     "isMandatory": "0",
+        //     "completed": "1",
+        //     "enabled": null,
+        //     "status": "A"
+        // },
         {
             "createdBy": "SYSTEM",
             "creationDate": "2024-07-11T09:24:51.357+00:00",

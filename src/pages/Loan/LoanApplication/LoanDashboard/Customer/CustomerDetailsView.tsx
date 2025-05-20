@@ -484,11 +484,11 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                         )}
                                     />
                                 </Form.Item>
-                                <Form.Item label="Physical Disability Description" validateStatus={errors.stkPhysDisabilityDesce ? "error" : ""} help={errors.stkPhysDisabilityDesce?.message} hidden={physDisability === 'false'}>
+                                <Form.Item label="Description of Physical Disability" validateStatus={errors.stkPhysDisabilityDesce ? "error" : ""} help={errors.stkPhysDisabilityDesce?.message} hidden={physDisability === 'false'}>
                                     <Controller
                                         name="stkPhysDisabilityDesce"
                                         control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Physical Disability Description" />}
+                                        render={({ field }) => <Input {...field} placeholder="Enter Description of Physical Disability" />}
                                     />
                                 </Form.Item>
                                 <Form.Item label="Geographic Location" validateStatus={errors.geoLocation ? "error" : ""} help={errors.geoLocation?.message}>

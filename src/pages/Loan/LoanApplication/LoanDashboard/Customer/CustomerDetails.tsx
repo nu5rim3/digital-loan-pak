@@ -32,7 +32,7 @@ const schema = yup.object().shape({
     stkTitle: yup.string().required("Title is required"),
     stkFatherOrHusName: yup.string().required("Father or Husband Name is required"),
     stkEduLevel: yup.string().required("Education Qualification is required"),
-    stkPhysDisability: yup.string().required("Physical Disability is required"),
+    stkPhysDisability: yup.string().required("Description of Physical Disability  is required"),
     headOfFamily: yup.string().required("Head of Family is required"),
     healthCondition: yup.string().required("Health Condition is required"),
     stkSequence: yup.string(),
@@ -394,7 +394,7 @@ const CustomerDetails: React.FC = () => {
                                 />}
                             />
                         </Form.Item>
-                        <Form.Item label="Physical Disability" validateStatus={errors.stkPhysDisability ? "error" : ""} help={errors.stkPhysDisability?.message} required>
+                        <Form.Item label="Description of Physical Disability " validateStatus={errors.stkPhysDisability ? "error" : ""} help={errors.stkPhysDisability?.message} required>
                             <Controller
                                 name="stkPhysDisability"
                                 control={control}
@@ -407,16 +407,16 @@ const CustomerDetails: React.FC = () => {
                                             { value: 'true', label: 'Yes' },
                                             { value: 'false', label: 'No' },
                                         ]}
-                                        placeholder="Select Physical Disability"
+                                        placeholder="Select Description of Physical Disability "
                                     />
                                 )}
                             />
                         </Form.Item>
-                        <Form.Item label="Physical Disability Description" validateStatus={errors.stkPhysDisabilityDesce ? "error" : ""} help={errors.stkPhysDisabilityDesce?.message} hidden={physDisability === 'false'}>
+                        <Form.Item label="Description of Physical Disability  Description" validateStatus={errors.stkPhysDisabilityDesce ? "error" : ""} help={errors.stkPhysDisabilityDesce?.message} hidden={physDisability === 'false'}>
                             <Controller
                                 name="stkPhysDisabilityDesce"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Physical Disability Description" value={field.value || ''} />}
+                                render={({ field }) => <Input.TextArea {...field} placeholder="Enter Description of Physical Disability  Description" value={field.value || ''} />}
                             />
                         </Form.Item>
                         <Form.Item label="Geo Location" validateStatus={errors.geoLocation ? "error" : ""} help={errors.geoLocation?.message} required>

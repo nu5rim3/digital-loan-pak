@@ -86,8 +86,11 @@ export interface IProduct {
     trtxCalMethod: string;
     prtbMndFlg: string;
   }[];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  pStru: any[];
+  pStru: {
+    struSeq: string;
+    struPrds: string;
+    struRent: string | null;
+  }[];
 }
 
 export interface IProductDefinition {
@@ -306,7 +309,16 @@ export interface IOtherIncome {
   lastModifiedDate?: string;
 }
 
+export interface ISpecialCharge {
+  trtxTrx: string | undefined;
+  trtxAmt: string | undefined;
+  trtxAddcrit: string | undefined;
+  trtxCalMethod: string | undefined;
+  prtbMndFlg: string | undefined;
+}
+
 export interface ITrailCalulation {
+  tcNo?: string;
   pMode: string;
   pUser: string;
   pFacilityType: string;
@@ -354,17 +366,11 @@ export interface ITrailCalulation {
   prevLoanContractNo?: string | null;
   prevLoanOutstanding?: string | null;
   countOfRollOver?: string | null;
-  pTrtx?: {
-    trtxTrx?: string;
-    trtxAmt?: string;
-    trtxAddcrit?: string;
-    trtxCalMethod?: string;
-    prtbMndFlg?: string;
-  }[];
+  pTrtx: ISpecialCharge[];
   pStru: {
-    struSeq: string;
+    struSeq: number;
     struPrds: string;
-    amount: string;
+    struRent: string;
   }[];
 }
 
@@ -485,6 +491,10 @@ interface ICreditState {
   trailCalulationDetails: ITrailCalulationDetailsResponse | null;
   trailCalulationDetailsLoading: boolean;
   trailCalulationDetailsError: string | null;
+
+  trailCalucationData: ITrailCalulation | null;
+  trailCalucationDataLoading: boolean;
+  trailCalucationDataError: string | null;
 
   fetachGoldLoanAppDetails: (appId: string) => Promise<void>;
   addGoldLoanAppDetails: (data: IGoldLoanAppDetails) => Promise<void>;
@@ -617,6 +627,8 @@ interface ICreditState {
     cliId: string,
     data: ITrailCalulation
   ) => Promise<void>;
+
+  fetchTrailCalulationDetailsByAppId: (appId: string) => Promise<void>;
 }
 
 const useCreditStore = create<ICreditState>((set) => ({
@@ -696,6 +708,10 @@ const useCreditStore = create<ICreditState>((set) => ({
   trailCalulationDetails: null,
   trailCalulationDetailsLoading: false,
   trailCalulationDetailsError: null,
+
+  trailCalucationData: null,
+  trailCalucationDataLoading: false,
+  trailCalucationDataError: null,
 
   fetachGoldLoanAppDetails: async (appId: string) => {
     set({ goldLoanAppDetailsLoading: true });
@@ -1648,13 +1664,31 @@ const useCreditStore = create<ICreditState>((set) => ({
         trailCalulationLoading: false,
       }));
       notification.success({
-        message: "Trail Calculation Saved Successfully",
+        message: "Trial Calculation Saved Successfully",
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({
         trailCalulationError: error.message,
         trailCalulationLoading: false,
+      });
+    }
+  },
+
+  // /mobixCamsCredit/v1/credit/tc/{appId}
+  fetchTrailCalulationDetailsByAppId: async (appId: string) => {
+    set({ trailCalucationDataLoading: true });
+    try {
+      const response = await API.get(`/mobixCamsCredit/v1/credit/tc/${appId}`);
+      set({
+        trailCalucationData: response.data,
+        trailCalucationDataLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        trailCalucationDataError: error.message,
+        trailCalucationDataLoading: false,
       });
     }
   },
