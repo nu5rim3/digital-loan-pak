@@ -23,8 +23,8 @@ interface IOtherIncomeProps {
 const schema = yup.object().shape({
     profession: yup.string().required('Profession is required'),
     sourceOfIncome: yup.string().required('Source of income is required'),
-    purposeOfLoan: yup.string().required('Purpose of loan is required'),
-    incomeCategory: yup.string().required('Income category is required'),
+    purposeOfLoan: yup.string().required('Purpose of Facility is required'),
+    incomeCategory: yup.string().required('Other Income Category is required'),
     description: yup.string().required('Description is required'),
 });
 
@@ -102,14 +102,14 @@ const OtherIncome: React.FC<IOtherIncomeProps> = ({ sourceOfIncome, resetSourceO
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Purpose of Loan" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
+                    <Form.Item label="Purpose of Facility" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
                         <Controller
                             name="purposeOfLoan"
                             control={control}
                             render={({ field }) => (
                                 <Select
                                     {...field}
-                                    placeholder="Select Purpose of Loan"
+                                    placeholder="Select Purpose of Facility"
                                     loading={facilityPurposeLoading}
                                     options={
                                         facilityPurpose.map((item) => ({ label: formatName(item.code), value: item.code }))
@@ -140,14 +140,14 @@ const OtherIncome: React.FC<IOtherIncomeProps> = ({ sourceOfIncome, resetSourceO
                         />
                     </Form.Item>
                     {/* incomeCategory */}
-                    <Form.Item label="Income Category" name="incomeCategory" validateStatus={errors.incomeCategory ? 'error' : ''} help={errors.incomeCategory?.message} required>
+                    <Form.Item label="Other Income Category" name="incomeCategory" validateStatus={errors.incomeCategory ? 'error' : ''} help={errors.incomeCategory?.message} required>
                         <Controller
                             name="incomeCategory"
                             control={control}
                             render={({ field }) => (
                                 <Input
                                     {...field}
-                                    placeholder="Enter Income Category"
+                                    placeholder="Enter Other Income Category"
                                 />
                             )}
                         />

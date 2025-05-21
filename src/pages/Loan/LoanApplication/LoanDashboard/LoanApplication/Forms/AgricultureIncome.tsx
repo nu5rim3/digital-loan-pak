@@ -53,14 +53,14 @@ const schema = yup.object().shape({
     loanLimitRabi: yup.string().typeError('Loan limit for Rabi must be a number').required(),
     loanLimitKharif: yup.string().typeError('Loan limit for Kharif must be a number').required(),
     loanLimitTotal: yup.string().typeError('Total loan limit must be a number').required(),
-    purposeOfLoan: yup.string().required('Purpose of loan is required'),
+    purposeOfLoan: yup.string().required('Purpose of Facility is required'),
     floodsFactor: yup.string().required('Floods factor is required'),
     irrigation: yup.string().required('Irrigation method is required'),
     methods: yup.string().required('Methods are required'),
     proofOfCult: yup.string().required('Proof of cultivation is required'),
     expInCult: yup.string().required('Experience in cultivation is required'),
     borrowerDistrict: yup.string().required('Borrower district is required'),
-    loanTenure: yup.string().required('Loan tenure is required'),
+    loanTenure: yup.string().required('Loan Tenure in Days in Days is required'),
     insCompany: yup.string().required('Insurance company is required'),
     policyIssuedDate: yup.string().required('Policy issued date is required'),
     policyExpiredDate: yup.string().required('Policy expired date is required'),
@@ -74,8 +74,8 @@ const schema = yup.object().shape({
     otherInfo3: yup.string(),
     assets: yup.array().required('Assets are required'),
     totAssetsValue: yup.string().typeError('Total assets value must be a number').required('Total assets value is required'),
-    rabiCrop: yup.string().required('Rabi crop is required'),
-    kharifCrop: yup.string().required('Kharif crop is required'),
+    rabiCrop: yup.string().required('Name of Rabi Crop is required'),
+    kharifCrop: yup.string().required('Name of Kharif Crop is required'),
     khasra: yup.string().required('Khasra number is required'),
     khewat: yup.string().required('Khewat number is required'),
     khtoni: yup.string().required('Khtoni number is required'),
@@ -300,10 +300,10 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
 
     return (
 
-        <Card title={"Agricultural Income Details"} size='small'>
+        <Card title={"Agriculture Income details"} size='small'>
             <Form layout='vertical' onFinish={handleSubmit(onSubmit)} >
                 <div className='flex flex-col gap-3'>
-                    <Card size='small' title={<span className='text-gray-600'>Nature of The Borrower</span>}>
+                    <Card size='small' title={<span className='text-gray-600'>Nature of the Borrower</span>}>
                         <div className='grid grid-cols-3 gap-3'>
                             <Form.Item label="Profession" name="profession" validateStatus={errors.profession ? 'error' : ''} help={errors.profession?.message} required>
                                 <Controller
@@ -324,14 +324,14 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                     )}
                                 />
                             </Form.Item>
-                            <Form.Item label="Purpose of Loan" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
+                            <Form.Item label="Purpose of Facility" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
                                 <Controller
                                     name="purposeOfLoan"
                                     control={control}
                                     render={({ field }) => (
                                         <Select
                                             {...field}
-                                            placeholder="Select Purpose of Loan"
+                                            placeholder="Select Purpose of Facility"
                                             loading={facilityPurposeLoading}
                                             options={
                                                 facilityPurpose.map((item) => ({ label: formatName(item.code), value: item.code }))
@@ -361,7 +361,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                     )}
                                 />
                             </Form.Item>
-                            <Form.Item label="Nature of The Borrower" name="natureOfTheBorrower" validateStatus={errors.natureOfTheBorrower ? 'error' : ''} help={errors.natureOfTheBorrower?.message} required>
+                            <Form.Item label="Nature of the Borrower" name="natureOfTheBorrower" validateStatus={errors.natureOfTheBorrower ? 'error' : ''} help={errors.natureOfTheBorrower?.message} required>
                                 <Controller
                                     name="natureOfTheBorrower"
                                     control={control}
@@ -466,11 +466,14 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                     name="ownContact"
                                     control={control}
                                     render={({ field }) => (
-                                        <Input
+                                        <InputNumber
                                             {...field}
-                                            placeholder="Contact Number"
+                                            placeholder="Enter Contact Number"
                                             maxLength={11}
-                                            onChange={(e) => setValue('ownContact', formatPhoneNumber(e.target.value), { shouldValidate: true })}
+                                            style={{ width: '100%' }}
+                                            formatter={value => value?.replace(/\D/g, '') ?? ''}
+                                            parser={value => value?.replace(/\D/g, '') ?? ''}
+                                            onChange={(value) => setValue('ownContact', formatPhoneNumber(value ?? ''), { shouldValidate: true })}
                                         />
                                     )}
                                 />
@@ -489,7 +492,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                             </Form.Item>
                         </div>
                     </Card>
-                    <Card size='small' title={<span className='text-gray-600'>Cultivated Land Area (in acres)</span>}>
+                    <Card size='small' title={<span className='text-gray-600'>Land Under Cultivation in Acres</span>}>
                         <div className='grid grid-cols-3 gap-3'>
 
                             <Form.Item label="Acres Owned" name="acresOwned" validateStatus={errors.acresOwned ? 'error' : ''} help={errors.acresOwned?.message} required>
@@ -587,14 +590,14 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                             <div className='w-full'>
                                 <Card size='small' title={<span className='text-gray-600'>Rabi Crop Details</span>}>
                                     <div className='grid grid-cols-1 gap-3'>
-                                        <Form.Item label="Rabi Crop Name" name="rabiCrop" validateStatus={errors.rabiCrop ? 'error' : ''} help={errors.rabiCrop?.message} required>
+                                        <Form.Item label="Name of Rabi Crop" name="rabiCrop" validateStatus={errors.rabiCrop ? 'error' : ''} help={errors.rabiCrop?.message} required>
                                             <Controller
                                                 name="rabiCrop"
                                                 control={control}
                                                 render={({ field }) => (
                                                     <Input
                                                         {...field}
-                                                        placeholder="Rabi Crop Name"
+                                                        placeholder="Name of Rabi Crop"
                                                     />
                                                 )}
                                             />
@@ -644,14 +647,14 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                             <div className='w-full'>
                                 <Card size='small' title={<span className='text-gray-600'>Kharif Crop Details</span>}>
                                     <div className='grid grid-cols-1 gap-3'>
-                                        <Form.Item label="Kharif Crop Name" name="kharifCrop" validateStatus={errors.kharifCrop ? 'error' : ''} help={errors.kharifCrop?.message} required>
+                                        <Form.Item label="Name of Kharif Crop" name="kharifCrop" validateStatus={errors.kharifCrop ? 'error' : ''} help={errors.kharifCrop?.message} required>
                                             <Controller
                                                 name="kharifCrop"
                                                 control={control}
                                                 render={({ field }) => (
                                                     <Input
                                                         {...field}
-                                                        placeholder="Kharif Crop Name"
+                                                        placeholder="Name of Kharif Crop"
                                                     />
                                                 )}
                                             />
@@ -710,6 +713,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                         <Input
                                             {...field}
                                             placeholder="Khasra Number"
+                                            type='number'
                                         />
                                     )}
                                 />
@@ -723,6 +727,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                         <Input
                                             {...field}
                                             placeholder="Khewat Number"
+                                            type='number'
                                         />
                                     )}
                                 />
@@ -736,6 +741,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                         <Input
                                             {...field}
                                             placeholder="Khtoni Number"
+                                            type='number'
                                         />
                                     )}
                                 />
@@ -1025,7 +1031,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                         </div>
                     </Card>
 
-                    <Card size='small' title={<span className='text-gray-600'>Ownerships</span>}>
+                    <Card size='small' title={<span className='text-gray-600'>Ownership</span>}>
                         <div className='flex justify-end'>
                             <Button type='primary' onClick={() => openModal('save')} icon={<PlusOutlined />}>Add Ownership</Button>
                         </div>
@@ -1073,7 +1079,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                         </Form.Item>
                     </Card>
 
-                    <Card size='small' title={<span className='text-gray-600'>Crop Loan Insureance Report (CLIR)</span>}>
+                    <Card size='small' title={<span className='text-gray-600'>Crop Loan Insurance Report (CLIR)</span>}>
                         {/* loanTenure */}
                         <div className='grid grid-cols-4 gap-3'>
                             <Form.Item label="Loan Tenure" name="loanTenure" validateStatus={errors.loanTenure ? 'error' : ''} help={errors.loanTenure?.message} required>
@@ -1083,8 +1089,9 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                     render={({ field }) => (
                                         <Input
                                             {...field}
-                                            placeholder="Loan Tenure"
+                                            placeholder="Loan Tenure in Days"
                                             defaultValue='360'
+                                            suffix="Days"
                                         />
                                     )}
                                 />
@@ -1197,14 +1204,14 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                 />
                             </Form.Item>
 
-                            <Form.Item label="Number of Time Claim Loged" name="claimLodged" validateStatus={errors.claimLodged ? 'error' : ''} help={errors.claimLodged?.message} required>
+                            <Form.Item label="Number Of Times Claim Lodged" name="claimLodged" validateStatus={errors.claimLodged ? 'error' : ''} help={errors.claimLodged?.message} required>
                                 <Controller
                                     name="claimLodged"
                                     control={control}
                                     render={({ field }) => (
                                         <Input
                                             {...field}
-                                            placeholder="Number of Time Claim Loged"
+                                            placeholder="Number Of Times Claim Lodged"
                                         />
                                     )}
                                 />
@@ -1251,7 +1258,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                         </div>
                     </Card>
 
-                    <Tag color="green" className='mt-3 font-bold'>Note: I test hereby undertake that I am the owner/ tenant/ shared cropper of the crops on the above specified land and will utilize the loan only for the purchase of inputs and other production activities of the reported crops.</Tag>
+                    <Tag color="green" className='mt-3 font-bold text-center'>Note: I test hereby undertake that I am the owner/ tenant/ shared cropper of the crops on the above specified land and will utilize the loan only <br /> for the purchase of inputs and other production activities of the reported crops.</Tag>
 
                     <div className='pt-5'>
                         <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>

@@ -160,7 +160,7 @@ export interface IBusinessIncome {
   prevExpInBns: string;
   ownOfBnsPlace: string;
   costOfBns: string;
-  bnsRatings: string;
+  // bnsRatings: string;
   repeatCustomer: string;
   status?: string;
 }

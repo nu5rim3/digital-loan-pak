@@ -1,5 +1,5 @@
 import { useForm, Controller } from "react-hook-form";
-import { Input, Button, Form, Select, Card, Space } from "antd";
+import { Input, Button, Form, Select, Card, Space, InputNumber } from "antd";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useEffect, useState } from "react";
@@ -17,7 +17,7 @@ const schema = yup.object().shape({
     name: yup.string().required("Name is required"),
     initals: yup.string().required("Initials is required"),
     surname: yup.string(),
-    telcoProvider: yup.string().required("Operator is required"),
+    telcoProvider: yup.string().required("Operator Name is required"),
     contactNumber: yup.string().required("Contact Number is required"),
     identificationType: yup.string().required("Identification Type is required"),
     identificationNumber: yup.string().required("Identification Number is required"),
@@ -190,13 +190,13 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                     </div>
                     <div className="grid grid-cols-2 gap-3">
 
-                        <Form.Item label="Operator" validateStatus={errors.telcoProvider ? "error" : ""} help={errors.telcoProvider?.message} required>
+                        <Form.Item label="Operator Name" validateStatus={errors.telcoProvider ? "error" : ""} help={errors.telcoProvider?.message} required>
                             <Controller
                                 name="telcoProvider"
                                 control={control}
                                 render={({ field }) =>
 
-                                    <Select {...field} placeholder="Select an Operator" allowClear loading={operatorLoading} options={operators.map((item) => ({
+                                    <Select {...field} placeholder="Select an Operator Name" allowClear loading={operatorLoading} options={operators.map((item) => ({
                                         label: item.vendorDesc,
                                         value: item.vendorDesc
                                     }))}>
@@ -209,10 +209,14 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                                 name="contactNumber"
                                 control={control}
                                 render={({ field }) =>
-                                    <Input {...field} placeholder="Enter contact number"
-                                        type='number'
+                                    <InputNumber
+                                        {...field}
+                                        placeholder="Enter Contact Number"
                                         maxLength={11}
-                                        onChange={(e) => setValue('contactNumber', formatPhoneNumber(e.target.value), { shouldValidate: true })}
+                                        style={{ width: '100%' }}
+                                        formatter={value => value?.replace(/\D/g, '') ?? ''}
+                                        parser={value => value?.replace(/\D/g, '') ?? ''}
+                                        onChange={(value) => setValue('contactNumber', formatPhoneNumber(value ?? ''), { shouldValidate: true })}
                                     />
                                 }
                             />

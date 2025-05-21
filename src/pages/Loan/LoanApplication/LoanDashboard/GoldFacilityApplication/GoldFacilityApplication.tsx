@@ -13,7 +13,7 @@ import CommonModal from '../../../../../components/common/modal/commonModal';
 import { convertStringToNumber, formatSentence } from '../../../../../utils/formatterFunctions';
 
 const schema = yup.object().shape({
-    tppNumber: yup.string().required('TTP Number is required'),
+    tppNumber: yup.string().required('TPP Number is required'),
     goldLoanAppType: yup
         .string()
         .required('Gold Facility Type is required')
@@ -317,12 +317,12 @@ const GoldFacilityApplication: React.FC = () => {
                                                     )}
                                                 />
                                             </Form.Item>
-                                            <Form.Item label="TTP Number" validateStatus={errors.tppNumber ? 'error' : ''} help={errors.tppNumber?.message} required>
+                                            <Form.Item label="TPP Number" validateStatus={errors.tppNumber ? 'error' : ''} help={errors.tppNumber?.message} required>
                                                 <Controller
                                                     name="tppNumber"
                                                     control={control}
                                                     render={({ field }) => (
-                                                        <Input {...field} placeholder="TTP Number" />
+                                                        <Input {...field} placeholder="TPP Number" type='number' />
                                                     )}
                                                 />
                                             </Form.Item>
@@ -510,7 +510,7 @@ const DetailsCard: React.FC<{ detail: IGoldLoanAppDetails; onEdit: () => void; o
                     }
                 </div>
                 <Descriptions column={2}>
-                    <Descriptions.Item label="TTP Number">{detail.tppNumber}</Descriptions.Item>
+                    <Descriptions.Item label="TPP Number">{detail.tppNumber}</Descriptions.Item>
                     <Descriptions.Item label="Gold Loan App Type">{detail.goldLoanAppType === 'DEN' ? 'Dencimeter' : 'Goldsmith'}</Descriptions.Item>
                     {
                         detail.goldLoanAppType === 'GOD' && (

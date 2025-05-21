@@ -23,16 +23,16 @@ interface IBusinessIncomeProps {
 const schema = yup.object().shape({
     profession: yup.string().required('Profession is required'),
     sourceOfIncome: yup.string().required('Source of Income is required'),
-    purposeOfLoan: yup.string().required('Purpose of Loan is required'),
+    purposeOfLoan: yup.string().required('Purpose of Facility is required'),
     bnsName: yup.string().required('Business Name is required'),
     natureOfBns: yup.string().required('Nature of Business is required'),
     bnsAddress: yup.string().required('Business Address is required'),
-    phoneNo: yup.string().required('Phone Number is required').matches(/^[0-9]{11}$/, 'Phone Number must be 11 digits'),
+    phoneNo: yup.string().required('Contact Number is required').matches(/^[0-9]{11}$/, 'Contact Number must be 11 digits'),
     description: yup.string().required('Description is required'),
     prevExpInBns: yup.string().required('Previous Experience in Business is required'),
     ownOfBnsPlace: yup.string().required('Ownership of Business Place is required'),
-    costOfBns: yup.string().required('Cost of Business is required'),
-    bnsRatings: yup.string().required('Business Ratings is required'),
+    costOfBns: yup.string().required('Business Asset and Stock is required'),
+    // bnsRatings: yup.string().required('Business Ratings is required'),
     repeatCustomer: yup.string().required('Repeat Customer is required'),
 })
 
@@ -89,7 +89,7 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
             setValue('costOfBns', updateData.costOfBns)
             setValue('phoneNo', updateData.phoneNo)
             setValue('repeatCustomer', updateData.repeatCustomer)
-            setValue('bnsRatings', updateData.bnsRatings)
+            // setValue('bnsRatings', updateData.bnsRatings)
             setValue('bnsAddress', updateData.bnsAddress)
             setValue('description', updateData.description)
 
@@ -125,14 +125,14 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
                                     )}
                                 />
                             </Form.Item>
-                            <Form.Item label="Purpose of Loan" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
+                            <Form.Item label="Purpose of Facility" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
                                 <Controller
                                     name="purposeOfLoan"
                                     control={control}
                                     render={({ field }) => (
                                         <Select
                                             {...field}
-                                            placeholder="Select Purpose of Loan"
+                                            placeholder="Select Purpose of Facility"
                                             loading={facilityPurposeLoading}
                                             options={
                                                 facilityPurpose.map((item) => ({ label: formatName(item.code), value: item.code }))
@@ -215,21 +215,21 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
                                     )}
                                 />
                             </Form.Item>
-                            <Form.Item label="Own of Business Place" name="ownOfBnsPlace" validateStatus={errors.ownOfBnsPlace ? 'error' : ''} help={errors.ownOfBnsPlace?.message} required>
+                            <Form.Item label="Ownership of Business Place" name="ownOfBnsPlace" validateStatus={errors.ownOfBnsPlace ? 'error' : ''} help={errors.ownOfBnsPlace?.message} required>
                                 <Controller
                                     name="ownOfBnsPlace"
                                     control={control}
                                     render={({ field }) => (
                                         <Select
                                             {...field}
-                                            placeholder="Select Own of Business Place"
+                                            placeholder="Select Ownership of Business Place"
                                             loading={businessOwnershipLoading}
                                             options={businessOwnership.map((item) => ({ label: item.description, value: item.code }))}
                                         />
                                     )}
                                 />
                             </Form.Item>
-                            <Form.Item label="Cost of Business" name="costOfBns" validateStatus={errors.costOfBns ? 'error' : ''} help={errors.costOfBns?.message} required>
+                            <Form.Item label="Business Asset and Stock" name="costOfBns" validateStatus={errors.costOfBns ? 'error' : ''} help={errors.costOfBns?.message} required>
                                 <Controller
                                     name="costOfBns"
                                     control={control}
@@ -237,7 +237,7 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
                                         <InputNumber
                                             className='w-full'
                                             {...field}
-                                            placeholder="Cost of Business"
+                                            placeholder="Business Asset and Stock"
                                             defaultValue='0'
                                             formatter={(value) =>
                                                 `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
@@ -254,16 +254,19 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
                                 />
                             </Form.Item>
 
-                            <Form.Item label="Phone Number" name="phoneNo" validateStatus={errors.phoneNo ? 'error' : ''} help={errors.phoneNo?.message} required>
+                            <Form.Item label="Contact Number" name="phoneNo" validateStatus={errors.phoneNo ? 'error' : ''} help={errors.phoneNo?.message} required>
                                 <Controller
                                     name="phoneNo"
                                     control={control}
                                     render={({ field }) => (
-                                        <Input
+                                        <InputNumber
                                             {...field}
-                                            placeholder="Phone Number"
+                                            placeholder="Enter Contact Number"
                                             maxLength={11}
-                                            onChange={(e) => setValue('phoneNo', formatPhoneNumber(e.target.value), { shouldValidate: true })}
+                                            style={{ width: '100%' }}
+                                            formatter={value => value?.replace(/\D/g, '') ?? ''}
+                                            parser={value => value?.replace(/\D/g, '') ?? ''}
+                                            onChange={(value) => setValue('phoneNo', formatPhoneNumber(value ?? ''), { shouldValidate: true })}
                                         />
                                     )}
                                 />
@@ -283,7 +286,8 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
                                     )}
                                 />
                             </Form.Item>
-                            <Form.Item label="Business Ratings" name="bnsRatings" validateStatus={errors.bnsRatings ? 'error' : ''} help={errors.bnsRatings?.message} required>
+                            {/* Removed - Not in the DOC */}
+                            {/* <Form.Item label="Business Ratings" name="bnsRatings" validateStatus={errors.bnsRatings ? 'error' : ''} help={errors.bnsRatings?.message} required>
                                 <Controller
                                     name="bnsRatings"
                                     control={control}
@@ -295,7 +299,7 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
                                         />
                                     )}
                                 />
-                            </Form.Item>
+                            </Form.Item> */}
                             <Form.Item label="Business Address" name="bnsAddress" validateStatus={errors.bnsAddress ? 'error' : ''} help={errors.bnsAddress?.message} required>
                                 <Controller
                                     name="bnsAddress"

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import * as yup from 'yup'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Card, Form, Input, Select } from 'antd';
+import { Button, Card, Form, Input, InputNumber, Select } from 'antd';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { formatName, formatPhoneNumber, formatSentence } from '../../../../../../utils/formatterFunctions';
 import useCommonStore from '../../../../../../store/commonStore';
@@ -23,7 +23,7 @@ interface ISalaryIncomeForm {
 const schema = yup.object().shape({
     profession: yup.string().required('Profession is required'),
     sourceOfIncome: yup.string().required('Source of Income is required'),
-    purposeOfLoan: yup.string().required('Purpose of Loan is required'),
+    purposeOfLoan: yup.string().required('Purpose of Facility is required'),
     employer: yup.string().required('Employer is required'),
     typeOfBusiness: yup.string().required('Type of Business is required'),
     designation: yup.string().required('Designation is required'),
@@ -31,7 +31,7 @@ const schema = yup.object().shape({
     empAddress: yup.string().required('Employment Address is required'),
     typeOfJob: yup.string().required('Type of Job is required'),
     natureOfEmp: yup.string().required('Nature of Employment is required'),
-    contactNo: yup.string().required('Phone Number is required').test('len', 'Phone Number must be 11 characters', val => val?.length === 11),
+    contactNo: yup.string().required('Contact Number is required').test('len', 'Contact Number must be 11 characters', val => val?.length === 11),
     residenceOrWorking: yup.string().required('Residence or Working is required'),
     proofOfSalary: yup.string().required('Proof of Salary is required'),
     repeatCustomer: yup.string(),
@@ -126,14 +126,14 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Purpose of Loan" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
+                    <Form.Item label="Purpose of Facility" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
                         <Controller
                             name="purposeOfLoan"
                             control={control}
                             render={({ field }) => (
                                 <Select
                                     {...field}
-                                    placeholder="Select Purpose of Loan"
+                                    placeholder="Select Purpose of Facility"
                                     loading={facilityPurposeLoading}
                                     options={
                                         facilityPurpose.map((item) => ({ label: formatName(item.code), value: item.code }))
@@ -253,16 +253,19 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Contact No" name="contactNo" validateStatus={errors.contactNo ? 'error' : ''} help={errors.contactNo?.message} required>
+                    <Form.Item label="Contact Number" name="contactNo" validateStatus={errors.contactNo ? 'error' : ''} help={errors.contactNo?.message} required>
                         <Controller
                             name="contactNo"
                             control={control}
                             render={({ field }) => (
-                                <Input
+                                <InputNumber
                                     {...field}
-                                    placeholder="Contact No"
+                                    placeholder="Enter Contact Number"
                                     maxLength={11}
-                                    onChange={(e) => setValue('contactNo', formatPhoneNumber(e.target.value), { shouldValidate: true })}
+                                    style={{ width: '100%' }}
+                                    formatter={value => value?.replace(/\D/g, '') ?? ''}
+                                    parser={value => value?.replace(/\D/g, '') ?? ''}
+                                    onChange={(value) => setValue('contactNo', formatPhoneNumber(value ?? ''), { shouldValidate: true })}
                                 />
                             )}
                         />

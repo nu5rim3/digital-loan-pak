@@ -204,14 +204,14 @@ const OtherDetails: React.FC<IOtherDetails> = ({ stkId }) => {
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="Savings Account" validateStatus={errors.savingsReq ? 'error' : ''} help={errors.savingsReq?.message} required>
+                        <Form.Item label="Saving Account" validateStatus={errors.savingsReq ? 'error' : ''} help={errors.savingsReq?.message} required>
                             <Controller
                                 name="savingsReq"
                                 control={control}
                                 render={({ field }) =>
                                     <Select
                                         {...field}
-                                        placeholder="Savings Account"
+                                        placeholder="Saving Account"
                                         options={[{ label: 'Yes', value: 'Y' }, { label: 'No', value: 'N' }]}
                                     />
                                 }
@@ -281,7 +281,7 @@ const DetailsCard: React.FC<{ detail: IOtherInfo; onEdit: () => void; dataArray:
             <Descriptions.Item label="Occupation">{formatSentence(dataArray[1].filter((item: any) => item.code === detail.occupation)[0]?.description) ?? '-'}</Descriptions.Item>
             <Descriptions.Item label="Sector">{formatSentence(dataArray[2].filter((item: any) => item.code === detail.sector)[0]?.description) ?? '-'}</Descriptions.Item>
             <Descriptions.Item label="Sub Sector">{formatSentence(dataArray[3].filter((item: any) => item.code === detail.subSector)[0]?.description) ?? '-'}</Descriptions.Item>
-            <Descriptions.Item label="Savings Account">{detail.savingsReq === 'YES' ? 'Yes' : 'No'}</Descriptions.Item>
+            <Descriptions.Item label="Saving Account">{detail.savingsReq === 'YES' ? 'Yes' : 'No'}</Descriptions.Item>
             <Descriptions.Item label="Politically Exposed Person">{detail.poliExpo === 'Y' ? 'Yes' : 'No'}</Descriptions.Item>
             <Descriptions.Item label="How did you know">{formatSentence(dataArray[4].filter((item: any) => item.code === detail.howDidYouKnow)[0]?.description) ?? '-'}</Descriptions.Item>
             <Descriptions.Item label="WHT Declaration">{detail.whtDec ?? '-'}</Descriptions.Item>

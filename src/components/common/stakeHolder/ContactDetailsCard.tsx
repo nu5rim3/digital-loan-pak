@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Collapse, Descriptions, Empty, Form, Input, Select, Switch } from 'antd';
+import { Button, Card, Collapse, Descriptions, Empty, Form, InputNumber, Select, Switch } from 'antd';
 import { PlusOutlined, EditOutlined, SaveOutlined, UndoOutlined } from '@ant-design/icons';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -130,12 +130,14 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
                                 control={control}
                                 name="phoneNo"
                                 render={({ field }) => (
-                                    <Input
+                                    <InputNumber
                                         {...field}
                                         placeholder="Enter Contact Number"
-                                        type='number'
                                         maxLength={11}
-                                        onChange={(e) => setValue('phoneNo', formatPhoneNumber(e.target.value), { shouldValidate: true })}
+                                        style={{ width: '100%' }}
+                                        formatter={value => value?.replace(/\D/g, '') ?? ''}
+                                        parser={value => value?.replace(/\D/g, '') ?? ''}
+                                        onChange={(value) => setValue('phoneNo', formatPhoneNumber(value ?? ''), { shouldValidate: true })}
                                     />
                                 )}
                             />
