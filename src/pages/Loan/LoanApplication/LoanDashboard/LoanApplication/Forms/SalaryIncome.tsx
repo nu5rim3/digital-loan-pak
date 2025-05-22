@@ -288,30 +288,30 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Residence Or Working" name="residenceOrWorking" validateStatus={errors.residenceOrWorking ? 'error' : ''} help={errors.residenceOrWorking?.message} required>
+                    <Form.Item label="Travel distance to branch/service center" name="residenceOrWorking" validateStatus={errors.residenceOrWorking ? 'error' : ''} help={errors.residenceOrWorking?.message} required>
                         <Controller
                             name="residenceOrWorking"
                             control={control}
                             render={({ field }) => (
                                 <Select
                                     {...field}
-                                    placeholder="Select Residence or Working"
+                                    placeholder="Select Travel Distance"
                                     loading={distanceForResidenceOrWorkLoading}
-                                    options={distanceForResidenceOrWork.map((item) => ({ label: item.description, value: item.description }))}
+                                    options={distanceForResidenceOrWork.map((item) => ({ label: item.description, value: item.code }))}
                                 />
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Proof of Salary" name="proofOfSalary" validateStatus={errors.proofOfSalary ? 'error' : ''} help={errors.proofOfSalary?.message} required>
+                    <Form.Item label="Proof of Salary information" name="proofOfSalary" validateStatus={errors.proofOfSalary ? 'error' : ''} help={errors.proofOfSalary?.message} required>
                         <Controller
                             name="proofOfSalary"
                             control={control}
                             render={({ field }) => (
                                 <Select
                                     {...field}
-                                    placeholder="Select Proof of Salary"
+                                    placeholder="Select Proof of Salary information"
                                     loading={salaryLoading}
-                                    options={salary.map((item) => ({ label: item.description, value: item.description }))}
+                                    options={salary.map((item) => ({ label: item.description, value: item.code }))}
                                 />
                             )}
                         />
@@ -325,7 +325,7 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                                     {...field}
                                     placeholder="Select Repeat Customer"
                                     loading={repeatCustomersLoading}
-                                    options={repeatCustomers.map((item) => ({ label: item.description, value: item.description }))}
+                                    options={repeatCustomers.map((item) => ({ label: item.description, value: item.code }))}
                                 />
                             )}
                         />

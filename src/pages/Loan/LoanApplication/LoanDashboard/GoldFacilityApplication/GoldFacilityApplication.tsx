@@ -13,7 +13,7 @@ import CommonModal from '../../../../../components/common/modal/commonModal';
 import { convertStringToNumber, formatSentence } from '../../../../../utils/formatterFunctions';
 
 const schema = yup.object().shape({
-    tppNumber: yup.string().required('TPP Number is required'),
+    tppNumber: yup.string().required('TPP Number is required').matches(/^[0-9]+$/, 'TPP Number must be a number'),
     goldLoanAppType: yup
         .string()
         .required('Gold Facility Type is required')
@@ -179,6 +179,7 @@ const GoldFacilityApplication: React.FC = () => {
 
     const goldLoanType = watch('goldLoanAppType');
     const goldNetWeight = watch('goldNetWeight');
+    const denNetWeight = watch('denNetWeight');
 
 
     useEffect(() => {
@@ -207,11 +208,11 @@ const GoldFacilityApplication: React.FC = () => {
     useEffect(() => {
         if (goldLoanType === 'GOD' && marketValue !== undefined && Number(goldNetWeight) > 0) {
             setValue('goldCollateralValue', (Number(goldNetWeight) * convertStringToNumber(marketValue?.valueAmount ?? '')).toString());
-        } else if (goldLoanType === 'DEN' && marketValue !== undefined && Number(goldNetWeight) > 0) {
-            setValue('denCollateralValue', (Number(goldNetWeight) * convertStringToNumber(marketValue?.valueAmount ?? '')).toString());
+        } else if (goldLoanType === 'DEN' && marketValue !== undefined && Number(denNetWeight) > 0) {
+            setValue('denCollateralValue', (Number(denNetWeight) * convertStringToNumber(marketValue?.valueAmount ?? '')).toString());
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [goldNetWeight, marketValue])
+    }, [denNetWeight, goldNetWeight, marketValue])
 
 
 
@@ -222,9 +223,9 @@ const GoldFacilityApplication: React.FC = () => {
                     <Button type='primary' icon={<PlusOutlined />} onClick={() => openModal('save')}>Add Article Details</Button>
                 </div>
                 {goldLoanAppDetailsLoading ? (
-                    <Empty description="Loading Term Deposit Placed..." />
+                    <Empty description="Loading  Gold Facility Application ..." />
                 ) : goldLoanAppDetails.length === 0 ? (
-                    <Empty description="No Term Deposit Placed" />
+                    <Empty description="No Gold Facility Application Available" />
                 ) : (
                     <div className='grid grid-cols-2 gap-3'>
                         {goldLoanAppDetails.map((item, index) => (
@@ -364,7 +365,7 @@ const GoldFacilityApplication: React.FC = () => {
                                                                 name="goldGrossWeight"
                                                                 control={control}
                                                                 render={({ field }) => (
-                                                                    <Input {...field} placeholder="Gold Gross Weight" />
+                                                                    <Input {...field} placeholder="Gold Gross Weight" type='number' />
                                                                 )}
                                                             />
                                                         </Form.Item>
@@ -374,7 +375,7 @@ const GoldFacilityApplication: React.FC = () => {
                                                                 name="goldNetWeight"
                                                                 control={control}
                                                                 render={({ field }) => (
-                                                                    <Input {...field} placeholder="Gold Net Weight" />
+                                                                    <Input {...field} placeholder="Gold Net Weight" type='number' />
                                                                 )}
                                                             />
                                                         </Form.Item>
@@ -447,7 +448,7 @@ const GoldFacilityApplication: React.FC = () => {
                                                                 name="denGrossWeight"
                                                                 control={control}
                                                                 render={({ field }) => (
-                                                                    <Input {...field} placeholder="Den Gross Weight" />
+                                                                    <Input {...field} placeholder="Den Gross Weight" type='number' />
                                                                 )}
                                                             />
                                                         </Form.Item>
@@ -456,7 +457,7 @@ const GoldFacilityApplication: React.FC = () => {
                                                                 name="denNetWeight"
                                                                 control={control}
                                                                 render={({ field }) => (
-                                                                    <Input {...field} placeholder="Den Net Weight" />
+                                                                    <Input {...field} placeholder="Den Net Weight" type='number' />
                                                                 )}
                                                             />
                                                         </Form.Item>

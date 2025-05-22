@@ -24,7 +24,7 @@ const schema = yup.object().shape({
     stkCNicExpDate: yup.string().required("CNIC Expired Date is required"),
     stkCNicStatus: yup.string().required("CNIC Status is required"),
     stkCusName: yup.string().required("Customer Name is required"),
-    stkInitials: yup.string().required("Initials is required"),
+    stkInitials: yup.string().required("Initial is required"),
     stkSurName: yup.string().required("Surname is required"),
     stkOtherName: yup.string().required("Other Name is required"),
     stkDob: yup.string().required("Date of Birth is required"),
@@ -184,302 +184,302 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                                             render={({ field }) => <Input {...field} placeholder="Enter Customer Name" />}
                                         />
                                     </Form.Item>
-                                    <Form.Item label="initial validateStatus={errors.stkInitials ? " error" : ""} help={errors.stkInitials?.message} required>
-                                    <Controller
-                                        name="stkInitials"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter initial />}
+                                    <Form.Item label="Initial" validateStatus={errors.stkInitials ? "error" : ""} help={errors.stkInitials?.message} required>
+                                        <Controller
+                                            name="stkInitials"
+                                            control={control}
+                                            render={({ field }) => <Input {...field} placeholder="Enter Initial" />}
                                         />
                                     </Form.Item>
                                     <Form.Item label="Surname" validateStatus={errors.stkSurName ? "error" : ""} help={errors.stkSurName?.message} required>
-                                    <Controller
-                                        name="stkSurName"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Surname" />}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Other Name" validateStatus={errors.stkOtherName ? "error" : ""} help={errors.stkOtherName?.message} required>
-                                    <Controller
-                                        name="stkOtherName"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Other Name" />}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="CNIC Status" validateStatus={errors.stkCNicStatus ? "error" : ""} help={errors.stkCNicStatus?.message} required>
-                                    <Controller
-                                        name="stkCNicStatus"
-                                        control={control}
-                                        render={({ field }) => <Select {...field} placeholder="Select a CNIC Status" allowClear loading={cnicStausLoading} options={cnicStaus.map((item) => ({
-                                            label: item.description,
-                                            value: item.code
-                                        }))}>
-                                        </Select>}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="CNIC" validateStatus={errors.stkCNic ? "error" : ""} help={errors.stkCNic?.message} required>
-                                    <Controller
-                                        name="stkCNic"
-                                        disabled
-                                        control={control}
-                                        render={({ field }) => <Input {...field}
-                                            maxLength={15} // Max length considering dashes
-                                            placeholder="xxxxx-xxxxxxx-x"
-                                            onChange={(e) => {
-                                                const formatted = formatCNIC(e.target.value);
-                                                setValue("stkCNic", formatted, { shouldValidate: true });
-                                            }}
-                                        />}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="CNIC Issued Date" validateStatus={errors.stkCNicIssuedDate ? "error" : ""} help={errors.stkCNicIssuedDate?.message} required>
-                                    <Controller
-                                        name="stkCNicIssuedDate"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter CNIC Issued Date" type='date' />}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="CNIC Expired Date" validateStatus={errors.stkCNicExpDate ? "error" : ""} help={errors.stkCNicExpDate?.message} required>
-                                    <Controller
-                                        name="stkCNicExpDate"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter CNIC Expired Date" type='date' />}
-                                    />
-                                </Form.Item>
-
-                                <Form.Item label="Date of Birth" validateStatus={errors.stkDob ? "error" : ""} help={errors.stkDob?.message} required>
-                                    <Controller
-                                        name="stkDob"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Date of Birth" type='date' />}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Age" validateStatus={errors.stkAge ? "error" : ""} help={errors.stkAge?.message} required>
-                                    <Controller
-                                        name="stkAge"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Age" type='number' />}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Gender" validateStatus={errors.stkGender ? "error" : ""} help={errors.stkGender?.message} required>
-                                    <Controller
-                                        name='stkGender'
-                                        control={control}
-                                        render={({ field }) =>
-                                            <Select
-                                                {...field}
-                                                allowClear
-                                                options={[
-                                                    { value: 'F', label: 'Female' },
-                                                    { value: 'M', label: 'Male' },
-                                                    { value: 'A', label: 'Androgynous' },
-                                                ]}
-                                                placeholder="Select Gender"
-                                            />
-                                        }
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Organization Type" validateStatus={errors.stkOrgType ? "error" : ""} help={errors.stkOrgType?.message} required>
-                                    <Controller
-                                        name="stkOrgType"
-                                        control={control}
-                                        render={({ field }) =>
-                                            <Select {...field} placeholder="Select an Organization" allowClear loading={organizationTypeLoading} options={organizationType.map((item) => ({
+                                        <Controller
+                                            name="stkSurName"
+                                            control={control}
+                                            render={({ field }) => <Input {...field} placeholder="Enter Surname" />}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Other Name" validateStatus={errors.stkOtherName ? "error" : ""} help={errors.stkOtherName?.message} required>
+                                        <Controller
+                                            name="stkOtherName"
+                                            control={control}
+                                            render={({ field }) => <Input {...field} placeholder="Enter Other Name" />}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="CNIC Status" validateStatus={errors.stkCNicStatus ? "error" : ""} help={errors.stkCNicStatus?.message} required>
+                                        <Controller
+                                            name="stkCNicStatus"
+                                            control={control}
+                                            render={({ field }) => <Select {...field} placeholder="Select a CNIC Status" allowClear loading={cnicStausLoading} options={cnicStaus.map((item) => ({
                                                 label: item.description,
                                                 value: item.code
                                             }))}>
-                                            </Select>
-                                        }
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Education Level" validateStatus={errors.stkEduLevel ? "error" : ""} help={errors.stkEduLevel?.message} required>
-                                    <Controller
-                                        name="stkEduLevel"
-                                        control={control}
-                                        render={({ field }) =>
-                                            <Select
+                                            </Select>}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="CNIC" validateStatus={errors.stkCNic ? "error" : ""} help={errors.stkCNic?.message} required>
+                                        <Controller
+                                            name="stkCNic"
+                                            disabled
+                                            control={control}
+                                            render={({ field }) => <Input {...field}
+                                                maxLength={15} // Max length considering dashes
+                                                placeholder="xxxxx-xxxxxxx-x"
+                                                onChange={(e) => {
+                                                    const formatted = formatCNIC(e.target.value);
+                                                    setValue("stkCNic", formatted, { shouldValidate: true });
+                                                }}
+                                            />}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="CNIC Issued Date" validateStatus={errors.stkCNicIssuedDate ? "error" : ""} help={errors.stkCNicIssuedDate?.message} required>
+                                        <Controller
+                                            name="stkCNicIssuedDate"
+                                            control={control}
+                                            render={({ field }) => <Input {...field} placeholder="Enter CNIC Issued Date" type='date' />}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="CNIC Expired Date" validateStatus={errors.stkCNicExpDate ? "error" : ""} help={errors.stkCNicExpDate?.message} required>
+                                        <Controller
+                                            name="stkCNicExpDate"
+                                            control={control}
+                                            render={({ field }) => <Input {...field} placeholder="Enter CNIC Expired Date" type='date' />}
+                                        />
+                                    </Form.Item>
+
+                                    <Form.Item label="Date of Birth" validateStatus={errors.stkDob ? "error" : ""} help={errors.stkDob?.message} required>
+                                        <Controller
+                                            name="stkDob"
+                                            control={control}
+                                            render={({ field }) => <Input {...field} placeholder="Enter Date of Birth" type='date' />}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Age" validateStatus={errors.stkAge ? "error" : ""} help={errors.stkAge?.message} required>
+                                        <Controller
+                                            name="stkAge"
+                                            control={control}
+                                            render={({ field }) => <Input {...field} placeholder="Enter Age" type='number' />}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Gender" validateStatus={errors.stkGender ? "error" : ""} help={errors.stkGender?.message} required>
+                                        <Controller
+                                            name='stkGender'
+                                            control={control}
+                                            render={({ field }) =>
+                                                <Select
+                                                    {...field}
+                                                    allowClear
+                                                    options={[
+                                                        { value: 'F', label: 'Female' },
+                                                        { value: 'M', label: 'Male' },
+                                                        { value: 'A', label: 'Androgynous' },
+                                                    ]}
+                                                    placeholder="Select Gender"
+                                                />
+                                            }
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Organization Type" validateStatus={errors.stkOrgType ? "error" : ""} help={errors.stkOrgType?.message} required>
+                                        <Controller
+                                            name="stkOrgType"
+                                            control={control}
+                                            render={({ field }) =>
+                                                <Select {...field} placeholder="Select an Organization" allowClear loading={organizationTypeLoading} options={organizationType.map((item) => ({
+                                                    label: item.description,
+                                                    value: item.code
+                                                }))}>
+                                                </Select>
+                                            }
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Education Level" validateStatus={errors.stkEduLevel ? "error" : ""} help={errors.stkEduLevel?.message} required>
+                                        <Controller
+                                            name="stkEduLevel"
+                                            control={control}
+                                            render={({ field }) =>
+                                                <Select
+                                                    {...field}
+                                                    allowClear
+                                                    options={educationLevel.map((item) => ({
+                                                        label: item.description,
+                                                        value: item.code
+                                                    }))}
+                                                    placeholder="Select Education Level"
+                                                    loading={educationLevelLoading}
+                                                />
+                                            }
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Marital Status" validateStatus={errors.stkMaritialStatus ? "error" : ""} help={errors.stkMaritialStatus?.message} required>
+                                        <Controller
+                                            name="stkMaritialStatus"
+                                            control={control}
+                                            render={({ field }) =>
+                                                <Select
+                                                    {...field}
+                                                    allowClear
+                                                    options={[
+                                                        { value: 'D', label: 'Married' },
+                                                        { value: 'S', label: 'Single' },
+                                                        { value: 'P', label: 'Separated' },
+                                                        { value: 'W', label: 'Widow' },
+                                                        { value: 'I', label: 'Widower' },
+                                                    ]}
+                                                    placeholder="Select Marital Status" />
+                                            }
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Marital Comment" validateStatus={errors.stkMaritialComment ? "error" : ""} help={errors.stkMaritialComment?.message} required>
+                                        <Controller
+                                            name="stkMaritialComment"
+                                            control={control}
+                                            render={({ field }) => <Input {...field} placeholder="Enter Marital Comment" />}
+                                        />
+                                    </Form.Item>
+
+                                    <Form.Item label="Father or Husband Name" validateStatus={errors.stkFatherOrHusName ? "error" : ""} help={errors.stkFatherOrHusName?.message} required>
+                                        <Controller
+                                            name="stkFatherOrHusName"
+                                            control={control}
+                                            render={({ field }) => <Input {...field} placeholder="Enter Father or Husband Name" />}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Number of Dependents" validateStatus={errors.stkNumOfDependents ? "error" : ""} help={errors.stkNumOfDependents?.message} hidden>
+                                        <Controller
+                                            name="stkNumOfDependents"
+                                            control={control}
+                                            render={({ field }) => <Input {...field} placeholder="Enter Number of Dependents" />}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Number of Earners" validateStatus={errors.stkNumOfEarners ? "error" : ""} help={errors.stkNumOfEarners?.message} hidden>
+                                        <Controller
+                                            name="stkNumOfEarners"
+                                            control={control}
+                                            render={({ field }) => <Input {...field} placeholder="Enter Number of Earners" />}
+                                        />
+                                    </Form.Item>
+
+
+                                    <Form.Item label="Customer Code" validateStatus={errors.stkCusCode ? "error" : ""} help={errors.stkCusCode?.message}>
+                                        <Controller
+                                            name="stkCusCode"
+                                            control={control}
+                                            render={({ field }) => <Input {...field} placeholder="Enter Customer Code" />}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Group/Reference Number" validateStatus={errors.stkGrpRefNo ? "error" : ""} help={errors.stkGrpRefNo?.message}>
+                                        <Controller
+                                            name="stkGrpRefNo"
+                                            control={control}
+                                            render={({ field }) => <Input {...field} placeholder="Enter Group/Reference Number" />}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Status" validateStatus={errors.status ? "error" : ""} help={errors.status?.message} hidden>
+                                        <Controller
+                                            name="status"
+                                            control={control}
+                                            render={({ field }) => <Input {...field} placeholder="Enter Status" />}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Relationship" validateStatus={errors.relationship ? "error" : ""} help={errors.relationship?.message} required>
+                                        <Controller
+                                            name="relationship"
+                                            control={control}
+                                            render={({ field }) => <Input {...field} placeholder="Enter Relationship" />}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Head of Family" validateStatus={errors.headOfFamily ? "error" : ""} help={errors.headOfFamily?.message} required>
+                                        <Controller
+                                            name="headOfFamily"
+                                            control={control}
+                                            render={({ field }) =>
+                                                <Select
+                                                    {...field}
+                                                    allowClear
+                                                    options={headOfFamily.map((item) => ({
+                                                        label: item.description,
+                                                        value: item.code
+                                                    }))}
+                                                    placeholder="Select Head of Family"
+                                                    loading={headOfFamilyLoading}
+                                                />
+                                            }
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Household Contact" validateStatus={errors.houseHoldCont ? "error" : ""} help={errors.houseHoldCont?.message} hidden>
+                                        <Controller
+                                            name="houseHoldCont"
+                                            control={control}
+                                            render={({ field }) => <Input {...field} placeholder="Enter Household Contact" />}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Health Condition" validateStatus={errors.healthCondition ? "error" : ""} help={errors.healthCondition?.message} required>
+                                        <Controller
+                                            name="healthCondition"
+                                            control={control}
+                                            render={({ field }) => <Select
                                                 {...field}
                                                 allowClear
-                                                options={educationLevel.map((item) => ({
+                                                options={healthCondition.map((item) => ({
                                                     label: item.description,
                                                     value: item.code
                                                 }))}
-                                                placeholder="Select Education Level"
-                                                loading={educationLevelLoading}
-                                            />
-                                        }
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Marital Status" validateStatus={errors.stkMaritialStatus ? "error" : ""} help={errors.stkMaritialStatus?.message} required>
-                                    <Controller
-                                        name="stkMaritialStatus"
-                                        control={control}
-                                        render={({ field }) =>
-                                            <Select
-                                                {...field}
-                                                allowClear
-                                                options={[
-                                                    { value: 'D', label: 'Married' },
-                                                    { value: 'S', label: 'Single' },
-                                                    { value: 'P', label: 'Separated' },
-                                                    { value: 'W', label: 'Widow' },
-                                                    { value: 'I', label: 'Widower' },
-                                                ]}
-                                                placeholder="Select Marital Status" />
-                                        }
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Marital Comment" validateStatus={errors.stkMaritialComment ? "error" : ""} help={errors.stkMaritialComment?.message} required>
-                                    <Controller
-                                        name="stkMaritialComment"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Marital Comment" />}
-                                    />
-                                </Form.Item>
+                                                placeholder="Select Health Condition"
+                                                loading={healthConditionLoading}
+                                            />}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Physical Disability" validateStatus={errors.stkPhysDisability ? "error" : ""} help={errors.stkPhysDisability?.message} required>
+                                        <Controller
+                                            name="stkPhysDisability"
+                                            control={control}
+                                            render={({ field }) => (
+                                                <Select
+                                                    {...field}
+                                                    value={field.value === undefined ? null : field.value}
+                                                    allowClear
+                                                    options={[
+                                                        { value: 'true', label: 'Yes' },
+                                                        { value: 'false', label: 'No' },
+                                                    ]}
+                                                    placeholder="Select Physical Disability"
+                                                />
+                                            )}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Geographic Location" validateStatus={errors.geoLocation ? "error" : ""} help={errors.geoLocation?.message}>
+                                        <Controller
+                                            name="geoLocation"
+                                            control={control}
+                                            render={({ field }) => <Input {...field} placeholder="Enter Geographic Location" />}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Employee Number" validateStatus={errors.stkEmpNo ? "error" : ""} help={errors.stkEmpNo?.message}>
+                                        <Controller
+                                            name="stkEmpNo"
+                                            control={control}
+                                            render={({ field }) => <Input {...field} placeholder="Enter Employee Number" />}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item hidden>
+                                        <Controller
+                                            name="idx"
+                                            control={control}
+                                            render={({ field }) => <Input {...field} />}
+                                        />
+                                    </Form.Item>
+                                </div>
+                            </Form>
+                        </Card>
 
-                                <Form.Item label="Father or Husband Name" validateStatus={errors.stkFatherOrHusName ? "error" : ""} help={errors.stkFatherOrHusName?.message} required>
-                                    <Controller
-                                        name="stkFatherOrHusName"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Father or Husband Name" />}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Number of Dependents" validateStatus={errors.stkNumOfDependents ? "error" : ""} help={errors.stkNumOfDependents?.message} hidden>
-                                    <Controller
-                                        name="stkNumOfDependents"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Number of Dependents" />}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Number of Earners" validateStatus={errors.stkNumOfEarners ? "error" : ""} help={errors.stkNumOfEarners?.message} hidden>
-                                    <Controller
-                                        name="stkNumOfEarners"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Number of Earners" />}
-                                    />
-                                </Form.Item>
+                        <ContactDetailsCard stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
 
+                        <AddressDetailsCard stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
 
-                                <Form.Item label="Customer Code" validateStatus={errors.stkCusCode ? "error" : ""} help={errors.stkCusCode?.message}>
-                                    <Controller
-                                        name="stkCusCode"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Customer Code" />}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Group/Reference Number" validateStatus={errors.stkGrpRefNo ? "error" : ""} help={errors.stkGrpRefNo?.message}>
-                                    <Controller
-                                        name="stkGrpRefNo"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Group/Reference Number" />}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Status" validateStatus={errors.status ? "error" : ""} help={errors.status?.message} hidden>
-                                    <Controller
-                                        name="status"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Status" />}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Relationship" validateStatus={errors.relationship ? "error" : ""} help={errors.relationship?.message} required>
-                                    <Controller
-                                        name="relationship"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Relationship" />}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Head of Family" validateStatus={errors.headOfFamily ? "error" : ""} help={errors.headOfFamily?.message} required>
-                                    <Controller
-                                        name="headOfFamily"
-                                        control={control}
-                                        render={({ field }) =>
-                                            <Select
-                                                {...field}
-                                                allowClear
-                                                options={headOfFamily.map((item) => ({
-                                                    label: item.description,
-                                                    value: item.code
-                                                }))}
-                                                placeholder="Select Head of Family"
-                                                loading={headOfFamilyLoading}
-                                            />
-                                        }
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Household Contact" validateStatus={errors.houseHoldCont ? "error" : ""} help={errors.houseHoldCont?.message} hidden>
-                                    <Controller
-                                        name="houseHoldCont"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Household Contact" />}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Health Condition" validateStatus={errors.healthCondition ? "error" : ""} help={errors.healthCondition?.message} required>
-                                    <Controller
-                                        name="healthCondition"
-                                        control={control}
-                                        render={({ field }) => <Select
-                                            {...field}
-                                            allowClear
-                                            options={healthCondition.map((item) => ({
-                                                label: item.description,
-                                                value: item.code
-                                            }))}
-                                            placeholder="Select Health Condition"
-                                            loading={healthConditionLoading}
-                                        />}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Physical Disability" validateStatus={errors.stkPhysDisability ? "error" : ""} help={errors.stkPhysDisability?.message} required>
-                                    <Controller
-                                        name="stkPhysDisability"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Select
-                                                {...field}
-                                                value={field.value === undefined ? null : field.value}
-                                                allowClear
-                                                options={[
-                                                    { value: 'true', label: 'Yes' },
-                                                    { value: 'false', label: 'No' },
-                                                ]}
-                                                placeholder="Select Physical Disability"
-                                            />
-                                        )}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Geographic Location" validateStatus={errors.geoLocation ? "error" : ""} help={errors.geoLocation?.message}>
-                                    <Controller
-                                        name="geoLocation"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Geographic Location" />}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Employee Number" validateStatus={errors.stkEmpNo ? "error" : ""} help={errors.stkEmpNo?.message}>
-                                    <Controller
-                                        name="stkEmpNo"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Employee Number" />}
-                                    />
-                                </Form.Item>
-                                <Form.Item hidden>
-                                    <Controller
-                                        name="idx"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} />}
-                                    />
-                                </Form.Item>
-                            </div>
-                        </Form>
-                    </Card>
+                        <IncomeDetails stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
 
-            <ContactDetailsCard stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
-
-            <AddressDetailsCard stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
-
-            <IncomeDetails stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
-
-        </>
-    )
-}
+                    </>
+                )
+            }
 
         </div >
     )

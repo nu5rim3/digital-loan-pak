@@ -29,7 +29,7 @@ const ECIBDetails: React.FC<IECIBDetails> = ({ idx, cnic }) => {
 
 
 
-    console.log('ecibDetails : ', ecibDetails);
+    // console.log('ecibDetails : ', ecibDetails);
 
     return (
         <>

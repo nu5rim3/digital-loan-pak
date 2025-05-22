@@ -959,14 +959,14 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                 />
                             </Form.Item>
 
-                            <Form.Item label="Agriculturing Methods" name="methods" validateStatus={errors.methods ? 'error' : ''} help={errors.methods?.message} required>
+                            <Form.Item label="Methods use for Agriculture Machineries" name="methods" validateStatus={errors.methods ? 'error' : ''} help={errors.methods?.message} required>
                                 <Controller
                                     name="methods"
                                     control={control}
                                     render={({ field }) => (
                                         <Select
                                             {...field}
-                                            placeholder="Select Agriculturing Methods"
+                                            placeholder="Select Methods use for Agriculture Machineries"
                                             loading={agriMethodsLoading}
                                             options={agriMethods.map((item) => ({ label: item.description, value: item.code }))}
                                         />
@@ -974,14 +974,14 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                 />
                             </Form.Item>
 
-                            <Form.Item label="Market Check" name="marketCheck" validateStatus={errors.marketCheck ? 'error' : ''} help={errors.marketCheck?.message} required>
+                            <Form.Item label="Market Check through Feild Verfication" name="marketCheck" validateStatus={errors.marketCheck ? 'error' : ''} help={errors.marketCheck?.message} required>
                                 <Controller
                                     name="marketCheck"
                                     control={control}
                                     render={({ field }) => (
                                         <Select
                                             {...field}
-                                            placeholder="Select Market Check"
+                                            placeholder="Select Market Check through Feild Verfication"
                                             loading={marketCheckLoading}
                                             options={marketCheck.map((item) => ({ label: item.description, value: item.code }))}
                                         />
@@ -1295,7 +1295,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
 
 
             <CommonModal
-                title="Ownerships"
+                title="Ownership"
                 open={isModalOpen}
                 onClose={closeModal}
                 footer={true}
@@ -1319,7 +1319,6 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                                 options: [
                                                     { label: <span>Home</span>, value: 'Home' },
                                                     { label: <span>Agri Land</span>, value: 'Agri Land' },
-                                                    { label: <span>Land</span>, value: 'Land' },
                                                     { label: <span>Tube Well</span>, value: 'Tube Well' },
                                                     { label: <span>Trolly</span>, value: 'Trolly' },
                                                 ],
