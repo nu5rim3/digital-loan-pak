@@ -175,6 +175,12 @@ interface IStackholderState {
   incomeDetailsLoading: boolean;
   incomeDetailsError: string | null;
 
+  qrdetails: {
+    qrImageUrl: string;
+  };
+  qrdetailsLoading: boolean;
+  qrdetailsError: string | null;
+
   //   fetchStakeholdes: () => Promise<void>;
   // fetchStakeholderById: (idx: string) => Promise<void>;
   // fetchStakeholderByCNIC: (cnic: string) => Promise<void>;
@@ -227,6 +233,7 @@ interface IStackholderState {
   ) => Promise<void>;
 
   getStakeHolderByCNIC: (cnic: string) => Promise<void>;
+  getQRDetailsByStkId: (cliIdx: string) => Promise<void>;
 }
 
 const useStakeholderStore = create<IStackholderState>((set) => ({
@@ -266,6 +273,12 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
   incomesDetails: [],
   incomeDetailsLoading: false,
   incomeDetailsError: null,
+
+  qrdetails: {
+    qrImageUrl: "",
+  },
+  qrdetailsLoading: false,
+  qrdetailsError: null,
 
   //   fetchStakeholdes: async () => {
   //     set({ stakeholderLoading: true, stakeholderError: null });
@@ -765,6 +778,25 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({ stakeholderError: error.message, stakeholderLoading: false });
+    }
+  },
+
+  // /mobixCamsClientele/v1/clienteles/{cliIdx}/qr-codes
+  getQRDetailsByStkId: async (cliIdx: string) => {
+    set({ qrdetailsLoading: true, qrdetailsError: null });
+    try {
+      const response = await API.get(
+        `/mobixCamsClientele/v1/clienteles/${cliIdx}/qr-codes`,
+        { responseType: "blob" }
+      );
+      const qrImageUrl = URL.createObjectURL(response.data);
+      set({
+        qrdetails: { qrImageUrl },
+        qrdetailsLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ qrdetailsError: error.message, qrdetailsLoading: false });
     }
   },
 }));

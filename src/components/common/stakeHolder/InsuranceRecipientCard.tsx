@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Collapse, Descriptions, Empty, Form, Input, InputNumber, Select } from 'antd';
+import { Button, Card, Collapse, Descriptions, Empty, Form, Input, Select } from 'antd';
 import { PlusOutlined, EditOutlined, SaveOutlined, UndoOutlined } from '@ant-design/icons';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -18,7 +18,7 @@ const schema = yup.object().shape({
     recipientName: yup.string().required('Recipent Name is required'),
     relationship: yup.string().required('Relationship is required'),
     cNicNo: yup.string().required('CNIC is required'),
-    phoneNo: yup.string().required('Contact Number is required').test('len', 'Contact Number must be 11 characters', val => val?.length === 11),
+    phoneNo: yup.string().required('Contact Number is required').matches(/^[0-9]{11}$/, 'Contact Number must be 11 digits'),
     isBorrowerRelatedParty: yup.string().default('Y'),
 });
 
@@ -149,14 +149,32 @@ const InsuranceRecipientCard: React.FC<IInsuranceRecipientCard> = ({ stkId }) =>
                                 name="phoneNo"
                                 control={control}
                                 render={({ field }) => (
-                                    <InputNumber
+                                    <Input
                                         {...field}
                                         placeholder="Enter Contact Number"
                                         maxLength={11}
                                         style={{ width: '100%' }}
-                                        formatter={value => value?.replace(/\D/g, '') ?? ''}
-                                        parser={value => value?.replace(/\D/g, '') ?? ''}
-                                        onChange={(value) => setValue('phoneNo', formatPhoneNumber(value ?? ''), { shouldValidate: true })}
+                                        type="text"
+                                        onKeyDown={e => {
+                                            // Allow control keys (backspace, delete, arrows, etc.)
+                                            if (
+                                                !/[0-9]/.test(e.key) &&
+                                                e.key !== 'Backspace' &&
+                                                e.key !== 'Delete' &&
+                                                e.key !== 'ArrowLeft' &&
+                                                e.key !== 'ArrowRight' &&
+                                                e.key !== 'Tab'
+                                            ) {
+                                                e.preventDefault();
+                                            }
+                                        }}
+                                        onChange={e => {
+                                            // Allow clearing the input
+                                            const value = e.target.value;
+                                            // If user clears input, value is '', allow it
+                                            const sanitized = value === '' ? '' : value.replace(/\D/g, '').slice(0, 11);
+                                            field.onChange(sanitized);
+                                        }}
                                     />
                                 )}
                             />

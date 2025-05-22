@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
 import * as yup from 'yup'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Card, Form, Input, InputNumber, Select } from 'antd';
+import { Button, Card, Form, Input, Select } from 'antd';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { formatName, formatPhoneNumber, formatSentence } from '../../../../../../utils/formatterFunctions';
+import { formatName, formatSentence } from '../../../../../../utils/formatterFunctions';
 import useCommonStore from '../../../../../../store/commonStore';
 import useCreditStore, { ISalaryIncome } from '../../../../../../store/creditStore';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -31,7 +31,7 @@ const schema = yup.object().shape({
     empAddress: yup.string().required('Employment Address is required'),
     typeOfJob: yup.string().required('Type of Job is required'),
     natureOfEmp: yup.string().required('Nature of Employment is required'),
-    contactNo: yup.string().required('Contact Number is required').test('len', 'Contact Number must be 11 characters', val => val?.length === 11),
+    contactNo: yup.string().required('Contact Number is required').matches(/^[0-9]{11}$/, 'Contact Number must be 11 digits'),
     residenceOrWorking: yup.string().required('Residence or Working is required'),
     proofOfSalary: yup.string().required('Proof of Salary is required'),
     repeatCustomer: yup.string(),
@@ -258,14 +258,32 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                             name="contactNo"
                             control={control}
                             render={({ field }) => (
-                                <InputNumber
+                                <Input
                                     {...field}
                                     placeholder="Enter Contact Number"
                                     maxLength={11}
                                     style={{ width: '100%' }}
-                                    formatter={value => value?.replace(/\D/g, '') ?? ''}
-                                    parser={value => value?.replace(/\D/g, '') ?? ''}
-                                    onChange={(value) => setValue('contactNo', formatPhoneNumber(value ?? ''), { shouldValidate: true })}
+                                    type="text"
+                                    onKeyDown={e => {
+                                        // Allow control keys (backspace, delete, arrows, etc.)
+                                        if (
+                                            !/[0-9]/.test(e.key) &&
+                                            e.key !== 'Backspace' &&
+                                            e.key !== 'Delete' &&
+                                            e.key !== 'ArrowLeft' &&
+                                            e.key !== 'ArrowRight' &&
+                                            e.key !== 'Tab'
+                                        ) {
+                                            e.preventDefault();
+                                        }
+                                    }}
+                                    onChange={e => {
+                                        // Allow clearing the input
+                                        const value = e.target.value;
+                                        // If user clears input, value is '', allow it
+                                        const sanitized = value === '' ? '' : value.replace(/\D/g, '').slice(0, 11);
+                                        field.onChange(sanitized);
+                                    }}
                                 />
                             )}
                         />

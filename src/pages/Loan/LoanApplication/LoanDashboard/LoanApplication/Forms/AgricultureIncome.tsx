@@ -3,7 +3,7 @@ import * as yup from 'yup'
 import { Controller, useForm } from 'react-hook-form'
 import { Button, Card, Descriptions, Empty, Form, Input, InputNumber, Select, Tag, Checkbox } from 'antd';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { formatCNIC, formatCurrency, formatName, formatPhoneNumber, formatSentence, getDistrict } from '../../../../../../utils/formatterFunctions';
+import { formatCNIC, formatCurrency, formatName, formatSentence, getDistrict } from '../../../../../../utils/formatterFunctions';
 import useCommonStore from '../../../../../../store/commonStore';
 import useCreditStore, { IAgricultureIncome, IOwnerships } from '../../../../../../store/creditStore';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -33,7 +33,7 @@ const schema = yup.object().shape({
     ownName: yup.string().required('Owner name is required'),
     ownCNIC: yup.string().required('Owner CNIC is required'),
     ownAddress: yup.string().required('Owner address is required'),
-    ownContact: yup.string().required('Owner contact number is required'),
+    ownContact: yup.string().required('Owner contact number is required').matches(/^[0-9]{11}$/, 'Contact number must be 11 digits'),
     acresOwned: yup.string().typeError('Acres owned must be a number').required('Acres owned is required'),
     acresRented: yup.string().typeError('Acres rented must be a number').required('Acres rented is required'),
     acresTotal: yup.string().typeError('Total acres must be a number').required('Total acres are required'),
@@ -466,14 +466,32 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                     name="ownContact"
                                     control={control}
                                     render={({ field }) => (
-                                        <InputNumber
+                                        <Input
                                             {...field}
                                             placeholder="Enter Contact Number"
                                             maxLength={11}
                                             style={{ width: '100%' }}
-                                            formatter={value => value?.replace(/\D/g, '') ?? ''}
-                                            parser={value => value?.replace(/\D/g, '') ?? ''}
-                                            onChange={(value) => setValue('ownContact', formatPhoneNumber(value ?? ''), { shouldValidate: true })}
+                                            type="text"
+                                            onKeyDown={e => {
+                                                // Allow control keys (backspace, delete, arrows, etc.)
+                                                if (
+                                                    !/[0-9]/.test(e.key) &&
+                                                    e.key !== 'Backspace' &&
+                                                    e.key !== 'Delete' &&
+                                                    e.key !== 'ArrowLeft' &&
+                                                    e.key !== 'ArrowRight' &&
+                                                    e.key !== 'Tab'
+                                                ) {
+                                                    e.preventDefault();
+                                                }
+                                            }}
+                                            onChange={e => {
+                                                // Allow clearing the input
+                                                const value = e.target.value;
+                                                // If user clears input, value is '', allow it
+                                                const sanitized = value === '' ? '' : value.replace(/\D/g, '').slice(0, 11);
+                                                field.onChange(sanitized);
+                                            }}
                                         />
                                     )}
                                 />
