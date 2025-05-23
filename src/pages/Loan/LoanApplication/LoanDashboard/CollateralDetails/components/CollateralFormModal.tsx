@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Modal, Form, Select, Input, Button } from "antd";
 import { Controller, useForm } from "react-hook-form";
-import { FormValues, validationSchema } from "../types";
+import { FormValues, validationSchema, LeaseProductFormValues } from "../types";
 import { yupResolver } from "@hookform/resolvers/yup";
 import VehicleForm from "./VehicleForm";
 import BankGuaranteeForm from "./BankGuaranteeForm";
@@ -40,6 +40,28 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
       securityType: "",
     },
     mode: "onChange",
+  });
+
+  const {
+    control: leaseControl,
+    formState: { errors: leaseErrors },
+  } = useForm<LeaseProductFormValues>({
+    defaultValues: {
+      equipmentCost: "",
+      equipmentType: "",
+      supplierCode: "",
+      equipmentName: "",
+      condition: "",
+      category: "",
+      depreciationCode: "",
+      vehicleType: "",
+      manufacturer: "",
+      model: "",
+      engineCapacityCC: "",
+      engineCapacityHP: "",
+      insuranceCompany: "",
+      referenceNo: "",
+    },
   });
 
   useEffect(() => {
@@ -105,7 +127,9 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
                     render={({ field }) => (
                       <Select {...field} placeholder="Select Security Type">
                         <Select.Option value="VEHICLE">Vehicle</Select.Option>
-                        <Select.Option value="MACHINERY">Machinery</Select.Option>
+                        <Select.Option value="MACHINERY">
+                          Machinery
+                        </Select.Option>
                         <Select.Option value="BANK_GUARANTEE">
                           Bank Guarantee
                         </Select.Option>
@@ -113,7 +137,9 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
                           Property Mortgage
                         </Select.Option>
                         <Select.Option value="SAVINGS">Savings</Select.Option>
-                        <Select.Option value="LAND_STOCK">Land Stock</Select.Option>
+                        <Select.Option value="LAND_STOCK">
+                          Land Stock
+                        </Select.Option>
                       </Select>
                     )}
                   />
@@ -147,7 +173,8 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
           </>
         ) : (
           <div className="mt-5">
-            <LeaseProductForm control={control} errors={errors} /></div>
+            <LeaseProductForm control={leaseControl} errors={leaseErrors} />
+          </div>
         )}
       </Form>
     </Modal>
