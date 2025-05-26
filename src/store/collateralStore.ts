@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import axios from 'axios';
 import { API } from '../services/api';
 
 // Common interfaces
@@ -98,7 +97,7 @@ const useCollateralStore = create<ICollateralState>((set) => ({
   modelsLoading: false,
 
   // Fetch functions
-  fetchTypes: async (type) => {
+  fetchTypes: async () => {
     set({ typesLoading: true });
     try {
       const endpoint = `/mobixCamsCommon/v1/sub-security/types-1`;
@@ -111,7 +110,7 @@ const useCollateralStore = create<ICollateralState>((set) => ({
     }
   },
 
-  fetchSubTypes: async (type) => {
+  fetchSubTypes: async () => {
     set({ subTypesLoading: true });
     try {
       const endpoint = `/mobixCamsCommon/v1/sub-security/types-2`;

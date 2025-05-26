@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from "react";
-import { Form, Input, InputNumber, Select, DatePicker } from "antd";
+import { Form, Input, InputNumber, Select } from "antd";
 import { Controller, Control } from "react-hook-form";
 import { FormValues } from "../types";
-import dayjs from "dayjs";
 import useCollateralStore from "../../../../../../store/collateralStore";
 
 interface MachineryFormProps {
@@ -20,8 +19,6 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
     suppliersLoading: machinerySuppliersLoading,
     conditions: machineryConditions,
     conditionsLoading: machineryConditionsLoading,
-    securityCategories: machineryCategories,
-    securityCategoriesLoading: machineryCategoriesLoading,
     fetchTypes,
     fetchOwnerships,
     fetchSuppliers,

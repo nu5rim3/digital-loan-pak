@@ -47,7 +47,7 @@ const CustomerRiskProfiling: React.FC = () => {
     }
   };
 
-  const handleRemove = async (data: CustomerRiskProfilingFormData) => {
+  const handleRemove = async () => {
     try {
       if (selectedDetail) {
         setProfiles(profiles.filter(profile => profile.id !== selectedDetail.id));

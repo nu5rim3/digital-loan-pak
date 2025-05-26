@@ -15,7 +15,6 @@ const CustomerRiskProfilingModal: React.FC<CustomerRiskProfilingProps> = ({
 }) => {
   const [form] = Form.useForm();
 
-  // Initialize form with selected data when modal opens
   useEffect(() => {
     if (isModalOpen) {
       const values = formMethods.getValues();

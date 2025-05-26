@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Descriptions, Button, Space } from "antd";
+import { Card, Descriptions, Button } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { CustomerRiskProfilingFormData } from "./types";
 
