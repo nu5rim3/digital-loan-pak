@@ -24,7 +24,7 @@ const schema = yup.object().shape({
     stkCNicExpDate: yup.string().required("CNIC Expired Date is required"),
     stkCNicStatus: yup.string().required("CNIC Status is required"),
     stkCusName: yup.string().required("Customer Name is required"),
-    stkInitials: yup.string().required("Initials is required"),
+    stkInitials: yup.string().required("Initial is required"),
     stkSurName: yup.string().required("Surname is required"),
     stkOtherName: yup.string().required("Other Name is required"),
     stkDob: yup.string().required("Date of Birth is required"),
@@ -148,11 +148,11 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                 render={({ field }) => <Input {...field} placeholder="Enter Customer Name" />}
                             />
                         </Form.Item>
-                        <Form.Item label="Initials" validateStatus={errors.stkInitials ? "error" : ""} help={errors.stkInitials?.message} required>
+                        <Form.Item label="Initial" validateStatus={errors.stkInitials ? "error" : ""} help={errors.stkInitials?.message} required>
                             <Controller
                                 name="stkInitials"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Initials" />}
+                                render={({ field }) => <Input {...field} placeholder="Enter Initial" />}
                             />
                         </Form.Item>
                         <Form.Item label="Surname" validateStatus={errors.stkSurName ? "error" : ""} help={errors.stkSurName?.message} required>

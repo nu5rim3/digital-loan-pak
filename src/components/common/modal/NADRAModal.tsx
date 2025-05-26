@@ -1,13 +1,25 @@
-import React from 'react';
-import { Divider, Modal, QRCode } from 'antd';
+import React, { useEffect } from 'react';
+import { Divider, Modal, Spin } from 'antd';
+import useStakeholderStore from '../../../store/stakeholderStore';
 
 
 interface NADRAModalProps {
+    cliIdx: string;
     open: boolean;
     onCancel: () => void;
 }
 
-const NADRAModal: React.FC<NADRAModalProps> = ({ open, onCancel }) => {
+const NADRAModal: React.FC<NADRAModalProps> = ({ cliIdx, open, onCancel }) => {
+
+    const { qrdetails, qrdetailsLoading, getQRDetailsByStkId } = useStakeholderStore()
+
+    useEffect(() => {
+        if (cliIdx !== '' && cliIdx !== undefined && open) {
+            getQRDetailsByStkId(cliIdx)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [cliIdx, open])
+
     return (
         <Modal
             open={open}
@@ -19,8 +31,9 @@ const NADRAModal: React.FC<NADRAModalProps> = ({ open, onCancel }) => {
             <Divider>Scan the QR code below to get verification</Divider>
             {/* Place your QR code component here */}
             <div className='flex justify-center'>
-
-                <QRCode size={200} value={'https://google.com'} />
+                <Spin spinning={qrdetailsLoading} size='small'>
+                    <img src={qrdetails?.qrImageUrl} alt="QR Code" />
+                </Spin>
             </div>
         </Modal>
     );

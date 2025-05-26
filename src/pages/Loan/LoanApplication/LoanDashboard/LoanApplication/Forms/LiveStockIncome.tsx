@@ -24,7 +24,7 @@ interface ILiveStockIncomeProps {
 const schema = yup.object().shape({
     profession: yup.string().required('Profession is required'),
     sourceOfIncome: yup.string().required('Source of Income is required'),
-    purposeOfLoan: yup.string().required('Purpose of Loan is required'),
+    purposeOfLoan: yup.string().required('Purpose of Facility is required'),
     animalOrCrop: yup.string().required('Animal or Crop is required'),
     buffaloes: yup.string().required('Buffaloes are required'),
     cows: yup.string().required('Cows are required'),
@@ -34,7 +34,7 @@ const schema = yup.object().shape({
     animalTagging: yup.string().required('Animal Tagging is required'),
     borrowerDistrict: yup.string().required('Borrower District is required'),
     sowodo: yup.string().required('Sowodo is required'),
-    loanTenure: yup.string().required('Loan Tenure is required'),
+    loanTenure: yup.string().required('Loan Tenure in Days is required'),
     insCompany: yup.string().required('Insurance Company is required'),
     policyIssuedDate: yup.string().required('Policy Issued Date is required'),
     policyExpiredDate: yup.string().required('Policy Expired Date is required'),
@@ -178,14 +178,14 @@ const LiveStockIncome: React.FC<ILiveStockIncomeProps> = ({ sourceOfIncome, rese
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Purpose of Loan" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
+                    <Form.Item label="Purpose of Facility" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
                         <Controller
                             name="purposeOfLoan"
                             control={control}
                             render={({ field }) => (
                                 <Select
                                     {...field}
-                                    placeholder="Select Purpose of Loan"
+                                    placeholder="Select Purpose of Facility"
                                     loading={facilityPurposeLoading}
                                     options={
                                         facilityPurpose.map((item) => ({ label: formatName(item.code), value: item.code }))
@@ -232,14 +232,14 @@ const LiveStockIncome: React.FC<ILiveStockIncomeProps> = ({ sourceOfIncome, rese
                         />
                     </Form.Item>
 
-                    <Form.Item label="Nature of The Borrower" name="natureOfTheBorrower" validateStatus={errors.natureOfTheBorrower ? 'error' : ''} help={errors.natureOfTheBorrower?.message} required>
+                    <Form.Item label="Nature of the Borrower" name="natureOfTheBorrower" validateStatus={errors.natureOfTheBorrower ? 'error' : ''} help={errors.natureOfTheBorrower?.message} required>
                         <Controller
                             name="natureOfTheBorrower"
                             control={control}
                             render={({ field }) => (
                                 <Select
                                     {...field}
-                                    placeholder="Select Nature of Borrower"
+                                    placeholder="Select Nature of the Borrower"
                                     options={
                                         [
                                             { label: 'Owner', value: 'OWNER' },
@@ -517,18 +517,19 @@ const LiveStockIncome: React.FC<ILiveStockIncomeProps> = ({ sourceOfIncome, rese
                             </Form.Item>
                         </div>
                     </Card>
-                    <Card size='small' title={<span className='text-gray-600'>Farm Loan Insureance Report (FLIR)</span>}>
+                    <Card size='small' title={<span className='text-gray-600'>Farm Loan Insurance Report (FLIR)</span>}>
                         {/* loanTenure */}
                         <div className='grid grid-cols-4 gap-3'>
-                            <Form.Item label="Loan Tenure" name="loanTenure" validateStatus={errors.loanTenure ? 'error' : ''} help={errors.loanTenure?.message} required>
+                            <Form.Item label="Loan Tenure in Days" name="loanTenure" validateStatus={errors.loanTenure ? 'error' : ''} help={errors.loanTenure?.message} required>
                                 <Controller
                                     name="loanTenure"
                                     control={control}
                                     render={({ field }) => (
                                         <Input
                                             {...field}
-                                            placeholder="Loan Tenure"
+                                            placeholder="Loan Tenure in Days"
                                             defaultValue='360'
+                                            suffix="Days"
                                         />
                                     )}
                                 />
@@ -603,14 +604,14 @@ const LiveStockIncome: React.FC<ILiveStockIncomeProps> = ({ sourceOfIncome, rese
                                 />
                             </Form.Item>
 
-                            <Form.Item label="Number of Time Claim Loged" name="claimLodged" validateStatus={errors.claimLodged ? 'error' : ''} help={errors.claimLodged?.message} required>
+                            <Form.Item label="Number Of Times Claim Lodged" name="claimLodged" validateStatus={errors.claimLodged ? 'error' : ''} help={errors.claimLodged?.message} required>
                                 <Controller
                                     name="claimLodged"
                                     control={control}
                                     render={({ field }) => (
                                         <Input
                                             {...field}
-                                            placeholder="Number of Time Claim Loged"
+                                            placeholder="Number Of Times Claim Lodged"
                                         />
                                     )}
                                 />

@@ -171,11 +171,11 @@ const CustomerDetails: React.FC = () => {
                                 render={({ field }) => <Input {...field} placeholder="Enter Customer Name" />}
                             />
                         </Form.Item>
-                        <Form.Item label="Initials" validateStatus={errors.stkInitials ? "error" : ""} help={errors.stkInitials?.message} required>
+                        <Form.Item label="Initial" validateStatus={errors.stkInitials ? "error" : ""} help={errors.stkInitials?.message} required>
                             <Controller
                                 name="stkInitials"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Initials" />}
+                                render={({ field }) => <Input {...field} placeholder="Enter Initial" />}
                             />
                         </Form.Item>
                         <Form.Item label="Surname" validateStatus={errors.stkSurName ? "error" : ""} help={errors.stkSurName?.message} required>
@@ -440,7 +440,7 @@ const CustomerDetails: React.FC = () => {
                     </div>
                 </Form>
             </Card>
-        </div>
+        </div >
     )
 }
 

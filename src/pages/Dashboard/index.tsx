@@ -6,8 +6,6 @@ const Dashboard: React.FC = () => {
 
     return (
         <div className="grid grid-cols-4 gap-4">
-            {/* {cardData.map((data, index) => <StatusCard key={`${data.itemKey}${index}`} itemKey={data.itemKey} title={data.title} hcolor={data.hcolor} bcolor={data.bcolor} value={data.value} icon={data.icon} />)} */}
-
             <StatusCard
                 itemKey="PENDING"
                 title="Pending Loans"
@@ -22,12 +20,12 @@ const Dashboard: React.FC = () => {
                     title="Create New Loans"
                     hcolor="hover:bg-yellow-200"
                     bcolor="bg-yellow-100"
-                    // value={0}
                     icon={<PlusCircleFilled className="text-green-500" />}
                 />
             </div>
-        </div>
-    )
-}
 
-export default Dashboard
+        </div>
+    );
+};
+
+export default Dashboard;

@@ -3,7 +3,7 @@ import * as yup from 'yup'
 import { Controller, useForm } from 'react-hook-form'
 import { Button, Card, Form, Input, Select } from 'antd';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { formatName, formatPhoneNumber, formatSentence } from '../../../../../../utils/formatterFunctions';
+import { formatName, formatSentence } from '../../../../../../utils/formatterFunctions';
 import useCommonStore from '../../../../../../store/commonStore';
 import useCreditStore, { ISalaryIncome } from '../../../../../../store/creditStore';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -23,7 +23,7 @@ interface ISalaryIncomeForm {
 const schema = yup.object().shape({
     profession: yup.string().required('Profession is required'),
     sourceOfIncome: yup.string().required('Source of Income is required'),
-    purposeOfLoan: yup.string().required('Purpose of Loan is required'),
+    purposeOfLoan: yup.string().required('Purpose of Facility is required'),
     employer: yup.string().required('Employer is required'),
     typeOfBusiness: yup.string().required('Type of Business is required'),
     designation: yup.string().required('Designation is required'),
@@ -31,7 +31,7 @@ const schema = yup.object().shape({
     empAddress: yup.string().required('Employment Address is required'),
     typeOfJob: yup.string().required('Type of Job is required'),
     natureOfEmp: yup.string().required('Nature of Employment is required'),
-    contactNo: yup.string().required('Phone Number is required').test('len', 'Phone Number must be 11 characters', val => val?.length === 11),
+    contactNo: yup.string().required('Contact Number is required').matches(/^[0-9]{11}$/, 'Contact Number must be 11 digits'),
     residenceOrWorking: yup.string().required('Residence or Working is required'),
     proofOfSalary: yup.string().required('Proof of Salary is required'),
     repeatCustomer: yup.string(),
@@ -126,14 +126,14 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Purpose of Loan" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
+                    <Form.Item label="Purpose of Facility" name="purposeOfLoan" validateStatus={errors.purposeOfLoan ? 'error' : ''} help={errors.purposeOfLoan?.message} required>
                         <Controller
                             name="purposeOfLoan"
                             control={control}
                             render={({ field }) => (
                                 <Select
                                     {...field}
-                                    placeholder="Select Purpose of Loan"
+                                    placeholder="Select Purpose of Facility"
                                     loading={facilityPurposeLoading}
                                     options={
                                         facilityPurpose.map((item) => ({ label: formatName(item.code), value: item.code }))
@@ -253,44 +253,65 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Contact No" name="contactNo" validateStatus={errors.contactNo ? 'error' : ''} help={errors.contactNo?.message} required>
+                    <Form.Item label="Contact Number" name="contactNo" validateStatus={errors.contactNo ? 'error' : ''} help={errors.contactNo?.message} required>
                         <Controller
                             name="contactNo"
                             control={control}
                             render={({ field }) => (
                                 <Input
                                     {...field}
-                                    placeholder="Contact No"
+                                    placeholder="Enter Contact Number"
                                     maxLength={11}
-                                    onChange={(e) => setValue('contactNo', formatPhoneNumber(e.target.value), { shouldValidate: true })}
+                                    style={{ width: '100%' }}
+                                    type="text"
+                                    onKeyDown={e => {
+                                        // Allow control keys (backspace, delete, arrows, etc.)
+                                        if (
+                                            !/[0-9]/.test(e.key) &&
+                                            e.key !== 'Backspace' &&
+                                            e.key !== 'Delete' &&
+                                            e.key !== 'ArrowLeft' &&
+                                            e.key !== 'ArrowRight' &&
+                                            e.key !== 'Tab'
+                                        ) {
+                                            e.preventDefault();
+                                        }
+                                    }}
+                                    onChange={e => {
+                                        // Allow clearing the input
+                                        const value = e.target.value;
+                                        // If user clears input, value is '', allow it
+                                        const sanitized = value === '' ? '' : value.replace(/\D/g, '').slice(0, 11);
+                                        field.onChange(sanitized);
+                                    }}
                                 />
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Residence Or Working" name="residenceOrWorking" validateStatus={errors.residenceOrWorking ? 'error' : ''} help={errors.residenceOrWorking?.message} required>
+                    <Form.Item label="Travel distance to branch/service center" name="residenceOrWorking" validateStatus={errors.residenceOrWorking ? 'error' : ''} help={errors.residenceOrWorking?.message} required>
                         <Controller
                             name="residenceOrWorking"
                             control={control}
                             render={({ field }) => (
                                 <Select
                                     {...field}
-                                    placeholder="Select Residence or Working"
+                                    placeholder="Select Travel Distance"
                                     loading={distanceForResidenceOrWorkLoading}
-                                    options={distanceForResidenceOrWork.map((item) => ({ label: item.description, value: item.description }))}
+                                    options={distanceForResidenceOrWork.map((item) => ({ label: item.description, value: item.code }))}
                                 />
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Proof of Salary" name="proofOfSalary" validateStatus={errors.proofOfSalary ? 'error' : ''} help={errors.proofOfSalary?.message} required>
+                    <Form.Item label="Proof of Salary information" name="proofOfSalary" validateStatus={errors.proofOfSalary ? 'error' : ''} help={errors.proofOfSalary?.message} required>
                         <Controller
                             name="proofOfSalary"
                             control={control}
                             render={({ field }) => (
                                 <Select
                                     {...field}
-                                    placeholder="Select Proof of Salary"
+                                    placeholder="Select Proof of Salary information"
                                     loading={salaryLoading}
-                                    options={salary.map((item) => ({ label: item.description, value: item.description }))}
+                                    options={salary.map((item) => ({ label: item.description, value: item.code }))}
                                 />
                             )}
                         />
@@ -304,7 +325,7 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                                     {...field}
                                     placeholder="Select Repeat Customer"
                                     loading={repeatCustomersLoading}
-                                    options={repeatCustomers.map((item) => ({ label: item.description, value: item.description }))}
+                                    options={repeatCustomers.map((item) => ({ label: item.description, value: item.code }))}
                                 />
                             )}
                         />

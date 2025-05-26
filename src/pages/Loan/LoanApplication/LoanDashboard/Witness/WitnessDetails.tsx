@@ -48,7 +48,7 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
             <div>
                 <Empty description={<span>Witnesses are not available. Please create a witness.</span>} children={<Button type="primary" onClick={() => setOpenModal(true)} icon={<PlusOutlined />}>Add Witness</Button>} />
 
-                <CommonModal open={openModal} onClose={() => setOpenModal(false)} title={'Add Wintess'} size='large' footer={true}>
+                <CommonModal open={openModal} onClose={() => setOpenModal(false)} title={'Add Witness'} size='large' footer={true}>
                     <CreateWitness appId={appId ?? ''} mode='create' onClose={() => setOpenModal(false)} />
                 </CommonModal>
             </div>
@@ -92,9 +92,9 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
                                         </Descriptions>
                                     </Card>
 
-                                    <ContactDetailsCard stkId={formDetails[selectedIndex].idx ?? ''} subTitle={`Wintess ${selectedIndex + 1}`} />
+                                    <ContactDetailsCard stkId={formDetails[selectedIndex].idx ?? ''} subTitle={`Witness ${selectedIndex + 1}`} />
 
-                                    <AddressDetailsCard stkId={formDetails[selectedIndex].idx ?? ''} subTitle={`Wintess ${selectedIndex + 1}`} />
+                                    <AddressDetailsCard stkId={formDetails[selectedIndex].idx ?? ''} subTitle={`Witness ${selectedIndex + 1}`} />
 
                                 </div>
                             )
@@ -102,7 +102,7 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
                     </div>
                 )
             }
-            <CommonModal open={openModal} onClose={() => setOpenModal(false)} title={'Add Wintess'} size='large' footer={true}>
+            <CommonModal open={openModal} onClose={() => setOpenModal(false)} title={'Add Witness'} size='large' footer={true}>
                 {
                     mode === 'update' ? <CreateWitness appId={appId ?? ''} mode={mode} onClose={() => setOpenModal(false)} witnessDetails={formDetails && formDetails[selectedIndex]} /> : <CreateWitness appId={appId ?? ''} mode={mode} onClose={() => setOpenModal(false)} />
                 }

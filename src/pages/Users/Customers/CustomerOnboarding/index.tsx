@@ -146,7 +146,7 @@ const CustomerOnboarding: React.FC = () => {
                 customerIdx !== '' &&
                 <>
                     <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={customerIdx ?? ''} onCompleted={() => navigate(`${mainURL}/loan/application/${loan?.idx}`)} />
-                    <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} />
+                    <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={customerIdx ?? ''} />
                 </>
             }
 

@@ -214,8 +214,8 @@ const BusinessDetailsCard: React.FC<{ detail: IBusinessIncome; onEdit: () => voi
         <Descriptions column={1}>
             <Descriptions.Item label="Business Name">{detail.bnsName}</Descriptions.Item>
             <Descriptions.Item label="Business Phone">{detail.phoneNo}</Descriptions.Item>
-            <Descriptions.Item label="Cost of Business">{formatCurrency(Number(detail.costOfBns))}</Descriptions.Item>
-            <Descriptions.Item label="Business Ratings">{detail.bnsRatings ?? '-'}</Descriptions.Item>
+            <Descriptions.Item label="Business Asset and Stock">{formatCurrency(Number(detail.costOfBns))}</Descriptions.Item>
+            {/* <Descriptions.Item label="Business Ratings">{detail.bnsRatings ?? '-'}</Descriptions.Item> */}
         </Descriptions>
     </Card>
 );
@@ -306,7 +306,7 @@ const OtherDetailsCard: React.FC<{ detail: IOtherIncome; onEdit: () => void; onR
             </Popconfirm>
         </div>
         <Descriptions column={1} colon>
-            <Descriptions.Item label="Income Category">{detail.incomeCategory}</Descriptions.Item>
+            <Descriptions.Item label="Other Income Category">{detail.incomeCategory}</Descriptions.Item>
             <Descriptions.Item label="Description">{detail.description}</Descriptions.Item>
         </Descriptions>
     </Card>

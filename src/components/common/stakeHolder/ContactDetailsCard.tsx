@@ -5,12 +5,11 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import CommonModal from '../modal/commonModal';
-import { formatPhoneNumber } from '../../../utils/formatterFunctions';
 import useStakeholderStore, { IContactDetails } from '../../../store/stakeholderStore';
 
 const schema = yup.object().shape({
     phoneNoType: yup.string().required('Contact Type is required'),
-    phoneNo: yup.string().required('Contact Number is required'),
+    phoneNo: yup.string().required('Contact Number is required').matches(/^[0-9]{11}$/, 'Contact Number must be 11 digits'),
     status: yup.string().default('A'),
 });
 
@@ -133,9 +132,29 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
                                     <Input
                                         {...field}
                                         placeholder="Enter Contact Number"
-                                        type='number'
                                         maxLength={11}
-                                        onChange={(e) => setValue('phoneNo', formatPhoneNumber(e.target.value), { shouldValidate: true })}
+                                        style={{ width: '100%' }}
+                                        type="text"
+                                        onKeyDown={e => {
+                                            // Allow control keys (backspace, delete, arrows, etc.)
+                                            if (
+                                                !/[0-9]/.test(e.key) &&
+                                                e.key !== 'Backspace' &&
+                                                e.key !== 'Delete' &&
+                                                e.key !== 'ArrowLeft' &&
+                                                e.key !== 'ArrowRight' &&
+                                                e.key !== 'Tab'
+                                            ) {
+                                                e.preventDefault();
+                                            }
+                                        }}
+                                        onChange={e => {
+                                            // Allow clearing the input
+                                            const value = e.target.value;
+                                            // If user clears input, value is '', allow it
+                                            const sanitized = value === '' ? '' : value.replace(/\D/g, '').slice(0, 11);
+                                            field.onChange(sanitized);
+                                        }}
                                     />
                                 )}
                             />
