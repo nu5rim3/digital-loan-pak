@@ -1,8 +1,9 @@
-import React from "react";
-import { Form, Input, Select, DatePicker } from "antd";
-import { Control, Controller } from "react-hook-form";
+import React, { useEffect, useRef } from "react";
+import { Form, Input, InputNumber, Select, DatePicker } from "antd";
+import { Controller, Control } from "react-hook-form";
 import { FormValues } from "../types";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
+import useCollateralStore from "../../../../../../store/collateralStore";
 
 interface LandStockFormProps {
   control: Control<FormValues>;
@@ -10,6 +11,41 @@ interface LandStockFormProps {
 }
 
 const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
+  const {
+    types: landStockTypes,
+    typesLoading: landStockTypesLoading,
+    ownerships: landStockOwnerships,
+    ownershipsLoading: landStockOwnershipsLoading,
+    securityTypes: landStockSecurityTypes,
+    securityTypesLoading: landStockSecurityTypesLoading,
+    securityCategories: landStockCategories,
+    securityCategoriesLoading: landStockCategoriesLoading,
+    fetchTypes,
+    fetchOwnerships,
+    fetchSecurityTypes,
+    fetchSecurityCategories,
+  } = useCollateralStore();
+
+  const dataFetched = useRef(false);
+
+  useEffect(() => {
+    if (!dataFetched.current) {
+      fetchTypes('land-stock');
+      fetchOwnerships();
+      fetchSecurityTypes();
+      fetchSecurityCategories();
+      dataFetched.current = true;
+    }
+  }, [fetchTypes, fetchOwnerships, fetchSecurityTypes, fetchSecurityCategories]);
+
+  const getOptions = (arr: any[]) =>
+    arr
+      .filter((item) => item.status === "A")
+      .map((item) => ({
+        label: item.description,
+        value: item.code,
+      }));
+
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow">
@@ -27,29 +63,12 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
               name="landStockType"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Type">
-                  <Select.Option value="land">Land</Select.Option>
-                  <Select.Option value="stock">Stock</Select.Option>
-                </Select>
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Sub Type"
-            validateStatus={errors.landStockSubType ? "error" : ""}
-            help={errors.landStockSubType?.message}
-            labelCol={{ span: 24 }}
-            wrapperCol={{ span: 24 }}
-          >
-            <Controller
-              name="landStockSubType"
-              control={control}
-              render={({ field }) => (
-                <Select {...field} placeholder="Select Sub Type">
-                  <Select.Option value="type1">Type 1</Select.Option>
-                  <Select.Option value="type2">Type 2</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  placeholder="Select Type"
+                  loading={landStockTypesLoading}
+                  options={getOptions(landStockTypes)}
+                />
               )}
             />
           </Form.Item>
@@ -66,10 +85,56 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
               name="landStockOwnership"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Ownership">
-                  <Select.Option value="individual">Individual</Select.Option>
-                  <Select.Option value="company">Company</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  placeholder="Select Ownership"
+                  loading={landStockOwnershipsLoading}
+                  options={getOptions(landStockOwnerships)}
+                />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Security Type"
+            required
+            validateStatus={errors.landStockSecurityType ? "error" : ""}
+            help={errors.landStockSecurityType?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="landStockSecurityType"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  placeholder="Select Security Type"
+                  loading={landStockSecurityTypesLoading}
+                  options={getOptions(landStockSecurityTypes)}
+                />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Category"
+            required
+            validateStatus={errors.landStockCategory ? "error" : ""}
+            help={errors.landStockCategory?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="landStockCategory"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  placeholder="Select Category"
+                  loading={landStockCategoriesLoading}
+                  options={getOptions(landStockCategories)}
+                />
               )}
             />
           </Form.Item>
@@ -86,7 +151,15 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
               name="landStockMarketValue"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter Market Value" />
+                <InputNumber
+                  {...field}
+                  style={{ width: "100%" }}
+                  placeholder="Enter Market Value"
+                  formatter={(value) =>
+                    `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
+                  parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                />
               )}
             />
           </Form.Item>
@@ -103,7 +176,15 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
               name="landStockFSV"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter FSV" />
+                <InputNumber
+                  {...field}
+                  style={{ width: "100%" }}
+                  placeholder="Enter FSV"
+                  formatter={(value) =>
+                    `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
+                  parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                />
               )}
             />
           </Form.Item>
@@ -125,7 +206,7 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
           </Form.Item>
 
           <Form.Item
-            label="Deed Transfer No"
+            label="Deed/Transfer No"
             validateStatus={errors.landStockDeedTransferNo ? "error" : ""}
             help={errors.landStockDeedTransferNo?.message}
             labelCol={{ span: 24 }}
@@ -135,7 +216,7 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
               name="landStockDeedTransferNo"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter Deed Transfer No" />
+                <Input {...field} placeholder="Enter Deed/Transfer No" />
               )}
             />
           </Form.Item>
@@ -189,28 +270,7 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
           </Form.Item>
 
           <Form.Item
-            label="Category"
-            required
-            validateStatus={errors.landStockCategory ? "error" : ""}
-            help={errors.landStockCategory?.message}
-            labelCol={{ span: 24 }}
-            wrapperCol={{ span: 24 }}
-          >
-            <Controller
-              name="landStockCategory"
-              control={control}
-              render={({ field }) => (
-                <Select {...field} placeholder="Select Category">
-                  <Select.Option value="category1">Category 1</Select.Option>
-                  <Select.Option value="category2">Category 2</Select.Option>
-                </Select>
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item
             label="Security Date"
-            required
             validateStatus={errors.landStockSecurityDate ? "error" : ""}
             help={errors.landStockSecurityDate?.message}
             labelCol={{ span: 24 }}
@@ -228,27 +288,6 @@ const LandStockForm: React.FC<LandStockFormProps> = ({ control, errors }) => {
                     field.onChange(date);
                   }}
                 />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Security Type"
-            required
-            validateStatus={errors.landStockSecurityType ? "error" : ""}
-            help={errors.landStockSecurityType?.message}
-            labelCol={{ span: 24 }}
-            wrapperCol={{ span: 24 }}
-          >
-            <Controller
-              name="landStockSecurityType"
-              control={control}
-              render={({ field }) => (
-                <Select {...field} placeholder="Select Security Type">
-                  <Select.Option value="mortgage">Mortgage</Select.Option>
-                  <Select.Option value="pledge">Pledge</Select.Option>
-                  <Select.Option value="hypothecation">Hypothecation</Select.Option>
-                </Select>
               )}
             />
           </Form.Item>

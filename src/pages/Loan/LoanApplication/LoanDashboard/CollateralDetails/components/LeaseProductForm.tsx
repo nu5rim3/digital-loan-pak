@@ -6,14 +6,11 @@ import dayjs from "dayjs";
 
 interface LeaseProductFormProps {
   control: Control<LeaseProductFormValues>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   errors: Record<string, any>;
 }
 
 export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
   control,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  errors,
 }) => {
   const condition = useWatch({
     control,

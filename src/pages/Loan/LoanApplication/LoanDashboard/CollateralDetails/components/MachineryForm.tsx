@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Form, Input, InputNumber, Select } from "antd";
-import { Control, Controller } from "react-hook-form";
+import { Controller, Control } from "react-hook-form";
 import { FormValues } from "../types";
+import useCollateralStore from "../../../../../../store/collateralStore";
 
 interface MachineryFormProps {
   control: Control<FormValues>;
@@ -9,6 +10,49 @@ interface MachineryFormProps {
 }
 
 const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
+  const {
+    types: machineryTypes,
+    typesLoading: machineryTypesLoading,
+    ownerships: machineryOwnerships,
+    ownershipsLoading: machineryOwnershipsLoading,
+    suppliers: machinerySuppliers,
+    suppliersLoading: machinerySuppliersLoading,
+    conditions: machineryConditions,
+    conditionsLoading: machineryConditionsLoading,
+    fetchTypes,
+    fetchOwnerships,
+    fetchSuppliers,
+    fetchConditions,
+    fetchSecurityCategories,
+  } = useCollateralStore();
+
+  const dataFetched = useRef(false);
+
+  useEffect(() => {
+    if (!dataFetched.current) {
+      fetchTypes('machinery');
+      fetchOwnerships();
+      fetchSuppliers();
+      fetchConditions();
+      fetchSecurityCategories();
+      dataFetched.current = true;
+    }
+  }, [
+    fetchTypes,
+    fetchOwnerships,
+    fetchSuppliers,
+    fetchConditions,
+    fetchSecurityCategories,
+  ]);
+
+  const getOptions = (arr: any[]) =>
+    arr
+      .filter((item) => item.status === "A")
+      .map((item) => ({
+        label: item.description,
+        value: item.code,
+      }));
+
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow">
@@ -26,12 +70,12 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
               name="machineryType"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Type">
-                  <Select.Option value="construction">Construction</Select.Option>
-                  <Select.Option value="agricultural">Agricultural</Select.Option>
-                  <Select.Option value="industrial">Industrial</Select.Option>
-                  <Select.Option value="mining">Mining</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  placeholder="Select Type"
+                  loading={machineryTypesLoading}
+                  options={getOptions(machineryTypes)}
+                />
               )}
             />
           </Form.Item>
@@ -48,11 +92,12 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
               name="machineryOwnership"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Ownership">
-                  <Select.Option value="owned">Owned</Select.Option>
-                  <Select.Option value="leased">Leased</Select.Option>
-                  <Select.Option value="financed">Financed</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  placeholder="Select Ownership"
+                  loading={machineryOwnershipsLoading}
+                  options={getOptions(machineryOwnerships)}
+                />
               )}
             />
           </Form.Item>
@@ -69,10 +114,34 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
               name="machinerySupplier"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Supplier">
-                  <Select.Option value="supplier1">Supplier 1</Select.Option>
-                  <Select.Option value="supplier2">Supplier 2</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  placeholder="Select Supplier"
+                  loading={machinerySuppliersLoading}
+                  options={getOptions(machinerySuppliers)}
+                />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Condition"
+            required
+            validateStatus={errors.machineryCondition ? "error" : ""}
+            help={errors.machineryCondition?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="machineryCondition"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  placeholder="Select Condition"
+                  loading={machineryConditionsLoading}
+                  options={getOptions(machineryConditions)}
+                />
               )}
             />
           </Form.Item>
@@ -109,7 +178,9 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
                   {...field}
                   style={{ width: "100%" }}
                   placeholder="Enter Market Value"
-                  formatter={(value) => `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                  formatter={(value) =>
+                    `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
                 />
               )}
@@ -132,7 +203,9 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
                   {...field}
                   style={{ width: "100%" }}
                   placeholder="Enter FSV"
-                  formatter={(value) => `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                  formatter={(value) =>
+                    `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
                 />
               )}
@@ -189,26 +262,6 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
           </Form.Item>
 
           <Form.Item
-            label="Condition"
-            required
-            validateStatus={errors.machineryCondition ? "error" : ""}
-            help={errors.machineryCondition?.message}
-            labelCol={{ span: 24 }}
-            wrapperCol={{ span: 24 }}
-          >
-            <Controller
-              name="machineryCondition"
-              control={control}
-              render={({ field }) => (
-                <Select {...field} placeholder="Select Condition">
-                  <Select.Option value="new">New</Select.Option>
-                  <Select.Option value="used">Used</Select.Option>
-                </Select>
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item
             label="Bond No"
             validateStatus={errors.machineryBondNo ? "error" : ""}
             help={errors.machineryBondNo?.message}
@@ -239,7 +292,9 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
                   {...field}
                   style={{ width: "100%" }}
                   placeholder="Enter Bond Value"
-                  formatter={(value) => `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                  formatter={(value) =>
+                    `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
                 />
               )}
@@ -267,4 +322,4 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
   );
 };
 
-export default MachineryForm; 
+export default MachineryForm;
