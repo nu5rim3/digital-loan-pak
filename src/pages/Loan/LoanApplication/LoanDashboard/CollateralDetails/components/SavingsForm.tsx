@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Form, Input, InputNumber, Select, DatePicker } from "antd";
-import { Control, Controller } from "react-hook-form";
+import { Controller, Control } from "react-hook-form";
 import { FormValues } from "../types";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
+import useCollateralStore from "../../../../../../store/collateralStore";
 
 interface SavingsFormProps {
   control: Control<FormValues>;
@@ -10,13 +11,40 @@ interface SavingsFormProps {
 }
 
 const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
+  const {
+    types: savingsTypes,
+    typesLoading: savingsTypesLoading,
+    ownerships: savingsOwnerships,
+    ownershipsLoading: savingsOwnershipsLoading,
+    fetchTypes,
+    fetchOwnerships,
+  } = useCollateralStore();
+
+  const dataFetched = useRef(false);
+
+  useEffect(() => {
+    if (!dataFetched.current) {
+      fetchTypes('savings');
+      fetchOwnerships();
+      dataFetched.current = true;
+    }
+  }, [fetchTypes, fetchOwnerships]);
+
+  const getOptions = (arr: any[]) =>
+    arr
+      .filter((item) => item.status === "A")
+      .map((item) => ({
+        label: item.description,
+        value: item.code,
+      }));
+
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-4">Savings Details</h3>
         <div className="grid grid-cols-3 gap-4">
-          <Form.Item 
-            label="Type" 
+          <Form.Item
+            label="Type"
             required
             validateStatus={errors.savingsType ? "error" : ""}
             help={errors.savingsType?.message}
@@ -27,36 +55,18 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
               name="savingsType"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Type">
-                  <Select.Option value="fixed">Fixed</Select.Option>
-                  <Select.Option value="recurring">Recurring</Select.Option>
-                  <Select.Option value="current">Current</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  placeholder="Select Type"
+                  loading={savingsTypesLoading}
+                  options={getOptions(savingsTypes)}
+                />
               )}
             />
           </Form.Item>
 
-          <Form.Item 
-            label="Sub Type"
-            validateStatus={errors.savingsSubType ? "error" : ""}
-            help={errors.savingsSubType?.message}
-            labelCol={{ span: 24 }}
-            wrapperCol={{ span: 24 }}
-          >
-            <Controller
-              name="savingsSubType"
-              control={control}
-              render={({ field }) => (
-                <Select {...field} placeholder="Select Sub Type">
-                  <Select.Option value="type1">Type 1</Select.Option>
-                  <Select.Option value="type2">Type 2</Select.Option>
-                </Select>
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item 
-            label="Ownership" 
+          <Form.Item
+            label="Ownership"
             required
             validateStatus={errors.savingsOwnership ? "error" : ""}
             help={errors.savingsOwnership?.message}
@@ -67,15 +77,17 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
               name="savingsOwnership"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Ownership">
-                  <Select.Option value="individual">Individual</Select.Option>
-                  <Select.Option value="company">Company</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  placeholder="Select Ownership"
+                  loading={savingsOwnershipsLoading}
+                  options={getOptions(savingsOwnerships)}
+                />
               )}
             />
           </Form.Item>
 
-          <Form.Item 
+          <Form.Item
             label="FD No"
             validateStatus={errors.savingsFDNo ? "error" : ""}
             help={errors.savingsFDNo?.message}
@@ -91,7 +103,7 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
+          <Form.Item
             label="Amount"
             validateStatus={errors.savingsAmount ? "error" : ""}
             help={errors.savingsAmount?.message}
@@ -106,14 +118,16 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
                   {...field}
                   style={{ width: "100%" }}
                   placeholder="Enter Amount"
-                  formatter={(value) => `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                  formatter={(value) =>
+                    `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
                 />
               )}
             />
           </Form.Item>
 
-          <Form.Item 
+          <Form.Item
             label="Maturity Date"
             validateStatus={errors.savingsMaturityDate ? "error" : ""}
             help={errors.savingsMaturityDate?.message}
@@ -136,7 +150,7 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
+          <Form.Item
             label="Company"
             validateStatus={errors.savingsCompany ? "error" : ""}
             help={errors.savingsCompany?.message}
@@ -147,15 +161,12 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
               name="savingsCompany"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Company">
-                  <Select.Option value="company1">Company 1</Select.Option>
-                  <Select.Option value="company2">Company 2</Select.Option>
-                </Select>
+                <Input {...field} placeholder="Enter Company" />
               )}
             />
           </Form.Item>
 
-          <Form.Item 
+          <Form.Item
             label="Description"
             validateStatus={errors.savingsDescription ? "error" : ""}
             help={errors.savingsDescription?.message}
@@ -171,7 +182,7 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
+          <Form.Item
             label="Savings No"
             validateStatus={errors.savingsNo ? "error" : ""}
             help={errors.savingsNo?.message}
@@ -187,8 +198,8 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
             />
           </Form.Item>
 
-          <Form.Item 
-            label="Savings Build Up Value"
+          <Form.Item
+            label="Build Up Value"
             validateStatus={errors.savingsBuildUpValue ? "error" : ""}
             help={errors.savingsBuildUpValue?.message}
             labelCol={{ span: 24 }}
@@ -202,7 +213,9 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
                   {...field}
                   style={{ width: "100%" }}
                   placeholder="Enter Build Up Value"
-                  formatter={(value) => `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                  formatter={(value) =>
+                    `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
                 />
               )}

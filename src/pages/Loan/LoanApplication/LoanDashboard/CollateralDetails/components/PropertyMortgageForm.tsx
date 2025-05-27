@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Form, Input, InputNumber, Select, DatePicker } from "antd";
-import { Control, Controller } from "react-hook-form";
+import { Controller, Control } from "react-hook-form";
 import { FormValues } from "../types";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
+import useCollateralStore from "../../../../../../store/collateralStore";
 
 interface PropertyMortgageFormProps {
   control: Control<FormValues>;
@@ -13,6 +14,51 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
   control,
   errors,
 }) => {
+  const {
+    types: propertyTypes,
+    typesLoading: propertyTypesLoading,
+    ownerships: propertyOwnerships,
+    ownershipsLoading: propertyOwnershipsLoading,
+    bondTypes: propertyBondTypes,
+    bondTypesLoading: propertyBondTypesLoading,
+    propertyTypes: propertyPropertyTypes,
+    propertyTypesLoading: propertyPropertyTypesLoading,
+    companies: propertyCompanies,
+    companiesLoading: propertyCompaniesLoading,
+    fetchTypes,
+    fetchOwnerships,
+    fetchBondTypes,
+    fetchPropertyTypes,
+    fetchCompanies,
+  } = useCollateralStore();
+
+  const dataFetched = useRef(false);
+
+  useEffect(() => {
+    if (!dataFetched.current) {
+      fetchTypes('property-mortgage');
+      fetchOwnerships();
+      fetchBondTypes();
+      fetchPropertyTypes();
+      fetchCompanies();
+      dataFetched.current = true;
+    }
+  }, [
+    fetchTypes,
+    fetchOwnerships,
+    fetchBondTypes,
+    fetchPropertyTypes,
+    fetchCompanies,
+  ]);
+
+  const getOptions = (arr: any[]) =>
+    arr
+      .filter((item) => item.status === "A")
+      .map((item) => ({
+        label: item.description,
+        value: item.code,
+      }));
+
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow">
@@ -30,12 +76,12 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
               name="propertyType"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Type">
-                  <Select.Option value="residential">Residential</Select.Option>
-                  <Select.Option value="commercial">Commercial</Select.Option>
-                  <Select.Option value="industrial">Industrial</Select.Option>
-                  <Select.Option value="land">Land</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  placeholder="Select Type"
+                  loading={propertyTypesLoading}
+                  options={getOptions(propertyTypes)}
+                />
               )}
             />
           </Form.Item>
@@ -74,10 +120,12 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
               name="propertyOwnership"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Ownership">
-                  <Select.Option value="individual">Individual</Select.Option>
-                  <Select.Option value="company">Company</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  placeholder="Select Ownership"
+                  loading={propertyOwnershipsLoading}
+                  options={getOptions(propertyOwnerships)}
+                />
               )}
             />
           </Form.Item>
@@ -94,10 +142,12 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
               name="propertyBondType"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Bond Type">
-                  <Select.Option value="type1">Type 1</Select.Option>
-                  <Select.Option value="type2">Type 2</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  placeholder="Select Bond Type"
+                  loading={propertyBondTypesLoading}
+                  options={getOptions(propertyBondTypes)}
+                />
               )}
             />
           </Form.Item>
@@ -114,10 +164,12 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
               name="propertyPropertyType"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Property Type">
-                  <Select.Option value="type1">Type 1</Select.Option>
-                  <Select.Option value="type2">Type 2</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  placeholder="Select Property Type"
+                  loading={propertyPropertyTypesLoading}
+                  options={getOptions(propertyPropertyTypes)}
+                />
               )}
             />
           </Form.Item>
@@ -269,10 +321,12 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
               name="propertyCompany"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Company">
-                  <Select.Option value="company1">Company 1</Select.Option>
-                  <Select.Option value="company2">Company 2</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  placeholder="Select Company"
+                  loading={propertyCompaniesLoading}
+                  options={getOptions(propertyCompanies)}
+                />
               )}
             />
           </Form.Item>

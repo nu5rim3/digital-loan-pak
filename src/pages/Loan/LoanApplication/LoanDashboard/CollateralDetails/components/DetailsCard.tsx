@@ -34,7 +34,6 @@ const DetailsCard: React.FC<DetailsCardProps> = ({
         return (
           <>
             <Descriptions.Item label="Type">{data.machineryType}</Descriptions.Item>
-            <Descriptions.Item label="Make">{data.machineryMake}</Descriptions.Item>
             <Descriptions.Item label="Model">{data.machineryModel}</Descriptions.Item>
             <Descriptions.Item label="Engine No">{data.machineryEngineNo}</Descriptions.Item>
             <Descriptions.Item label="Serial No">{data.machinerySerialNo}</Descriptions.Item>
@@ -55,8 +54,6 @@ const DetailsCard: React.FC<DetailsCardProps> = ({
         return (
           <>
             <Descriptions.Item label="Type">{data.propertyType}</Descriptions.Item>
-            <Descriptions.Item label="Location">{data.propertyLocation}</Descriptions.Item>
-            <Descriptions.Item label="Area">{data.propertyArea}</Descriptions.Item>
             <Descriptions.Item label="Market Value">{data.propertyMarketValue}</Descriptions.Item>
             <Descriptions.Item label="FSV">{data.propertyFSV}</Descriptions.Item>
           </>

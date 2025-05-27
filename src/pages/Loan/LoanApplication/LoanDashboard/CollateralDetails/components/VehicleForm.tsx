@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Form, Input, InputNumber, Select, DatePicker } from "antd";
-import { Controller, Control } from "react-hook-form";
+import { Controller, Control, useWatch } from "react-hook-form";
 import { FormValues } from "../types";
 import dayjs from 'dayjs';
+import useCollateralStore from "../../../../../../store/collateralStore";
 
 interface VehicleFormProps {
   control: Control<FormValues>;
@@ -10,6 +11,69 @@ interface VehicleFormProps {
 }
 
 const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
+  const {
+    types: vehicleTypes,
+    typesLoading: vehicleTypesLoading,
+    ownerships: vehicleOwnerships,
+    ownershipsLoading: vehicleOwnershipsLoading,
+    suppliers: vehicleSuppliers,
+    suppliersLoading: vehicleSuppliersLoading,
+    conditions: vehicleConditions,
+    conditionsLoading: vehicleConditionsLoading,
+    securityCategories: vehicleCategories,
+    securityCategoriesLoading: vehicleCategoriesLoading,
+    makes: vehicleMakes,
+    makesLoading: vehicleMakesLoading,
+    models: vehicleModels,
+    modelsLoading: vehicleModelsLoading,
+    fetchTypes,
+    fetchOwnerships,
+    fetchSuppliers,
+    fetchConditions,
+    fetchSecurityCategories,
+    fetchMakes,
+    fetchModels,
+  } = useCollateralStore();
+
+  const dataFetched = useRef(false);
+  const selectedMake = useWatch({
+    control,
+    name: "vehicleMake",
+  });
+
+  useEffect(() => {
+    if (!dataFetched.current) {
+      fetchTypes('vehicle');
+      fetchOwnerships();
+      fetchSuppliers();
+      fetchConditions();
+      fetchSecurityCategories();
+      fetchMakes();
+      dataFetched.current = true;
+    }
+  }, [
+    fetchTypes,
+    fetchOwnerships,
+    fetchSuppliers,
+    fetchConditions,
+    fetchSecurityCategories,
+    fetchMakes,
+  ]);
+
+  useEffect(() => {
+    if (selectedMake) {
+      fetchModels(selectedMake);
+    }
+  }, [selectedMake, fetchModels]);
+
+  const getOptions = (arr: any[]) =>
+    arr
+      .filter((item) => item.status === "A")
+      .map((item) => ({
+        label: item.description,
+        value: item.code,
+      }));
+
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow">
@@ -27,12 +91,12 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               name="vehicleType"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Type">
-                  <Select.Option value="car">Car</Select.Option>
-                  <Select.Option value="truck">Truck</Select.Option>
-                  <Select.Option value="bus">Bus</Select.Option>
-                  <Select.Option value="motorcycle">Motorcycle</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  placeholder="Select Type"
+                  loading={vehicleTypesLoading}
+                  options={getOptions(vehicleTypes)}
+                />
               )}
             />
           </Form.Item>
@@ -49,10 +113,12 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               name="vehicleOwnership"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Ownership">
-                  <Select.Option value="individual">Individual</Select.Option>
-                  <Select.Option value="company">Company</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  placeholder="Select Ownership"
+                  loading={vehicleOwnershipsLoading}
+                  options={getOptions(vehicleOwnerships)}
+                />
               )}
             />
           </Form.Item>
@@ -69,10 +135,12 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               name="vehicleSupplier"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Supplier">
-                  <Select.Option value="supplier1">Supplier 1</Select.Option>
-                  <Select.Option value="supplier2">Supplier 2</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  placeholder="Select Supplier"
+                  loading={vehicleSuppliersLoading}
+                  options={getOptions(vehicleSuppliers)}
+                />
               )}
             />
           </Form.Item>
@@ -89,16 +157,18 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               name="vehicleCondition"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Condition">
-                  <Select.Option value="new">New</Select.Option>
-                  <Select.Option value="used">Used</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  placeholder="Select Condition"
+                  loading={vehicleConditionsLoading}
+                  options={getOptions(vehicleConditions)}
+                />
               )}
             />
           </Form.Item>
 
           <Form.Item
-            label="Vehicle Category"
+            label="Category"
             required
             validateStatus={errors.vehicleCategory ? "error" : ""}
             help={errors.vehicleCategory?.message}
@@ -109,12 +179,12 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               name="vehicleCategory"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Category">
-                  <Select.Option value="sedan">Sedan</Select.Option>
-                  <Select.Option value="suv">SUV</Select.Option>
-                  <Select.Option value="hatchback">Hatchback</Select.Option>
-                  <Select.Option value="pickup">Pickup</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  placeholder="Select Category"
+                  loading={vehicleCategoriesLoading}
+                  options={getOptions(vehicleCategories)}
+                />
               )}
             />
           </Form.Item>
@@ -131,12 +201,12 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               name="vehicleMake"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Make">
-                  <Select.Option value="toyota">Toyota</Select.Option>
-                  <Select.Option value="honda">Honda</Select.Option>
-                  <Select.Option value="suzuki">Suzuki</Select.Option>
-                  <Select.Option value="mitsubishi">Mitsubishi</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  placeholder="Select Make"
+                  loading={vehicleMakesLoading}
+                  options={getOptions(vehicleMakes)}
+                />
               )}
             />
           </Form.Item>
@@ -153,10 +223,12 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               name="vehicleModel"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Model">
-                  <Select.Option value="model1">Model 1</Select.Option>
-                  <Select.Option value="model2">Model 2</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  placeholder="Select Model"
+                  loading={vehicleModelsLoading}
+                  options={getOptions(vehicleModels)}
+                />
               )}
             />
           </Form.Item>
