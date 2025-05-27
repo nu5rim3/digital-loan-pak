@@ -152,7 +152,8 @@ const GuarantorOnboarding: React.FC = () => {
             {
                 guarantorIdx !== '' &&
                 <>
-                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={guarantorIdx ?? ''} onCompleted={() => navigate(`${appId}`)} />
+                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={guarantorIdx ?? ''} />
+                    {/* onCompleted={() => navigate(`${appId}`)}  */}
                     <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={guarantorIdx ?? ''} />
                 </>
             }

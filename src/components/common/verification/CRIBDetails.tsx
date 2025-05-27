@@ -80,42 +80,50 @@ const CRIBDetails: React.FC<ICRIBDetails> = ({ cnic }) => {
         <>
             <Card title={'Internal CRIB Details'} loading={cribLoading} extra={
                 <>
-                    <Button type="default" icon={<EyeOutlined />} onClick={() => setOpenModal(true)} disabled={cribDetails?.detail === null}>View More</Button>
+                    <Button type="default" icon={<EyeOutlined />} onClick={() => setOpenModal(true)} disabled={cribDetails?.length === 0}>View More</Button>
                     <Button type="text" icon={<ReloadOutlined />} onClick={onRefresh} />
                 </>
             }>
                 <Form>
                     <div className="grid grid-cols-3 gap-3">
-                        {cribDetails?.detail === null ? <Form.Item><b>{cribDetails.message}</b></Form.Item> :
-                            <>
-                                <Form.Item label="Name">
-                                    <b>{formatName(cribDetails?.clientName ?? '-') ?? '-'}</b>
-                                </Form.Item>
-                                <Form.Item label="CNIC">
-                                    <b>{cnic ?? '-'}</b>
-                                </Form.Item>
-                                <Form.Item label="Previous Loans">
-                                    <b>{cribLoan.numberOfPreviousLoans}</b>
-                                </Form.Item>
-                                <Form.Item label="Active Loans">
-                                    <b>{cribLoan.numberOfActiveLoans}</b>
-                                </Form.Item>
-                                <Form.Item label="Active Loans Amount">
-                                    <b>{formatCurrency(cribLoan.activeLoansAmount ?? 0)}</b>
-                                </Form.Item>
-                                <Form.Item label="Active Outstanding">
-                                    <b>{formatCurrency(cribLoan.activeOutstanding ?? 0)}</b>
-                                </Form.Item>
-                                <Form.Item label="Overdue">
-                                    <b>{formatCurrency(cribLoan.overdue ?? 0)}</b>
-                                </Form.Item>
-                                <Form.Item label="Active Installment Value">
-                                    <b>{formatCurrency(cribLoan.activeInstallmentValue ?? 0)}</b>
-                                </Form.Item>
-                                <Form.Item label="Active Arrers Amount">
-                                    <b>{formatCurrency(cribLoan.arrearsAmount ?? 0)}</b>
-                                </Form.Item>
-                            </>
+                        {
+                            cribDetails !== null && cribDetails.map(((detail, index) => (
+                                <div key={index}>
+                                    <Form.Item label="Name">
+                                        <b>{formatName(detail?.clientName ?? '-') ?? '-'}</b>
+                                    </Form.Item>
+                                    <Form.Item label="CNIC">
+                                        <b>{cnic ?? '-'}</b>
+                                    </Form.Item>
+                                    <Form.Item label="Previous Loans">
+                                        <b>{cribLoan.numberOfPreviousLoans}</b>
+                                    </Form.Item>
+                                    <Form.Item label="Active Loans">
+                                        <b>{cribLoan.numberOfActiveLoans}</b>
+                                    </Form.Item>
+                                    <Form.Item label="Active Loans Amount">
+                                        <b>{formatCurrency(cribLoan.activeLoansAmount ?? 0)}</b>
+                                    </Form.Item>
+                                    <Form.Item label="Active Outstanding">
+                                        <b>{formatCurrency(cribLoan.activeOutstanding ?? 0)}</b>
+                                    </Form.Item>
+                                    <Form.Item label="Overdue">
+                                        <b>{formatCurrency(cribLoan.overdue ?? 0)}</b>
+                                    </Form.Item>
+                                    <Form.Item label="Active Installment Value">
+                                        <b>{formatCurrency(cribLoan.activeInstallmentValue ?? 0)}</b>
+                                    </Form.Item>
+                                    <Form.Item label="Active Arrers Amount">
+                                        <b>{formatCurrency(cribLoan.arrearsAmount ?? 0)}</b>
+                                    </Form.Item>
+                                </div>
+                            )))
+                        }
+
+                        {
+                            cribDetails === null && <Form.Item>
+                                <b>No CRIB details found for the provided CNIC.</b>
+                            </Form.Item>
                         }
                     </div>
                 </Form>
