@@ -68,7 +68,7 @@ interface IVerificationECIBResponse {
 interface IVerificationState {
   blacklistDetails: IVerificationBlacklistResponse | null;
   msasDetails: IVerificationMSASResponse | null;
-  cribDetails: IVerificationCRIBResponse | null;
+  cribDetails: IVerificationCRIBResponse[] | null;
   ecibDetails: IVerificationECIBResponse | null;
   blLoading: boolean;
   msasLoading: boolean;
@@ -80,6 +80,7 @@ interface IVerificationState {
   fetchMSASByIdx: (cnic: string) => Promise<void>;
   fetchCRIBByCnic: (cnic: string) => Promise<void>;
   fetchECIBById: (cnic: string) => Promise<void>;
+  resetCRIBDetails: () => void;
 }
 
 const useVerificationStore = create<IVerificationState>((set) => ({
@@ -148,6 +149,9 @@ const useVerificationStore = create<IVerificationState>((set) => ({
       set({ error: error.message, ecibLoading: false });
     }
   },
+
+  resetCRIBDetails: () =>
+    set({ cribDetails: null, cribLoading: false, error: null }),
 }));
 
 export default useVerificationStore;

@@ -12,6 +12,7 @@ import useUserStore from '../../../store/userStore'
 import { specialChargesByCode } from '../../../utils/loanStats'
 import useCreditStore, { ITrailCalulationResponse } from '../../../store/creditStore'
 import { useParams } from 'react-router-dom'
+import useVerificationStore from '../../../store/verificationStore'
 
 const schema = yup.object().shape({
     productFacility: yup.string().required('Type of Facility is required'),
@@ -118,11 +119,14 @@ const schema = yup.object().shape({
 
 interface ISaveTrialCalculation {
     cliIdx: string;
+    cnic?: string;
 }
 
-const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx }) => {
+const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => {
     const { appId } = useParams()
     const [isSaveShow, setIsSaveShow] = useState(false);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [rollOverDetail, setRollOverDetail] = useState<any | null>(null);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [calculationPayload, setCalculationPayload] = useState<any | null>(null);
     const [validationSchema, setValidationSchema] = useState(schema);
@@ -153,7 +157,9 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx }) => {
             dateOfPaymenent: undefined,
             remark: undefined,
             insuranceVE: undefined,
-            prevLoanOutstanding: 0.00
+            prevLoanOutstanding: 0.00,
+            prevLoanProd: undefined,
+            prevLoanContractNo: undefined,
         }
     });
 
@@ -161,6 +167,8 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx }) => {
         control,
         name: 'structuredPayment', // This matches the name in your schema
     });
+
+    console.log('errors', errors);
 
     const {
         subProductTypes, subProductTypesLoading,
@@ -172,6 +180,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx }) => {
 
     const { productDetails, productDetailsLoading, fetchProductDetails, resetProductDetails } = useLoanStore()
     const { user } = useUserStore()
+    const { cribDetails, cribLoading, fetchCRIBByCnic, resetCRIBDetails } = useVerificationStore()
     const { trailCalulationDetails, trailCalulationDetailsLoading, trailCalucationData, trailCalucationDataLoading, trailCalulationLoading, sendTrailCalulation, fetchTrailCalulation, resetTrailCalculationDetails, saveTrailCalulation } = useCreditStore()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -222,10 +231,6 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx }) => {
             "pTrhdColMeth": calculationMethod === 'B' ? data.paymentFrequency : '', // payment frequency code
             "pStru": calculationMethod === 'S' ? data.structuredPayment : [], // TODO: stucture payment
             "pTrhdDep": data.leaseKeyMoney ?? '', // "" Lease Key Money
-            prevLoanProd: facilityType === 'RO' ? data.prevLoanProd : '', // previous loan product
-            prevLoanContractNo: facilityType === 'RO' ? data.prevLoanContractNo : '', // previous loan contract no
-            prevLoanOutstanding: facilityType === 'RO' ? data.prevLoanOutstanding : '', // previous loan outstanding
-            countOfRollOver: facilityType === 'RO' ? data.countOfRollOver : '', // count of roll over
             "pTrtx": productDetails?.specialCharges.map((item) => ({
                 "trtxTrx": item.prtbTrx, // prtbTrx
                 "trtxAmt": item.prtbCalAmt, // prtbCalAmt
@@ -233,6 +238,15 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx }) => {
                 "trtxCalMethod": item.prtbCalMetod, //prtbCalMetod
                 "prtbMndFlg": item.prtbMndFlg, // prtbMndFlg
             })) ?? [],
+        }
+
+        if (facilityType === 'RO') {
+            setRollOverDetail({
+                prevLoanProd: data.prevLoanProd ?? '',
+                prevLoanContractNo: data.prevLoanContractNo ?? '',
+                prevLoanOutstanding: data.prevLoanOutstanding ?? 0,
+                countOfRollOver: data.countOfRollOver ?? '',
+            })
         }
 
         sendTrailCalulation(__data).then((res: ITrailCalulationResponse) => {
@@ -260,9 +274,35 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx }) => {
     }
 
     const onRestHandle = () => {
-        reset();
+        reset(
+            {
+                productFacility: undefined,
+                productCategory: undefined,
+                productType: undefined,
+                productSubType: undefined,
+                loanAmount: 0.00,
+                cost: 0.00,
+                trems: undefined,
+                markup: undefined,
+                irr: undefined,
+                calculationMethod: undefined,
+                paymentFrequency: undefined,
+                leaseKeyMoney: undefined,
+                executionDate: undefined,
+                capitalPaid: undefined,
+                gracePeriod: undefined,
+                expiryDate: undefined,
+                dateOfPaymenent: undefined,
+                remark: undefined,
+                insuranceVE: undefined,
+                prevLoanOutstanding: 0.00,
+                prevLoanProd: undefined,
+                prevLoanContractNo: undefined,
+            }
+        );
         resetProductDetails()
         resetTrailCalculationDetails()
+        resetCRIBDetails()
         setIsSaveShow(false)
     }
 
@@ -281,9 +321,6 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx }) => {
     useEffect(() => {
         if (productCategory !== undefined) {
             setValue('productType', '');
-            if (facilityType !== 'RO') {
-                setValue('productSubType', '')
-            }
             setValue('loanAmount', 0)
             setValue('trems', 0)
             setSelectedProductType(null)
@@ -296,9 +333,6 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx }) => {
 
     useEffect(() => {
         if (productType !== undefined && productType !== '') {
-            if (facilityType !== 'RO') {
-                setValue('productSubType', '')
-            }
             setSelectedSubProductType(null)
             fetchSubProductTypes(productType ?? '')
             resetProductDetails()
@@ -316,10 +350,10 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx }) => {
 
 
     useEffect(() => {
-        if (facilityType !== 'RO') {
-            if (selectedSubProductType !== null && selectedProductType !== null) {
-                fetchProductDetails(selectedProductType?.prodCode, selectedSubProductType?.subTypeCode, user?.branches[0]?.lsbrProv?.toString() ?? '', selectedProductType?.prodCurrency ?? trailCalucationData?.pTrhdCurCode)
-            }
+        // if (facilityType !== 'RO') {
+        if (selectedSubProductType !== null && selectedProductType !== null) {
+            fetchProductDetails(selectedProductType?.prodCode, selectedSubProductType?.subTypeCode, user?.branches[0]?.lsbrProv?.toString() ?? '', selectedProductType?.prodCurrency ?? trailCalucationData?.pTrhdCurCode)
+            // }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedSubProductType, selectedProductType])
@@ -361,54 +395,27 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx }) => {
     }, [productDetails, selectedSubProductType, selectedProductType]);
 
     const saveCalculationHandle = () => {
-        saveTrailCalulation(appId ?? '', cliIdx, calculationPayload)
+
+        let __calculationPayload = calculationPayload;
+        if (facilityType === 'RO') {
+            __calculationPayload = {
+                ...calculationPayload,
+                prevLoanProd: facilityType === 'RO' ? rollOverDetail.prevLoanProd : '', // previous loan product
+                prevLoanContractNo: facilityType === 'RO' ? rollOverDetail.prevLoanContractNo : '', // previous loan contract no
+                prevLoanOutstanding: facilityType === 'RO' ? rollOverDetail.prevLoanOutstanding : '', // previous loan outstanding
+                countOfRollOver: facilityType === 'RO' ? rollOverDetail.countOfRollOver : '', // count of roll over
+            }
+        }
+        saveTrailCalulation(appId ?? '', cliIdx, __calculationPayload)
     }
 
-    // fetchTrailCalulationDetailsByAppId
+    useEffect(() => {
 
-    // useEffect(() => {
-    //     if (facilityType === 'RO') {
-    //         fetchTrailCalulationDetailsByAppId(appId ?? '')
-    //     }
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [facilityType])
-
-    // useEffect(() => {
-    //     if (facilityType === 'RO' && trailCalucationData !== null) {
-    //         setValue('productType', trailCalucationData?.pTrhdLType)
-    //         setValue('productSubType', trailCalucationData?.pTrhdBus)
-    //         setValue('loanAmount', Number(trailCalucationData?.pTrhdLocCost))
-    //         setValue('trems', Number(trailCalucationData?.pTrhdTerm))
-    //         setValue('markup', Number(trailCalucationData?.pTrhdTr))
-    //         setValue('calculationMethod', trailCalucationData?.pTrhdMethod)
-    //         setValue('paymentFrequency', trailCalucationData?.pTrhdColMeth)
-    //         setValue('structuredPayment', trailCalucationData?.pStru.map((item) => ({
-    //             struSeq: item.struSeq,
-    //             struPrds: item.struPrds,
-    //             struRent: Number(item.struRent),
-    //             isPayble: item.struRent === '0' ? 'N' : 'Y',
-    //         })))
-    //         // setValue('leaseKeyMoney', Number(trailCalucationData?.pDep))
-    //         // reset({
-    //         // productFacility: trailCalucationData?.pFacilityType,
-    //         // productCategory: trailCalucationData?.pTrhdLType,
-    //         // productType: trailCalucationData?.pTrhdLType,
-    //         // productSubType: trailCalucationData?.pTrhdBus,
-    //         // loanAmount: Number(trailCalucationData?.pTrhdLocCost),
-    //         // trems: Number(trailCalucationData?.pTrhdTerm),
-    //         // markup: Number(trailCalucationData?.pTrhdTr),
-    //         // calculationMethod: trailCalucationData?.pTrhdMethod,
-    //         // paymentFrequency: trailCalucationData?.pTrhdColMeth,
-    //         // // leaseKeyMoney: Number(trailCalucationData?.pDep),
-    //         // executionDate: trailCalucationData?.pInsuAddCrit,
-    //         // // capitalPaid: Number(trailCalucationData?.pInsuCoverAmt),
-    //         // // gracePeriod: Number(trailCalucationData?.pInsuCoverAmt),
-    //         // expiryDate: trailCalucationData?.pInsuAddCrit,
-    //         // dateOfPaymenent: trailCalucationData?.pInsuAddCrit,
-    //         // })
-    //     }
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [trailCalucationData])
+        if (facilityType === 'RO') {
+            fetchCRIBByCnic(cnic ?? '')
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [facilityType])
 
 
     return (
@@ -416,6 +423,24 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx }) => {
             <Card title="Trial Calculation" className='w-full'>
                 <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
                     <div className="grid grid-cols-4 gap-3">
+
+                        <Form.Item label={'Type of Facility'} validateStatus={errors.productFacility ? "error" : ""} help={errors.productFacility?.message} required>
+                            <Controller
+                                name="productFacility"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select
+                                        {...field}
+                                        placeholder="Enter Type of Facility"
+                                        loading={facilityTypesLoading}
+                                        options={facilityTypes.map((item) => ({
+                                            value: item.code,
+                                            label: item.description,
+                                        }))}
+                                    />
+                                )}
+                            />
+                        </Form.Item>
 
                         <Form.Item label={'Product Category'} validateStatus={errors.productCategory ? "error" : ""} help={errors.productCategory?.message} required>
                             <Controller
@@ -434,24 +459,6 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx }) => {
                                 )}
                             />
 
-                        </Form.Item>
-
-                        <Form.Item label={'Type of Facility'} validateStatus={errors.productFacility ? "error" : ""} help={errors.productFacility?.message} required>
-                            <Controller
-                                name="productFacility"
-                                control={control}
-                                render={({ field }) => (
-                                    <Select
-                                        {...field}
-                                        placeholder="Enter Type of Facility"
-                                        loading={facilityTypesLoading}
-                                        options={facilityTypes.map((item) => ({
-                                            value: item.code,
-                                            label: item.description,
-                                        }))}
-                                    />
-                                )}
-                            />
                         </Form.Item>
 
                         <Form.Item label={'Previous Loan Product'} validateStatus={errors.prevLoanProd ? "error" : ""} help={errors.prevLoanProd?.message} required hidden={facilityType !== 'RO'}>
@@ -479,7 +486,19 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx }) => {
                                 name="prevLoanContractNo"
                                 control={control}
                                 render={({ field }) => (
-                                    <Input {...field} placeholder="Enter Previous Loan Contract No" />
+                                    <Select
+                                        {...field}
+                                        loading={cribLoading}
+                                        options={cribDetails?.map((item) => ({
+                                            value: item?.contractNo ?? '',
+                                            label: item?.contractNo ?? '',
+                                        })) ?? []}
+                                        onChange={(value) => {
+                                            field.onChange(value);
+                                            const selectedContract = cribDetails?.find((item) => item.contractNo === value);
+                                            setValue('prevLoanOutstanding', selectedContract ? Number(selectedContract.totalDues ?? 0) : 0);
+                                        }}
+                                    />
                                 )}
                             />
                         </Form.Item>
@@ -520,7 +539,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx }) => {
                             <Controller
                                 name="productType"
                                 control={control}
-                                disabled={productCategory === undefined || facilityType === 'RO'}
+                                disabled={productCategory === undefined}
                                 render={({ field }) => (
                                     <Select
                                         {...field}
@@ -541,7 +560,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx }) => {
                             <Controller
                                 name="productSubType"
                                 control={control}
-                                disabled={productType === undefined || facilityType === 'RO'}
+                                disabled={productType === undefined}
                                 render={({ field }) => (
                                     <Select
                                         {...field}
@@ -561,7 +580,6 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx }) => {
                             <Controller
                                 name="loanAmount"
                                 control={control}
-                                disabled={facilityType === 'RO'}
                                 render={({ field }) => (
                                     <InputNumber
                                         {...field}
@@ -609,7 +627,8 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx }) => {
                             />
                         </Form.Item>
 
-                        <Form.Item label={'Calculation Method'} validateStatus={errors.calculationMethod ? "error" : ""} help={errors.calculationMethod?.message} required hidden={facilityType === 'RO'}>
+                        <Form.Item label={'Calculation Method'} validateStatus={errors.calculationMethod ? "error" : ""} help={errors.calculationMethod?.message} required>
+                            {/* hidden={facilityType === 'RO'} */}
                             <Controller
                                 name="calculationMethod"
                                 control={control}
