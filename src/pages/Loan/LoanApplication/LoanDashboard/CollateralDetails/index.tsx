@@ -6,7 +6,7 @@ import DetailsCard from "./components/DetailsCard";
 import CollateralFormModal from "./components/CollateralFormModal";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 
 // TODO: This will be replaced with global state later
 const productCategory = "LOAN" as const;
@@ -63,9 +63,9 @@ const CollateralDetails: React.FC<CollateralDetailsProps> = () => {
         );
         setFormData(updatedFormData);
       } else {
-        const newData = { ...data, id: uuidv4() };
-        const updatedData = [...formData, newData];
-        setFormData(updatedData);
+        // const newData = { ...data, id: uuidv4() };
+        // const updatedData = [...formData, newData];
+        // setFormData(updatedData);
       }
       closeModal();
     } catch (error) {
