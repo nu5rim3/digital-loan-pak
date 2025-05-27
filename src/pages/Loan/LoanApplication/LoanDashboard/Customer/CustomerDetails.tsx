@@ -62,8 +62,10 @@ const CustomerDetails: React.FC = () => {
     const onSubmit = async (data: any) => {
         if (mode === 'create') {
             addStakeholder({ ...data, appraisalID: appId ?? '', new: true, stkType: 'C' })
+            // TODO: histroy back
         } else if (mode === 'edit') {
             updateStakeholder(stakholderId, { ...data, appraisalID: appId ?? '', update: true, stkType: 'C' })
+            // TODO: histroy back
         }
     }
 

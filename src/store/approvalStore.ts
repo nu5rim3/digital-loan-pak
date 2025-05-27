@@ -177,10 +177,13 @@ const useApprovalStore = create<IApprovalState>((set) => ({
       appraisalApprovalError: null,
     });
     try {
-      await APIAuth.put(`/mobixCamsApproval/v1/approvals/appraisal/${idx}/inactive`);
+      await APIAuth.put(
+        `/mobixCamsApproval/v1/approvals/appraisal/${idx}/inactive`
+      );
       set({
         appraisalApprovalLoading: false,
       });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({
         appraisalApprovalError: error.message,

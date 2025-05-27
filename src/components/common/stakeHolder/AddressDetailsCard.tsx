@@ -34,6 +34,8 @@ const schema = yup.object().shape({
     status: yup.string(),
 });
 
+// TODO: addressType if already used remove from the residenceType or disable it in the form
+
 const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) => {
     const [openModal, setOpenModal] = useState(false);
     const [mode, setMode] = useState<'create' | 'edit' | 'remove'>('create');

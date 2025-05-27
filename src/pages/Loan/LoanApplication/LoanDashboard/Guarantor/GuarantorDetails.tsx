@@ -58,8 +58,10 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
     const onSubmit = async (data: any) => {
         if (mode === 'create') {
             addStakeholder({ ...data, appraisalID: appId ?? '', new: true, stkType: 'G' })
+            // TODO: back
         } else if (mode === 'edit') {
             updateStakeholder(stakholderId, { ...data, appraisalID: appId ?? '', update: true, stkType: 'G' })
+            // TODO: back
         }
     }
 

@@ -95,7 +95,11 @@ const CustomerOnboarding: React.FC = () => {
                     <>
                         <div className='flex gap-3'>
                             <Button onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
+                            {/* TODO: conditionlly remove if otp verified */}
                             <Button type="primary" loading={false} onClick={approval} icon={<CheckCircleOutlined />}>Approval</Button>
+                            {/* TODO: Navigate to TC page */}
+                            <Button type='primary' onClick={approval} icon={<QrcodeOutlined />} >Calculate TC</Button>
+                            {/* end */}
                             <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} >Scan QR</Button>
                         </div>
                     </>
@@ -145,7 +149,7 @@ const CustomerOnboarding: React.FC = () => {
             {
                 customerIdx !== '' &&
                 <>
-                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={customerIdx ?? ''} onCompleted={() => navigate(`${mainURL}/loan/application/${loan?.idx}`)} />
+                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={customerIdx ?? ''} />
                     <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={customerIdx ?? ''} />
                 </>
             }

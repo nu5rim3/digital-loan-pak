@@ -284,7 +284,7 @@ const DetailsCard: React.FC<{ detail: IOtherInfo; onEdit: () => void; dataArray:
             <Descriptions.Item label="Saving Account">{detail.savingsReq === 'YES' ? 'Yes' : 'No'}</Descriptions.Item>
             <Descriptions.Item label="Politically Exposed Person">{detail.poliExpo === 'Y' ? 'Yes' : 'No'}</Descriptions.Item>
             <Descriptions.Item label="How did you know">{formatSentence(dataArray[4].filter((item: any) => item.code === detail.howDidYouKnow)[0]?.description) ?? '-'}</Descriptions.Item>
-            <Descriptions.Item label="WHT Declaration">{detail.whtDec ?? '-'}</Descriptions.Item>
+            <Descriptions.Item label="WHT Declaration">{detail.whtDec === 'Y' ? 'Yes' : 'No'}</Descriptions.Item>
 
         </Descriptions>
     </Card>

@@ -115,6 +115,9 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
                                     <Select {...field} placeholder="Select Contact Type" options={[
                                         { label: 'Mobile', value: 'Mobile' },
                                         { label: 'Home', value: 'Home' },
+                                        { label: 'Office', value: 'Office' },
+                                        { label: 'Fixed Line', value: 'Fixed Line' },
+                                        { label: 'Additional Phone Number', value: 'Additional Phone Number' },
                                     ]} />
                                 )}
                             />
