@@ -61,10 +61,24 @@ const CustomerDetails: React.FC = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
         if (mode === 'create') {
-            addStakeholder({ ...data, appraisalID: appId ?? '', new: true, stkType: 'C' })
+            addStakeholder({
+                ...data,
+                appraisalID: appId ?? '',
+                new: true,
+                stkType: 'C',
+                stkCNic: customers[0]?.identificationNumber ?? '',
+                stkCusName: customers[0]?.fullName ?? ''
+            })
             // TODO: histroy back
         } else if (mode === 'edit') {
-            updateStakeholder(stakholderId, { ...data, appraisalID: appId ?? '', update: true, stkType: 'C' })
+            updateStakeholder(stakholderId, {
+                ...data,
+                appraisalID: appId ?? '',
+                update: true,
+                stkType: 'C',
+                stkCNic: customers[0]?.identificationNumber ?? '',
+                stkCusName: customers[0]?.fullName ?? ''
+            })
             // TODO: histroy back
         }
     }
