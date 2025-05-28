@@ -168,8 +168,6 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         name: 'structuredPayment', // This matches the name in your schema
     });
 
-    console.log('errors', errors);
-
     const {
         subProductTypes, subProductTypesLoading,
         productTypes, productTypesLoading,
@@ -412,11 +410,11 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
     useEffect(() => {
 
         if (facilityType === 'RO') {
+            console.log('hello')
             fetchCRIBByCnic(cnic ?? '')
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [facilityType])
-
 
     return (
         <div>
@@ -489,10 +487,10 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                     <Select
                                         {...field}
                                         loading={cribLoading}
-                                        options={cribDetails?.map((item) => ({
+                                        options={Array.isArray(cribDetails) ? cribDetails?.map((item) => ({
                                             value: item?.contractNo ?? '',
                                             label: item?.contractNo ?? '',
-                                        })) ?? []}
+                                        })) ?? [] : []}
                                         onChange={(value) => {
                                             field.onChange(value);
                                             const selectedContract = cribDetails?.find((item) => item.contractNo === value);
@@ -671,6 +669,20 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                                 label: 'Half Yearly',
                                             }
                                         ]}
+                                        onChange={(value) => {
+                                            field.onChange(value);
+                                            if (value === 'M') {
+                                                setValue('trems', 1); // Set terms to 1 for monthly payment frequency
+                                            } else if (value === 'A') {
+                                                setValue('trems', 12); // Set terms to 12 for annually
+                                            } else if (value === 'BA') {
+                                                setValue('trems', 6); // Set terms to 6 for bi-annually
+                                            } else if (value === 'Q') {
+                                                setValue('trems', 4); // Set terms to 4 for quarterly
+                                            } else if (value === 'HY') {
+                                                setValue('trems', 6); // Set terms to 6 for half yearly
+                                            }
+                                        }}
                                     />
                                 )}
                             />

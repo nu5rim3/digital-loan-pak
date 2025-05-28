@@ -14,10 +14,11 @@ import FormDetails from '../../../../components/common/verification/FormDetails'
 // import ViewDetails from '../../../../components/common/verification/ViewDetails';
 import { getStatusByName, TRule } from '../../../../utils/MSASActionFunctions';
 import { mainURL } from '../../../../App';
+import useGuarantorStore from '../../../../store/guarantorStore';
 // import useGuarantorStore from '../../../../store/guarantorStore';
 
 const GuarantorOnboarding: React.FC = () => {
-    // const { guarantor, fetchGuarantorByAppId } = useGuarantorStore()
+    const { guarantor } = useGuarantorStore()
     const [otpModalOpen, setOtpModalOpen] = useState(false);
     const [nadraModalOpen, setNadraModalOpen] = useState(false)
     const [guarantorIdx, setGuarantorIdx] = useState<string | undefined>('');//CLI0000000000001, CLI0000000103821
@@ -86,7 +87,7 @@ const GuarantorOnboarding: React.FC = () => {
                 }
 
                 {
-                    guarantorCNIC && <CRIBDetails idx={guarantorIdx ?? ''} cnic={''} />//guarantorCNIC ?? 
+                    guarantorCNIC && <CRIBDetails idx={guarantorIdx ?? ''} cnic={''} fullName={guarantor?.fullName ?? ''} />//guarantorCNIC ?? 
                 }
 
                 {
@@ -102,7 +103,7 @@ const GuarantorOnboarding: React.FC = () => {
                     <>
                         <div className='flex gap-3'>
                             <Button onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
-                            <Button type="primary" loading={false} onClick={approval} icon={<CheckCircleOutlined />}>Approval</Button>
+                            <Button type="primary" loading={false} onClick={approval} icon={<CheckCircleOutlined />} hidden={otpVerification === 'Y'}>Approval</Button>
                             <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />}>Scan QR</Button>
                         </div>
                     </>
@@ -152,7 +153,7 @@ const GuarantorOnboarding: React.FC = () => {
             {
                 guarantorIdx !== '' &&
                 <>
-                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={guarantorIdx ?? ''} />
+                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={guarantorIdx ?? ''} onCompleted={() => navigate(`${mainURL}/loan/application/${appId ?? ''}`)} />
                     {/* onCompleted={() => navigate(`${appId}`)}  */}
                     <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={guarantorIdx ?? ''} />
                 </>

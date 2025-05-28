@@ -69,7 +69,7 @@ const CustomerOnboarding: React.FC = () => {
                     :
                     <ViewDetails type='C' setIdx={setCustomerIdx} setCnic={setCustomerCNIC} />
                 }
-
+                {/* have to after verification is done */}
                 {
                     customerIdx && <MSASVerification idx={customerIdx ?? ''} cnic={customerCNIC ?? ''} setApprovalStatus={setApprovalStatus} key={msasTrigger} setRuleStatus={setRuleStatus} />
                 }
@@ -79,7 +79,7 @@ const CustomerOnboarding: React.FC = () => {
                 }
 
                 {
-                    customerCNIC && <CRIBDetails idx={customerIdx ?? ''} cnic={customerCNIC ?? ''} />
+                    customerCNIC && <CRIBDetails idx={customerIdx ?? ''} cnic={customerCNIC ?? ''} fullName={customer?.fullName ?? ''} />
                 }
 
                 {
@@ -95,11 +95,10 @@ const CustomerOnboarding: React.FC = () => {
                     <>
                         <div className='flex gap-3'>
                             <Button onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
-                            {/* TODO: conditionlly remove if otp verified */}
-                            <Button type="primary" loading={false} onClick={approval} icon={<CheckCircleOutlined />}>Approval</Button>
-                            {/* TODO: Navigate to TC page */}
-                            <Button type='primary' onClick={approval} icon={<QrcodeOutlined />} >Calculate TC</Button>
-                            {/* end */}
+                            <Button type="primary" loading={false} onClick={approval} icon={<CheckCircleOutlined />} hidden={otpVerification === 'Y'}>Approval</Button>
+                            <Button type='primary' onClick={() => {
+                                navigate(`${mainURL}/loan/application/${loan?.idx ?? ''}`)
+                            }} icon={<QrcodeOutlined />} hidden={otpVerification === 'P'}>Calculate TC</Button>
                             <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} >Scan QR</Button>
                         </div>
                     </>
@@ -149,7 +148,7 @@ const CustomerOnboarding: React.FC = () => {
             {
                 customerIdx !== '' &&
                 <>
-                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={customerIdx ?? ''} />
+                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={customerIdx ?? ''} onCompleted={triggerMSAS} />
                     <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={customerIdx ?? ''} />
                 </>
             }

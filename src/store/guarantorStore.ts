@@ -20,6 +20,7 @@ interface IGuarantor {
   creationDate?: string;
   lastModifiedBy?: string;
   lastModifiedDate?: string;
+  client: "WEB";
 }
 
 interface ICustomerState {

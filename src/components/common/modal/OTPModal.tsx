@@ -8,10 +8,10 @@ interface OTPModalProps {
     idx: string;
     visible: boolean;
     onCancel: () => void;
-    // onCompleted: () => void;
+    onCompleted: () => void;
 }
 
-const OTPModal: React.FC<OTPModalProps> = ({ idx, visible, onCancel }) => {
+const OTPModal: React.FC<OTPModalProps> = ({ idx, visible, onCancel, onCompleted }) => {
 
     const { control, handleSubmit, setValue, watch, reset } = useForm();
     const { sendOTP, verifyOTP, otpLoading, otpVerificationLoading, otpVerificationResponse } = useOTPStore()
@@ -28,7 +28,7 @@ const OTPModal: React.FC<OTPModalProps> = ({ idx, visible, onCancel }) => {
     useEffect(() => {
         if (otpVerificationResponse !== null) {
             onCancel();
-            // onCompleted();
+            onCompleted();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [otpVerificationResponse]);

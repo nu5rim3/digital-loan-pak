@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from "zustand";
 import { APIAuth } from "../services/api";
+import { notification } from "antd";
 
 interface IOTPState {
   otpResponse: any | null;
@@ -32,7 +33,6 @@ const useOTPStore = create<IOTPState>((set) => ({
         `/mobixCamsClientele/v1/clienteles/verifications/send-sms/${idx}`
       );
       set({ otpResponse: response.data, otpLoading: false });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);
       set({ otpError: error.message, otpLoading: false });
@@ -50,7 +50,10 @@ const useOTPStore = create<IOTPState>((set) => ({
         otpVerificationResponse: response.data,
         otpVerificationLoading: false,
       });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      notification.success({
+        message: "OTP Verification",
+        description: "OTP verification successful.",
+      });
     } catch (error: any) {
       console.error(error);
       set({

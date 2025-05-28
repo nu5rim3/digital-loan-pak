@@ -20,6 +20,7 @@ interface ICustomer {
   creationDate?: string;
   lastModifiedBy?: string;
   lastModifiedDate?: string;
+  client: "WEB";
 }
 
 interface ICustomerState {
