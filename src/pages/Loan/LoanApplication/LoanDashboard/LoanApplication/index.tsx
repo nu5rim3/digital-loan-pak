@@ -74,7 +74,7 @@ const LoanApplication: React.FC = () => {
                             placeholder="Select Income Source"
                             value={sourceOfIncome}
                             options={[
-                                { label: 'Agricultural Income', value: 'Agricultural Income' },
+                                { label: 'Agriculture Income ', value: 'Agriculture Income ' },
                                 { label: 'Business Income', value: 'Business Income' },
                                 { label: 'Salary Income', value: 'Salary Income' },
                                 { label: 'Live Stock Income', value: 'Live Stock Income' },

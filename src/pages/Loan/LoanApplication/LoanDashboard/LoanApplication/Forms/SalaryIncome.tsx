@@ -175,14 +175,14 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                             )}
                         />
                     </Form.Item>
-                    <Form.Item label="Business Type" name="employerAddress" validateStatus={errors.typeOfBusiness ? 'error' : ''} help={errors.typeOfBusiness?.message} required>
+                    <Form.Item label="Type Of Business" name="employerAddress" validateStatus={errors.typeOfBusiness ? 'error' : ''} help={errors.typeOfBusiness?.message} required>
                         <Controller
                             name="typeOfBusiness"
                             control={control}
                             render={({ field }) => (
                                 <Select
                                     {...field}
-                                    placeholder="Select a Nature of Business"
+                                    placeholder="Select a Type Of Business"
                                     loading={natureOfBusinessLoading}
                                     options={natureOfBusiness.map((item) => ({ label: item.description, value: item.description }))}
                                 />
