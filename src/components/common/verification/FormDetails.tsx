@@ -15,7 +15,7 @@ const { Search } = Input;
 // ✅ Validation Schema
 const schema = yup.object().shape({
     name: yup.string().required("Name is required"),
-    initals: yup.string().required("Initial is required"),
+    initals: yup.string(),
     surname: yup.string(),
     telcoProvider: yup.string().required("Operator Name is required"),
     contactNumber: yup.string().required("Contact Number is required").matches(/^[0-9]{11}$/, "Contact Number must be 11 digits"),
@@ -47,7 +47,9 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
 
-        const postData = { ...data, fullName: `${data.name ?? ''} ${data.initals ?? ''} ${data.surname ?? ''}`, appraisalId: appId ?? loan?.idx }
+        const fullName = `${data.name ?? ''} ${data.initals ?? ''} ${data.surname ?? ''}`.trim();
+
+        const postData = { ...data, fullName: fullName, appraisalId: appId ?? loan?.idx }
         delete postData['name']
         delete postData['initals']
         delete postData['surname']
@@ -114,9 +116,9 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
 
     useEffect(() => {
         if (type === 'C' && selectedCustomer) {
-            setValue("name", selectedCustomer?.fullName?.split(' ')[0] || '');
-            setValue("initals", selectedCustomer?.fullName?.split(' ')[1] || '');
-            setValue("surname", selectedCustomer?.fullName?.split(' ')[2] || '');
+            setValue("name", selectedCustomer?.fullName?.split(' ')[0]?.replace(/\s/g, '') || '');
+            setValue("initals", selectedCustomer?.fullName?.split(' ')[1]?.replace(/\s/g, '') || '');
+            setValue("surname", selectedCustomer?.fullName?.split(' ')[2]?.replace(/\s/g, '') || '');
             setValue("telcoProvider", selectedCustomer?.telcoProvider || '');
             setValue("contactNumber", selectedCustomer?.contactNumber || '');
             setValue("identificationType", selectedCustomer?.identificationType || '');
@@ -128,9 +130,9 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
 
     useEffect(() => {
         if (type === 'G' && selectedGuarantor) {
-            setValue("name", selectedGuarantor?.fullName?.split(' ')[0] || '');
-            setValue("initals", selectedGuarantor?.fullName?.split(' ')[1] || '');
-            setValue("surname", selectedGuarantor?.fullName?.split(' ')[2] || '');
+            setValue("name", selectedCustomer?.fullName?.split(' ')[0]?.replace(/\s/g, '') || '');
+            setValue("initals", selectedCustomer?.fullName?.split(' ')[1]?.replace(/\s/g, '') || '');
+            setValue("surname", selectedCustomer?.fullName?.split(' ')[2]?.replace(/\s/g, '') || '');
             setValue("telcoProvider", selectedGuarantor?.telcoProvider || '');
             setValue("contactNumber", selectedGuarantor?.contactNumber || '');
             setValue("identificationType", selectedGuarantor?.identificationType || '');
@@ -173,7 +175,7 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                             />
                         </Form.Item>
 
-                        <Form.Item label="Initial" validateStatus={errors.initals ? "error" : ""} help={errors.initals?.message} required>
+                        <Form.Item label="Initial" validateStatus={errors.initals ? "error" : ""} help={errors.initals?.message}>
                             <Controller
                                 name="initals"
                                 control={control}

@@ -9,6 +9,8 @@ import useApprovalStore from '../../../../store/approvalStore';
 import useLoanStore from '../../../../store/loanStore';
 import useUserStore from '../../../../store/userStore';
 import { QrcodeOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
+import { mainURL } from '../../../../App';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
@@ -20,15 +22,17 @@ const schema = yup.object().shape({
 interface IExceptionalApproval {
     setOtpModalOpen: () => void;
     setNadraModalOpen: () => void;
+    otpVerification?: string; // Optional prop for OTP verification status
     // NADRAStatus: string | null | undefined;
 }
 
-const ExceptionalApproval: React.FC<IExceptionalApproval> = ({ setOtpModalOpen, setNadraModalOpen }) => {
+const ExceptionalApproval: React.FC<IExceptionalApproval> = ({ setOtpModalOpen, setNadraModalOpen, otpVerification }) => {
     const { control, handleSubmit, formState: { errors }, setValue } = useForm({
         resolver: yupResolver(schema),
     });
 
     const { loan } = useLoanStore()
+    const navigate = useNavigate();
     const { currentRole } = useUserStore()
 
     const { exceptionalApprovalCategories, exceptionalApprovalCategoriesLoading, appraisalApprovalLoading, fetchExceptionalApprovalCategories, requestExceptionalApproval } = useApprovalStore()
@@ -55,7 +59,7 @@ const ExceptionalApproval: React.FC<IExceptionalApproval> = ({ setOtpModalOpen, 
         <Card title="Exceptional Approval">
             <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
                 <div className='grid grid-cols-2 gap-3'>
-                    <Form.Item label="Exceptional Method" validateStatus={errors.category ? "error" : ""} help={errors.category?.message} required>
+                    <Form.Item label="Exceptional Method" validateStatus={errors.category ? "error" : ""} help={errors.category?.message} required hidden={otpVerification === 'Y'}>
                         <Controller
                             name='category'
                             control={control}
@@ -83,7 +87,7 @@ const ExceptionalApproval: React.FC<IExceptionalApproval> = ({ setOtpModalOpen, 
                         />
                     </Form.Item>
 
-                    <Form.Item label="Comment" validateStatus={errors.remark ? "error" : ""} help={errors.remark?.message} required>
+                    <Form.Item label="Comment" validateStatus={errors.remark ? "error" : ""} help={errors.remark?.message} required hidden={otpVerification === 'Y'}>
                         <Controller
                             name='remark'
                             control={control}
@@ -103,7 +107,10 @@ const ExceptionalApproval: React.FC<IExceptionalApproval> = ({ setOtpModalOpen, 
                     </Form.Item>
                 </div>
                 <div>
-                    <Button type="primary" htmlType="submit" danger icon={<CheckSquareOutlined />} loading={appraisalApprovalLoading}>Exceptional Approval</Button>
+                    <Button type="primary" htmlType="submit" danger icon={<CheckSquareOutlined />} loading={appraisalApprovalLoading} className='mr-3' hidden={otpVerification === 'Y'}>Exceptional Approval</Button>
+                    <Button type='primary' onClick={() => {
+                        navigate(`${mainURL}/loan/application/${loan?.idx ?? ''}`)
+                    }} icon={<QrcodeOutlined />} hidden={otpVerification === 'P'} className='mr-3'>Calculate TC</Button>
                     <Button type='default' onClick={setNadraModalOpen} icon={<QrcodeOutlined />}>Scan QR</Button>
                 </div>
             </Form>
