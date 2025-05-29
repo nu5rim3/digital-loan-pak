@@ -435,6 +435,16 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [facilityType])
 
+    useEffect(() => {
+        if (isSaveShow) {
+            const subscription = watch((_value, { name, type }) => {
+                console.log(`Field changed: ${name}, Type: ${type}`);
+                setIsSaveShow(false);
+            });
+            return () => subscription.unsubscribe();
+        }
+    }, [isSaveShow, watch]);
+
     return (
         <div>
             <Card title="Trial Calculation" className='w-full'>
