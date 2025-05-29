@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { API } from "../services/api";
+import { API, APIAuth } from "../services/api";
 
 interface IVerificationBlacklistResponse {
   cnicNo: string;
@@ -111,7 +111,7 @@ const useVerificationStore = create<IVerificationState>((set) => ({
   fetchMSASByIdx: async (idx: string) => {
     set({ msasLoading: true, error: null, msasDetails: null });
     try {
-      const response = await API.get(
+      const response = await APIAuth.get(
         `/mobixCamsClientele/v1/clienteles/verifications/get-by-clientele/${idx}`
       );
       set({ msasDetails: response.data, msasLoading: false });
