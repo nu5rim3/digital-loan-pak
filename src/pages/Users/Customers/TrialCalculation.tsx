@@ -236,6 +236,25 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                 "trtxCalMethod": item.prtbCalMetod, //prtbCalMetod
                 "prtbMndFlg": item.prtbMndFlg, // prtbMndFlg
             })) ?? [],
+            "pSnrv": productType === '9' || productType === 'E9' ?
+                [
+                    {
+                        "snrvFac": data.loanAmount ?? '0',
+                        "snrvCap": data.capitalPaid ?? '0',
+                        "snrvExpDate": data.expiryDate ?? '',
+                        "snrvIntRt": "10",
+                        "snrvPInt": "0",
+                        "snrvDtPay": data.dateOfPaymenent ?? '',
+                        "snrvGPrd": data.gracePeriod ?? '',
+                    }
+                ] : [],
+            "pTreq": productType === '1' ?
+                [
+                    {
+                        "treqEv": data.insuranceVE ?? '', // insuranceVE
+                        "treqEqpCost": data.cost ?? '0', // cost
+                    }
+                ] : []
         }
 
         if (facilityType === 'RO') {
