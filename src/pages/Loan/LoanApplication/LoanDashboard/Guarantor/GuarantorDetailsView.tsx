@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { useForm, Controller } from "react-hook-form";
-import { Input, Form, Button, Card, Select, Empty } from "antd";
+import { Input, Form, Button, Card, Select, Empty, Spin } from "antd";
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import useCommonStore from '../../../../../store/commonStore';
 import { formatCNIC } from '../../../../../utils/formatterFunctions';
 import { useNavigate, useParams } from 'react-router-dom';
 import { mainURL } from '../../../../../App';
-import { PlusOutlined, EditOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, QrcodeOutlined } from '@ant-design/icons';
 import { IStakeholder } from '../../../../../store/stakeholderStore';
 import useGuarantorStore from '../../../../../store/guarantorStore';
 import ContactDetailsCard from '../../../../../components/common/stakeHolder/ContactDetailsCard';
 import AddressDetailsCard from '../../../../../components/common/stakeHolder/AddressDetailsCard';
 import IncomeDetails from '../../../../../components/common/stakeHolder/IncomeDetails';
+import NADRAModal from '../../../../../components/common/modal/NADRAModal';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
@@ -58,7 +59,7 @@ interface IGuarantorDetailsView {
 }
 
 const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) => {
-
+    const [nadraModalOpen, setNadraModalOpen] = useState(false)
     const { control, formState: { errors }, setValue, watch } = useForm({
         resolver: yupResolver(schema),
     });
@@ -67,7 +68,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
     const navigate = useNavigate();
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [selectedIdx, setSelectedIdx] = useState('');
-    const { fetchGuarantorByAppId } = useGuarantorStore()
+    const { guarantors, guarantorLoading, fetchGuarantorByAppId } = useGuarantorStore()
 
     useEffect(() => {
         fetchGuarantorByAppId(appId ?? '')
@@ -88,8 +89,9 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
         navigate(`${mainURL}/users/guarantor`, { state: { appId: appId } })
     }
 
-    const selectedGuarantor = (idx: string) => {
-        const selected = formDetails?.find((item) => item.idx === idx);
+    const selectedGuarantor = (identificationNumber: string) => {
+        const selected = formDetails?.find((item) => item.stkCNic === identificationNumber);
+        const __selected = guarantors?.find((item) => item.identificationNumber === identificationNumber);
         if (selected) {
             setSelectedIdx(selected?.idx);
             setValue("idx", selected?.idx ?? '');
@@ -114,15 +116,41 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
             setValue("stkFatherOrHusName", selected?.stkFatherOrHusName);
             setValue("relationship", selected?.relationship);
             setValue("currentResPlace", selected?.currentResPlace);
+        } else if (__selected) {
+            setSelectedIdx('');
+            setValue("idx", __selected?.idx ?? '');
+            setValue("appraisalID", appId ?? '');
+            setValue("stkSequence", __selected?.sequence);
+            setValue("stkOrgType", '');
+            setValue("stkCNic", __selected.identificationNumber);
+            setValue("stkCNicIssuedDate", '');
+            setValue("stkCNicExpDate", '');
+            setValue("stkCNicStatus", '');
+            setValue("stkCusCode", '');
+            setValue("stkCusName", __selected.fullName);
+            setValue("stkInitials", '');
+            setValue("stkSurName", '');
+            setValue("stkOtherName", '');
+            setValue("stkDob", '');
+            setValue("stkAge", '');
+            setValue("stkGender", '');
+            setValue("stkMaritialStatus", '');
+            setValue("stkMaritialComment", '');
+            setValue("stkTitle", '');
+            setValue("stkFatherOrHusName", '');
+            setValue("relationship", '');
         }
     }
 
     const idx = watch("idx");
+    const cnicNumber = watch("stkCNic");
 
-    if (formDetails?.length === 0) {
+    if (guarantors?.length === 0) {
         return (
             <div>
-                <Empty description={<span>Guarantors are not available. Please create a guarantor.</span>} children={<Button type="primary" onClick={onClickCreate} icon={<PlusOutlined />}>Add Guarantor</Button>} />
+                <Spin spinning={guarantorLoading}>
+                    <Empty description={<span>Guarantors are not available. Please create a guarantor.</span>} children={<Button type="primary" onClick={onClickCreate} icon={<PlusOutlined />}>Add Guarantor</Button>} />
+                </Spin>
             </div>
         )
     }
@@ -133,10 +161,10 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                 <Button type="primary" onClick={onClickCreate} icon={<PlusOutlined />}>Add Guarantor</Button>
             </div>
             <div className="grid grid-cols-4 gap-3">
-                {formDetails?.map((item, index) => (
+                {guarantors?.map((item, index) => (
                     <Button key={index} type="primary" onClick={() => {
                         setSelectedIndex(index + 1);
-                        selectedGuarantor(item.idx)
+                        selectedGuarantor(item.identificationNumber ?? '');
                     }}>
                         {`Guarantor ${index + 1}`}
                     </Button>
@@ -145,12 +173,16 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
             {
                 selectedIndex > 0 && (
                     <>
-                        <Card title={<div className='flex justify-between'>
-                            <div>Personal Details: Guarantor {selectedIndex}</div>
-                            <Button type="default" onClick={() => {
-                                navigate(`${mainURL}/loan/application/${appId}/guarantor`, { state: { mode: 'edit', idx: idx } })
-                            }} icon={<EditOutlined />}>Update details</Button>
-                        </div>}>
+                        <Card title={`Personal Details: Guarantor ${selectedIndex}`}
+                            extra={
+                                <div className='grid grid-cols-2 gap-2'>
+                                    <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} >Scan QR</Button>
+                                    <Button type="default" onClick={() => {
+                                        navigate(`${mainURL}/loan/application/${appId}/guarantor`, { state: { mode: 'edit', idx: idx, cnicNumber: cnicNumber } })
+                                    }} icon={<EditOutlined />}>Update details</Button>
+                                </div>
+                            }
+                        >
                             <Form layout="vertical" disabled>
                                 <div className="grid grid-cols-4 gap-3">
                                     <Form.Item label="Title" validateStatus={errors.stkTitle ? "error" : ""} help={errors.stkTitle?.message} required>
@@ -470,12 +502,19 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                                 </div>
                             </Form>
                         </Card>
+                        {
+                            selectedIdx !== '' && (
+                                <>
+                                    <ContactDetailsCard stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
 
-                        <ContactDetailsCard stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
+                                    <AddressDetailsCard stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
 
-                        <AddressDetailsCard stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
+                                    <IncomeDetails stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
+                                </>
+                            )
+                        }
 
-                        <IncomeDetails stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
+                        <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={guarantors[selectedIndex]?.idx ?? ''} />
 
                     </>
                 )

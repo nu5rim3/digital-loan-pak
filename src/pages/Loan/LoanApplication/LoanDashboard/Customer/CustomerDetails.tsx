@@ -152,7 +152,6 @@ const CustomerDetails: React.FC = () => {
 
     return (
         <div className='flex flex-col gap-3'>
-
             <Card title="Personal Details">
                 <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
                     <div className="grid grid-cols-4 gap-3">
@@ -447,7 +446,7 @@ const CustomerDetails: React.FC = () => {
                         <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>
                             Back
                         </Button>
-                        <Button type="primary" htmlType="submit" loading={false} icon={<EditOutlined />}>
+                        <Button type="primary" htmlType="submit" icon={<EditOutlined />} loading={stakeholderLoading}>
                             {mode === 'create' ? 'Save' : 'Update'}
                         </Button>
                         <Button type="default" onClick={onRestHandle} danger icon={<UndoOutlined />} loading={stakeholderLoading}>

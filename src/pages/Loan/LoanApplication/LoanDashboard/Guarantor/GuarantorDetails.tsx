@@ -5,11 +5,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, useForm } from 'react-hook-form';
 import * as yup from "yup";
 import useStakeholderStore, { IStakeholder } from '../../../../../store/stakeholderStore';
-import useCustomerStore from '../../../../../store/customerStore';
 import useCommonStore from '../../../../../store/commonStore';
 import { getStakeholderByType } from '../../../../../utils/stakholderFunction';
-import { formatCNIC } from '../../../../../utils/formatterFunctions';
+import { formatCNIC, formatName } from '../../../../../utils/formatterFunctions';
 import { CaretLeftOutlined, EditOutlined, UndoOutlined } from '@ant-design/icons';
+import useGuarantorStore from '../../../../../store/guarantorStore';
 
 interface IGuarantorDetails {
     formDetails?: IStakeholder[];
@@ -46,23 +46,27 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
 
     const { organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, fetchEducationLevel, headOfFamily, headOfFamilyLoading, fetchHeadOfFamily, healthCondition, healthConditionLoading, fetchHealthCondition } = useCommonStore()
     const { stakeholderLoading, stakeholders, fetchStackholderByAppId, addStakeholder, updateStakeholder } = useStakeholderStore()
-    const { customers, fetchCustomerByAppId } = useCustomerStore()
+    const { guarantors, fetchGuarantorByAppId } = useGuarantorStore();
+    const [initialSave, setInitialSave] = useState(false);
+
     const { appId } = useParams()
     const navigate = useNavigate();
     const mode = useLocation().state?.mode ?? 'create';
-    const selectedIndex = useLocation().state?.selectedIndx ?? '0';
+    const { state } = useLocation()
 
     const [stakholderId, setStakholderId] = useState('');
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
-        if (mode === 'create') {
+        if (initialSave) {
             addStakeholder({ ...data, appraisalID: appId ?? '', new: true, stkType: 'G' })
-            // TODO: back
+            setInitialSave(false)
+        } else if (mode === 'create') {
+            addStakeholder({ ...data, appraisalID: appId ?? '', new: true, stkType: 'G' })
         } else if (mode === 'edit') {
             updateStakeholder(stakholderId, { ...data, appraisalID: appId ?? '', update: true, stkType: 'G' })
-            // TODO: back
         }
+        fetchStackholderByAppId(appId ?? '')
     }
 
     useEffect(() => {
@@ -71,16 +75,18 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
         fetchEducationLevel()
         fetchHeadOfFamily()
         fetchHealthCondition()
-        fetchCustomerByAppId(appId ?? '')
+        fetchGuarantorByAppId(appId ?? '')
         fetchStackholderByAppId(appId ?? '')
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
         if (mode === 'edit') {
-            const formDetails = getStakeholderByType('G', stakeholders)[selectedIndex]
-            setStakholderId(formDetails?.idx)
+            const formDetails = getStakeholderByType('G', stakeholders).find((item) => item.stkCNic === state.cnicNumber);
+            const __selectedGuarantor = guarantors.find((item) => item.identificationNumber === state.cnicNumber || item.idx === state.idx)
             if (formDetails) {
+                setStakholderId(formDetails?.idx)
+                setInitialSave(false)
                 setValue("appraisalID", formDetails?.appraisalID ?? appId ?? '');
                 setValue("stkOrgType", formDetails?.stkOrgType);
                 setValue("stkCNic", formDetails?.stkCNic);
@@ -100,11 +106,16 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                 setValue("currentResidences", formDetails?.currentResidences);
                 setValue("relationship", formDetails?.relationship);
                 setValue("modeOfSecurity", formDetails?.modeOfSecurity);
+            } else if (__selectedGuarantor) {
+                setInitialSave(true)
+                setValue("appraisalID", appId ?? '');
+                setValue("stkCNic", __selectedGuarantor.identificationNumber);
+                setValue("stkCusName", __selectedGuarantor.fullName);
             }
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [stakeholders, customers])
+    }, [stakeholders, guarantors])
 
     const onRestHandle = () => {
         if (mode === 'create') {
@@ -250,7 +261,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                 control={control}
                                 render={({ field }) =>
                                     <Select {...field} placeholder="Select an Organization" allowClear loading={organizationTypeLoading} options={organizationType.map((item) => ({
-                                        label: item.description,
+                                        label: formatName(item.description),
                                         value: item.code
                                     }))}>
                                     </Select>

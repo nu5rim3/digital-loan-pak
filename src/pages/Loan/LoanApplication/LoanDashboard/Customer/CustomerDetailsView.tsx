@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm, Controller } from "react-hook-form";
 import { Input, Form, Button, Card, Select, Collapse } from "antd";
 import * as yup from "yup";
@@ -9,7 +9,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import useCustomerStore from '../../../../../store/customerStore';
 import { mainURL } from '../../../../../App';
 import { IStakeholder } from '../../../../../store/stakeholderStore';
-import { EditOutlined } from '@ant-design/icons';
+import { EditOutlined, QrcodeOutlined } from '@ant-design/icons';
 // import TrailCalculation from '../../../../Users/Customers/TrialCalculation';
 import ContactDetailsCard from '../../../../../components/common/stakeHolder/ContactDetailsCard';
 import AddressDetailsCard from '../../../../../components/common/stakeHolder/AddressDetailsCard';
@@ -17,6 +17,7 @@ import InsuranceRecipientCard from '../../../../../components/common/stakeHolder
 import TrialCalculation from '../../../../Users/Customers/TrialCalculation';
 import OtherDetails from '../../../../../components/common/stakeHolder/OtherDetails';
 import BankDetails from '../../../../../components/common/stakeHolder/BankDetails';
+import NADRAModal from '../../../../../components/common/modal/NADRAModal';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
@@ -65,6 +66,7 @@ interface ICustomerDetailsView {
 }
 
 const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) => {
+    const [nadraModalOpen, setNadraModalOpen] = useState(false)
 
     const { control, formState: { errors }, setValue, watch } = useForm({
         resolver: yupResolver(schema),
@@ -142,7 +144,11 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                 <div className='pb-5'>
                     <TrialCalculation cliIdx={customers[0].idx ?? ''} cnic={customers[0].identificationNumber} />
                 </div>
-                <Card title={'Customer Details'}>
+                <Card title={'Customer Details'}
+                    extra={
+                        <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} >Scan QR</Button>
+                    }
+                >
                     <Form layout="vertical">
                         <div className="grid grid-cols-4 gap-3">
                             <Form.Item label="Full Name">
@@ -167,13 +173,16 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                 </Card>
 
                 {/* <CustomerScreen mode={mode} setMode={setMode} /> */}
+                <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={customers[0]?.idx ?? ''} />
             </>
         )
     }
 
     return (
         <div className='flex flex-col gap-3'>
-
+            <div className='pb-5'>
+                <TrialCalculation cliIdx={customers[0].idx ?? ''} cnic={customers[0].identificationNumber} />
+            </div>
             <Collapse
                 size='small'
                 defaultActiveKey={['1']}

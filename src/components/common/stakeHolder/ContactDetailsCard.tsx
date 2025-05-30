@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Collapse, Descriptions, Empty, Form, Input, Select, Switch } from 'antd';
+import { Button, Card, Collapse, Descriptions, Empty, Form, Input, Select, Spin, Switch } from 'antd';
 import { PlusOutlined, EditOutlined, SaveOutlined, UndoOutlined } from '@ant-design/icons';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -86,7 +86,9 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
                                     ))}
                                 </div>
                             ) : (
-                                <Empty description="No Contact Details Available" />
+                                <Spin spinning={contactDetailsLoading}>
+                                    <Empty description="No Contact Details Available" />
+                                </Spin>
                             )}
                         </>
                     ),

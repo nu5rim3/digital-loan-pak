@@ -92,7 +92,7 @@ const LoanDaashboard: React.FC = () => {
                 return <CashFlow />;
             case 'credit-scoring':
                 return <CreditScoringPage appraisalId={appId ?? ''} productCode={'GOLD'} />;
-                case 'customer-risk-profiling':
+            case 'customer-risk-profiling':
                 return <CustomerRiskProfiling />;
             case 'exceptional-approval':
                 return <ExceptionalApproval />;
@@ -104,7 +104,7 @@ const LoanDaashboard: React.FC = () => {
                 return <div>Witness Acknowledgement</div>;
             case 'term-deposit':
                 return <div>Term Deposit</div>;
-                case 'collateral-details':
+            case 'collateral-details':
                 return <CollateralDetails />;
             case 'business-introducer':
                 return <BusinessIntroducer />;

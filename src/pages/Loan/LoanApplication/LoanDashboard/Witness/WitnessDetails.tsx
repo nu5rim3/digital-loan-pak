@@ -5,16 +5,17 @@ import useStakeholderStore, { IStakeholder } from '../../../../../store/stakehol
 import useWitnessStore from '../../../../../store/witnessStore';
 import CommonModal from '../../../../../components/common/modal/commonModal';
 import CreateWitness from '../../../../Users/Witnesses/CreateWitness';
-import { PlusOutlined, EditOutlined } from '@ant-design/icons'
+import { PlusOutlined, EditOutlined, QrcodeOutlined } from '@ant-design/icons'
 import ContactDetailsCard from '../../../../../components/common/stakeHolder/ContactDetailsCard';
 import AddressDetailsCard from '../../../../../components/common/stakeHolder/AddressDetailsCard';
+import NADRAModal from '../../../../../components/common/modal/NADRAModal';
 
 interface IWitnessDetails {
     formDetails?: IStakeholder[];
 }
 
 const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
-
+    const [nadraModalOpen, setNadraModalOpen] = useState(false)
     const { appId } = useParams();
     const [openModal, setOpenModal] = useState(false)
     const [selectedIndex, setSelectedIndex] = useState(0);
@@ -76,12 +77,14 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
                         {
                             selectedIndex >= 0 && (
                                 <div className='flex flex-col gap-3'>
-                                    <Card title={
-                                        <div className='flex justify-between'>
-                                            <div>Witness {selectedIndex + 1}</div>
-                                            <Button type="default" onClick={onClickUpdate} icon={<EditOutlined />}>Update Details</Button>
-                                        </div>
+                                    <Card title={`Witness ${selectedIndex + 1}`
                                     }
+                                        extra={
+                                            <div className='grid grid-cols-2 gap-2'>
+                                                <Button type="default" onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />}>Scan NADRA</Button>
+                                                <Button type="default" onClick={onClickUpdate} icon={<EditOutlined />}>Update Details</Button>
+                                            </div>
+                                        }
                                     >
                                         <Descriptions column={5}>
                                             <Descriptions.Item label="Title">{formDetails[selectedIndex].stkTitle ?? '-'}</Descriptions.Item>
@@ -95,7 +98,7 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
                                     <ContactDetailsCard stkId={formDetails[selectedIndex].idx ?? ''} subTitle={`Witness ${selectedIndex + 1}`} />
 
                                     <AddressDetailsCard stkId={formDetails[selectedIndex].idx ?? ''} subTitle={`Witness ${selectedIndex + 1}`} />
-
+                                    <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={''} />
                                 </div>
                             )
                         }
