@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Card, Descriptions, Empty, Form, Input, InputNumber, Select } from 'antd'
+import { Button, Card, Descriptions, Empty, Form, Input, InputNumber, Select, Spin } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -225,7 +225,9 @@ const GoldFacilityApplication: React.FC = () => {
                 {goldLoanAppDetailsLoading ? (
                     <Empty description="Loading  Gold Facility Application ..." />
                 ) : goldLoanAppDetails.length === 0 ? (
-                    <Empty description="No Gold Facility Application Available" />
+                    <Spin spinning={goldLoanAppDetailsLoading}>
+                        <Empty description="No Gold Facility Application Available" />
+                    </Spin>
                 ) : (
                     <div className='grid grid-cols-2 gap-3'>
                         {goldLoanAppDetails.map((item, index) => (
