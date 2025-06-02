@@ -81,7 +81,7 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
                                     }
                                         extra={
                                             <div className='grid grid-cols-2 gap-2'>
-                                                <Button type="default" onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />}>Scan NADRA</Button>
+                                                <Button type="default" onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />}>Scan QR</Button>
                                                 <Button type="default" onClick={onClickUpdate} icon={<EditOutlined />}>Update Details</Button>
                                             </div>
                                         }
@@ -98,7 +98,7 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
                                     <ContactDetailsCard stkId={formDetails[selectedIndex].idx ?? ''} subTitle={`Witness ${selectedIndex + 1}`} />
 
                                     <AddressDetailsCard stkId={formDetails[selectedIndex].idx ?? ''} subTitle={`Witness ${selectedIndex + 1}`} />
-                                    <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={''} />
+                                    <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={formDetails[selectedIndex].idx ?? ''} />
                                 </div>
                             )
                         }
