@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Collapse, Descriptions, Empty, Form, Input, Select, Spin, Switch } from 'antd';
+import { Button, Card, Collapse, Descriptions, Empty, Form, Select, Spin, Switch } from 'antd';
 import { PlusOutlined, EditOutlined, SaveOutlined, UndoOutlined } from '@ant-design/icons';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import CommonModal from '../modal/commonModal';
 import useStakeholderStore, { IContactDetails } from '../../../store/stakeholderStore';
+import ContactInput from '../inputs/ContactInput';
 
 const schema = yup.object().shape({
     phoneNoType: yup.string().required('Contact Type is required'),
@@ -134,32 +135,8 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
                                 control={control}
                                 name="phoneNo"
                                 render={({ field }) => (
-                                    <Input
+                                    <ContactInput
                                         {...field}
-                                        placeholder="Enter Contact Number"
-                                        maxLength={11}
-                                        style={{ width: '100%' }}
-                                        type="text"
-                                        onKeyDown={e => {
-                                            // Allow control keys (backspace, delete, arrows, etc.)
-                                            if (
-                                                !/[0-9]/.test(e.key) &&
-                                                e.key !== 'Backspace' &&
-                                                e.key !== 'Delete' &&
-                                                e.key !== 'ArrowLeft' &&
-                                                e.key !== 'ArrowRight' &&
-                                                e.key !== 'Tab'
-                                            ) {
-                                                e.preventDefault();
-                                            }
-                                        }}
-                                        onChange={e => {
-                                            // Allow clearing the input
-                                            const value = e.target.value;
-                                            // If user clears input, value is '', allow it
-                                            const sanitized = value === '' ? '' : value.replace(/\D/g, '').slice(0, 11);
-                                            field.onChange(sanitized);
-                                        }}
                                     />
                                 )}
                             />

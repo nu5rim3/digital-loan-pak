@@ -9,18 +9,19 @@ import useCustomerStore from "../../../store/customerStore";
 import useLoanStore from "../../../store/loanStore";
 import { formatCNIC } from "../../../utils/formatterFunctions";
 import useGuarantorStore from "../../../store/guarantorStore";
+import ContactInput from "../inputs/ContactInput";
 // import { useNavigate } from "react-router-dom";
 const { Search } = Input;
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
-    name: yup.string().required("Name is required"),
-    initals: yup.string(),
-    surname: yup.string(),
+    name: yup.string().required("Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    initals: yup.string().matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    surname: yup.string().matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     telcoProvider: yup.string().required("Operator Name is required"),
     contactNumber: yup.string().required("Contact Number is required").matches(/^[0-9]{11}$/, "Contact Number must be 11 digits"),
     identificationType: yup.string().required("Identification Type is required"),
-    identificationNumber: yup.string().required("Identification Number is required"),
+    identificationNumber: yup.string().required("Identification Number is required").matches(/^\d{5}-\d{7}-\d$/, 'CNIC must be in format xxxxx-xxxxxxx-x'),
 });
 
 interface IFormDetails {
@@ -171,7 +172,7 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                             <Controller
                                 name="name"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter name" />}
+                                render={({ field }) => <Input {...field} placeholder="Enter Name" maxLength={50} />}
                             />
                         </Form.Item>
 
@@ -211,32 +212,8 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                                 name="contactNumber"
                                 control={control}
                                 render={({ field }) =>
-                                    <Input
+                                    <ContactInput
                                         {...field}
-                                        placeholder="Enter Contact Number"
-                                        maxLength={11}
-                                        style={{ width: '100%' }}
-                                        type="text"
-                                        onKeyDown={e => {
-                                            // Allow control keys (backspace, delete, arrows, etc.)
-                                            if (
-                                                !/[0-9]/.test(e.key) &&
-                                                e.key !== 'Backspace' &&
-                                                e.key !== 'Delete' &&
-                                                e.key !== 'ArrowLeft' &&
-                                                e.key !== 'ArrowRight' &&
-                                                e.key !== 'Tab'
-                                            ) {
-                                                e.preventDefault();
-                                            }
-                                        }}
-                                        onChange={e => {
-                                            // Allow clearing the input
-                                            const value = e.target.value;
-                                            // If user clears input, value is '', allow it
-                                            const sanitized = value === '' ? '' : value.replace(/\D/g, '').slice(0, 11);
-                                            field.onChange(sanitized);
-                                        }}
                                     />
                                 }
                             />

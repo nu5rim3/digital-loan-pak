@@ -7,7 +7,7 @@ import * as yup from "yup";
 import useStakeholderStore, { IStakeholder } from '../../../../../store/stakeholderStore';
 import useCommonStore from '../../../../../store/commonStore';
 import { getStakeholderByType } from '../../../../../utils/stakholderFunction';
-import { formatCNIC, formatName } from '../../../../../utils/formatterFunctions';
+import { formatCNIC, formatName, titleGenderMaritalMap } from '../../../../../utils/formatterFunctions';
 import { CaretLeftOutlined, EditOutlined, UndoOutlined } from '@ant-design/icons';
 import useGuarantorStore from '../../../../../store/guarantorStore';
 
@@ -19,20 +19,20 @@ interface IGuarantorDetails {
 const schema = yup.object().shape({
     appraisalID: yup.string(),
     stkOrgType: yup.string().required("Organization Type is required"),
-    stkCNic: yup.string().required("CNIC is required"),
+    stkCNic: yup.string().required("CNIC is required").matches(/^\d{5}-\d{7}-\d$/, 'CNIC must be in format xxxxx-xxxxxxx-x'),
     stkCNicIssuedDate: yup.string().required("CNIC Issued Date is required"),
     stkCNicExpDate: yup.string().required("CNIC Expired Date is required"),
     stkCNicStatus: yup.string().required("CNIC Status is required"),
-    stkCusName: yup.string().required("Customer Name is required"),
-    stkInitials: yup.string().required("Initial is required"),
-    stkSurName: yup.string().required("Surname is required"),
-    stkOtherName: yup.string().required("Other Name is required"),
+    stkCusName: yup.string().required("Customer Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    stkInitials: yup.string().required("Initial is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    stkSurName: yup.string().required("Surname is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    stkOtherName: yup.string().required("Other Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     stkDob: yup.string().required("Date of Birth is required"),
     stkAge: yup.string().required("Age is required"),
     stkGender: yup.string().required("Gender is required"),
     stkMaritialStatus: yup.string().required("Marital Status is required"),
     stkTitle: yup.string().required("Title is required"),
-    stkFatherOrHusName: yup.string().required("Father or Husband Name is required"),
+    stkFatherOrHusName: yup.string().required("Father or Husband Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     currentResidences: yup.string().required("Current Residence is required"),
     relationship: yup.string().required("Relationship is required"),
     modeOfSecurity: yup.string().required("Mode of Security is required"),
@@ -40,7 +40,7 @@ const schema = yup.object().shape({
 
 const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
 
-    const { control, handleSubmit, formState: { errors }, setValue, reset } = useForm({
+    const { control, handleSubmit, formState: { errors }, setValue, reset, watch } = useForm({
         resolver: yupResolver(schema),
     });
 
@@ -124,6 +124,28 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
             fetchStackholderByAppId(appId ?? '')
         }
     }
+
+    const stkDob = watch('stkDob')
+
+    useEffect(() => {
+        if (stkDob) {
+            const today = new Date();
+            const birthDate = new Date(stkDob);
+            const age = today.getFullYear() - birthDate.getFullYear();
+            setValue("stkAge", age.toString());
+        }
+    }, [stkDob, setValue]);
+
+    const watchedTitle = watch("stkTitle");
+
+    useEffect(() => {
+        if (!watchedTitle) return;
+        const map = titleGenderMaritalMap[watchedTitle];
+        if (map) {
+            if (map.gender) setValue("stkGender", map.gender);
+            if (map.maritalStatus) setValue("stkMaritialStatus", map.maritalStatus);
+        }
+    }, [watchedTitle, setValue]);
 
     return (
         <div className='flex flex-col gap-3'>

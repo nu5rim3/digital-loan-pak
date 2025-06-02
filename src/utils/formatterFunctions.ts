@@ -140,3 +140,18 @@ export const getDistrict = () => {
     { label: "Skardu", value: "Skardu" },
   ];
 };
+
+export const titleGenderMaritalMap: Record<
+  string,
+  { gender?: string; maritalStatus?: string }
+> = {
+  MR: { gender: "M", maritalStatus: "S" },
+  MRS: { gender: "F", maritalStatus: "D" },
+  MS: { gender: "F", maritalStatus: "S" },
+  DR: { gender: undefined, maritalStatus: undefined }, // Could be either
+  PROF: { gender: undefined, maritalStatus: undefined },
+  ENG: { gender: undefined, maritalStatus: undefined },
+  REV: { gender: undefined, maritalStatus: undefined },
+  "M/S": { gender: undefined, maritalStatus: undefined }, // Could be firm or group
+  MST: { gender: "F", maritalStatus: "S" },
+};

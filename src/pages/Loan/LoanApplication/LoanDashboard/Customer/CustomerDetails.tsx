@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 import useStakeholderStore from '../../../../../store/stakeholderStore';
 import useCommonStore from '../../../../../store/commonStore';
-import { formatCNIC, formatName } from '../../../../../utils/formatterFunctions';
+import { formatCNIC, formatName, titleGenderMaritalMap } from '../../../../../utils/formatterFunctions';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import useCustomerStore from '../../../../../store/customerStore';
 import { CaretLeftOutlined, EditOutlined, UndoOutlined } from '@ant-design/icons';
@@ -16,28 +16,28 @@ import { getStakeholderByType } from '../../../../../utils/stakholderFunction';
 const schema = yup.object().shape({
     appraisalID: yup.string(),
     stkOrgType: yup.string().required("Organization Type is required"),
-    stkCNic: yup.string().required("CNIC is required"),
+    stkCNic: yup.string().required("CNIC is required").matches(/^\d{5}-\d{7}-\d$/, 'CNIC must be in format xxxxx-xxxxxxx-x'),
     stkCNicIssuedDate: yup.string().required("CNIC Issued Date is required"),
     stkCNicExpDate: yup.string().required("CNIC Expired Date is required"),
     stkCNicStatus: yup.string().required("CNIC Status is required"),
-    stkCusName: yup.string().required("Customer Name is required"),
-    stkInitials: yup.string().required("Initials is required"),
-    stkSurName: yup.string().required("Surname is required"),
-    stkOtherName: yup.string().required("Other Name is required"),
+    stkCusName: yup.string().required("Customer Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    stkInitials: yup.string().required("Initials is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    stkSurName: yup.string().required("Surname is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    stkOtherName: yup.string().required("Other Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     stkDob: yup.string().required("Date of Birth is required"),
     stkAge: yup.string().required("Age is required"),
     stkGender: yup.string().required("Gender is required"),
     stkMaritialStatus: yup.string().required("Marital Status is required"),
     stkMaritialComment: yup.string().required("Marital Comment is required"),
     stkTitle: yup.string().required("Title is required"),
-    stkFatherOrHusName: yup.string().required("Father or Husband Name is required"),
+    stkFatherOrHusName: yup.string().required("Father or Husband Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     stkEduLevel: yup.string().required("Education Qualification is required"),
     stkPhysDisability: yup.string().required("Description of Physical Disability  is required"),
     headOfFamily: yup.string().required("Head of Family is required"),
     healthCondition: yup.string().required("Health Condition is required"),
     stkSequence: yup.string(),
-    stkNumOfDependents: yup.string().nullable(),
-    stkNumOfEarners: yup.string().nullable(),
+    stkNumOfDependents: yup.string().matches(/^[0-9]+$/, "Number of Dependents must be a number"),
+    stkNumOfEarners: yup.string().matches(/^[0-9]+$/, "Number of Dependents must be a number"),
     stkCusCode: yup.string().nullable(),
     stkGrpRefNo: yup.string().nullable(),
     stkPhysDisabilityDesce: yup.string().nullable(),
@@ -149,6 +149,30 @@ const CustomerDetails: React.FC = () => {
             fetchStackholderByAppId(appId ?? '')
         }
     }
+
+    const stkDob = watch('stkDob')
+
+    useEffect(() => {
+        if (stkDob) {
+            const today = new Date();
+            const birthDate = new Date(stkDob);
+            const age = today.getFullYear() - birthDate.getFullYear();
+            setValue("stkAge", age.toString());
+        }
+    }, [stkDob, setValue]);
+
+    const watchedTitle = watch("stkTitle");
+
+    useEffect(() => {
+        if (!watchedTitle) return;
+        const map = titleGenderMaritalMap[watchedTitle];
+        if (map) {
+            if (map.gender) setValue("stkGender", map.gender);
+            if (map.maritalStatus) setValue("stkMaritialStatus", map.maritalStatus);
+        }
+    }, [watchedTitle, setValue]);
+
+
 
     return (
         <div className='flex flex-col gap-3'>

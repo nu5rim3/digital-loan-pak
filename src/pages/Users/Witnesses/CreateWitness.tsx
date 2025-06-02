@@ -15,11 +15,11 @@ interface ICreateWitness {
 }
 
 const schema = yup.object().shape({
-    stkTitle: yup.string().required("Title is required"),
-    stkCusName: yup.string().required("Full Name is required"),
-    stkInitials: yup.string().required("Initial is required"),
-    stkSurName: yup.string(),
-    stkCNic: yup.string().required("CNIC Number is required"),
+    stkTitle: yup.string().required("Title is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    stkCusName: yup.string().required("Full Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    stkInitials: yup.string().required("Initial is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    stkSurName: yup.string().matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    stkCNic: yup.string().required("CNIC Number is required").matches(/^\d{5}-\d{7}-\d$/, 'CNIC must be in format xxxxx-xxxxxxx-x'),
 });
 
 const CreateWitness: React.FC<ICreateWitness> = ({ appId, mode, witnessDetails, onClose }) => {

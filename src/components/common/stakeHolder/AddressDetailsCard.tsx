@@ -34,8 +34,6 @@ const schema = yup.object().shape({
     status: yup.string(),
 });
 
-// TODO: addressType if already used remove from the residenceType or disable it in the form
-
 const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) => {
     const [openModal, setOpenModal] = useState(false);
     const [mode, setMode] = useState<'create' | 'edit' | 'remove'>('create');
@@ -135,8 +133,8 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
                             />
                         </div>
                         <Descriptions column={1}>
-                            <Descriptions.Item label="Resident Type">{getResidenceType(item.residenceType)}</Descriptions.Item>
                             <Descriptions.Item label="Address Type">{getAddressType(item.addressType)}</Descriptions.Item>
+                            <Descriptions.Item label="Resident Type">{getResidenceType(item.residenceType)}</Descriptions.Item>
                             <Descriptions.Item label="Address Line 1">{item.addressLine1}</Descriptions.Item>
                             <Descriptions.Item label="Address Line 2">{item.addressLine2}</Descriptions.Item>
                             <Descriptions.Item label="Address Line 3">{item.addressLine3}</Descriptions.Item>
@@ -155,8 +153,38 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
         );
     };
 
+    const usedAddressTypes = React.useMemo(
+        () => addressDetails?.filter(a => a.status === 'A').map(a => a.addressType) ?? [],
+        [addressDetails]
+    );
+
+    const addressTypeOptions = [
+        { label: 'Permanent', value: 'PERMANANT' },
+        { label: 'Residential', value: 'TEMPORARY' },
+        { label: 'Business', value: 'BUSINESS' },
+    ];
+
+    const disabledAddressTypeOptions = addressTypeOptions.map(option => ({
+        ...option,
+        disabled: usedAddressTypes.includes(option.value as "PERMANANT" | "TEMPORARY" | "OTHER")
+    }));
+
+
     const renderFormItems = () => (
         <>
+            <Form.Item label="Address Type" validateStatus={errors.addressType ? "error" : ""} help={errors.addressType?.message} required>
+                <Controller
+                    control={control}
+                    name="addressType"
+                    render={({ field }) => (
+                        <Select
+                            {...field}
+                            placeholder="Select Address Type"
+                            options={disabledAddressTypeOptions}
+                        />
+                    )}
+                />
+            </Form.Item>
             <Form.Item label="Residence Type" validateStatus={errors.residenceType ? "error" : ""} help={errors.residenceType?.message} required>
                 <Controller
                     name="residenceType"
@@ -172,23 +200,7 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
                     )}
                 />
             </Form.Item>
-            <Form.Item label="Address Type" validateStatus={errors.addressType ? "error" : ""} help={errors.addressType?.message} required>
-                <Controller
-                    control={control}
-                    name="addressType"
-                    render={({ field }) => (
-                        <Select
-                            {...field}
-                            placeholder="Select Address Type"
-                            options={[
-                                { label: 'Permanent Address', value: 'PERMANANT' },
-                                { label: 'Residential Address', value: 'TEMPORARY' },
-                                { label: 'Business Address', value: 'BUSINESS' },
-                            ]}
-                        />
-                    )}
-                />
-            </Form.Item>
+
 
             <Form.Item label="Address Line 1" validateStatus={errors.addressLine1 ? "error" : ""} help={errors.addressLine1?.message} required>
                 <Controller

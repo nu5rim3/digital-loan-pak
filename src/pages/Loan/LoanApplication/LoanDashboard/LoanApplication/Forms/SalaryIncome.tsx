@@ -12,6 +12,7 @@ import {
     UndoOutlined,
     CaretLeftOutlined,
 } from '@ant-design/icons';
+import ContactInput from '../../../../../../components/common/inputs/ContactInput';
 
 interface ISalaryIncomeForm {
     sourceOfIncome: string
@@ -24,7 +25,7 @@ const schema = yup.object().shape({
     profession: yup.string().required('Profession is required'),
     sourceOfIncome: yup.string().required('Source of Income is required'),
     purposeOfLoan: yup.string().required('Purpose of Facility is required'),
-    employer: yup.string().required('Employer is required'),
+    employer: yup.string().required('Employer is required').matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     typeOfBusiness: yup.string().required('Type of Business is required'),
     designation: yup.string().required('Designation is required'),
     currEmpPeriod: yup.string().required('Current Employment Period is required'),
@@ -258,32 +259,8 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                             name="contactNo"
                             control={control}
                             render={({ field }) => (
-                                <Input
+                                <ContactInput
                                     {...field}
-                                    placeholder="Enter Contact Number"
-                                    maxLength={11}
-                                    style={{ width: '100%' }}
-                                    type="text"
-                                    onKeyDown={e => {
-                                        // Allow control keys (backspace, delete, arrows, etc.)
-                                        if (
-                                            !/[0-9]/.test(e.key) &&
-                                            e.key !== 'Backspace' &&
-                                            e.key !== 'Delete' &&
-                                            e.key !== 'ArrowLeft' &&
-                                            e.key !== 'ArrowRight' &&
-                                            e.key !== 'Tab'
-                                        ) {
-                                            e.preventDefault();
-                                        }
-                                    }}
-                                    onChange={e => {
-                                        // Allow clearing the input
-                                        const value = e.target.value;
-                                        // If user clears input, value is '', allow it
-                                        const sanitized = value === '' ? '' : value.replace(/\D/g, '').slice(0, 11);
-                                        field.onChange(sanitized);
-                                    }}
                                 />
                             )}
                         />

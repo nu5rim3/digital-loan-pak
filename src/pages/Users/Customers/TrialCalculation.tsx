@@ -407,6 +407,11 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
             setValue('loanAmount', Number(productDetails?.generalInfo.defaultLoanAmt))
             setValue('trems', Number(productDetails?.generalInfo.defaultTerm))
             setValue('markup', Number(productDetails?.generalInfo.defaultRate))
+        } else {
+            setValidationSchema(schema);
+            setValue('loanAmount', 0)
+            setValue('trems', 0)
+            setValue('markup', 0)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [productDetails, selectedSubProductType, selectedProductType]);
