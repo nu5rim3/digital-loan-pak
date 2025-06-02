@@ -72,13 +72,16 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
         resolver: yupResolver(schema),
     });
     const { organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, educationLevel, educationLevelLoading, fetchEducationLevel, headOfFamily, headOfFamilyLoading, fetchHeadOfFamily, healthCondition, healthConditionLoading, fetchHealthCondition } = useCommonStore()
-    const { customers, fetchCustomerByAppId } = useCustomerStore()
+    const { customers, fetchCustomerByAppId, resetCustomer } = useCustomerStore()
     const { appId } = useParams()
     const navigate = useNavigate();
 
 
     useEffect(() => {
         fetchCustomerByAppId(appId ?? '')
+        return () => {
+            resetCustomer()
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [appId])
 
@@ -191,12 +194,15 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                     label: 'Customer Details',
                     children: <>
                         <div className='flex justify-end'>
-                            <Button
-                                icon={<EditOutlined />}
-                                type="default"
-                                onClick={() => navigate(`${mainURL}/loan/application/${appId}/customer`, { state: { mode: 'edit' } })}>
-                                Update Details
-                            </Button>
+                            <>
+                                <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} className='mr-2'>Scan QR</Button>
+                                <Button
+                                    icon={<EditOutlined />}
+                                    type="default"
+                                    onClick={() => navigate(`${mainURL}/loan/application/${appId}/customer`, { state: { mode: 'edit' } })}>
+                                    Update Details
+                                </Button>
+                            </>
                         </div>
                         <Form layout="vertical" disabled className='p-4'>
                             <div className="grid grid-cols-4 gap-3">
@@ -530,6 +536,8 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
             < OtherDetails stkId={formDetails?.idx ?? ''} />
 
             < BankDetails stkId={formDetails?.idx ?? ''} />
+
+            <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={customers[0]?.idx ?? ''} />
 
         </div >
     )

@@ -33,7 +33,7 @@ const LoanDaashboard: React.FC = () => {
     const navigate = useNavigate();
     const { appId } = useParams();
     const { loading, loanStatus, fetchLoanStatusById } = useLoanStore();
-    const { stakeholders, fetchStackholderByAppId, fetchContactDetailsByStkId, fetchAddressDetailsByStkId } = useStakeholderStore();
+    const { stakeholders, fetchStackholderByAppId, fetchContactDetailsByStkId, fetchAddressDetailsByStkId, resetStakeholder } = useStakeholderStore();
     const { customers, fetchCustomerByAppId } = useCustomerStore()
 
     // TODO: have to call the apprisal api to get the status of the loan application
@@ -315,6 +315,9 @@ const LoanDaashboard: React.FC = () => {
         }
         if (stakeholders.length === 0) {
             fetchStackholderByAppId(appId ?? '')
+        }
+        return () => {
+            resetStakeholder()
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [appId])

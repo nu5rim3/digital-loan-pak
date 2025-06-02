@@ -187,6 +187,7 @@ interface IStackholderState {
   addStakeholder: (stakeholder: IStakeholder) => Promise<void>;
   fetchStackholderByAppId: (appraisalId: string) => Promise<void>;
   updateStakeholder: (idx: string, updatedUser: IStakeholder) => Promise<void>;
+  resetStakeholder: () => void;
 
   fetchContactDetailsByStkId: (stkId: string) => Promise<void>;
   addContactDetail: (
@@ -799,6 +800,11 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
       set({ qrdetailsError: error.message, qrdetailsLoading: false });
     }
   },
+  // only reset stakeholders
+  resetStakeholder: () =>
+    set(() => ({
+      stakeholders: [],
+    })),
 }));
 
 export default useStakeholderStore;
