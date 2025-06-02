@@ -3,11 +3,80 @@ import { Form, Input, InputNumber, Select } from "antd";
 import { Controller, Control } from "react-hook-form";
 import { FormValues } from "../types";
 import useCollateralStore from "../../../../../../store/collateralStore";
+import { message } from "antd";
 
 interface MachineryFormProps {
   control: Control<FormValues>;
   errors: Record<string, any>;
 }
+
+// Function to submit machinery data to the API
+export const submitMachinery = async (
+  data: FormValues, 
+  appraisalId: string, 
+  isEdit: boolean = false
+): Promise<boolean> => {
+  try {
+    const {
+      id,
+      machineryType,
+      machineryOwnership,
+      machinerySupplier,
+      machineryCondition,
+      machineryModel,
+      machineryEngineNo,
+      machinerySerialNo,
+      machineryDescription,
+      machineryBondNo,
+      machineryBondValue,
+      machineryMV,
+      machineryFSV,
+      machineryValuedBy,
+      machineryInsuranceCompany,
+      machineryReferenceNo,
+    } = data;
+
+    // Prepare payload for API
+    const payload = {
+      appraisalId,
+      type: machineryType || "",
+      ownership: machineryOwnership || "",
+      supplier: machinerySupplier || "",
+      condition: machineryCondition || "",
+      model: machineryModel,
+      engineNo: machineryEngineNo,
+      serialChasisNo: machinerySerialNo || "",
+      description: machineryDescription,
+      bondNo: machineryBondNo,
+      bondValue: machineryBondValue,
+      marketValue: machineryMV ? parseFloat(machineryMV) : undefined,
+      fsv: machineryFSV ? parseFloat(machineryFSV) : undefined,
+      valuedBy: machineryValuedBy,
+      insuCompany: machineryInsuranceCompany,
+      refNo: machineryReferenceNo,
+      machineryEquipSecCategory: "Main Security", // Default value
+      machineryEquipSecType: "MACHINERY AND EQUIPMENT" // Default value
+    };
+
+    console.log(`${isEdit ? 'Updating' : 'Saving'} machinery equipment with payload:`, payload);
+
+    let response;
+    if (isEdit && id) {
+      response = await useCollateralStore.getState().updateMachinery(id, payload);
+      message.success("Machinery equipment updated successfully");
+    } else {
+      response = await useCollateralStore.getState().saveMachinery(payload);
+      message.success("Machinery equipment saved successfully");
+    }
+
+    console.log(`Machinery equipment ${isEdit ? 'update' : 'save'} response:`, response);
+    return true;
+  } catch (error) {
+    console.error(`Error ${isEdit ? 'updating' : 'saving'} machinery equipment:`, error);
+    message.error(`Failed to ${isEdit ? 'update' : 'save'} machinery equipment`);
+    return false;
+  }
+};
 
 const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
   const {
@@ -19,22 +88,26 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
     suppliersLoading: machinerySuppliersLoading,
     conditions: machineryConditions,
     conditionsLoading: machineryConditionsLoading,
+    insuranceCompanies,
+    insuranceCompaniesLoading,
     fetchTypes,
     fetchOwnerships,
     fetchSuppliers,
     fetchConditions,
     fetchSecurityCategories,
+    fetchInsuranceCompanies,
   } = useCollateralStore();
 
   const dataFetched = useRef(false);
 
   useEffect(() => {
     if (!dataFetched.current) {
-      fetchTypes('machinery');
+      fetchTypes("machinery");
       fetchOwnerships();
       fetchSuppliers();
       fetchConditions();
       fetchSecurityCategories();
+      fetchInsuranceCompanies();
       dataFetched.current = true;
     }
   }, [
@@ -43,6 +116,7 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
     fetchSuppliers,
     fetchConditions,
     fetchSecurityCategories,
+    fetchInsuranceCompanies,
   ]);
 
   const getOptions = (arr: any[]) =>
@@ -313,6 +387,31 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Valued By" />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item label="Insurance Company">
+            <Controller
+              name="machineryInsuranceCompany"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  placeholder="Select Insurance Company"
+                  loading={insuranceCompaniesLoading}
+                  options={getOptions(insuranceCompanies)}
+                />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item label="Reference No">
+            <Controller
+              name="machineryReferenceNo"
+              control={control}
+              render={({ field }) => (
+                <Input {...field} placeholder="Enter Reference No" />
               )}
             />
           </Form.Item>

@@ -25,6 +25,8 @@ export interface FormValues {
   vehicleRegBookNo?: string;
   vehicleBookReceivedDate?: Date;
   vehicleCRReleasedDate?: Date;
+  vehicleInsuranceCompany?: string;
+  vehicleReferenceNo?: string;
 
   // Machinery fields
   machineryType?: string;
@@ -40,11 +42,12 @@ export interface FormValues {
   machineryBondNo?: string;
   machineryBondValue?: string;
   machineryValuedBy?: string;
+  machineryInsuranceCompany?: string;
+  machineryReferenceNo?: string;
 
   // Bank Guarantee fields
   bankGuaranteeType?: string;
   bankGuaranteeOwnership?: string;
-  // LOFIN fields
   fdNo?: string;
   fdValue?: string;
   startDate?: string;
@@ -52,12 +55,13 @@ export interface FormValues {
   referenceNo?: string;
   guaranteeValue?: string;
   guaranteedTo?: string;
-  // Ondemand fields
   institutionName?: string;
   dateOfExpiry?: string;
   referenceNoOndemand?: string;
   valueOfGuarantee?: string;
   renewedBy?: string;
+  bankInsuranceCompany?: string;
+  bankReferenceNo?: string;
 
   // Property Mortgage fields
   propertyType?: string;
@@ -80,6 +84,8 @@ export interface FormValues {
   propertyMarketValue?: string;
   propertyFSV?: string;
   propertyLotNo?: string;
+  propertyInsuranceCompany?: string;
+  propertyReferenceNo?: string;
 
   // Savings fields
   savingsType?: string;
@@ -107,9 +113,38 @@ export interface FormValues {
   landStockCategory?: string;
   landStockSecurityDate?: Date;
   landStockSecurityType?: string;
+  
+  // Lease fields
+  leaseEquipType?: string;
+  leaseCost?: string;
+  leaseSupplierCode?: string;
+  leaseEquipName?: string;
+  leaseCondition?: string;
+  leaseCategory?: string;
+  leaseDepreciationCode?: string;
+  leaseVehicleType?: string;
+  leaseManufacturer?: string;
+  leaseModel?: string;
+  leaseEngineCapacityCC?: string;
+  leaseEngineCapacityHP?: string;
+  leaseEngineNo?: string;
+  leaseChassisNo?: string;
+  leaseDuplicateKey?: string;
+  leaseVehicleNo?: string;
+  leaseRegistrationBookNo?: string;
+  leaseRegistrationDate?: Date;
+  leaseRegistrationYear?: string;
+  leaseMV?: string;
+  leaseFSV?: string;
+  leaseProvince?: string;
+  leaseInsuranceCompany?: string;
+  leaseReferenceNo?: string;
 }
 
 export interface LeaseProductFormValues {
+  // Common fields
+  id?: string;
+  
   // Equipment Details
   equipmentCost: string;
   equipmentType: string;
@@ -128,7 +163,7 @@ export interface LeaseProductFormValues {
   engineNo?: string;
   chassisNo?: string;
   vehicleNo?: string;
-  registrationDate?: string;
+  registrationDate?: Date;
   duplicateKey?: string;
   registrationBookNo?: string;
   registrationYear?: string;
@@ -136,6 +171,7 @@ export interface LeaseProductFormValues {
   internalFSV?: string;
   insuranceCompany: string;
   referenceNo: string;
+  province?: string;
 }
 
 export const validationSchema = yup.object().shape({
@@ -224,6 +260,10 @@ export const validationSchema = yup.object().shape({
     is: "MACHINERY",
     then: (schema) => schema.required("Supplier is required"),
   }),
+  machineryCondition: yup.string().when("securityType", {
+    is: "MACHINERY",
+    then: (schema) => schema.required("Condition is required"),
+  }),
   machineryDescription: yup.string(),
   machineryMV: yup.string().when("securityType", {
     is: "MACHINERY",
@@ -239,13 +279,11 @@ export const validationSchema = yup.object().shape({
     is: "MACHINERY",
     then: (schema) => schema.required("Serial No/Chassis No is required"),
   }),
-  machineryCondition: yup.string().when("securityType", {
-    is: "MACHINERY",
-    then: (schema) => schema.required("Condition is required"),
-  }),
   machineryBondNo: yup.string(),
   machineryBondValue: yup.string(),
   machineryValuedBy: yup.string(),
+  machineryInsuranceCompany: yup.string(),
+  machineryReferenceNo: yup.string(),
 
   // Bank Guarantee fields
   bankGuaranteeType: yup.string().when("securityType", {
