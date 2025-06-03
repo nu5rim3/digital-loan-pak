@@ -1,6 +1,6 @@
 import { Button, Card, Collapse, Descriptions, Empty, Form, Input, Select, Switch } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { PlusOutlined, EditOutlined, UndoOutlined, SaveOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, UndoOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
@@ -124,7 +124,14 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
             <div className="grid grid-cols-3 gap-4">
                 {addressDetails.map((item, index) => item.status === 'A' && (
                     <Card key={index}>
-                        <div className="flex justify-end">
+                        <div className="flex justify-end gap-1">
+                            <Button
+                                type="default"
+                                size="small"
+                                danger
+                                icon={<DeleteOutlined />}
+                                onClick={() => inActivateAddressDetail(item.idx).finally(() => fetchAddressDetailsByStkId(stkId ?? ''))}
+                            />
                             <Button
                                 type="default"
                                 size="small"

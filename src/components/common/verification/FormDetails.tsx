@@ -131,9 +131,9 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
 
     useEffect(() => {
         if (type === 'G' && selectedGuarantor) {
-            setValue("name", selectedCustomer?.fullName?.split(' ')[0]?.replace(/\s/g, '') || '');
-            setValue("initals", selectedCustomer?.fullName?.split(' ')[1]?.replace(/\s/g, '') || '');
-            setValue("surname", selectedCustomer?.fullName?.split(' ')[2]?.replace(/\s/g, '') || '');
+            setValue("name", selectedGuarantor?.fullName?.split(' ')[0]?.replace(/\s/g, '') || '');
+            setValue("initals", selectedGuarantor?.fullName?.split(' ')[1]?.replace(/\s/g, '') || '');
+            setValue("surname", selectedGuarantor?.fullName?.split(' ')[2]?.replace(/\s/g, '') || '');
             setValue("telcoProvider", selectedGuarantor?.telcoProvider || '');
             setValue("contactNumber", selectedGuarantor?.contactNumber || '');
             setValue("identificationType", selectedGuarantor?.identificationType || '');
@@ -176,14 +176,14 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                             />
                         </Form.Item>
 
-                        <Form.Item label="Initial" validateStatus={errors.initals ? "error" : ""} help={errors.initals?.message}>
+                        <Form.Item label="Initial" validateStatus={errors.initals ? "error" : ""} help={errors.initals?.message} required>
                             <Controller
                                 name="initals"
                                 control={control}
                                 render={({ field }) => <Input {...field} placeholder="Enter Initial" />}
                             />
                         </Form.Item>
-                        <Form.Item label="Surname" validateStatus={errors.surname ? "error" : ""} help={errors.surname?.message}>
+                        <Form.Item label="Surname" validateStatus={errors.surname ? "error" : ""} help={errors.surname?.message} required>
                             <Controller
                                 name="surname"
                                 control={control}

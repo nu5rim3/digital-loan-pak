@@ -341,7 +341,7 @@ const GoldFacilityApplication: React.FC = () => {
                                                                         {...field}
                                                                         allowClear
                                                                         placeholder="Select Goldsmith ID"
-                                                                        options={goldsmiths.map((item) => ({ label: item.ownerName, value: item.id }))}
+                                                                        options={goldsmiths.map((item) => ({ label: item.shopName, value: item.id }))}
                                                                         loading={goldsmithLoading}
                                                                         onChange={(value) => {
                                                                             setValue('goldsmithId', value, { shouldValidate: true });
