@@ -49,7 +49,7 @@ const CustomerDetails: React.FC = () => {
     const { control, handleSubmit, formState: { errors }, setValue, watch, reset } = useForm({
         resolver: yupResolver(schema),
     });
-    const { organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, educationLevel, educationLevelLoading, fetchEducationLevel, headOfFamily, headOfFamilyLoading, fetchHeadOfFamily, healthCondition, healthConditionLoading, fetchHealthCondition } = useCommonStore()
+    const { locations, locationsLoading, organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, educationLevel, educationLevelLoading, fetchEducationLevel, headOfFamily, headOfFamilyLoading, fetchHeadOfFamily, healthCondition, healthConditionLoading, fetchHealthCondition, fetchLocations } = useCommonStore()
     const { stakeholderLoading, stakeholders, fetchStackholderByAppId, addStakeholder, updateStakeholder } = useStakeholderStore()
     const { customers, fetchCustomerByAppId } = useCustomerStore()
     const { appId } = useParams()
@@ -91,6 +91,7 @@ const CustomerDetails: React.FC = () => {
         fetchHealthCondition()
         fetchCustomerByAppId(appId ?? '')
         fetchStackholderByAppId(appId ?? '')
+        fetchLocations()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -462,7 +463,17 @@ const CustomerDetails: React.FC = () => {
                             <Controller
                                 name="geoLocation"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Geo Location" />}
+                                render={({ field }) =>
+                                    <Select
+                                        {...field}
+                                        allowClear
+                                        loading={locationsLoading}
+                                        options={locations.map((item) => ({
+                                            label: formatName(item.locationName),
+                                            value: item.code
+                                        }))}
+                                    />
+                                }
                             />
                         </Form.Item>
                     </div>

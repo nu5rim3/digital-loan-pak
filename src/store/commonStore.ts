@@ -282,6 +282,14 @@ interface ISubProductType {
   subTypeStatus: string;
   subTypeDefault: string;
 }
+
+interface ILocations {
+  code: string;
+  productCode: string;
+  locationName: string;
+  creditScore: string;
+  status: "A" | "I";
+}
 interface ICommonState {
   operators: IOperator[];
   operatorLoading: boolean;
@@ -439,6 +447,10 @@ interface ICommonState {
   subProductTypesLoading: boolean;
   subProductTypesError: string | null;
 
+  locations: ILocations[];
+  locationsLoading: boolean;
+  locationsError: string | null;
+
   fetchOperators: () => Promise<void>;
   fetchECIBReport: (cnic: string) => Promise<void>;
   fetchOrganizationType: () => Promise<void>;
@@ -479,6 +491,7 @@ interface ICommonState {
   fetchFacilityTypes: () => Promise<void>;
   fetchProductTypes: (facilityCode: string) => Promise<void>;
   fetchSubProductTypes: (prodCode: string) => Promise<void>;
+  fetchLocations: () => Promise<void>;
 }
 
 type TPersist = (
@@ -660,6 +673,10 @@ const useCommonStore = create<ICommonState>(
       subProductTypes: [],
       subProductTypesLoading: false,
       subProductTypesError: null,
+
+      locations: [],
+      locationsLoading: false,
+      locationsError: null,
 
       fetchOperators: async () => {
         set({ operatorLoading: true, operatorError: null });
@@ -1281,6 +1298,18 @@ const useCommonStore = create<ICommonState>(
             subProductTypesError: error.message,
             subProductTypesLoading: false,
           });
+        }
+      },
+
+      // /mobixCamsCommon/v1/geo-locations
+      fetchLocations: async () => {
+        set({ locationsLoading: true, locationsError: null });
+        try {
+          const response = await API.get("/mobixCamsCommon/v1/geo-locations");
+          set({ locations: response.data, locationsLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({ locationsError: error.message, locationsLoading: false });
         }
       },
     }),
