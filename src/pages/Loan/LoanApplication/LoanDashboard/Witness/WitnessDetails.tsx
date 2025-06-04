@@ -62,7 +62,7 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
                 formDetails && formDetails?.length > 0 && (
                     <div className='flex flex-col gap-3'>
                         <div className='flex justify-end'>
-                            <Button type="primary" onClick={onClickCreate} icon={<PlusOutlined />}>Add Witness</Button>
+                            <Button type="primary" onClick={onClickCreate} icon={<PlusOutlined />} disabled={formDetails.length >= 2}>Add Witness</Button>
                         </div>
                         <div className='grid grid-cols-4 gap-3'>
                             {

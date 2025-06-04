@@ -4,7 +4,7 @@ import { Input, Form, Button, Card, Select, Collapse } from "antd";
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import useCommonStore from '../../../../../store/commonStore';
-import { formatCNIC } from '../../../../../utils/formatterFunctions';
+import { formatCNIC, formatName } from '../../../../../utils/formatterFunctions';
 import { useNavigate, useParams } from 'react-router-dom';
 import useCustomerStore from '../../../../../store/customerStore';
 import { mainURL } from '../../../../../App';
@@ -71,7 +71,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
     const { control, formState: { errors }, setValue, watch } = useForm({
         resolver: yupResolver(schema),
     });
-    const { organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, educationLevel, educationLevelLoading, fetchEducationLevel, headOfFamily, headOfFamilyLoading, fetchHeadOfFamily, healthCondition, healthConditionLoading, fetchHealthCondition } = useCommonStore()
+    const { locations, locationsLoading, organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, educationLevel, educationLevelLoading, fetchEducationLevel, headOfFamily, headOfFamilyLoading, fetchHeadOfFamily, healthCondition, healthConditionLoading, fetchHealthCondition, fetchLocations } = useCommonStore()
     const { customers, fetchCustomerByAppId, resetCustomer } = useCustomerStore()
     const { appId } = useParams()
     const navigate = useNavigate();
@@ -91,6 +91,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
         if (educationLevel.length === 0) { fetchEducationLevel() }
         if (headOfFamily.length === 0) { fetchHeadOfFamily() }
         if (healthCondition.length === 0) { fetchHealthCondition() }
+        if (locations.length === 0) { fetchLocations() }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -371,7 +372,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                                 {...field}
                                                 allowClear
                                                 options={[
-                                                    { value: 'D', label: 'Married' },
+                                                    { value: 'M', label: 'Married' },
                                                     { value: 'S', label: 'Single' },
                                                     { value: 'P', label: 'Separated' },
                                                     { value: 'W', label: 'Widow' },
@@ -381,7 +382,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                         }
                                     />
                                 </Form.Item>
-                                <Form.Item label="Marital Comment" validateStatus={errors.stkMaritialComment ? "error" : ""} help={errors.stkMaritialComment?.message} required>
+                                <Form.Item label="Marital Comment" validateStatus={errors.stkMaritialComment ? "error" : ""} help={errors.stkMaritialComment?.message} hidden>
                                     <Controller
                                         name="stkMaritialComment"
                                         control={control}
@@ -510,7 +511,16 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                     <Controller
                                         name="geoLocation"
                                         control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Geographic Location" />}
+                                        render={({ field }) =>
+                                            <Select
+                                                {...field}
+                                                allowClear
+                                                loading={locationsLoading}
+                                                options={locations.map((item) => ({
+                                                    label: formatName(item.locationName),
+                                                    value: item.code
+                                                }))}
+                                            />}
                                     />
                                 </Form.Item>
                                 <Form.Item label="Employee Number" validateStatus={errors.stkEmpNo ? "error" : ""} help={errors.stkEmpNo?.message}>

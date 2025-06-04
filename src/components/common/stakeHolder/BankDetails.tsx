@@ -17,8 +17,8 @@ interface IBankDetails {
 const schema = yup.object().shape({
     bank: yup.string().required('Bank is required'),
     chequeNo: yup.string().required('Cheque No is required'),
-    accountNo: yup.string().required('Account No is required'),
-    accountTitle: yup.string().required('Account Title is required'),
+    accountNo: yup.string().required('Account No is required').matches(/^\d+$/, 'Account No must be numeric'),
+    accountTitle: yup.string().required('Account Title is required').matches(/^[a-zA-Z.\s]+$/, 'Account Title must contain only letters and spaces'),
 });
 
 const BankDetails: React.FC<IBankDetails> = ({ stkId }) => {

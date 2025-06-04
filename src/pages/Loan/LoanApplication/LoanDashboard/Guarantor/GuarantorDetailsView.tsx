@@ -63,7 +63,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
     const { control, formState: { errors }, setValue, watch } = useForm({
         resolver: yupResolver(schema),
     });
-    const { organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, educationLevel, educationLevelLoading, fetchEducationLevel, headOfFamily, headOfFamilyLoading, fetchHeadOfFamily, healthCondition, healthConditionLoading, fetchHealthCondition } = useCommonStore()
+    const { organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus } = useCommonStore()
     const { appId } = useParams()
     const navigate = useNavigate();
     const [selectedIndex, setSelectedIndex] = useState(0);
@@ -78,9 +78,6 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
     useEffect(() => {
         if (organizationType.length === 0) { fetchOrganizationType() }
         if (cnicStaus.length === 0) { fetchCNICStaus() }
-        if (educationLevel.length === 0) { fetchEducationLevel() }
-        if (headOfFamily.length === 0) { fetchHeadOfFamily() }
-        if (healthCondition.length === 0) { fetchHealthCondition() }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -158,7 +155,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
     return (
         <div className='flex flex-col gap-3'>
             <div className='flex justify-end mb-4'>
-                <Button type="primary" onClick={onClickCreate} icon={<PlusOutlined />}>Add Guarantor</Button>
+                <Button type="primary" onClick={onClickCreate} icon={<PlusOutlined />} disabled={guarantors.length >= 2}>Add Guarantor</Button>
             </div>
             <div className="grid grid-cols-4 gap-3">
                 {guarantors?.map((item, index) => (
@@ -323,24 +320,6 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                                             }
                                         />
                                     </Form.Item>
-                                    <Form.Item label="Education Level" validateStatus={errors.stkEduLevel ? "error" : ""} help={errors.stkEduLevel?.message} required>
-                                        <Controller
-                                            name="stkEduLevel"
-                                            control={control}
-                                            render={({ field }) =>
-                                                <Select
-                                                    {...field}
-                                                    allowClear
-                                                    options={educationLevel.map((item) => ({
-                                                        label: item.description,
-                                                        value: item.code
-                                                    }))}
-                                                    placeholder="Select Education Level"
-                                                    loading={educationLevelLoading}
-                                                />
-                                            }
-                                        />
-                                    </Form.Item>
                                     <Form.Item label="Marital Status" validateStatus={errors.stkMaritialStatus ? "error" : ""} help={errors.stkMaritialStatus?.message} required>
                                         <Controller
                                             name="stkMaritialStatus"
@@ -350,7 +329,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                                                     {...field}
                                                     allowClear
                                                     options={[
-                                                        { value: 'D', label: 'Married' },
+                                                        { value: 'M', label: 'Married' },
                                                         { value: 'S', label: 'Single' },
                                                         { value: 'P', label: 'Separated' },
                                                         { value: 'W', label: 'Widow' },
@@ -360,49 +339,12 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                                             }
                                         />
                                     </Form.Item>
-                                    <Form.Item label="Marital Comment" validateStatus={errors.stkMaritialComment ? "error" : ""} help={errors.stkMaritialComment?.message} required>
-                                        <Controller
-                                            name="stkMaritialComment"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Marital Comment" />}
-                                        />
-                                    </Form.Item>
 
                                     <Form.Item label="Father or Husband Name" validateStatus={errors.stkFatherOrHusName ? "error" : ""} help={errors.stkFatherOrHusName?.message} required>
                                         <Controller
                                             name="stkFatherOrHusName"
                                             control={control}
                                             render={({ field }) => <Input {...field} placeholder="Enter Father or Husband Name" />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Number of Dependents" validateStatus={errors.stkNumOfDependents ? "error" : ""} help={errors.stkNumOfDependents?.message} hidden>
-                                        <Controller
-                                            name="stkNumOfDependents"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Number of Dependents" />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Number of Earners" validateStatus={errors.stkNumOfEarners ? "error" : ""} help={errors.stkNumOfEarners?.message} hidden>
-                                        <Controller
-                                            name="stkNumOfEarners"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Number of Earners" />}
-                                        />
-                                    </Form.Item>
-
-
-                                    <Form.Item label="Customer Code" validateStatus={errors.stkCusCode ? "error" : ""} help={errors.stkCusCode?.message}>
-                                        <Controller
-                                            name="stkCusCode"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Customer Code" />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Group/Reference Number" validateStatus={errors.stkGrpRefNo ? "error" : ""} help={errors.stkGrpRefNo?.message}>
-                                        <Controller
-                                            name="stkGrpRefNo"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Group/Reference Number" />}
                                         />
                                     </Form.Item>
                                     <Form.Item label="Status" validateStatus={errors.status ? "error" : ""} help={errors.status?.message} hidden>
@@ -417,79 +359,6 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                                             name="relationship"
                                             control={control}
                                             render={({ field }) => <Input {...field} placeholder="Enter Relationship" />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Head of Family" validateStatus={errors.headOfFamily ? "error" : ""} help={errors.headOfFamily?.message} required>
-                                        <Controller
-                                            name="headOfFamily"
-                                            control={control}
-                                            render={({ field }) =>
-                                                <Select
-                                                    {...field}
-                                                    allowClear
-                                                    options={headOfFamily.map((item) => ({
-                                                        label: item.description,
-                                                        value: item.code
-                                                    }))}
-                                                    placeholder="Select Head of Family"
-                                                    loading={headOfFamilyLoading}
-                                                />
-                                            }
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Household Contact" validateStatus={errors.houseHoldCont ? "error" : ""} help={errors.houseHoldCont?.message} hidden>
-                                        <Controller
-                                            name="houseHoldCont"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Household Contact" />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Health Condition" validateStatus={errors.healthCondition ? "error" : ""} help={errors.healthCondition?.message} required>
-                                        <Controller
-                                            name="healthCondition"
-                                            control={control}
-                                            render={({ field }) => <Select
-                                                {...field}
-                                                allowClear
-                                                options={healthCondition.map((item) => ({
-                                                    label: item.description,
-                                                    value: item.code
-                                                }))}
-                                                placeholder="Select Health Condition"
-                                                loading={healthConditionLoading}
-                                            />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Physical Disability" validateStatus={errors.stkPhysDisability ? "error" : ""} help={errors.stkPhysDisability?.message} required>
-                                        <Controller
-                                            name="stkPhysDisability"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <Select
-                                                    {...field}
-                                                    value={field.value === undefined ? null : field.value}
-                                                    allowClear
-                                                    options={[
-                                                        { value: 'true', label: 'Yes' },
-                                                        { value: 'false', label: 'No' },
-                                                    ]}
-                                                    placeholder="Select Physical Disability"
-                                                />
-                                            )}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Geographic Location" validateStatus={errors.geoLocation ? "error" : ""} help={errors.geoLocation?.message}>
-                                        <Controller
-                                            name="geoLocation"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Geographic Location" />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Employee Number" validateStatus={errors.stkEmpNo ? "error" : ""} help={errors.stkEmpNo?.message}>
-                                        <Controller
-                                            name="stkEmpNo"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Employee Number" />}
                                         />
                                     </Form.Item>
                                     <Form.Item hidden>

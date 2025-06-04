@@ -20,15 +20,36 @@ const schema = yup.object().shape({
     appraisalID: yup.string(),
     stkOrgType: yup.string().required("Organization Type is required"),
     stkCNic: yup.string().required("CNIC is required").matches(/^\d{5}-\d{7}-\d$/, 'CNIC must be in format xxxxx-xxxxxxx-x'),
-    stkCNicIssuedDate: yup.string().required("CNIC Issued Date is required"),
-    stkCNicExpDate: yup.string().required("CNIC Expired Date is required"),
+    stkDob: yup.string().required("Date of Birth is required"),
+    stkAge: yup.string()
+        .required("Age is required")
+        .matches(/^\d+$/, "Age must be a number")
+        .test('is-valid-age', 'Age must be calculated from Date of Birth', function (value) {
+            const { stkDob } = this.parent;
+            if (stkDob) {
+                const dob = new Date(stkDob);
+                const age = new Date().getFullYear() - dob.getFullYear();
+                return Number(value) === age;
+            }
+            return true;
+        }),
+    stkCNicIssuedDate: yup.string()
+        .required("CNIC Issued Date is required")
+        .test('is-later', 'CNIC Issued Date must not be earlier than Date of Birth', function (value) {
+            const { stkDob } = this.parent;
+            return value && stkDob ? new Date(value) >= new Date(stkDob) : true;
+        }),
+    stkCNicExpDate: yup.string()
+        .required("CNIC Expired Date is required")
+        .test('is-later', 'CNIC Expired Date must be later than CNIC Issued Date', function (value) {
+            const { stkCNicIssuedDate } = this.parent;
+            return value && stkCNicIssuedDate ? new Date(value) > new Date(stkCNicIssuedDate) : true;
+        }),
     stkCNicStatus: yup.string().required("CNIC Status is required"),
     stkCusName: yup.string().required("Customer Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     stkInitials: yup.string().required("Initial is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     stkSurName: yup.string().required("Surname is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     stkOtherName: yup.string().required("Other Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
-    stkDob: yup.string().required("Date of Birth is required"),
-    stkAge: yup.string().required("Age is required"),
     stkGender: yup.string().required("Gender is required"),
     stkMaritialStatus: yup.string().required("Marital Status is required"),
     stkTitle: yup.string().required("Title is required"),
@@ -299,7 +320,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                         {...field}
                                         allowClear
                                         options={[
-                                            { value: 'D', label: 'Married' },
+                                            { value: 'M', label: 'Married' },
                                             { value: 'S', label: 'Single' },
                                             { value: 'P', label: 'Separated' },
                                             { value: 'W', label: 'Widow' },

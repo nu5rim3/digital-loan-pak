@@ -155,3 +155,22 @@ export const titleGenderMaritalMap: Record<
   "M/S": { gender: undefined, maritalStatus: undefined }, // Could be firm or group
   MST: { gender: "F", maritalStatus: "S" },
 };
+
+export function splitInitialAndSurname(fullName: string): {
+  initial: string;
+  surname: string;
+} {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+  if (parts.length <= 1) {
+    return { initial: "", surname: "" };
+  }
+  if (parts.length === 2) {
+    return { initial: "", surname: parts[1] };
+  }
+  const surname = parts[parts.length - 1];
+  const initialsArray = parts
+    .slice(0, -1)
+    .map((p) => p.charAt(0).toUpperCase() + ".");
+  const initial = initialsArray.join(" ");
+  return { initial, surname };
+}

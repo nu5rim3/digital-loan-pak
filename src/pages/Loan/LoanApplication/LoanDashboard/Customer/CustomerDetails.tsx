@@ -17,31 +17,52 @@ const schema = yup.object().shape({
     appraisalID: yup.string(),
     stkOrgType: yup.string().required("Organization Type is required"),
     stkCNic: yup.string().required("CNIC is required").matches(/^\d{5}-\d{7}-\d$/, 'CNIC must be in format xxxxx-xxxxxxx-x'),
-    stkCNicIssuedDate: yup.string().required("CNIC Issued Date is required"),
-    stkCNicExpDate: yup.string().required("CNIC Expired Date is required"),
+    stkDob: yup.string().required("Date of Birth is required"),
+    stkAge: yup.string()
+        .required("Age is required")
+        .matches(/^\d+$/, "Age must be a number")
+        .test('is-valid-age', 'Age must be calculated from Date of Birth', function (value) {
+            const { stkDob } = this.parent;
+            if (stkDob) {
+                const dob = new Date(stkDob);
+                const age = new Date().getFullYear() - dob.getFullYear();
+                return Number(value) === age;
+            }
+            return true;
+        }),
+    stkCNicIssuedDate: yup.string()
+        .required("CNIC Issued Date is required")
+        .test('is-later', 'CNIC Issued Date must not be earlier than Date of Birth', function (value) {
+            const { stkDob } = this.parent;
+            return value && stkDob ? new Date(value) >= new Date(stkDob) : true;
+        }),
+    stkCNicExpDate: yup.string()
+        .required("CNIC Expired Date is required")
+        .test('is-later', 'CNIC Expired Date must be later than CNIC Issued Date', function (value) {
+            const { stkCNicIssuedDate } = this.parent;
+            return value && stkCNicIssuedDate ? new Date(value) > new Date(stkCNicIssuedDate) : true;
+        }),
     stkCNicStatus: yup.string().required("CNIC Status is required"),
     stkCusName: yup.string().required("Customer Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     stkInitials: yup.string().required("Initials is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     stkSurName: yup.string().required("Surname is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     stkOtherName: yup.string().required("Other Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
-    stkDob: yup.string().required("Date of Birth is required"),
-    stkAge: yup.string().required("Age is required"),
     stkGender: yup.string().required("Gender is required"),
     stkMaritialStatus: yup.string().required("Marital Status is required"),
-    stkMaritialComment: yup.string().required("Marital Comment is required"),
+    stkMaritialComment: yup.string(),
     stkTitle: yup.string().required("Title is required"),
     stkFatherOrHusName: yup.string().required("Father or Husband Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     stkEduLevel: yup.string().required("Education Qualification is required"),
-    stkPhysDisability: yup.string().required("Description of Physical Disability  is required"),
+    stkPhysDisability: yup.string().required("Description of Physical Disability is required"),
     headOfFamily: yup.string().required("Head of Family is required"),
     healthCondition: yup.string().required("Health Condition is required"),
     stkSequence: yup.string(),
-    stkNumOfDependents: yup.string().matches(/^[0-9]+$/, "Number of Dependents must be a number"),
-    stkNumOfEarners: yup.string().matches(/^[0-9]+$/, "Number of Dependents must be a number"),
+    stkNumOfDependents: yup.string().matches(/^[0-9]*$/, "Number of Dependents must be a number").notRequired(),
+    stkNumOfEarners: yup.string().matches(/^[0-9]+$/, "Number of Earners must be a number").notRequired(),
     stkCusCode: yup.string().nullable(),
     stkGrpRefNo: yup.string().nullable(),
     stkPhysDisabilityDesce: yup.string().nullable(),
-    geoLocation: yup.string().required("Geo Location is required"),
+    geoLocation: yup.string().required("Geographic Location is required"),
 });
 
 const CustomerDetails: React.FC = () => {
@@ -49,6 +70,7 @@ const CustomerDetails: React.FC = () => {
     const { control, handleSubmit, formState: { errors }, setValue, watch, reset } = useForm({
         resolver: yupResolver(schema),
     });
+
     const { locations, locationsLoading, organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, educationLevel, educationLevelLoading, fetchEducationLevel, headOfFamily, headOfFamilyLoading, fetchHeadOfFamily, healthCondition, healthConditionLoading, fetchHealthCondition, fetchLocations } = useCommonStore()
     const { stakeholderLoading, stakeholders, fetchStackholderByAppId, addStakeholder, updateStakeholder } = useStakeholderStore()
     const { customers, fetchCustomerByAppId } = useCustomerStore()
@@ -116,7 +138,7 @@ const CustomerDetails: React.FC = () => {
                 setValue("stkAge", formDetails?.stkAge);
                 setValue("stkGender", formDetails?.stkGender);
                 setValue("stkMaritialStatus", formDetails?.stkMaritialStatus ?? '');
-                setValue("stkMaritialComment", formDetails?.stkMaritialComment);
+                setValue("stkMaritialComment", formDetails?.stkMaritialComment ?? '');
                 setValue("stkTitle", formDetails?.stkTitle);
                 setValue("stkFatherOrHusName", formDetails?.stkFatherOrHusName);
                 setValue("stkNumOfDependents", formDetails?.stkNumOfDependents);
@@ -286,7 +308,7 @@ const CustomerDetails: React.FC = () => {
                             <Controller
                                 name="stkAge"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Age" type='number' />}
+                                render={({ field }) => <Input {...field} placeholder="Age is calculated automatically" type='number' />}
                             />
                         </Form.Item>
                         <Form.Item label="Gender" validateStatus={errors.stkGender ? "error" : ""} help={errors.stkGender?.message} required>
@@ -347,7 +369,7 @@ const CustomerDetails: React.FC = () => {
                                         {...field}
                                         allowClear
                                         options={[
-                                            { value: 'D', label: 'Married' },
+                                            { value: 'M', label: 'Married' },
                                             { value: 'S', label: 'Single' },
                                             { value: 'P', label: 'Separated' },
                                             { value: 'W', label: 'Widow' },
@@ -357,7 +379,7 @@ const CustomerDetails: React.FC = () => {
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="Marital Comment" validateStatus={errors.stkMaritialComment ? "error" : ""} help={errors.stkMaritialComment?.message} required>
+                        <Form.Item label="Marital Comment" validateStatus={errors.stkMaritialComment ? "error" : ""} help={errors.stkMaritialComment?.message} hidden>
                             <Controller
                                 name="stkMaritialComment"
                                 control={control}
@@ -459,7 +481,7 @@ const CustomerDetails: React.FC = () => {
                                 render={({ field }) => <Input.TextArea {...field} placeholder="Enter Description of Physical Disability  Description" value={field.value || ''} />}
                             />
                         </Form.Item>
-                        <Form.Item label="Geo Location" validateStatus={errors.geoLocation ? "error" : ""} help={errors.geoLocation?.message} required>
+                        <Form.Item label="Geographic Location" validateStatus={errors.geoLocation ? "error" : ""} help={errors.geoLocation?.message} required>
                             <Controller
                                 name="geoLocation"
                                 control={control}

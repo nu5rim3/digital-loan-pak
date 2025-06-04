@@ -87,7 +87,7 @@ const InsuranceRecipientCard: React.FC<IInsuranceRecipientCard> = ({ stkId }) =>
                         children: (
                             <>
                                 <div className='flex justify-end pb-3'>
-                                    <Button type="primary" onClick={() => openModal('create')} icon={<PlusOutlined />}>
+                                    <Button type="primary" onClick={() => openModal('create')} icon={<PlusOutlined />} disabled={recipients.length > 0}>
                                         Add Insurance Recipient
                                     </Button>
                                 </div>
