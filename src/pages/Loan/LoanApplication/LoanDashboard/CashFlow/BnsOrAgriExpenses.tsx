@@ -190,7 +190,7 @@ const BnsOrAgriExpenses: React.FC = () => {
             />
 
             <CommonModal
-                title={`${formatSentence(mode)} Revenue`}
+                title={`${formatSentence(mode)} Business or Agriculture Expenses`}
                 open={isModalOpen}
                 onClose={closeModal}
                 footer={true}
@@ -244,14 +244,14 @@ const BnsOrAgriExpenses: React.FC = () => {
                                 )}
                             />
                         </Form.Item>
-                        <Form.Item label="Semi Annual" validateStatus={errors.semiAnnual ? 'error' : ''} help={errors.semiAnnual?.message}>
+                        <Form.Item label="Semi Annually" validateStatus={errors.semiAnnual ? 'error' : ''} help={errors.semiAnnual?.message}>
                             <Controller
                                 name="semiAnnual"
                                 control={control}
                                 render={({ field }) => (
                                     <InputNumber
                                         {...field}
-                                        placeholder="Semi Annual"
+                                        placeholder="Semi Annually"
                                         style={{ width: '100%' }}
                                         formatter={(value) =>
                                             `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
@@ -330,7 +330,7 @@ const DetailsCard: React.FC<{ detail: IFinancialEntry; onEdit: () => void; onRem
         <Descriptions column={1}>
             <Descriptions.Item label="Key">{detail.key}</Descriptions.Item>
             <Descriptions.Item label="Monthly">{formatCurrency(Number(detail?.monthly ?? 0))}</Descriptions.Item>
-            <Descriptions.Item label="Semi Annual">{formatCurrency(Number(detail?.semiAnnual ?? 0))}</Descriptions.Item>
+            <Descriptions.Item label="Semi Annually">{formatCurrency(Number(detail?.semiAnnual ?? 0))}</Descriptions.Item>
             <Descriptions.Item label="Annually">{formatCurrency(Number(detail?.annually ?? 0))}</Descriptions.Item>
         </Descriptions>
     </Card>

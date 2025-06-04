@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import { APIAuth } from "../services/api";
 import { notification } from "antd";
+import { devtools } from "zustand/middleware";
 
 interface IOTPState {
   otpResponse: any | null;
@@ -17,7 +18,8 @@ interface IOTPState {
   verifyOTP: (idx: string, code: string) => Promise<void>;
 }
 
-const useOTPStore = create<IOTPState>((set) => ({
+const useOTPStore = create<IOTPState>();
+devtools((set) => ({
   otpResponse: null,
   otpLoading: false,
   otpError: null,
