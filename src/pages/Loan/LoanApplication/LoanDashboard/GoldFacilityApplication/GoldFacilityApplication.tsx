@@ -274,7 +274,13 @@ const GoldFacilityApplication: React.FC = () => {
                                     name="articleQuantity"
                                     control={articleControl}
                                     render={({ field }) => (
-                                        <Input {...field} placeholder="Article Quantity" />
+                                        <Input
+                                            {...field}
+                                            placeholder="Article Quantity"
+                                            onChange={(value) =>
+                                                field.onChange(Number(value))
+                                            }
+                                        />
                                     )}
                                 />
                             </Form.Item>
@@ -399,8 +405,10 @@ const GoldFacilityApplication: React.FC = () => {
                                                                             value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
                                                                         }
                                                                         step={0.01}
-                                                                        min={0}
                                                                         stringMode // keeps precision in string format
+                                                                        onChange={(value) =>
+                                                                            field.onChange(Number(value))
+                                                                        }
                                                                     />
                                                                 )}
                                                             />
@@ -439,8 +447,10 @@ const GoldFacilityApplication: React.FC = () => {
                                                                             value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
                                                                         }
                                                                         step={0.01}
-                                                                        min={0}
                                                                         stringMode // keeps precision in string format
+                                                                        onChange={(value) =>
+                                                                            field.onChange(Number(value))
+                                                                        }
                                                                     />
                                                                 )}
                                                             />

@@ -237,9 +237,11 @@ const BnsOrAgriExpenses: React.FC = () => {
                                             value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
                                         }
                                         step={0.01}
-                                        min={0}
                                         stringMode // keeps precision in string format
                                         onFocus={() => setActiveField('monthly')}
+                                        onChange={(value) =>
+                                            field.onChange(Number(value))
+                                        }
                                     />
                                 )}
                             />
@@ -260,9 +262,11 @@ const BnsOrAgriExpenses: React.FC = () => {
                                             value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
                                         }
                                         step={0.01}
-                                        min={0}
                                         stringMode // keeps precision in string format
                                         onFocus={() => setActiveField('semiAnnual')}
+                                        onChange={(value) =>
+                                            field.onChange(Number(value))
+                                        }
                                     />
                                 )}
                             />
@@ -283,9 +287,11 @@ const BnsOrAgriExpenses: React.FC = () => {
                                             value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
                                         }
                                         step={0.01}
-                                        min={0}
                                         stringMode // keeps precision in string format
                                         onFocus={() => setActiveField('annually')}
+                                        onChange={(value) =>
+                                            field.onChange(Number(value))
+                                        }
                                     />
                                 )}
                             />

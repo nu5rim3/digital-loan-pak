@@ -61,7 +61,7 @@ const ApplicantRevenue: React.FC = () => {
     };
 
     const onSubmit = (data: IFinancialEntry) => {
-        console.log("Form Submitted with data:", data);
+
         if (mode === 'update') {
             updateApplicantRevenue(selectedDetail?.key ?? '', data).finally(closeModal);
         } else if (mode === 'save') {
@@ -144,7 +144,7 @@ const ApplicantRevenue: React.FC = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [annually]);
-    console.log('applicantRevenue:', applicantRevenue);
+
     return (
         <>
             <Collapse

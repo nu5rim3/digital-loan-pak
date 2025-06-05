@@ -773,7 +773,17 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                 name="dateOfPaymenent"
                                 control={control}
                                 render={({ field }) => (
-                                    <Input {...field} placeholder="Enter Date of Payment" type='date' />
+                                    <Select {...field} placeholder="Enter Date of Payment" options={
+                                        [
+                                            {
+                                                value: 'END OF MONTH',
+                                                label: 'End of Month',
+                                            }, {
+                                                value: 'END OF TERM',
+                                                label: 'End of Term',
+                                            },
+                                        ]
+                                    } />
                                 )}
                             />
                         </Form.Item>
