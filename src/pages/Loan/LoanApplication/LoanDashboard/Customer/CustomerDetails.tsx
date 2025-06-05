@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 
 import useStakeholderStore from '../../../../../store/stakeholderStore';
 import useCommonStore from '../../../../../store/commonStore';
-import { formatCNIC, formatName, titleGenderMaritalMap } from '../../../../../utils/formatterFunctions';
+import { formatCNIC, formatName, splitInitialAndSurname, titleGenderMaritalMap } from '../../../../../utils/formatterFunctions';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import useCustomerStore from '../../../../../store/customerStore';
 import { CaretLeftOutlined, EditOutlined, UndoOutlined } from '@ant-design/icons';
@@ -156,6 +156,9 @@ const CustomerDetails: React.FC = () => {
         if (customers.length > 0) {
             setValue("stkCusName", customers[0]?.fullName);
             setValue("stkCNic", customers[0]?.identificationNumber);
+            const { initial, surname } = splitInitialAndSurname(customers[0]?.fullName?.toString());
+            setValue("stkInitials", initial);
+            setValue("stkSurName", surname);
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -237,6 +240,7 @@ const CustomerDetails: React.FC = () => {
                             <Controller
                                 name="stkInitials"
                                 control={control}
+                                disabled
                                 render={({ field }) => <Input {...field} placeholder="Enter Initial" />}
                             />
                         </Form.Item>
@@ -244,6 +248,7 @@ const CustomerDetails: React.FC = () => {
                             <Controller
                                 name="stkSurName"
                                 control={control}
+                                disabled
                                 render={({ field }) => <Input {...field} placeholder="Enter Surname" />}
                             />
                         </Form.Item>

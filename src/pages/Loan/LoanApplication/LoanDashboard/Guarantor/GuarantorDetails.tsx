@@ -7,7 +7,7 @@ import * as yup from "yup";
 import useStakeholderStore, { IStakeholder } from '../../../../../store/stakeholderStore';
 import useCommonStore from '../../../../../store/commonStore';
 import { getStakeholderByType } from '../../../../../utils/stakholderFunction';
-import { formatCNIC, formatName, titleGenderMaritalMap } from '../../../../../utils/formatterFunctions';
+import { formatCNIC, formatName, splitInitialAndSurname, titleGenderMaritalMap } from '../../../../../utils/formatterFunctions';
 import { CaretLeftOutlined, EditOutlined, UndoOutlined } from '@ant-design/icons';
 import useGuarantorStore from '../../../../../store/guarantorStore';
 
@@ -132,6 +132,9 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                 setValue("appraisalID", appId ?? '');
                 setValue("stkCNic", __selectedGuarantor.identificationNumber);
                 setValue("stkCusName", __selectedGuarantor.fullName);
+                const { initial, surname } = splitInitialAndSurname(__selectedGuarantor?.fullName?.toString());
+                setValue("stkInitials", initial);
+                setValue("stkSurName", surname);
             }
         }
 
@@ -208,6 +211,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                             <Controller
                                 name="stkInitials"
                                 control={control}
+                                disabled
                                 render={({ field }) => <Input {...field} placeholder="Enter Initial" />}
                             />
                         </Form.Item>
@@ -215,6 +219,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                             <Controller
                                 name="stkSurName"
                                 control={control}
+                                disabled
                                 render={({ field }) => <Input {...field} placeholder="Enter Surname" />}
                             />
                         </Form.Item>
