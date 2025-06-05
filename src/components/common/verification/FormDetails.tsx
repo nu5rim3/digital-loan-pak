@@ -16,8 +16,8 @@ const { Search } = Input;
 // ✅ Validation Schema
 const schema = yup.object().shape({
     name: yup.string().required("Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
-    initals: yup.string().matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces").notRequired(),
-    surname: yup.string().matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces").notRequired(),
+    initals: yup.string().notRequired().matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    surname: yup.string().notRequired().matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     telcoProvider: yup.string().required("Operator Name is required"),
     contactNumber: yup.string().required("Contact Number is required").matches(/^[0-9]{11}$/, "Contact Number must be 11 digits"),
     identificationType: yup.string().required("Identification Type is required"),
@@ -193,6 +193,7 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                             <Controller
                                 name="initals"
                                 control={control}
+                                disabled
                                 render={({ field }) => <Input {...field} placeholder="Enter Initial" value={field.value || ''} />}
                             />
                         </Form.Item>
@@ -200,6 +201,7 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                             <Controller
                                 name="surname"
                                 control={control}
+                                disabled
                                 render={({ field }) => <Input {...field} placeholder="Enter surname" value={field.value || ''} />}
                             />
                         </Form.Item>

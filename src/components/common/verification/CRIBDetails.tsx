@@ -79,6 +79,8 @@ const CRIBDetails: React.FC<ICRIBDetails> = ({ cnic, fullName }) => {
         }
     }, [cribDetails]);
 
+    console.log('cribDetails:', cribDetails);
+
     return (
         <>
             <Card title={'Internal CRIB Details'} loading={cribLoading} extra={
@@ -90,7 +92,7 @@ const CRIBDetails: React.FC<ICRIBDetails> = ({ cnic, fullName }) => {
                 <Form>
                     <div className="grid grid-cols-3 gap-3">
                         {
-                            cribDetails !== null &&
+                            Array.isArray(cribDetails) &&
                             <div>
                                 <Form.Item label="Name">
                                     <b>{fullName ?? '-'}</b>
@@ -123,7 +125,7 @@ const CRIBDetails: React.FC<ICRIBDetails> = ({ cnic, fullName }) => {
                         }
 
                         {
-                            cribDetails === null && <Form.Item>
+                            cribDetails !== null && typeof cribDetails === "object" && <Form.Item>
                                 <b>No CRIB details found for the provided CNIC.</b>
                             </Form.Item>
                         }

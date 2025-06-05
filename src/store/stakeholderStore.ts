@@ -105,7 +105,6 @@ export interface IOtherInfo {
   sector: string;
   subSector?: string;
   savingsReq: string;
-  whtDec?: string;
   poliExpo: string;
   status?: string;
   createdBy?: string;
@@ -222,6 +221,7 @@ interface IStackholderState {
   fetchPDCDetailsByStkId: (stkId: string) => Promise<void>;
   addPDCDetail: (stkId: string, pdcDetails: IPDCDetails) => Promise<void>;
   updatePDCDetail: (pdId: string, pdcDetails: IPDCDetails) => Promise<void>;
+  deletePDCDetail: (pdId: string) => Promise<void>;
 
   fetchIncomeDetailsByStkId: (stkId: string) => Promise<void>;
   addIncomeDetail: (
@@ -699,6 +699,27 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
         message: "Success",
         description:
           response.data.message ?? "PDC Detail Updated successfully!",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ pdcDetailsError: error.message, pdcDetailsLoading: false });
+    }
+  },
+
+  deletePDCDetail: async (pdId: string) => {
+    set({ pdcDetailsLoading: true, pdcDetailsError: null });
+    try {
+      const response = await APIAuth.put(
+        `/mobixCamsClientele/v1/clienteles/pdc/${pdId}/inactive`
+      );
+      set({
+        // PDCDetails: response.data,
+        pdcDetailsLoading: false,
+      });
+      notification.success({
+        message: "Success",
+        description:
+          response.data.message ?? "PDC Detail Deleted successfully!",
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

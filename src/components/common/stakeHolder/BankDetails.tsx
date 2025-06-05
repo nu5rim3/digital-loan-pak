@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Collapse, Descriptions, Empty, Form, Input, Select } from 'antd';
-import { PlusOutlined, EditOutlined, SaveOutlined, UndoOutlined } from '@ant-design/icons';
+import { Button, Card, Collapse, Descriptions, Empty, Form, Input, Select, Spin } from 'antd';
+import { PlusOutlined, EditOutlined, SaveOutlined, UndoOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -32,7 +32,7 @@ const BankDetails: React.FC<IBankDetails> = ({ stkId }) => {
     });
 
     const { banks, bankLoading, fetchBanks } = useCommonStore();
-    const { pdcDetailsLoading, PDCDetails, fetchPDCDetailsByStkId, addPDCDetail, updatePDCDetail } = useStakeholderStore();
+    const { pdcDetailsLoading, PDCDetails, fetchPDCDetailsByStkId, addPDCDetail, updatePDCDetail, deletePDCDetail } = useStakeholderStore();
 
     const openModal = (mode: 'create' | 'edit', details: IPDCDetails | null = null) => {
         setMode(mode);
@@ -91,13 +91,15 @@ const BankDetails: React.FC<IBankDetails> = ({ stkId }) => {
                                 </div>
                                 {pdcDetailsLoading ?
                                     <div className='flex flex-1 justify-center' >
-                                        <Empty description={"Loading Post Dated Cheque Details..."} />
+                                        <Spin spinning={pdcDetailsLoading}>
+                                            <Empty description={"Loading Post Dated Cheque Details..."} />
+                                        </Spin>
                                     </div> :
                                     <>
                                         {PDCDetails?.length > 0 ?
                                             <div className='grid grid-cols-4 gap-4'>
                                                 {PDCDetails?.map((item, index) => (
-                                                    <DetailsCard key={index} detail={item} onEdit={() => openModal('edit', item)} dataArray={[banks]} />
+                                                    <DetailsCard key={index} detail={item} onEdit={() => openModal('edit', item)} dataArray={[banks]} onDelete={() => deletePDCDetail(item.idx ?? '').finally(() => fetchPDCDetailsByStkId(stkId ?? ''))} />
                                                 ))}
                                             </div> :
                                             <div className='flex flex-1 justify-center' >
@@ -170,9 +172,10 @@ const BankDetails: React.FC<IBankDetails> = ({ stkId }) => {
     )
 }
 
-const DetailsCard: React.FC<{ detail: IPDCDetails; onEdit: () => void; dataArray: any[] }> = ({ detail, onEdit, dataArray }) => (
+const DetailsCard: React.FC<{ detail: IPDCDetails; onEdit: () => void; dataArray: any[], onDelete: () => void }> = ({ detail, onEdit, onDelete, dataArray }) => (
     <Card>
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-1">
+            <Button type="default" size="small" icon={<DeleteOutlined />} onClick={onDelete} danger />
             <Button type="default" size="small" icon={<EditOutlined />} onClick={onEdit} />
         </div>
         <Descriptions column={1}>

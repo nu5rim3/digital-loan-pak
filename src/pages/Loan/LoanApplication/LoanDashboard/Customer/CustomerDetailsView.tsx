@@ -434,13 +434,6 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                         render={({ field }) => <Input {...field} placeholder="Enter Status" />}
                                     />
                                 </Form.Item>
-                                <Form.Item label="Relationship" validateStatus={errors.relationship ? "error" : ""} help={errors.relationship?.message} required>
-                                    <Controller
-                                        name="relationship"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Relationship" />}
-                                    />
-                                </Form.Item>
                                 <Form.Item label="Head of Family" validateStatus={errors.headOfFamily ? "error" : ""} help={errors.headOfFamily?.message} required>
                                     <Controller
                                         name="headOfFamily"
@@ -521,13 +514,6 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                                     value: item.code
                                                 }))}
                                             />}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Employee Number" validateStatus={errors.stkEmpNo ? "error" : ""} help={errors.stkEmpNo?.message}>
-                                    <Controller
-                                        name="stkEmpNo"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Employee Number" />}
                                     />
                                 </Form.Item>
                             </div>

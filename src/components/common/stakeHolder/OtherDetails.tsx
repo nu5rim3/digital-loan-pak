@@ -21,7 +21,6 @@ const schema = yup.object().shape({
     sector: yup.string().required('Sector is required'),
     subSector: yup.string().required('Sub Sector is required'),
     savingsReq: yup.string().required('Saving Account is required'),
-    whtDec: yup.string().required('WHT Declaration is required'),
     poliExpo: yup.string().required('Politically Exposed is required')
 });
 
@@ -49,7 +48,6 @@ const OtherDetails: React.FC<IOtherDetails> = ({ stkId }) => {
             setValue('sector', otherDetails.sector);
             setValue('subSector', otherDetails.subSector ?? '');
             setValue('savingsReq', otherDetails.savingsReq);
-            setValue('whtDec', otherDetails.whtDec ?? '');
             setValue('poliExpo', otherDetails.poliExpo);
         } else {
             reset();
@@ -109,13 +107,12 @@ const OtherDetails: React.FC<IOtherDetails> = ({ stkId }) => {
                         label: `Other Details`,
                         children: (
                             <>
-                                {
-                                    otherInfo?.length === 0 &&
-                                    <div className='flex justify-end pb-3'>
-                                        <Button type="primary" onClick={() => openModal('create')} icon={<PlusOutlined />}>
-                                            Add Other Details
-                                        </Button>
-                                    </div>}
+
+                                <div className='flex justify-end pb-3'>
+                                    <Button type="primary" onClick={() => openModal('create')} icon={<PlusOutlined />} disabled={otherInfo.length > 0}>
+                                        Add Other Details
+                                    </Button>
+                                </div>
                                 {otherInfoLoading ?
                                     <div className='flex flex-1 justify-center' >
                                         <Empty description={"Loading Other Details..."} />
@@ -244,19 +241,6 @@ const OtherDetails: React.FC<IOtherDetails> = ({ stkId }) => {
                                 }
                             />
                         </Form.Item>
-                        <Form.Item label="WHT Declaration" validateStatus={errors.whtDec ? 'error' : ''} help={errors.whtDec?.message} required>
-                            <Controller
-                                name="whtDec"
-                                control={control}
-                                render={({ field }) =>
-                                    <Select
-                                        {...field}
-                                        placeholder="WHT Declaration"
-                                        options={[{ label: 'Yes', value: 'Y' }, { label: 'No', value: 'N' }]}
-                                    />
-                                }
-                            />
-                        </Form.Item>
                     </div>
                     <div className="flex justify-end gap-3">
                         <Button type="primary" htmlType="submit" loading={otherInfoLoading} icon={<SaveOutlined />}>
@@ -284,7 +268,6 @@ const DetailsCard: React.FC<{ detail: IOtherInfo; onEdit: () => void; dataArray:
             <Descriptions.Item label="Saving Account">{detail.savingsReq === 'YES' ? 'Yes' : 'No'}</Descriptions.Item>
             <Descriptions.Item label="Politically Exposed Person">{detail.poliExpo === 'Y' ? 'Yes' : 'No'}</Descriptions.Item>
             <Descriptions.Item label="How did you know">{formatSentence(dataArray[4].filter((item: any) => item.code === detail.howDidYouKnow)[0]?.description) ?? '-'}</Descriptions.Item>
-            <Descriptions.Item label="WHT Declaration">{detail.whtDec === 'Y' ? 'Yes' : 'No'}</Descriptions.Item>
 
         </Descriptions>
     </Card>
