@@ -214,6 +214,12 @@ const BnsOrAgriExpenses: React.FC = () => {
                                             { value: 'Business 1', label: 'Business 1' },
                                             { value: 'Business 2', label: 'Business 2' },
                                             { value: 'Lev Expenses', label: 'Lev Expenses' },
+                                            { value: 'Salary & Wages', label: 'Salary & Wages' },
+                                            { value: 'Rental', label: 'Rental' },
+                                            { value: 'Utilities', label: 'Utilities' },
+                                            { value: 'Transportation', label: 'Transportation' },
+                                            { value: 'Communication', label: 'Communication' },
+                                            { value: 'Taxes & Licenses', label: 'Taxes & Licenses' },
                                             { value: 'Other', label: 'Other' },
                                         ]}
                                     />

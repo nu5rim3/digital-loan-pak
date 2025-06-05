@@ -49,7 +49,7 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
     const onSubmit = async (data: any) => {
 
         const postData = { ...data, appraisalId: appId ?? loan?.idx }
-        delete postData['name']
+        // delete postData['name']
         delete postData['initals']
         delete postData['surname']
 
