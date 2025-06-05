@@ -55,14 +55,14 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
 
         if (type === 'C') {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const response: any = await addCustomer({ ...postData, type: type, client: 'WEB' })
+            const response: any = await addCustomer({ ...postData, fullName: data.name, type: type, client: 'WEB' })
             if (response) {
                 setIdx(response?.idx);
                 setCNIC(response?.identificationNumber);
             }
         } else if (type === 'G') {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const response: any = await addGuarantor({ ...postData, type: type, client: 'WEB' })
+            const response: any = await addGuarantor({ ...postData, fullName: data.name, type: type, client: 'WEB' })
             if (response) {
                 setIdx(response?.idx);
                 setCNIC(response?.identificationNumber);
