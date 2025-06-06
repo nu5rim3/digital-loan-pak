@@ -90,7 +90,7 @@ const CustomerDetails: React.FC = () => {
                 stkType: 'C',
                 stkCNic: customers[0]?.identificationNumber ?? '',
                 stkCusName: customers[0]?.fullName ?? ''
-            })
+            }).finally(() => navigate(-1)) // Navigate back after adding stakeholder
             // TODO: histroy back
         } else if (mode === 'edit') {
             updateStakeholder(stakholderId, {
@@ -100,7 +100,7 @@ const CustomerDetails: React.FC = () => {
                 stkType: 'C',
                 stkCNic: customers[0]?.identificationNumber ?? '',
                 stkCusName: customers[0]?.fullName ?? ''
-            })
+            }).finally(() => navigate(-1)) // Navigate back after adding stakeholder
             // TODO: histroy back
         }
     }
