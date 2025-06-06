@@ -198,8 +198,6 @@ const CustomerDetails: React.FC = () => {
         }
     }, [watchedTitle, setValue]);
 
-
-
     return (
         <div className='flex flex-col gap-3'>
             <Card title="Personal Details">

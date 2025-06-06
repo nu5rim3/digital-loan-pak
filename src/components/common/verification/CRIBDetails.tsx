@@ -79,7 +79,7 @@ const CRIBDetails: React.FC<ICRIBDetails> = ({ cnic, fullName }) => {
         }
     }, [cribDetails]);
 
-    if (cribDetails !== null && typeof cribDetails === "object" && cribDetails[0].code === '002') {
+    if (cribDetails !== null && typeof cribDetails === "object") {
         return (
             <Card title={'Internal CRIB Details'} loading={cribLoading} extra={
                 <Button type="text" icon={<ReloadOutlined />} onClick={onRefresh} />
@@ -93,7 +93,7 @@ const CRIBDetails: React.FC<ICRIBDetails> = ({ cnic, fullName }) => {
         <>
             <Card title={'Internal CRIB Details'} loading={cribLoading} extra={
                 <>
-                    <Button type="default" icon={<EyeOutlined />} onClick={() => setOpenModal(true)} disabled={cribDetails?.length === 0}>View More</Button>
+                    <Button type="default" icon={<EyeOutlined />} onClick={() => setOpenModal(true)} disabled={cribDetails !== null}>View More</Button>
                     <Button type="text" icon={<ReloadOutlined />} onClick={onRefresh} />
                 </>
             }>

@@ -13,6 +13,7 @@ import { specialChargesByCode } from '../../../utils/loanStats'
 import useCreditStore, { ITrailCalulationResponse } from '../../../store/creditStore'
 import { useParams } from 'react-router-dom'
 import useVerificationStore from '../../../store/verificationStore'
+import moment from 'moment'
 
 const schema = yup.object().shape({
     productFacility: yup.string().required('Type of Facility is required'),
@@ -243,7 +244,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                     {
                         "snrvFac": data.loanAmount ?? '0',
                         "snrvCap": data.capitalPaid ?? '0',
-                        "snrvExpDate": data.expiryDate ?? '',
+                        "snrvExpDate": moment(data.expiryDate).format('yyyyMMdd') ?? '',
                         "snrvIntRt": "10",
                         "snrvPInt": "0",
                         "snrvDtPay": data.dateOfPaymenent ?? '',

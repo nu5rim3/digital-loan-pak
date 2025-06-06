@@ -1,16 +1,19 @@
 import { Card, Form, Input } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import useCustomerStore from '../../../store/customerStore';
+import useGuarantorStore from '../../../store/guarantorStore';
 // import useGuarantorStore from '../../../store/guarantorStore';
 
 interface IViewDetails {
     type: string;
     setIdx: (idx: string) => void;
     setCnic: (cnic: string) => void;
+    setName?: (name: string) => void;
 }
 
-const ViewDetails: React.FC<IViewDetails> = ({ type, setCnic, setIdx }) => {
+const ViewDetails: React.FC<IViewDetails> = ({ type, setCnic, setIdx, setName }) => {
     const { customer } = useCustomerStore();
+    const { selectedGuarantor } = useGuarantorStore();
     // const { guarantor } = useGuarantorStore();
     const [form] = useForm();
 
@@ -19,8 +22,12 @@ const ViewDetails: React.FC<IViewDetails> = ({ type, setCnic, setIdx }) => {
             form.setFieldsValue(customer);
             setCnic(customer?.identificationNumber ?? '');
             setIdx(customer?.idx ?? '');
+            setName?.(customer?.fullName ?? '');
         } else if (type === 'G') {
-            // form.setFieldsValue(guarantor);
+            form.setFieldsValue(selectedGuarantor);
+            setCnic(selectedGuarantor?.identificationNumber ?? '');
+            setIdx(selectedGuarantor?.idx ?? '');
+            setName?.(selectedGuarantor?.fullName ?? '');
         }
     };
 

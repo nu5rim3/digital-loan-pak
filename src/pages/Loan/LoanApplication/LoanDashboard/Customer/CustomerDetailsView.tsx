@@ -139,7 +139,6 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [formDetails, customers])
 
-
     const physDisability = watch('stkPhysDisability');
 
     if (formDetails === null) {
