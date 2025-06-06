@@ -99,7 +99,7 @@ const Summary: React.FC = () => {
                                     <Descriptions.Item label="Annual Revenue">
                                         {formatCurrency(Number(annualRevenue ?? 0))}
                                     </Descriptions.Item>
-                                    <Descriptions.Item label="Loan Alegiblity Status">
+                                    <Descriptions.Item label="Loan Eligibility Status">
                                         <Tag color={isAlegibleFroLoan ? 'green' : 'red'}><b>{isAlegibleFroLoan ? 'Suceess' : 'Reject'}</b></Tag>
                                     </Descriptions.Item>
                                 </Descriptions>

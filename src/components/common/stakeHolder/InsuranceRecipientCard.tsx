@@ -9,15 +9,16 @@ import { formatPhoneNumber, formatCNIC, formatSentence } from '../../../utils/fo
 import useStakeholderStore, { IRecipient } from '../../../store/stakeholderStore';
 import useCommonStore from '../../../store/commonStore';
 import { getDescriptionByFamilyCode } from '../../../utils/stakholderFunction';
+import ContactInput from '../inputs/ContactInput';
 
 interface IInsuranceRecipientCard {
     stkId: string
 }
 
 const schema = yup.object().shape({
-    recipientName: yup.string().required('Recipent Name is required'),
+    recipientName: yup.string().required('Recipent Name is required').matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     relationship: yup.string().required('Relationship is required'),
-    cNicNo: yup.string().required('CNIC is required'),
+    cNicNo: yup.string().required('CNIC is required').matches(/^\d{5}-\d{7}-\d$/, 'CNIC must be in format xxxxx-xxxxxxx-x'),
     phoneNo: yup.string().required('Contact Number is required').matches(/^[0-9]{11}$/, 'Contact Number must be 11 digits'),
     isBorrowerRelatedParty: yup.string().default('Y'),
 });
@@ -86,7 +87,7 @@ const InsuranceRecipientCard: React.FC<IInsuranceRecipientCard> = ({ stkId }) =>
                         children: (
                             <>
                                 <div className='flex justify-end pb-3'>
-                                    <Button type="primary" onClick={() => openModal('create')} icon={<PlusOutlined />}>
+                                    <Button type="primary" onClick={() => openModal('create')} icon={<PlusOutlined />} disabled={recipients.length > 0}>
                                         Add Insurance Recipient
                                     </Button>
                                 </div>
@@ -149,32 +150,8 @@ const InsuranceRecipientCard: React.FC<IInsuranceRecipientCard> = ({ stkId }) =>
                                 name="phoneNo"
                                 control={control}
                                 render={({ field }) => (
-                                    <Input
+                                    <ContactInput
                                         {...field}
-                                        placeholder="Enter Contact Number"
-                                        maxLength={11}
-                                        style={{ width: '100%' }}
-                                        type="text"
-                                        onKeyDown={e => {
-                                            // Allow control keys (backspace, delete, arrows, etc.)
-                                            if (
-                                                !/[0-9]/.test(e.key) &&
-                                                e.key !== 'Backspace' &&
-                                                e.key !== 'Delete' &&
-                                                e.key !== 'ArrowLeft' &&
-                                                e.key !== 'ArrowRight' &&
-                                                e.key !== 'Tab'
-                                            ) {
-                                                e.preventDefault();
-                                            }
-                                        }}
-                                        onChange={e => {
-                                            // Allow clearing the input
-                                            const value = e.target.value;
-                                            // If user clears input, value is '', allow it
-                                            const sanitized = value === '' ? '' : value.replace(/\D/g, '').slice(0, 11);
-                                            field.onChange(sanitized);
-                                        }}
                                     />
                                 )}
                             />

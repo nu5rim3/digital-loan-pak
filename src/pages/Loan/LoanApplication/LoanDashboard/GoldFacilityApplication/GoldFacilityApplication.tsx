@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Card, Descriptions, Empty, Form, Input, InputNumber, Select } from 'antd'
+import { Button, Card, Descriptions, Empty, Form, Input, InputNumber, Select, Spin } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -225,7 +225,9 @@ const GoldFacilityApplication: React.FC = () => {
                 {goldLoanAppDetailsLoading ? (
                     <Empty description="Loading  Gold Facility Application ..." />
                 ) : goldLoanAppDetails.length === 0 ? (
-                    <Empty description="No Gold Facility Application Available" />
+                    <Spin spinning={goldLoanAppDetailsLoading}>
+                        <Empty description="No Gold Facility Application Available" />
+                    </Spin>
                 ) : (
                     <div className='grid grid-cols-2 gap-3'>
                         {goldLoanAppDetails.map((item, index) => (
@@ -272,7 +274,13 @@ const GoldFacilityApplication: React.FC = () => {
                                     name="articleQuantity"
                                     control={articleControl}
                                     render={({ field }) => (
-                                        <Input {...field} placeholder="Article Quantity" />
+                                        <Input
+                                            {...field}
+                                            placeholder="Article Quantity"
+                                            onChange={(value) =>
+                                                field.onChange(Number(value))
+                                            }
+                                        />
                                     )}
                                 />
                             </Form.Item>
@@ -339,7 +347,7 @@ const GoldFacilityApplication: React.FC = () => {
                                                                         {...field}
                                                                         allowClear
                                                                         placeholder="Select Goldsmith ID"
-                                                                        options={goldsmiths.map((item) => ({ label: item.ownerName, value: item.id }))}
+                                                                        options={goldsmiths.map((item) => ({ label: item.shopName, value: item.id }))}
                                                                         loading={goldsmithLoading}
                                                                         onChange={(value) => {
                                                                             setValue('goldsmithId', value, { shouldValidate: true });
@@ -397,8 +405,10 @@ const GoldFacilityApplication: React.FC = () => {
                                                                             value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
                                                                         }
                                                                         step={0.01}
-                                                                        min={0}
                                                                         stringMode // keeps precision in string format
+                                                                        onChange={(value) =>
+                                                                            field.onChange(Number(value))
+                                                                        }
                                                                     />
                                                                 )}
                                                             />
@@ -437,8 +447,10 @@ const GoldFacilityApplication: React.FC = () => {
                                                                             value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
                                                                         }
                                                                         step={0.01}
-                                                                        min={0}
                                                                         stringMode // keeps precision in string format
+                                                                        onChange={(value) =>
+                                                                            field.onChange(Number(value))
+                                                                        }
                                                                     />
                                                                 )}
                                                             />

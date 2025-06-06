@@ -407,6 +407,11 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
             setValue('loanAmount', Number(productDetails?.generalInfo.defaultLoanAmt))
             setValue('trems', Number(productDetails?.generalInfo.defaultTerm))
             setValue('markup', Number(productDetails?.generalInfo.defaultRate))
+        } else {
+            setValidationSchema(schema);
+            setValue('loanAmount', 0)
+            setValue('trems', 0)
+            setValue('markup', 0)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [productDetails, selectedSubProductType, selectedProductType]);
@@ -644,7 +649,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                             />
                         </Form.Item>
 
-                        <Form.Item label={'IRR'} validateStatus={errors.irr ? "error" : ""} help={errors.irr?.message} required>
+                        <Form.Item label={'IRR'} validateStatus={errors.irr ? "error" : ""} help={errors.irr?.message}>
                             <Controller
                                 name="irr"
                                 control={control}
@@ -768,7 +773,17 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                 name="dateOfPaymenent"
                                 control={control}
                                 render={({ field }) => (
-                                    <Input {...field} placeholder="Enter Date of Payment" type='date' />
+                                    <Select {...field} placeholder="Enter Date of Payment" options={
+                                        [
+                                            {
+                                                value: 'END OF MONTH',
+                                                label: 'End of Month',
+                                            }, {
+                                                value: 'END OF TERM',
+                                                label: 'End of Term',
+                                            },
+                                        ]
+                                    } />
                                 )}
                             />
                         </Form.Item>

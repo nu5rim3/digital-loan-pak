@@ -1,15 +1,15 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm, Controller } from "react-hook-form";
 import { Input, Form, Button, Card, Select, Collapse } from "antd";
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import useCommonStore from '../../../../../store/commonStore';
-import { formatCNIC } from '../../../../../utils/formatterFunctions';
+import { formatCNIC, formatName } from '../../../../../utils/formatterFunctions';
 import { useNavigate, useParams } from 'react-router-dom';
 import useCustomerStore from '../../../../../store/customerStore';
 import { mainURL } from '../../../../../App';
 import { IStakeholder } from '../../../../../store/stakeholderStore';
-import { EditOutlined } from '@ant-design/icons';
+import { EditOutlined, QrcodeOutlined } from '@ant-design/icons';
 // import TrailCalculation from '../../../../Users/Customers/TrialCalculation';
 import ContactDetailsCard from '../../../../../components/common/stakeHolder/ContactDetailsCard';
 import AddressDetailsCard from '../../../../../components/common/stakeHolder/AddressDetailsCard';
@@ -17,34 +17,35 @@ import InsuranceRecipientCard from '../../../../../components/common/stakeHolder
 import TrialCalculation from '../../../../Users/Customers/TrialCalculation';
 import OtherDetails from '../../../../../components/common/stakeHolder/OtherDetails';
 import BankDetails from '../../../../../components/common/stakeHolder/BankDetails';
+import NADRAModal from '../../../../../components/common/modal/NADRAModal';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
     appraisalID: yup.string(),
     stkOrgType: yup.string().required("Organization Type is required"),
-    stkCNic: yup.string().required("CNIC is required"),
+    stkCNic: yup.string().required("CNIC is required").matches(/^\d{5}-\d{7}-\d$/, 'CNIC must be in format xxxxx-xxxxxxx-x'),
     stkCNicIssuedDate: yup.string().required("CNIC Issued Date is required"),
     stkCNicExpDate: yup.string().required("CNIC Expired Date is required"),
     stkCNicStatus: yup.string().required("CNIC Status is required"),
-    stkCusName: yup.string().required("Customer Name is required"),
-    stkInitials: yup.string().required("Initial is required"),
-    stkSurName: yup.string().required("Surname is required"),
-    stkOtherName: yup.string().required("Other Name is required"),
+    stkCusName: yup.string().required("Customer Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    stkInitials: yup.string().required("Initial is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    stkSurName: yup.string().required("Surname is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    stkOtherName: yup.string().required("Other Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     stkDob: yup.string().required("Date of Birth is required"),
     stkAge: yup.string().required("Age is required"),
     stkGender: yup.string().required("Gender is required"),
     stkMaritialStatus: yup.string().required("Marital Status is required"),
     stkMaritialComment: yup.string().required("Marital Comment is required"),
     stkTitle: yup.string().required("Title is required"),
-    stkFatherOrHusName: yup.string().required("Father or Husband Name is required"),
+    stkFatherOrHusName: yup.string().required("Father or Husband Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     stkEduLevel: yup.string().required("Education Qualification is required"),
     stkPhysDisability: yup.string().required("Physical Disability is required"),
     relationship: yup.string().required("Relationship is required"),
     headOfFamily: yup.string().required("Head of Family is required"),
     healthCondition: yup.string().required("Health Condition is required"),
     stkSequence: yup.string(),
-    stkNumOfDependents: yup.string(),
-    stkNumOfEarners: yup.string(),
+    stkNumOfDependents: yup.string().matches(/^[0-9]+$/, "Number of Dependents must be a number"),
+    stkNumOfEarners: yup.string().matches(/^[0-9]+$/, "Number of Dependents must be a number"),
     stkCusCode: yup.string(),
     stkGrpRefNo: yup.string(),
     stkPhysDisabilityDesce: yup.string(),
@@ -65,18 +66,22 @@ interface ICustomerDetailsView {
 }
 
 const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) => {
+    const [nadraModalOpen, setNadraModalOpen] = useState(false)
 
     const { control, formState: { errors }, setValue, watch } = useForm({
         resolver: yupResolver(schema),
     });
-    const { organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, educationLevel, educationLevelLoading, fetchEducationLevel, headOfFamily, headOfFamilyLoading, fetchHeadOfFamily, healthCondition, healthConditionLoading, fetchHealthCondition } = useCommonStore()
-    const { customers, fetchCustomerByAppId } = useCustomerStore()
+    const { locations, locationsLoading, organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, educationLevel, educationLevelLoading, fetchEducationLevel, headOfFamily, headOfFamilyLoading, fetchHeadOfFamily, healthCondition, healthConditionLoading, fetchHealthCondition, fetchLocations } = useCommonStore()
+    const { customers, fetchCustomerByAppId, resetCustomer } = useCustomerStore()
     const { appId } = useParams()
     const navigate = useNavigate();
 
 
     useEffect(() => {
         fetchCustomerByAppId(appId ?? '')
+        return () => {
+            resetCustomer()
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [appId])
 
@@ -86,6 +91,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
         if (educationLevel.length === 0) { fetchEducationLevel() }
         if (headOfFamily.length === 0) { fetchHeadOfFamily() }
         if (healthCondition.length === 0) { fetchHealthCondition() }
+        if (locations.length === 0) { fetchLocations() }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -142,7 +148,11 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                 <div className='pb-5'>
                     <TrialCalculation cliIdx={customers[0].idx ?? ''} cnic={customers[0].identificationNumber} />
                 </div>
-                <Card title={'Customer Details'}>
+                <Card title={'Customer Details'}
+                    extra={
+                        <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} >Scan QR</Button>
+                    }
+                >
                     <Form layout="vertical">
                         <div className="grid grid-cols-4 gap-3">
                             <Form.Item label="Full Name">
@@ -167,13 +177,16 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                 </Card>
 
                 {/* <CustomerScreen mode={mode} setMode={setMode} /> */}
+                <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={customers[0]?.idx ?? ''} />
             </>
         )
     }
 
     return (
         <div className='flex flex-col gap-3'>
-
+            <div className='pb-5'>
+                <TrialCalculation cliIdx={customers[0].idx ?? ''} cnic={customers[0].identificationNumber} />
+            </div>
             <Collapse
                 size='small'
                 defaultActiveKey={['1']}
@@ -182,12 +195,15 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                     label: 'Customer Details',
                     children: <>
                         <div className='flex justify-end'>
-                            <Button
-                                icon={<EditOutlined />}
-                                type="default"
-                                onClick={() => navigate(`${mainURL}/loan/application/${appId}/customer`, { state: { mode: 'edit' } })}>
-                                Update Details
-                            </Button>
+                            <>
+                                <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} className='mr-2'>Scan QR</Button>
+                                <Button
+                                    icon={<EditOutlined />}
+                                    type="default"
+                                    onClick={() => navigate(`${mainURL}/loan/application/${appId}/customer`, { state: { mode: 'edit' } })}>
+                                    Update Details
+                                </Button>
+                            </>
                         </div>
                         <Form layout="vertical" disabled className='p-4'>
                             <div className="grid grid-cols-4 gap-3">
@@ -356,7 +372,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                                 {...field}
                                                 allowClear
                                                 options={[
-                                                    { value: 'D', label: 'Married' },
+                                                    { value: 'M', label: 'Married' },
                                                     { value: 'S', label: 'Single' },
                                                     { value: 'P', label: 'Separated' },
                                                     { value: 'W', label: 'Widow' },
@@ -366,7 +382,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                         }
                                     />
                                 </Form.Item>
-                                <Form.Item label="Marital Comment" validateStatus={errors.stkMaritialComment ? "error" : ""} help={errors.stkMaritialComment?.message} required>
+                                <Form.Item label="Marital Comment" validateStatus={errors.stkMaritialComment ? "error" : ""} help={errors.stkMaritialComment?.message} hidden>
                                     <Controller
                                         name="stkMaritialComment"
                                         control={control}
@@ -416,13 +432,6 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                         name="status"
                                         control={control}
                                         render={({ field }) => <Input {...field} placeholder="Enter Status" />}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Relationship" validateStatus={errors.relationship ? "error" : ""} help={errors.relationship?.message} required>
-                                    <Controller
-                                        name="relationship"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Relationship" />}
                                     />
                                 </Form.Item>
                                 <Form.Item label="Head of Family" validateStatus={errors.headOfFamily ? "error" : ""} help={errors.headOfFamily?.message} required>
@@ -495,14 +504,16 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                     <Controller
                                         name="geoLocation"
                                         control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Geographic Location" />}
-                                    />
-                                </Form.Item>
-                                <Form.Item label="Employee Number" validateStatus={errors.stkEmpNo ? "error" : ""} help={errors.stkEmpNo?.message}>
-                                    <Controller
-                                        name="stkEmpNo"
-                                        control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter Employee Number" />}
+                                        render={({ field }) =>
+                                            <Select
+                                                {...field}
+                                                allowClear
+                                                loading={locationsLoading}
+                                                options={locations.map((item) => ({
+                                                    label: formatName(item.locationName),
+                                                    value: item.code
+                                                }))}
+                                            />}
                                     />
                                 </Form.Item>
                             </div>
@@ -521,6 +532,8 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
             < OtherDetails stkId={formDetails?.idx ?? ''} />
 
             < BankDetails stkId={formDetails?.idx ?? ''} />
+
+            <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={customers[0]?.idx ?? ''} />
 
         </div >
     )

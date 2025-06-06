@@ -16,6 +16,7 @@ import {
     PlusOutlined
 } from '@ant-design/icons';
 import CommonModal from '../../../../../../components/common/modal/commonModal';
+import ContactInput from '../../../../../../components/common/inputs/ContactInput';
 
 interface IAgricultureIncomeForm {
     sourceOfIncome: string
@@ -30,8 +31,8 @@ const schema = yup.object().shape({
     natureOfTheBorrower: yup.string().required('Nature of the borrower is required'),
     ownOfCult: yup.string().required('Ownership of cultivation is required'),
     ownOfLand: yup.string().required('Ownership of land is required'),
-    ownName: yup.string().required('Owner name is required'),
-    ownCNIC: yup.string().required('Owner CNIC is required'),
+    ownName: yup.string().required('Owner name is required').matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    ownCNIC: yup.string().required('Owner CNIC is required').matches(/^\d{5}-\d{7}-\d$/, 'CNIC must be in format xxxxx-xxxxxxx-x'),
     ownAddress: yup.string().required('Owner address is required'),
     ownContact: yup.string().required('Owner contact number is required').matches(/^[0-9]{11}$/, 'Contact number must be 11 digits'),
     acresOwned: yup.string().typeError('Acres owned must be a number').required('Acres owned is required'),
@@ -466,32 +467,8 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                     name="ownContact"
                                     control={control}
                                     render={({ field }) => (
-                                        <Input
+                                        <ContactInput
                                             {...field}
-                                            placeholder="Enter Contact Number"
-                                            maxLength={11}
-                                            style={{ width: '100%' }}
-                                            type="text"
-                                            onKeyDown={e => {
-                                                // Allow control keys (backspace, delete, arrows, etc.)
-                                                if (
-                                                    !/[0-9]/.test(e.key) &&
-                                                    e.key !== 'Backspace' &&
-                                                    e.key !== 'Delete' &&
-                                                    e.key !== 'ArrowLeft' &&
-                                                    e.key !== 'ArrowRight' &&
-                                                    e.key !== 'Tab'
-                                                ) {
-                                                    e.preventDefault();
-                                                }
-                                            }}
-                                            onChange={e => {
-                                                // Allow clearing the input
-                                                const value = e.target.value;
-                                                // If user clears input, value is '', allow it
-                                                const sanitized = value === '' ? '' : value.replace(/\D/g, '').slice(0, 11);
-                                                field.onChange(sanitized);
-                                            }}
                                         />
                                     )}
                                 />

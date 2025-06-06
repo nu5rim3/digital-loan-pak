@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Collapse, Descriptions, Empty, Form, Input, Select, Switch } from 'antd';
-import { PlusOutlined, EditOutlined, SaveOutlined, UndoOutlined } from '@ant-design/icons';
+import { Button, Card, Collapse, Descriptions, Empty, Form, Select, Spin, Switch } from 'antd';
+import { PlusOutlined, EditOutlined, SaveOutlined, UndoOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import CommonModal from '../modal/commonModal';
 import useStakeholderStore, { IContactDetails } from '../../../store/stakeholderStore';
+import ContactInput from '../inputs/ContactInput';
 
 const schema = yup.object().shape({
     phoneNoType: yup.string().required('Contact Type is required'),
@@ -48,9 +49,7 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
     };
 
     const onSubmit = (data: IContactDetails) => {
-        if (mode === 'remove') {
-            inActivateContactDetail(selectedContact?.idx ?? '').finally(closeModal);
-        } else if (mode === 'edit') {
+        if (mode === 'edit') {
             updateContactDetail(selectedContact?.idx ?? '', data).finally(closeModal);
         } else if (mode === 'create') {
             addContactDetail(stkId, [data]).finally(closeModal);
@@ -78,15 +77,19 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
                                 </Button>
                             </div>
                             {contactDetailsLoading ? (
-                                <Empty description="Loading Contact Details..." />
+                                <Spin spinning={contactDetailsLoading}>
+                                    <Empty description="Loading Contact Details..." />
+                                </Spin>
                             ) : contactDetails?.length ? (
                                 <div className="grid grid-cols-4 gap-4">
                                     {contactDetails.map((item, index) => (
-                                        <DetailsCard key={index} detail={item} onEdit={() => openModal('edit', item)} />
+                                        <DetailsCard key={index} detail={item} onEdit={() => openModal('edit', item)} onDelete={() => inActivateContactDetail(item.idx ?? '').finally(() => fetchContactDetailsByStkId(stkId))} />
                                     ))}
                                 </div>
                             ) : (
-                                <Empty description="No Contact Details Available" />
+                                <Spin spinning={contactDetailsLoading}>
+                                    <Empty description="No Contact Details Available" />
+                                </Spin>
                             )}
                         </>
                     ),
@@ -114,7 +117,6 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
                                 render={({ field }) => (
                                     <Select {...field} placeholder="Select Contact Type" options={[
                                         { label: 'Mobile', value: 'Mobile' },
-                                        { label: 'Home', value: 'Home' },
                                         { label: 'Office', value: 'Office' },
                                         { label: 'Fixed Line', value: 'Fixed Line' },
                                         { label: 'Additional Phone Number', value: 'Additional Phone Number' },
@@ -132,32 +134,8 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
                                 control={control}
                                 name="phoneNo"
                                 render={({ field }) => (
-                                    <Input
+                                    <ContactInput
                                         {...field}
-                                        placeholder="Enter Contact Number"
-                                        maxLength={11}
-                                        style={{ width: '100%' }}
-                                        type="text"
-                                        onKeyDown={e => {
-                                            // Allow control keys (backspace, delete, arrows, etc.)
-                                            if (
-                                                !/[0-9]/.test(e.key) &&
-                                                e.key !== 'Backspace' &&
-                                                e.key !== 'Delete' &&
-                                                e.key !== 'ArrowLeft' &&
-                                                e.key !== 'ArrowRight' &&
-                                                e.key !== 'Tab'
-                                            ) {
-                                                e.preventDefault();
-                                            }
-                                        }}
-                                        onChange={e => {
-                                            // Allow clearing the input
-                                            const value = e.target.value;
-                                            // If user clears input, value is '', allow it
-                                            const sanitized = value === '' ? '' : value.replace(/\D/g, '').slice(0, 11);
-                                            field.onChange(sanitized);
-                                        }}
                                     />
                                 )}
                             />
@@ -194,9 +172,10 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
     );
 };
 
-const DetailsCard: React.FC<{ detail: IContactDetails; onEdit: () => void }> = ({ detail, onEdit }) => (
+const DetailsCard: React.FC<{ detail: IContactDetails; onEdit: () => void, onDelete: () => void }> = ({ detail, onEdit, onDelete }) => (
     <Card>
         <div className="flex justify-end">
+            <Button type="default" size="small" danger icon={<DeleteOutlined />} onClick={() => onDelete()} className='mr-1' />
             <Button type="default" size="small" icon={<EditOutlined />} onClick={onEdit} disabled={detail.phoneNoType === 'OTP Phone Number'} />
         </div>
         <Descriptions column={1}>

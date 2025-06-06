@@ -1,47 +1,48 @@
 import React, { useEffect, useState } from 'react'
 import { useForm, Controller } from "react-hook-form";
-import { Input, Form, Button, Card, Select, Empty } from "antd";
+import { Input, Form, Button, Card, Select, Empty, Spin } from "antd";
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import useCommonStore from '../../../../../store/commonStore';
 import { formatCNIC } from '../../../../../utils/formatterFunctions';
 import { useNavigate, useParams } from 'react-router-dom';
 import { mainURL } from '../../../../../App';
-import { PlusOutlined, EditOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, QrcodeOutlined } from '@ant-design/icons';
 import { IStakeholder } from '../../../../../store/stakeholderStore';
 import useGuarantorStore from '../../../../../store/guarantorStore';
 import ContactDetailsCard from '../../../../../components/common/stakeHolder/ContactDetailsCard';
 import AddressDetailsCard from '../../../../../components/common/stakeHolder/AddressDetailsCard';
 import IncomeDetails from '../../../../../components/common/stakeHolder/IncomeDetails';
+import NADRAModal from '../../../../../components/common/modal/NADRAModal';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
     idx: yup.string(),
     appraisalID: yup.string(),
     stkOrgType: yup.string().required("Organization Type is required"),
-    stkCNic: yup.string().required("CNIC is required"),
+    stkCNic: yup.string().required("CNIC is required").matches(/^\d{5}-\d{7}-\d$/, 'CNIC must be in format xxxxx-xxxxxxx-x'),
     stkCNicIssuedDate: yup.string().required("CNIC Issued Date is required"),
     stkCNicExpDate: yup.string().required("CNIC Expired Date is required"),
     stkCNicStatus: yup.string().required("CNIC Status is required"),
-    stkCusName: yup.string().required("Customer Name is required"),
-    stkInitials: yup.string().required("Initial is required"),
-    stkSurName: yup.string().required("Surname is required"),
-    stkOtherName: yup.string().required("Other Name is required"),
+    stkCusName: yup.string().required("Customer Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    stkInitials: yup.string().required("Initial is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    stkSurName: yup.string().required("Surname is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    stkOtherName: yup.string().required("Other Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     stkDob: yup.string().required("Date of Birth is required"),
     stkAge: yup.string().required("Age is required"),
     stkGender: yup.string().required("Gender is required"),
     stkMaritialStatus: yup.string().required("Marital Status is required"),
     stkMaritialComment: yup.string().required("Marital Comment is required"),
     stkTitle: yup.string().required("Title is required"),
-    stkFatherOrHusName: yup.string().required("Father or Husband Name is required"),
+    stkFatherOrHusName: yup.string().required("Father or Husband Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     stkEduLevel: yup.string().required("Education Level is required"),
     stkPhysDisability: yup.string().required("Physical Disability is required"),
     relationship: yup.string().required("Relationship is required"),
     headOfFamily: yup.string().required("Head of Family is required"),
     healthCondition: yup.string().required("Health Condition is required"),
     stkSequence: yup.string(),
-    stkNumOfDependents: yup.string(),
-    stkNumOfEarners: yup.string(),
+    stkNumOfDependents: yup.string().matches(/^[0-9]+$/, "Number of Dependents must be a number"),
+    stkNumOfEarners: yup.string().matches(/^[0-9]+$/, "Number of Dependents must be a number"),
     stkCusCode: yup.string(),
     stkGrpRefNo: yup.string(),
     stkPhysDisabilityDesce: yup.string(),
@@ -58,16 +59,16 @@ interface IGuarantorDetailsView {
 }
 
 const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) => {
-
+    const [nadraModalOpen, setNadraModalOpen] = useState(false)
     const { control, formState: { errors }, setValue, watch } = useForm({
         resolver: yupResolver(schema),
     });
-    const { organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, educationLevel, educationLevelLoading, fetchEducationLevel, headOfFamily, headOfFamilyLoading, fetchHeadOfFamily, healthCondition, healthConditionLoading, fetchHealthCondition } = useCommonStore()
+    const { organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus } = useCommonStore()
     const { appId } = useParams()
     const navigate = useNavigate();
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [selectedIdx, setSelectedIdx] = useState('');
-    const { fetchGuarantorByAppId } = useGuarantorStore()
+    const { guarantors, guarantorLoading, fetchGuarantorByAppId } = useGuarantorStore()
 
     useEffect(() => {
         fetchGuarantorByAppId(appId ?? '')
@@ -77,9 +78,6 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
     useEffect(() => {
         if (organizationType.length === 0) { fetchOrganizationType() }
         if (cnicStaus.length === 0) { fetchCNICStaus() }
-        if (educationLevel.length === 0) { fetchEducationLevel() }
-        if (headOfFamily.length === 0) { fetchHeadOfFamily() }
-        if (healthCondition.length === 0) { fetchHealthCondition() }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -88,8 +86,9 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
         navigate(`${mainURL}/users/guarantor`, { state: { appId: appId } })
     }
 
-    const selectedGuarantor = (idx: string) => {
-        const selected = formDetails?.find((item) => item.idx === idx);
+    const selectedGuarantor = (identificationNumber: string) => {
+        const selected = formDetails?.find((item) => item.stkCNic === identificationNumber);
+        const __selected = guarantors?.find((item) => item.identificationNumber === identificationNumber);
         if (selected) {
             setSelectedIdx(selected?.idx);
             setValue("idx", selected?.idx ?? '');
@@ -114,15 +113,41 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
             setValue("stkFatherOrHusName", selected?.stkFatherOrHusName);
             setValue("relationship", selected?.relationship);
             setValue("currentResPlace", selected?.currentResPlace);
+        } else if (__selected) {
+            setSelectedIdx('');
+            setValue("idx", __selected?.idx ?? '');
+            setValue("appraisalID", appId ?? '');
+            setValue("stkSequence", __selected?.sequence);
+            setValue("stkOrgType", '');
+            setValue("stkCNic", __selected.identificationNumber);
+            setValue("stkCNicIssuedDate", '');
+            setValue("stkCNicExpDate", '');
+            setValue("stkCNicStatus", '');
+            setValue("stkCusCode", '');
+            setValue("stkCusName", __selected.fullName);
+            setValue("stkInitials", '');
+            setValue("stkSurName", '');
+            setValue("stkOtherName", '');
+            setValue("stkDob", '');
+            setValue("stkAge", '');
+            setValue("stkGender", '');
+            setValue("stkMaritialStatus", '');
+            setValue("stkMaritialComment", '');
+            setValue("stkTitle", '');
+            setValue("stkFatherOrHusName", '');
+            setValue("relationship", '');
         }
     }
 
     const idx = watch("idx");
+    const cnicNumber = watch("stkCNic");
 
-    if (formDetails?.length === 0) {
+    if (guarantors?.length === 0) {
         return (
             <div>
-                <Empty description={<span>Guarantors are not available. Please create a guarantor.</span>} children={<Button type="primary" onClick={onClickCreate} icon={<PlusOutlined />}>Add Guarantor</Button>} />
+                <Spin spinning={guarantorLoading}>
+                    <Empty description={<span>Guarantors are not available. Please create a guarantor.</span>} children={<Button type="primary" onClick={onClickCreate} icon={<PlusOutlined />}>Add Guarantor</Button>} />
+                </Spin>
             </div>
         )
     }
@@ -130,13 +155,13 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
     return (
         <div className='flex flex-col gap-3'>
             <div className='flex justify-end mb-4'>
-                <Button type="primary" onClick={onClickCreate} icon={<PlusOutlined />}>Add Guarantor</Button>
+                <Button type="primary" onClick={onClickCreate} icon={<PlusOutlined />} disabled={guarantors.length >= 2}>Add Guarantor</Button>
             </div>
             <div className="grid grid-cols-4 gap-3">
-                {formDetails?.map((item, index) => (
+                {guarantors?.map((item, index) => (
                     <Button key={index} type="primary" onClick={() => {
                         setSelectedIndex(index + 1);
-                        selectedGuarantor(item.idx)
+                        selectedGuarantor(item.identificationNumber ?? '');
                     }}>
                         {`Guarantor ${index + 1}`}
                     </Button>
@@ -145,12 +170,16 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
             {
                 selectedIndex > 0 && (
                     <>
-                        <Card title={<div className='flex justify-between'>
-                            <div>Personal Details: Guarantor {selectedIndex}</div>
-                            <Button type="default" onClick={() => {
-                                navigate(`${mainURL}/loan/application/${appId}/guarantor`, { state: { mode: 'edit', idx: idx } })
-                            }} icon={<EditOutlined />}>Update details</Button>
-                        </div>}>
+                        <Card title={`Personal Details: Guarantor ${selectedIndex}`}
+                            extra={
+                                <div className='grid grid-cols-2 gap-2'>
+                                    <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} >Scan QR</Button>
+                                    <Button type="default" onClick={() => {
+                                        navigate(`${mainURL}/loan/application/${appId}/guarantor`, { state: { mode: 'edit', idx: idx, cnicNumber: cnicNumber } })
+                                    }} icon={<EditOutlined />}>Update details</Button>
+                                </div>
+                            }
+                        >
                             <Form layout="vertical" disabled>
                                 <div className="grid grid-cols-4 gap-3">
                                     <Form.Item label="Title" validateStatus={errors.stkTitle ? "error" : ""} help={errors.stkTitle?.message} required>
@@ -291,24 +320,6 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                                             }
                                         />
                                     </Form.Item>
-                                    <Form.Item label="Education Level" validateStatus={errors.stkEduLevel ? "error" : ""} help={errors.stkEduLevel?.message} required>
-                                        <Controller
-                                            name="stkEduLevel"
-                                            control={control}
-                                            render={({ field }) =>
-                                                <Select
-                                                    {...field}
-                                                    allowClear
-                                                    options={educationLevel.map((item) => ({
-                                                        label: item.description,
-                                                        value: item.code
-                                                    }))}
-                                                    placeholder="Select Education Level"
-                                                    loading={educationLevelLoading}
-                                                />
-                                            }
-                                        />
-                                    </Form.Item>
                                     <Form.Item label="Marital Status" validateStatus={errors.stkMaritialStatus ? "error" : ""} help={errors.stkMaritialStatus?.message} required>
                                         <Controller
                                             name="stkMaritialStatus"
@@ -318,7 +329,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                                                     {...field}
                                                     allowClear
                                                     options={[
-                                                        { value: 'D', label: 'Married' },
+                                                        { value: 'M', label: 'Married' },
                                                         { value: 'S', label: 'Single' },
                                                         { value: 'P', label: 'Separated' },
                                                         { value: 'W', label: 'Widow' },
@@ -328,49 +339,12 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                                             }
                                         />
                                     </Form.Item>
-                                    <Form.Item label="Marital Comment" validateStatus={errors.stkMaritialComment ? "error" : ""} help={errors.stkMaritialComment?.message} required>
-                                        <Controller
-                                            name="stkMaritialComment"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Marital Comment" />}
-                                        />
-                                    </Form.Item>
 
                                     <Form.Item label="Father or Husband Name" validateStatus={errors.stkFatherOrHusName ? "error" : ""} help={errors.stkFatherOrHusName?.message} required>
                                         <Controller
                                             name="stkFatherOrHusName"
                                             control={control}
                                             render={({ field }) => <Input {...field} placeholder="Enter Father or Husband Name" />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Number of Dependents" validateStatus={errors.stkNumOfDependents ? "error" : ""} help={errors.stkNumOfDependents?.message} hidden>
-                                        <Controller
-                                            name="stkNumOfDependents"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Number of Dependents" />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Number of Earners" validateStatus={errors.stkNumOfEarners ? "error" : ""} help={errors.stkNumOfEarners?.message} hidden>
-                                        <Controller
-                                            name="stkNumOfEarners"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Number of Earners" />}
-                                        />
-                                    </Form.Item>
-
-
-                                    <Form.Item label="Customer Code" validateStatus={errors.stkCusCode ? "error" : ""} help={errors.stkCusCode?.message}>
-                                        <Controller
-                                            name="stkCusCode"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Customer Code" />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Group/Reference Number" validateStatus={errors.stkGrpRefNo ? "error" : ""} help={errors.stkGrpRefNo?.message}>
-                                        <Controller
-                                            name="stkGrpRefNo"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Group/Reference Number" />}
                                         />
                                     </Form.Item>
                                     <Form.Item label="Status" validateStatus={errors.status ? "error" : ""} help={errors.status?.message} hidden>
@@ -387,79 +361,6 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                                             render={({ field }) => <Input {...field} placeholder="Enter Relationship" />}
                                         />
                                     </Form.Item>
-                                    <Form.Item label="Head of Family" validateStatus={errors.headOfFamily ? "error" : ""} help={errors.headOfFamily?.message} required>
-                                        <Controller
-                                            name="headOfFamily"
-                                            control={control}
-                                            render={({ field }) =>
-                                                <Select
-                                                    {...field}
-                                                    allowClear
-                                                    options={headOfFamily.map((item) => ({
-                                                        label: item.description,
-                                                        value: item.code
-                                                    }))}
-                                                    placeholder="Select Head of Family"
-                                                    loading={headOfFamilyLoading}
-                                                />
-                                            }
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Household Contact" validateStatus={errors.houseHoldCont ? "error" : ""} help={errors.houseHoldCont?.message} hidden>
-                                        <Controller
-                                            name="houseHoldCont"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Household Contact" />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Health Condition" validateStatus={errors.healthCondition ? "error" : ""} help={errors.healthCondition?.message} required>
-                                        <Controller
-                                            name="healthCondition"
-                                            control={control}
-                                            render={({ field }) => <Select
-                                                {...field}
-                                                allowClear
-                                                options={healthCondition.map((item) => ({
-                                                    label: item.description,
-                                                    value: item.code
-                                                }))}
-                                                placeholder="Select Health Condition"
-                                                loading={healthConditionLoading}
-                                            />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Physical Disability" validateStatus={errors.stkPhysDisability ? "error" : ""} help={errors.stkPhysDisability?.message} required>
-                                        <Controller
-                                            name="stkPhysDisability"
-                                            control={control}
-                                            render={({ field }) => (
-                                                <Select
-                                                    {...field}
-                                                    value={field.value === undefined ? null : field.value}
-                                                    allowClear
-                                                    options={[
-                                                        { value: 'true', label: 'Yes' },
-                                                        { value: 'false', label: 'No' },
-                                                    ]}
-                                                    placeholder="Select Physical Disability"
-                                                />
-                                            )}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Geographic Location" validateStatus={errors.geoLocation ? "error" : ""} help={errors.geoLocation?.message}>
-                                        <Controller
-                                            name="geoLocation"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Geographic Location" />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Employee Number" validateStatus={errors.stkEmpNo ? "error" : ""} help={errors.stkEmpNo?.message}>
-                                        <Controller
-                                            name="stkEmpNo"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Employee Number" />}
-                                        />
-                                    </Form.Item>
                                     <Form.Item hidden>
                                         <Controller
                                             name="idx"
@@ -470,12 +371,19 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                                 </div>
                             </Form>
                         </Card>
+                        {
+                            selectedIdx !== '' && (
+                                <>
+                                    <ContactDetailsCard stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
 
-                        <ContactDetailsCard stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
+                                    <AddressDetailsCard stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
 
-                        <AddressDetailsCard stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
+                                    <IncomeDetails stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
+                                </>
+                            )
+                        }
 
-                        <IncomeDetails stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
+                        <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={guarantors[selectedIndex]?.idx ?? ''} />
 
                     </>
                 )

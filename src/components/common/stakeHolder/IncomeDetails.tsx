@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Collapse, Descriptions, Empty, Form, Input, Select } from 'antd';
+import { Button, Card, Collapse, Descriptions, Empty, Form, Input, Select, Spin } from 'antd';
 import { PlusOutlined, EditOutlined, SaveOutlined, UndoOutlined } from '@ant-design/icons';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -98,7 +98,9 @@ const IncomeDetails: React.FC<IIncomeDetail> = ({ stkId, subTitle }) => {
                                 </div>
                                 {incomeDetailsLoading ?
                                     <div className='flex flex-1 justify-center' >
-                                        <Empty description={"Loading Income/Assets Details..."} />
+                                        <Spin spinning={incomeDetailsLoading}>
+                                            <Empty description={"Loading Income/Assets Details..."} />
+                                        </Spin>
                                     </div> :
                                     <>
                                         {incomesDetails?.length > 0 ?

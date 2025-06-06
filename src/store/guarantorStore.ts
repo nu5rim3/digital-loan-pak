@@ -21,6 +21,7 @@ interface IGuarantor {
   lastModifiedBy?: string;
   lastModifiedDate?: string;
   client: "WEB";
+  sequence: string;
 }
 
 interface ICustomerState {

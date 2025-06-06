@@ -105,7 +105,6 @@ export interface IOtherInfo {
   sector: string;
   subSector?: string;
   savingsReq: string;
-  whtDec?: string;
   poliExpo: string;
   status?: string;
   createdBy?: string;
@@ -187,6 +186,7 @@ interface IStackholderState {
   addStakeholder: (stakeholder: IStakeholder) => Promise<void>;
   fetchStackholderByAppId: (appraisalId: string) => Promise<void>;
   updateStakeholder: (idx: string, updatedUser: IStakeholder) => Promise<void>;
+  resetStakeholder: () => void;
 
   fetchContactDetailsByStkId: (stkId: string) => Promise<void>;
   addContactDetail: (
@@ -221,6 +221,7 @@ interface IStackholderState {
   fetchPDCDetailsByStkId: (stkId: string) => Promise<void>;
   addPDCDetail: (stkId: string, pdcDetails: IPDCDetails) => Promise<void>;
   updatePDCDetail: (pdId: string, pdcDetails: IPDCDetails) => Promise<void>;
+  deletePDCDetail: (pdId: string) => Promise<void>;
 
   fetchIncomeDetailsByStkId: (stkId: string) => Promise<void>;
   addIncomeDetail: (
@@ -705,6 +706,27 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
     }
   },
 
+  deletePDCDetail: async (pdId: string) => {
+    set({ pdcDetailsLoading: true, pdcDetailsError: null });
+    try {
+      const response = await APIAuth.put(
+        `/mobixCamsClientele/v1/clienteles/pdc/${pdId}/inactive`
+      );
+      set({
+        // PDCDetails: response.data,
+        pdcDetailsLoading: false,
+      });
+      notification.success({
+        message: "Success",
+        description:
+          response.data.message ?? "PDC Detail Deleted successfully!",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ pdcDetailsError: error.message, pdcDetailsLoading: false });
+    }
+  },
+
   fetchIncomeDetailsByStkId: async (stkId: string) => {
     set({ incomeDetailsLoading: true, incomeDetailsError: null });
     try {
@@ -799,6 +821,11 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
       set({ qrdetailsError: error.message, qrdetailsLoading: false });
     }
   },
+  // only reset stakeholders
+  resetStakeholder: () =>
+    set(() => ({
+      stakeholders: [],
+    })),
 }));
 
 export default useStakeholderStore;

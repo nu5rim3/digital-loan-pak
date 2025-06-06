@@ -295,7 +295,7 @@ const useLoanStore = create<ILoanState>((set) => ({
   addLoan: async (loan: ILoan) => {
     set({ loading: true, error: null, loan: null });
     try {
-      const response = await API.post("/mobixCamsLoan/v1/appraisals", loan);
+      const response = await APIAuth.post("/mobixCamsLoan/v1/appraisals", loan);
       set({
         loan: response?.data?.data,
         loading: false,

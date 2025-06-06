@@ -5,11 +5,11 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Controller, useForm } from 'react-hook-form';
 import * as yup from "yup";
 import useStakeholderStore, { IStakeholder } from '../../../../../store/stakeholderStore';
-import useCustomerStore from '../../../../../store/customerStore';
 import useCommonStore from '../../../../../store/commonStore';
 import { getStakeholderByType } from '../../../../../utils/stakholderFunction';
-import { formatCNIC } from '../../../../../utils/formatterFunctions';
+import { formatCNIC, formatName, splitInitialAndSurname, titleGenderMaritalMap } from '../../../../../utils/formatterFunctions';
 import { CaretLeftOutlined, EditOutlined, UndoOutlined } from '@ant-design/icons';
+import useGuarantorStore from '../../../../../store/guarantorStore';
 
 interface IGuarantorDetails {
     formDetails?: IStakeholder[];
@@ -19,20 +19,41 @@ interface IGuarantorDetails {
 const schema = yup.object().shape({
     appraisalID: yup.string(),
     stkOrgType: yup.string().required("Organization Type is required"),
-    stkCNic: yup.string().required("CNIC is required"),
-    stkCNicIssuedDate: yup.string().required("CNIC Issued Date is required"),
-    stkCNicExpDate: yup.string().required("CNIC Expired Date is required"),
-    stkCNicStatus: yup.string().required("CNIC Status is required"),
-    stkCusName: yup.string().required("Customer Name is required"),
-    stkInitials: yup.string().required("Initial is required"),
-    stkSurName: yup.string().required("Surname is required"),
-    stkOtherName: yup.string().required("Other Name is required"),
+    stkCNic: yup.string().required("CNIC is required").matches(/^\d{5}-\d{7}-\d$/, 'CNIC must be in format xxxxx-xxxxxxx-x'),
     stkDob: yup.string().required("Date of Birth is required"),
-    stkAge: yup.string().required("Age is required"),
+    stkAge: yup.string()
+        .required("Age is required")
+        .matches(/^\d+$/, "Age must be a number")
+        .test('is-valid-age', 'Age must be calculated from Date of Birth', function (value) {
+            const { stkDob } = this.parent;
+            if (stkDob) {
+                const dob = new Date(stkDob);
+                const age = new Date().getFullYear() - dob.getFullYear();
+                return Number(value) === age;
+            }
+            return true;
+        }),
+    stkCNicIssuedDate: yup.string()
+        .required("CNIC Issued Date is required")
+        .test('is-later', 'CNIC Issued Date must not be earlier than Date of Birth', function (value) {
+            const { stkDob } = this.parent;
+            return value && stkDob ? new Date(value) >= new Date(stkDob) : true;
+        }),
+    stkCNicExpDate: yup.string()
+        .required("CNIC Expired Date is required")
+        .test('is-later', 'CNIC Expired Date must be later than CNIC Issued Date', function (value) {
+            const { stkCNicIssuedDate } = this.parent;
+            return value && stkCNicIssuedDate ? new Date(value) > new Date(stkCNicIssuedDate) : true;
+        }),
+    stkCNicStatus: yup.string().required("CNIC Status is required"),
+    stkCusName: yup.string().required("Customer Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    stkInitials: yup.string().required("Initial is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    stkSurName: yup.string().required("Surname is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    stkOtherName: yup.string().required("Other Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     stkGender: yup.string().required("Gender is required"),
     stkMaritialStatus: yup.string().required("Marital Status is required"),
     stkTitle: yup.string().required("Title is required"),
-    stkFatherOrHusName: yup.string().required("Father or Husband Name is required"),
+    stkFatherOrHusName: yup.string().required("Father or Husband Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     currentResidences: yup.string().required("Current Residence is required"),
     relationship: yup.string().required("Relationship is required"),
     modeOfSecurity: yup.string().required("Mode of Security is required"),
@@ -40,29 +61,33 @@ const schema = yup.object().shape({
 
 const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
 
-    const { control, handleSubmit, formState: { errors }, setValue, reset } = useForm({
+    const { control, handleSubmit, formState: { errors }, setValue, reset, watch } = useForm({
         resolver: yupResolver(schema),
     });
 
     const { organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, fetchEducationLevel, headOfFamily, headOfFamilyLoading, fetchHeadOfFamily, healthCondition, healthConditionLoading, fetchHealthCondition } = useCommonStore()
     const { stakeholderLoading, stakeholders, fetchStackholderByAppId, addStakeholder, updateStakeholder } = useStakeholderStore()
-    const { customers, fetchCustomerByAppId } = useCustomerStore()
+    const { guarantors, fetchGuarantorByAppId } = useGuarantorStore();
+    const [initialSave, setInitialSave] = useState(false);
+
     const { appId } = useParams()
     const navigate = useNavigate();
     const mode = useLocation().state?.mode ?? 'create';
-    const selectedIndex = useLocation().state?.selectedIndx ?? '0';
+    const { state } = useLocation()
 
     const [stakholderId, setStakholderId] = useState('');
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
-        if (mode === 'create') {
+        if (initialSave) {
             addStakeholder({ ...data, appraisalID: appId ?? '', new: true, stkType: 'G' })
-            // TODO: back
+            setInitialSave(false)
+        } else if (mode === 'create') {
+            addStakeholder({ ...data, appraisalID: appId ?? '', new: true, stkType: 'G' })
         } else if (mode === 'edit') {
             updateStakeholder(stakholderId, { ...data, appraisalID: appId ?? '', update: true, stkType: 'G' })
-            // TODO: back
         }
+        fetchStackholderByAppId(appId ?? '')
     }
 
     useEffect(() => {
@@ -71,16 +96,18 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
         fetchEducationLevel()
         fetchHeadOfFamily()
         fetchHealthCondition()
-        fetchCustomerByAppId(appId ?? '')
+        fetchGuarantorByAppId(appId ?? '')
         fetchStackholderByAppId(appId ?? '')
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
         if (mode === 'edit') {
-            const formDetails = getStakeholderByType('G', stakeholders)[selectedIndex]
-            setStakholderId(formDetails?.idx)
+            const formDetails = getStakeholderByType('G', stakeholders).find((item) => item.stkCNic === state.cnicNumber);
+            const __selectedGuarantor = guarantors.find((item) => item.identificationNumber === state.cnicNumber || item.idx === state.idx)
             if (formDetails) {
+                setStakholderId(formDetails?.idx)
+                setInitialSave(false)
                 setValue("appraisalID", formDetails?.appraisalID ?? appId ?? '');
                 setValue("stkOrgType", formDetails?.stkOrgType);
                 setValue("stkCNic", formDetails?.stkCNic);
@@ -100,11 +127,19 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                 setValue("currentResidences", formDetails?.currentResidences);
                 setValue("relationship", formDetails?.relationship);
                 setValue("modeOfSecurity", formDetails?.modeOfSecurity);
+            } else if (__selectedGuarantor) {
+                setInitialSave(true)
+                setValue("appraisalID", appId ?? '');
+                setValue("stkCNic", __selectedGuarantor.identificationNumber);
+                setValue("stkCusName", __selectedGuarantor.fullName);
+                const { initial, surname } = splitInitialAndSurname(__selectedGuarantor?.fullName?.toString());
+                setValue("stkInitials", initial);
+                setValue("stkSurName", surname);
             }
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [stakeholders, customers])
+    }, [stakeholders, guarantors])
 
     const onRestHandle = () => {
         if (mode === 'create') {
@@ -113,6 +148,28 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
             fetchStackholderByAppId(appId ?? '')
         }
     }
+
+    const stkDob = watch('stkDob')
+
+    useEffect(() => {
+        if (stkDob) {
+            const today = new Date();
+            const birthDate = new Date(stkDob);
+            const age = today.getFullYear() - birthDate.getFullYear();
+            setValue("stkAge", age.toString());
+        }
+    }, [stkDob, setValue]);
+
+    const watchedTitle = watch("stkTitle");
+
+    useEffect(() => {
+        if (!watchedTitle) return;
+        const map = titleGenderMaritalMap[watchedTitle];
+        if (map) {
+            if (map.gender) setValue("stkGender", map.gender);
+            if (map.maritalStatus) setValue("stkMaritialStatus", map.maritalStatus);
+        }
+    }, [watchedTitle, setValue]);
 
     return (
         <div className='flex flex-col gap-3'>
@@ -154,6 +211,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                             <Controller
                                 name="stkInitials"
                                 control={control}
+                                disabled
                                 render={({ field }) => <Input {...field} placeholder="Enter Initial" />}
                             />
                         </Form.Item>
@@ -161,6 +219,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                             <Controller
                                 name="stkSurName"
                                 control={control}
+                                disabled
                                 render={({ field }) => <Input {...field} placeholder="Enter Surname" />}
                             />
                         </Form.Item>
@@ -250,7 +309,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                 control={control}
                                 render={({ field }) =>
                                     <Select {...field} placeholder="Select an Organization" allowClear loading={organizationTypeLoading} options={organizationType.map((item) => ({
-                                        label: item.description,
+                                        label: formatName(item.description),
                                         value: item.code
                                     }))}>
                                     </Select>
@@ -266,7 +325,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                         {...field}
                                         allowClear
                                         options={[
-                                            { value: 'D', label: 'Married' },
+                                            { value: 'M', label: 'Married' },
                                             { value: 'S', label: 'Single' },
                                             { value: 'P', label: 'Separated' },
                                             { value: 'W', label: 'Widow' },

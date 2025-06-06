@@ -18,7 +18,7 @@ import useGuarantorStore from '../../../../store/guarantorStore';
 // import useGuarantorStore from '../../../../store/guarantorStore';
 
 const GuarantorOnboarding: React.FC = () => {
-    const { guarantor } = useGuarantorStore()
+    const { selectedGuarantor } = useGuarantorStore()
     const [otpModalOpen, setOtpModalOpen] = useState(false);
     const [nadraModalOpen, setNadraModalOpen] = useState(false)
     const [guarantorIdx, setGuarantorIdx] = useState<string | undefined>('');//CLI0000000000001, CLI0000000103821
@@ -63,6 +63,8 @@ const GuarantorOnboarding: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loan, appId])
 
+    console.log('guarantor:', selectedGuarantor);
+
 
     return (
         <>
@@ -87,7 +89,7 @@ const GuarantorOnboarding: React.FC = () => {
                 }
 
                 {
-                    guarantorCNIC && <CRIBDetails idx={guarantorIdx ?? ''} cnic={''} fullName={guarantor?.fullName ?? ''} />//guarantorCNIC ?? 
+                    guarantorCNIC && <CRIBDetails idx={guarantorIdx ?? ''} cnic={guarantorCNIC ?? ''} fullName={selectedGuarantor?.fullName ?? ''} />//guarantorCNIC ?? 
                 }
 
                 {

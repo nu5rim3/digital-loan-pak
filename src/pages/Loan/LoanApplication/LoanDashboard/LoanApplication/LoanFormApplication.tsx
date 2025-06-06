@@ -52,7 +52,7 @@ const LoanFormApplication: React.FC = () => {
                             placeholder="Select Income Source"
                             value={sourceOfIncome}
                             options={[
-                                { label: 'Agricultural Income', value: 'Agricultural Income' },
+                                { label: 'Agriculture Income', value: 'Agriculture Income' },
                                 { label: 'Business Income', value: 'Business Income' },
                                 { label: 'Salary Income', value: 'Salary Income' },
                                 { label: 'Live Stock Income', value: 'Live Stock Income' },
@@ -67,7 +67,7 @@ const LoanFormApplication: React.FC = () => {
                     sourceOfIncome === 'Salary Income' && <SalaryIncome sourceOfIncome={sourceOfIncome} resetSourceOfIncome={resetSourceOfIncome} mode={mode} updateData={mode === 'update' ? state.salaryIncome : null} />
                 }
                 {
-                    sourceOfIncome === 'Agricultural Income' && <AgricultureIncome sourceOfIncome={sourceOfIncome} resetSourceOfIncome={resetSourceOfIncome} formMode={mode} updateData={mode === 'update' ? state.agricultureIncome : null} />
+                    sourceOfIncome === 'Agriculture Income' && <AgricultureIncome sourceOfIncome={sourceOfIncome} resetSourceOfIncome={resetSourceOfIncome} formMode={mode} updateData={mode === 'update' ? state.agricultureIncome : null} />
                 }
                 {
                     sourceOfIncome === 'Business Income' && <BusinessIncome sourceOfIncome={sourceOfIncome} resetSourceOfIncome={resetSourceOfIncome} mode={mode} updateData={mode === 'update' ? state.businessIncome : null} />

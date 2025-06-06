@@ -7,20 +7,21 @@ import { CloseCircleOutlined, SaveOutlined, UndoOutlined } from "@ant-design/ico
 import useCommonStore from "../../../store/commonStore";
 import useCustomerStore from "../../../store/customerStore";
 import useLoanStore from "../../../store/loanStore";
-import { formatCNIC } from "../../../utils/formatterFunctions";
+import { formatCNIC, splitInitialAndSurname } from "../../../utils/formatterFunctions";
 import useGuarantorStore from "../../../store/guarantorStore";
+import ContactInput from "../inputs/ContactInput";
 // import { useNavigate } from "react-router-dom";
 const { Search } = Input;
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
-    name: yup.string().required("Name is required"),
-    initals: yup.string(),
-    surname: yup.string(),
+    name: yup.string().required("Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    initals: yup.string().notRequired().matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
+    surname: yup.string().notRequired().matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     telcoProvider: yup.string().required("Operator Name is required"),
     contactNumber: yup.string().required("Contact Number is required").matches(/^[0-9]{11}$/, "Contact Number must be 11 digits"),
     identificationType: yup.string().required("Identification Type is required"),
-    identificationNumber: yup.string().required("Identification Number is required"),
+    identificationNumber: yup.string().required("Identification Number is required").matches(/^\d{5}-\d{7}-\d$/, 'CNIC must be in format xxxxx-xxxxxxx-x'),
 });
 
 interface IFormDetails {
@@ -32,7 +33,7 @@ interface IFormDetails {
 }
 
 const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, setApprovalStatus }) => {
-    const { control, handleSubmit, formState: { errors }, reset, setValue } = useForm({
+    const { control, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm({
         resolver: yupResolver(schema),
     });
 
@@ -47,23 +48,21 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
 
-        const fullName = `${data.name ?? ''} ${data.initals ?? ''} ${data.surname ?? ''}`.trim();
-
-        const postData = { ...data, fullName: fullName, appraisalId: appId ?? loan?.idx }
-        delete postData['name']
+        const postData = { ...data, appraisalId: appId ?? loan?.idx }
+        // delete postData['name']
         delete postData['initals']
         delete postData['surname']
 
         if (type === 'C') {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const response: any = await addCustomer({ ...postData, type: type, client: 'WEB' })
+            const response: any = await addCustomer({ ...postData, fullName: data.name, type: type, client: 'WEB' })
             if (response) {
                 setIdx(response?.idx);
                 setCNIC(response?.identificationNumber);
             }
         } else if (type === 'G') {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const response: any = await addGuarantor({ ...postData, type: type, client: 'WEB' })
+            const response: any = await addGuarantor({ ...postData, fullName: data.name, type: type, client: 'WEB' })
             if (response) {
                 setIdx(response?.idx);
                 setCNIC(response?.identificationNumber);
@@ -116,9 +115,10 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
 
     useEffect(() => {
         if (type === 'C' && selectedCustomer) {
-            setValue("name", selectedCustomer?.fullName?.split(' ')[0]?.replace(/\s/g, '') || '');
-            setValue("initals", selectedCustomer?.fullName?.split(' ')[1]?.replace(/\s/g, '') || '');
-            setValue("surname", selectedCustomer?.fullName?.split(' ')[2]?.replace(/\s/g, '') || '');
+            const { initial, surname } = splitInitialAndSurname(selectedCustomer?.fullName?.toString());
+            setValue("name", selectedCustomer?.fullName || '');
+            setValue("initals", initial);
+            setValue("surname", surname);
             setValue("telcoProvider", selectedCustomer?.telcoProvider || '');
             setValue("contactNumber", selectedCustomer?.contactNumber || '');
             setValue("identificationType", selectedCustomer?.identificationType || '');
@@ -130,9 +130,10 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
 
     useEffect(() => {
         if (type === 'G' && selectedGuarantor) {
-            setValue("name", selectedCustomer?.fullName?.split(' ')[0]?.replace(/\s/g, '') || '');
-            setValue("initals", selectedCustomer?.fullName?.split(' ')[1]?.replace(/\s/g, '') || '');
-            setValue("surname", selectedCustomer?.fullName?.split(' ')[2]?.replace(/\s/g, '') || '');
+            const { initial, surname } = splitInitialAndSurname(selectedGuarantor?.fullName?.toString());
+            setValue("name", selectedGuarantor?.fullName || '');
+            setValue("initals", initial);
+            setValue("surname", surname);
             setValue("telcoProvider", selectedGuarantor?.telcoProvider || '');
             setValue("contactNumber", selectedGuarantor?.contactNumber || '');
             setValue("identificationType", selectedGuarantor?.identificationType || '');
@@ -140,6 +141,19 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedGuarantor])
+
+    const fullName = watch('name')
+
+
+    useEffect(() => {
+        if (fullName !== undefined && fullName !== '') {
+            const { initial, surname } = splitInitialAndSurname(fullName?.toString());
+            setValue("initals", initial);
+            setValue("surname", surname);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [fullName])
+
 
     return (
         <Card title={`${type === 'C' ? 'Customer' : 'Guarantor'} Onboarding`}>
@@ -167,11 +181,11 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
 
                 <div>
                     <div className="grid grid-cols-3 gap-3">
-                        <Form.Item label="Name" validateStatus={errors.name ? "error" : ""} help={errors.name?.message} required>
+                        <Form.Item label="Full Name" validateStatus={errors.name ? "error" : ""} help={errors.name?.message} required>
                             <Controller
                                 name="name"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter name" />}
+                                render={({ field }) => <Input {...field} placeholder="Enter Full Name" maxLength={50} />}
                             />
                         </Form.Item>
 
@@ -179,14 +193,16 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                             <Controller
                                 name="initals"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Initial" />}
+                                disabled
+                                render={({ field }) => <Input {...field} placeholder="Enter Initial" value={field.value || ''} />}
                             />
                         </Form.Item>
                         <Form.Item label="Surname" validateStatus={errors.surname ? "error" : ""} help={errors.surname?.message}>
                             <Controller
                                 name="surname"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter surname" />}
+                                disabled
+                                render={({ field }) => <Input {...field} placeholder="Enter surname" value={field.value || ''} />}
                             />
                         </Form.Item>
                     </div>
@@ -211,32 +227,8 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                                 name="contactNumber"
                                 control={control}
                                 render={({ field }) =>
-                                    <Input
+                                    <ContactInput
                                         {...field}
-                                        placeholder="Enter Contact Number"
-                                        maxLength={11}
-                                        style={{ width: '100%' }}
-                                        type="text"
-                                        onKeyDown={e => {
-                                            // Allow control keys (backspace, delete, arrows, etc.)
-                                            if (
-                                                !/[0-9]/.test(e.key) &&
-                                                e.key !== 'Backspace' &&
-                                                e.key !== 'Delete' &&
-                                                e.key !== 'ArrowLeft' &&
-                                                e.key !== 'ArrowRight' &&
-                                                e.key !== 'Tab'
-                                            ) {
-                                                e.preventDefault();
-                                            }
-                                        }}
-                                        onChange={e => {
-                                            // Allow clearing the input
-                                            const value = e.target.value;
-                                            // If user clears input, value is '', allow it
-                                            const sanitized = value === '' ? '' : value.replace(/\D/g, '').slice(0, 11);
-                                            field.onChange(sanitized);
-                                        }}
                                     />
                                 }
                             />
