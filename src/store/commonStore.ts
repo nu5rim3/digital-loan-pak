@@ -451,7 +451,7 @@ interface ICommonState {
   locationsLoading: boolean;
   locationsError: string | null;
 
-  productCategory: {
+  productCategories: {
     code: string;
     description: string;
   }[];
@@ -683,7 +683,7 @@ const useCommonStore = create<ICommonState>(
       locationsLoading: false,
       locationsError: null,
 
-      productCategory: [
+      productCategories: [
         {
           code: "A",
           description: "Lease",

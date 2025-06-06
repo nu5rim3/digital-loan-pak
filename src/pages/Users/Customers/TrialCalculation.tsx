@@ -169,6 +169,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
     });
 
     const {
+        productCategories,
         subProductTypes, subProductTypesLoading,
         productTypes, productTypesLoading,
         facilityTypes, facilityTypesLoading,
@@ -479,15 +480,10 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                 name="productCategory"
                                 control={control}
                                 render={({ field }) => (
-                                    <Select {...field} placeholder="Enter Product Category" options={[
-                                        {
-                                            value: 'A',
-                                            label: 'Lease',
-                                        }, {
-                                            value: 'C',
-                                            label: 'Loan',
-                                        }
-                                    ]} />
+                                    <Select {...field} placeholder="Enter Product Category" options={productCategories.map((item) => ({
+                                        value: item.code,
+                                        label: item.description
+                                    }))} />
                                 )}
                             />
 
