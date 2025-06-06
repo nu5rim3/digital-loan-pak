@@ -1,4 +1,4 @@
-import { Button, Card, Form, Tag } from 'antd'
+import { Button, Card, Empty, Form, Tag } from 'antd'
 import React, { useEffect } from 'react'
 import { ReloadOutlined } from "@ant-design/icons";
 import useVerificationStore from '../../../store/verificationStore';
@@ -23,6 +23,15 @@ const BlacklistVerification: React.FC<IBlacklistVerification> = ({ cnic }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cnic])
 
+    if (blacklistDetails?.detail === null) {
+        return (
+            <Card title={'Blacklist Verification'} loading={blLoading} extra={
+                <Button type="text" icon={<ReloadOutlined />} onClick={onRefresh} />
+            }>
+                <Empty description={<span><b>Unable to find matching record</b></span>} />
+            </Card>
+        )
+    }
 
     return (
         <Card title={'Blacklist Verification'} loading={blLoading} extra={
@@ -30,7 +39,7 @@ const BlacklistVerification: React.FC<IBlacklistVerification> = ({ cnic }) => {
         }>
             <Form>
                 <div className="grid grid-cols-2 gap-3">
-                    {blacklistDetails?.detail === null ? <Form.Item><b>{blacklistDetails.message}</b></Form.Item> :
+                    {blacklistDetails?.detail !== null &&
                         <>
                             <Form.Item label="Name">
                                 <b>{formatName(blacklistDetails?.rejectClientName ?? '-')}</b>

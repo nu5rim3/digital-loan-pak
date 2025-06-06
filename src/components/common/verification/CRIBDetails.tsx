@@ -79,7 +79,15 @@ const CRIBDetails: React.FC<ICRIBDetails> = ({ cnic, fullName }) => {
         }
     }, [cribDetails]);
 
-    console.log('cribDetails:', cribDetails);
+    if (cribDetails !== null && typeof cribDetails === "object" && cribDetails[0].code === '002') {
+        return (
+            <Card title={'Internal CRIB Details'} loading={cribLoading} extra={
+                <Button type="text" icon={<ReloadOutlined />} onClick={onRefresh} />
+            }>
+                <Empty description={<span><b>Unable to find matching record</b></span>} />
+            </Card>
+        )
+    }
 
     return (
         <>
@@ -122,12 +130,6 @@ const CRIBDetails: React.FC<ICRIBDetails> = ({ cnic, fullName }) => {
                                     <b>{formatCurrency(cribLoan.arrearsAmount ?? 0)}</b>
                                 </Form.Item>
                             </div>
-                        }
-
-                        {
-                            cribDetails !== null && typeof cribDetails === "object" && <Form.Item>
-                                <b>No CRIB details found for the provided CNIC.</b>
-                            </Form.Item>
                         }
                     </div>
                 </Form>

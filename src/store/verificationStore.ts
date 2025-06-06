@@ -56,6 +56,7 @@ interface IVerificationCRIBResponse {
   contractExpiryDate: string;
   detail: string;
   message: string;
+  code?: string;
 }
 
 interface IVerificationECIBResponse {

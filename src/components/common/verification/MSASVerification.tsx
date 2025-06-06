@@ -1,4 +1,4 @@
-import { Button, Card, Form } from 'antd'
+import { Button, Card, Empty, Form } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { ReloadOutlined } from "@ant-design/icons";
 import useVerificationStore from '../../../store/verificationStore';
@@ -36,6 +36,18 @@ const MSASVerification: React.FC<IMSASVerification> = ({ idx, setApprovalStatus,
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [msasDetails])
 
+    if (msasDetails === null) {
+        return (
+            <Card title={'MSAS Verification'} loading={msasLoading} extra={
+                <Button type="text" icon={<ReloadOutlined />} onClick={onRefresh} />
+            }>
+                <Form>
+                    <Empty description={<span><b>Unable to find matching record</b></span>} />
+                </Form>
+            </Card>
+        )
+    }
+
 
     return (
         <Card title={'MSAS Verification'} loading={msasLoading} extra={
@@ -44,18 +56,16 @@ const MSASVerification: React.FC<IMSASVerification> = ({ idx, setApprovalStatus,
             <Form>
                 <div className="grid grid-cols-3 gap-3">
                     {
-                        msasDetails === null ?
-                            <Form.Item><b>Data not found for given clientele idx</b></Form.Item>
-                            :
-                            <>
-                                {
-                                    verfication.map((verify, idx) => (
-                                        <Form.Item key={idx} label={verify.name}>
-                                            <StatusTag status={verify.status ?? 'P'} />
-                                        </Form.Item>
-                                    ))
-                                }
-                            </>
+                        msasDetails !== null &&
+                        <>
+                            {
+                                verfication.map((verify, idx) => (
+                                    <Form.Item key={idx} label={verify.name}>
+                                        <StatusTag status={verify.status ?? 'P'} />
+                                    </Form.Item>
+                                ))
+                            }
+                        </>
                     }
                 </div>
             </Form>
