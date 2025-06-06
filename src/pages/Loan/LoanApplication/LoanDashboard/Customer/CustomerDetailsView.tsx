@@ -397,14 +397,14 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                         render={({ field }) => <Input {...field} placeholder="Enter Father or Husband Name" />}
                                     />
                                 </Form.Item>
-                                <Form.Item label="Number of Dependents" validateStatus={errors.stkNumOfDependents ? "error" : ""} help={errors.stkNumOfDependents?.message} hidden>
+                                <Form.Item label="Number of Dependents" validateStatus={errors.stkNumOfDependents ? "error" : ""} help={errors.stkNumOfDependents?.message}>
                                     <Controller
                                         name="stkNumOfDependents"
                                         control={control}
                                         render={({ field }) => <Input {...field} placeholder="Enter Number of Dependents" />}
                                     />
                                 </Form.Item>
-                                <Form.Item label="Number of Earners" validateStatus={errors.stkNumOfEarners ? "error" : ""} help={errors.stkNumOfEarners?.message} hidden>
+                                <Form.Item label="Number of Earners" validateStatus={errors.stkNumOfEarners ? "error" : ""} help={errors.stkNumOfEarners?.message}>
                                     <Controller
                                         name="stkNumOfEarners"
                                         control={control}
