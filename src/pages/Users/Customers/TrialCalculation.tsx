@@ -675,6 +675,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                         options={productDetails?.calMethods.map((item) => ({
                                             value: item.calMethodCode,
                                             label: formatSentence(item.calMethodDesc),
+                                            // disabled: item.calMethodCode === 'S'
                                         }))} />
                                 )}
                             />
