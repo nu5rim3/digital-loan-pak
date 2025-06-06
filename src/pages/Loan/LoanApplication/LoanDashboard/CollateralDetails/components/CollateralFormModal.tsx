@@ -18,7 +18,7 @@ interface CollateralFormModalProps {
   onSave: (data: FormValues) => void;
   isEdit?: boolean;
   initialData: FormValues | null;
-  productCategory: "LOAN" | "LEASE" | null;
+  productCategory: "Loan" | "Lease" | null;
   appraisalId?: string;
   isLoading?: boolean;
 }
@@ -267,9 +267,9 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
   };
 
   const handleFormSubmit = () => {
-    if (productCategory === "LOAN") {
+    if (productCategory === "Loan") {
       handleSubmit(onSubmit)();
-    } else if (productCategory === "LEASE") {
+    } else if (productCategory === "Lease") {
       handleLeaseSubmit(onLeaseSubmit)();
     }
   };
@@ -297,7 +297,7 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
     >
       <Spin spinning={isLoading || isSaving} tip={isLoading ? "Loading details..." : "Saving data..."}>
         <Form layout="vertical" className="space-y-6">
-          {productCategory === "LOAN" ? (
+          {productCategory === "Loan" ? (
             <>
               <div className="bg-white p-6 rounded-lg shadow">
                 <h3 className="text-lg font-semibold mb-4">Basic Information</h3>

@@ -175,7 +175,8 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         facilityTypes, facilityTypesLoading,
         fetchFacilityTypes,
         fetchProductTypes,
-        fetchSubProductTypes } = useCommonStore();
+        fetchSubProductTypes,
+        setSelectedProductCategory } = useCommonStore();
 
     const { productDetails, productDetailsLoading, fetchProductDetails, resetProductDetails } = useLoanStore()
     const { user } = useUserStore()
@@ -345,6 +346,12 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
             setSelectedSubProductType(null)
             resetProductDetails()
             fetchProductTypes(productCategory ?? '')
+            
+            // Save the selected product category to the store
+            const selectedCategory = productCategories.find(cat => cat.code === productCategory);
+            if (selectedCategory) {
+                setSelectedProductCategory(selectedCategory);
+            }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [productCategory])

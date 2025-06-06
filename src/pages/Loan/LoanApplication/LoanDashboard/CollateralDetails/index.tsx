@@ -9,11 +9,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { v4 } from "uuid";
 import { useParams } from "react-router-dom";
 import useCollateralStore from "../../../../../store/collateralStore";
+import useCommonStore from "../../../../../store/commonStore";
 
-// TODO: This will be replaced with global state later
-const productCategory = "LOAN" as const;
-
-interface CollateralDetailsComponentProps {}
+interface CollateralDetailsComponentProps { }
 
 // Helper function to map API collateral data to form values
 const mapCollateralToFormValues = (collateral: any): FormValues => {
@@ -223,6 +221,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
   const { appId } = useParams();
   const { modal } = App.useApp();
   const initialFetchDone = useRef(false);
+  const { selectedProductCategory } = useCommonStore();
 
   const appraisalId = appId;
 
@@ -569,8 +568,8 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             propertyBondNo: detailedData.mortgageBondNo,
             propertyBondDate: detailedData.mortgageBondDate
               ? new Date(detailedData.mortgageBondDate)
-                  .toISOString()
-                  .split("T")[0]
+                .toISOString()
+                .split("T")[0]
               : undefined,
             propertyDeedNo: detailedData.mortgageDeedNo,
             propertyBondValue: detailedData.mortgageBondValue?.toString(),
@@ -933,7 +932,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         } finally {
         }
       },
-      onCancel: () => {},
+      onCancel: () => { },
     });
   };
 
@@ -1006,7 +1005,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           onSave={handleSubmit}
           isEdit={isEditing}
           initialData={currentFormData}
-          productCategory={productCategory}
+          productCategory={selectedProductCategory?.description as "Loan" | "Lease" | null || "Loan"}
           appraisalId={appraisalId}
           isLoading={
             fetchingDetail ||
