@@ -12,8 +12,8 @@ interface MachineryFormProps {
 
 // Function to submit machinery data to the API
 export const submitMachinery = async (
-  data: FormValues, 
-  appraisalId: string, 
+  data: FormValues,
+  appraisalId: string,
   isEdit: boolean = false
 ): Promise<boolean> => {
   try {

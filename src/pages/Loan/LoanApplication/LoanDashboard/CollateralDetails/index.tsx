@@ -6,14 +6,14 @@ import DetailsCard from "./components/DetailsCard";
 import CollateralFormModal from "./components/CollateralFormModal";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { v4 as uuidv4 } from "uuid";
+import { v4 } from "uuid";
 import { useParams } from "react-router-dom";
 import useCollateralStore from "../../../../../store/collateralStore";
 
 // TODO: This will be replaced with global state later
 const productCategory = "LOAN" as const;
 
-interface CollateralDetailsComponentProps { }
+interface CollateralDetailsComponentProps {}
 
 // Helper function to map API collateral data to form values
 const mapCollateralToFormValues = (collateral: any): FormValues => {
@@ -31,13 +31,19 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.bankGuaranteeOwnership = collateral.ownership;
       formValues.fdNo = collateral.fdNo;
       formValues.fdValue = collateral.fdValue;
-      formValues.startDate = collateral.startDate ? new Date(collateral.startDate).toISOString().split('T')[0] : undefined;
-      formValues.expiryDate = collateral.expiryDate ? new Date(collateral.expiryDate).toISOString().split('T')[0] : undefined;
+      formValues.startDate = collateral.startDate
+        ? new Date(collateral.startDate).toISOString().split("T")[0]
+        : undefined;
+      formValues.expiryDate = collateral.expiryDate
+        ? new Date(collateral.expiryDate).toISOString().split("T")[0]
+        : undefined;
       formValues.referenceNo = collateral.referenceNo;
       formValues.guaranteeValue = collateral.guaranteeValue;
       formValues.guaranteedTo = collateral.guaranteeTo;
       formValues.institutionName = collateral.institutionName;
-      formValues.dateOfExpiry = collateral.dateOfExpiry ? new Date(collateral.dateOfExpiry).toISOString().split('T')[0] : undefined;
+      formValues.dateOfExpiry = collateral.dateOfExpiry
+        ? new Date(collateral.dateOfExpiry).toISOString().split("T")[0]
+        : undefined;
       formValues.referenceNoOndemand = collateral.referenceNo;
       formValues.valueOfGuarantee = collateral.valueOfGuarantee;
       formValues.renewedBy = collateral.renewedBy;
@@ -48,25 +54,45 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.securityType = "VEHICLE";
       // Map vehicle specific fields - using the renamed fields from our transform
       formValues.vehicleType = collateral.vehicleType || collateral.type;
-      formValues.vehicleOwnership = collateral.vehicleOwnership || collateral.ownership;
-      formValues.vehicleSupplier = collateral.vehicleSupplier || collateral.supplier;
-      formValues.vehicleCondition = collateral.vehicleCondition || collateral.condition;
-      formValues.vehicleCategory = collateral.vehicleCategory || collateral.category;
+      formValues.vehicleOwnership =
+        collateral.vehicleOwnership || collateral.ownership;
+      formValues.vehicleSupplier =
+        collateral.vehicleSupplier || collateral.supplier;
+      formValues.vehicleCondition =
+        collateral.vehicleCondition || collateral.condition;
+      formValues.vehicleCategory =
+        collateral.vehicleCategory || collateral.category;
       formValues.vehicleMake = collateral.vehicleMake || collateral.make;
       formValues.vehicleModel = collateral.vehicleModel || collateral.model;
-      formValues.vehicleEngineNo = collateral.vehicleEngineNo || collateral.engineNo;
-      formValues.vehicleChassisNo = collateral.vehicleChassisNo || collateral.chassisNo;
-      formValues.vehicleDescription = collateral.vehicleDescription || collateral.description;
-      formValues.vehicleRegistrationNo = collateral.vehicleRegistrationNo || collateral.registrationNo;
-      formValues.vehicleMV = collateral.vehicleMV?.toString() || collateral.mv?.toString();
-      formValues.vehicleFSV = collateral.vehicleFSV?.toString() || collateral.fsv?.toString();
-      formValues.vehicleYearManufacture = collateral.vehicleYearManufacture || collateral.yearManufacture;
-      formValues.vehicleDateOfFirstReg = collateral.dateOfFirstReg ? new Date(collateral.dateOfFirstReg) : undefined;
-      formValues.vehicleRegBookNo = collateral.vehicleRegBookNo || collateral.regBookNo;
-      formValues.vehicleBookReceivedDate = collateral.bookReceivedDate ? new Date(collateral.bookReceivedDate) : undefined;
-      formValues.vehicleCRReleasedDate = collateral.crReleasedDate ? new Date(collateral.crReleasedDate) : undefined;
-      formValues.vehicleInsuranceCompany = collateral.vehicleInsuranceCompany || collateral.insuCompany;
-      formValues.vehicleReferenceNo = collateral.vehicleReferenceNo || collateral.refNo;
+      formValues.vehicleEngineNo =
+        collateral.vehicleEngineNo || collateral.engineNo;
+      formValues.vehicleChassisNo =
+        collateral.vehicleChassisNo || collateral.chassisNo;
+      formValues.vehicleDescription =
+        collateral.vehicleDescription || collateral.description;
+      formValues.vehicleRegistrationNo =
+        collateral.vehicleRegistrationNo || collateral.registrationNo;
+      formValues.vehicleMV =
+        collateral.vehicleMV?.toString() || collateral.mv?.toString();
+      formValues.vehicleFSV =
+        collateral.vehicleFSV?.toString() || collateral.fsv?.toString();
+      formValues.vehicleYearManufacture =
+        collateral.vehicleYearManufacture || collateral.yearManufacture;
+      formValues.vehicleDateOfFirstReg = collateral.dateOfFirstReg
+        ? new Date(collateral.dateOfFirstReg)
+        : undefined;
+      formValues.vehicleRegBookNo =
+        collateral.vehicleRegBookNo || collateral.regBookNo;
+      formValues.vehicleBookReceivedDate = collateral.bookReceivedDate
+        ? new Date(collateral.bookReceivedDate)
+        : undefined;
+      formValues.vehicleCRReleasedDate = collateral.crReleasedDate
+        ? new Date(collateral.crReleasedDate)
+        : undefined;
+      formValues.vehicleInsuranceCompany =
+        collateral.vehicleInsuranceCompany || collateral.insuCompany;
+      formValues.vehicleReferenceNo =
+        collateral.vehicleReferenceNo || collateral.refNo;
       break;
     case "machinery":
       formValues.securityType = "MACHINERY";
@@ -84,7 +110,8 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.machineryBondNo = collateral.machineryBondNo;
       formValues.machineryBondValue = collateral.machineryBondValue;
       formValues.machineryValuedBy = collateral.machineryValuedBy;
-      formValues.machineryInsuranceCompany = collateral.machineryInsuranceCompany;
+      formValues.machineryInsuranceCompany =
+        collateral.machineryInsuranceCompany;
       formValues.machineryReferenceNo = collateral.machineryReferenceNo;
       break;
     case "property-mortgage":
@@ -96,7 +123,9 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.propertyBondType = collateral.propertyBondType;
       formValues.propertyPropertyType = collateral.propertyPropertyType;
       formValues.propertyBondNo = collateral.propertyBondNo;
-      formValues.propertyBondDate = collateral.propertyBondDate ? new Date(collateral.propertyBondDate).toISOString().split('T')[0] : undefined;
+      formValues.propertyBondDate = collateral.propertyBondDate
+        ? new Date(collateral.propertyBondDate).toISOString().split("T")[0]
+        : undefined;
       formValues.propertyDeedNo = collateral.propertyDeedNo;
       formValues.propertyBondValue = collateral.propertyBondValue?.toString();
       formValues.propertySurveyPlanNo = collateral.propertySurveyPlanNo;
@@ -105,9 +134,12 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.propertyCompany = collateral.propertyCompany;
       formValues.propertyLawyerName = collateral.propertyLawyerName;
       formValues.propertyTitleInsurance = collateral.propertyTitleInsurance;
-      formValues.propertyInsuranceOfBuilding = collateral.propertyInsuranceOfBuilding;
-      formValues.propertyInsuranceValue = collateral.propertyInsuranceValue?.toString();
-      formValues.propertyMarketValue = collateral.propertyMarketValue?.toString();
+      formValues.propertyInsuranceOfBuilding =
+        collateral.propertyInsuranceOfBuilding;
+      formValues.propertyInsuranceValue =
+        collateral.propertyInsuranceValue?.toString();
+      formValues.propertyMarketValue =
+        collateral.propertyMarketValue?.toString();
       formValues.propertyFSV = collateral.propertyFSV?.toString();
       formValues.propertyLotNo = collateral.propertyLotNo;
       formValues.propertyInsuranceCompany = collateral.propertyInsuranceCompany;
@@ -119,7 +151,8 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.landStockType = collateral.landStockType;
       formValues.landStockSubType = collateral.landStockSubType;
       formValues.landStockOwnership = collateral.landStockOwnership;
-      formValues.landStockMarketValue = collateral.landStockMarketValue?.toString();
+      formValues.landStockMarketValue =
+        collateral.landStockMarketValue?.toString();
       formValues.landStockFSV = collateral.landStockFsv?.toString();
       formValues.landStockBondNo = collateral.landStockBondNo;
       formValues.landStockDeedTransferNo = collateral.landStockDeedTransferNo;
@@ -127,8 +160,9 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.landStockLawyerName = collateral.landStockLawyerName;
       formValues.landStockDescription = collateral.landStockDescription;
       formValues.landStockCategory = collateral.landStockCategory;
-      formValues.landStockSecurityDate = collateral.landStockSecDate ?
-        new Date(collateral.landStockSecDate.split(' ')[0]) : undefined;
+      formValues.landStockSecurityDate = collateral.landStockSecDate
+        ? new Date(collateral.landStockSecDate.split(" ")[0])
+        : undefined;
       formValues.landStockSecurityType = collateral.landStockSecType;
       break;
     case "savings":
@@ -139,8 +173,9 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.savingsOwnership = collateral.savingsOwnership;
       formValues.savingsFDNo = collateral.savingsFDNo;
       formValues.savingsAmount = collateral.savingsAmount?.toString();
-      formValues.savingsMaturityDate = collateral.savingsMaturityDate ?
-        new Date(collateral.savingsMaturityDate).toISOString().split('T')[0] : undefined;
+      formValues.savingsMaturityDate = collateral.savingsMaturityDate
+        ? new Date(collateral.savingsMaturityDate).toISOString().split("T")[0]
+        : undefined;
       formValues.savingsCompany = collateral.savingsCompany;
       formValues.savingsDescription = collateral.savingsDescription;
       formValues.savingsNo = collateral.savingsNo;
@@ -166,7 +201,9 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.leaseDuplicateKey = collateral.duplicateKey;
       formValues.leaseVehicleNo = collateral.leaseVehiNo;
       formValues.leaseRegistrationBookNo = collateral.leaseRegBookNo;
-      formValues.leaseRegistrationDate = collateral.leaseRegDate ? new Date(collateral.leaseRegDate) : undefined;
+      formValues.leaseRegistrationDate = collateral.leaseRegDate
+        ? new Date(collateral.leaseRegDate)
+        : undefined;
       formValues.leaseRegistrationYear = collateral.leaseRegYear;
       formValues.leaseMV = collateral.marketValue?.toString();
       formValues.leaseFSV = collateral.foreSaleValue?.toString();
@@ -190,7 +227,6 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
   const appraisalId = appId;
 
   const [isEditing, setIsEditing] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState<FormValues[]>([]);
   const [fetchingDetail, setFetchingDetail] = useState(false);
@@ -199,7 +235,6 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
   const [currentFormData, setCurrentFormData] = useState<FormValues | null>(
     null
   );
-
 
   const {
     fetchCollaterals,
@@ -267,10 +302,17 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
     setIsEditing(mode === "update");
 
     // If in update mode and it's a vehicle, fetch the detailed data
-    if (mode === "update" && data && data.securityType === "VEHICLE" && data.id) {
+    if (
+      mode === "update" &&
+      data &&
+      data.securityType === "VEHICLE" &&
+      data.id
+    ) {
       try {
         setFetchingDetail(true);
-        const detailedData = await useCollateralStore.getState().getVehicle(data.id);
+        const detailedData = await useCollateralStore
+          .getState()
+          .getVehicle(data.id);
 
         if (detailedData) {
           console.log("Fetched vehicle details:", detailedData);
@@ -293,12 +335,18 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             vehicleMV: detailedData.marketValue?.toString(),
             vehicleFSV: detailedData.foreSaleValue?.toString(),
             vehicleYearManufacture: detailedData.yearOfManufacture,
-            vehicleDateOfFirstReg: detailedData.dateOfFirstReg ? new Date(detailedData.dateOfFirstReg) : undefined,
+            vehicleDateOfFirstReg: detailedData.dateOfFirstReg
+              ? new Date(detailedData.dateOfFirstReg)
+              : undefined,
             vehicleRegBookNo: detailedData.regBookNo,
-            vehicleBookReceivedDate: detailedData.bookReceivedDate ? new Date(detailedData.bookReceivedDate) : undefined,
-            vehicleCRReleasedDate: detailedData.crReleasedDate ? new Date(detailedData.crReleasedDate) : undefined,
+            vehicleBookReceivedDate: detailedData.bookReceivedDate
+              ? new Date(detailedData.bookReceivedDate)
+              : undefined,
+            vehicleCRReleasedDate: detailedData.crReleasedDate
+              ? new Date(detailedData.crReleasedDate)
+              : undefined,
             vehicleInsuranceCompany: detailedData.insuCompany,
-            vehicleReferenceNo: detailedData.refNo
+            vehicleReferenceNo: detailedData.refNo,
           };
 
           setEditingId(detailedData.vehIdx || data.id);
@@ -321,7 +369,12 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
       }
     }
     // If in update mode and it's a bank guarantee, fetch the detailed data
-    else if (mode === "update" && data && data.securityType === "BANK_GUARANTEE" && data.id) {
+    else if (
+      mode === "update" &&
+      data &&
+      data.securityType === "BANK_GUARANTEE" &&
+      data.id
+    ) {
       try {
         setFetchingDetail(true);
         const detailedData = await getBankGuarantee(data.id);
@@ -337,18 +390,24 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             bankGuaranteeOwnership: detailedData.ownership,
             fdNo: detailedData.fdNo || undefined,
             fdValue: detailedData.fdValue || undefined,
-            startDate: detailedData.startDate ? new Date(detailedData.startDate).toISOString().split('T')[0] : undefined,
-            expiryDate: detailedData.expiryDate ? new Date(detailedData.expiryDate).toISOString().split('T')[0] : undefined,
+            startDate: detailedData.startDate
+              ? new Date(detailedData.startDate).toISOString().split("T")[0]
+              : undefined,
+            expiryDate: detailedData.expiryDate
+              ? new Date(detailedData.expiryDate).toISOString().split("T")[0]
+              : undefined,
             referenceNo: detailedData.referenceNo || undefined,
             guaranteeValue: detailedData.guaranteeValue || undefined,
             guaranteedTo: detailedData.guaranteeTo || undefined,
             institutionName: detailedData.institutionName || undefined,
-            dateOfExpiry: detailedData.dateOfExpiry ? new Date(detailedData.dateOfExpiry).toISOString().split('T')[0] : undefined,
+            dateOfExpiry: detailedData.dateOfExpiry
+              ? new Date(detailedData.dateOfExpiry).toISOString().split("T")[0]
+              : undefined,
             referenceNoOndemand: detailedData.referenceNo || undefined,
             valueOfGuarantee: detailedData.valueOfGuarantee || undefined,
             renewedBy: detailedData.renewedBy || undefined,
             bankInsuranceCompany: detailedData.insuCompany || undefined,
-            bankReferenceNo: detailedData.insuRefNo || undefined
+            bankReferenceNo: detailedData.insuRefNo || undefined,
           };
 
           setEditingId(detailedData.bankGuaranteeIdx || data.id);
@@ -371,10 +430,17 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
       }
     }
     // If in update mode and it's a land stock, fetch the detailed data
-    else if (mode === "update" && data && data.securityType === "LAND_STOCK" && data.id) {
+    else if (
+      mode === "update" &&
+      data &&
+      data.securityType === "LAND_STOCK" &&
+      data.id
+    ) {
       try {
         setFetchingDetail(true);
-        const detailedData = await useCollateralStore.getState().getLandStock(data.id);
+        const detailedData = await useCollateralStore
+          .getState()
+          .getLandStock(data.id);
 
         if (detailedData) {
           console.log("Fetched land stock details:", detailedData);
@@ -394,9 +460,10 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             landStockLawyerName: detailedData.landStockLawyerName,
             landStockDescription: detailedData.landStockDescription,
             landStockCategory: detailedData.landStockCategory,
-            landStockSecurityDate: detailedData.landStockSecDate ?
-              detailedData.landStockSecDate.split(' ')[0] : undefined,
-            landStockSecurityType: detailedData.landStockSecType
+            landStockSecurityDate: detailedData.landStockSecDate
+              ? detailedData.landStockSecDate.split(" ")[0]
+              : undefined,
+            landStockSecurityType: detailedData.landStockSecType,
           };
 
           setEditingId(detailedData.landStockIdx || data.id);
@@ -419,10 +486,17 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
       }
     }
     // If in update mode and it's machinery equipment, fetch the detailed data
-    else if (mode === "update" && data && data.securityType === "MACHINERY" && data.id) {
+    else if (
+      mode === "update" &&
+      data &&
+      data.securityType === "MACHINERY" &&
+      data.id
+    ) {
       try {
         setFetchingDetail(true);
-        const detailedData = await useCollateralStore.getState().getMachinery(data.id);
+        const detailedData = await useCollateralStore
+          .getState()
+          .getMachinery(data.id);
 
         if (detailedData) {
           console.log("Fetched machinery equipment details:", detailedData);
@@ -445,7 +519,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             machineryBondValue: detailedData.bondValue,
             machineryValuedBy: detailedData.valuedBy,
             machineryInsuranceCompany: detailedData.insuCompany,
-            machineryReferenceNo: detailedData.refNo
+            machineryReferenceNo: detailedData.refNo,
           };
 
           setEditingId(detailedData.machineryEquipIdx || data.id);
@@ -468,10 +542,17 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
       }
     }
     // If in update mode and it's property mortgage, fetch the detailed data
-    else if (mode === "update" && data && data.securityType === "PROPERTY_MORTGAGE" && data.id) {
+    else if (
+      mode === "update" &&
+      data &&
+      data.securityType === "PROPERTY_MORTGAGE" &&
+      data.id
+    ) {
       try {
         setFetchingDetail(true);
-        const detailedData = await useCollateralStore.getState().getPropertyMortgage(data.id);
+        const detailedData = await useCollateralStore
+          .getState()
+          .getPropertyMortgage(data.id);
 
         if (detailedData) {
           console.log("Fetched property mortgage details:", detailedData);
@@ -486,7 +567,11 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             propertyBondType: detailedData.mortgageBondType,
             propertyPropertyType: detailedData.mortgagePropertyType,
             propertyBondNo: detailedData.mortgageBondNo,
-            propertyBondDate: detailedData.mortgageBondDate ? new Date(detailedData.mortgageBondDate).toISOString().split('T')[0] : undefined,
+            propertyBondDate: detailedData.mortgageBondDate
+              ? new Date(detailedData.mortgageBondDate)
+                  .toISOString()
+                  .split("T")[0]
+              : undefined,
             propertyDeedNo: detailedData.mortgageDeedNo,
             propertyBondValue: detailedData.mortgageBondValue?.toString(),
             propertySurveyPlanNo: detailedData.mortgageSurveyPlanNo,
@@ -496,12 +581,13 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             propertyLawyerName: detailedData.mortgageLawyerName,
             propertyTitleInsurance: detailedData.mortgageTitleInsurance,
             propertyInsuranceOfBuilding: detailedData.mortgageInsOfBuilding,
-            propertyInsuranceValue: detailedData.mortgageInsuranceValue?.toString(),
+            propertyInsuranceValue:
+              detailedData.mortgageInsuranceValue?.toString(),
             propertyMarketValue: detailedData.mortgageMarketValue?.toString(),
             propertyFSV: detailedData.mortgageFsv?.toString(),
             propertyLotNo: detailedData.mortgageLotNo,
             propertyInsuranceCompany: detailedData.mortgageInsuranceCompany,
-            propertyReferenceNo: detailedData.mortgageReferenceNo
+            propertyReferenceNo: detailedData.mortgageReferenceNo,
           };
 
           setEditingId(detailedData.mortgageIdx || data.id);
@@ -524,10 +610,17 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
       }
     }
     // If in update mode and it's savings, fetch the detailed data
-    else if (mode === "update" && data && data.securityType === "SAVINGS" && data.id) {
+    else if (
+      mode === "update" &&
+      data &&
+      data.securityType === "SAVINGS" &&
+      data.id
+    ) {
       try {
         setFetchingDetail(true);
-        const detailedData = await useCollateralStore.getState().getSavings(data.id);
+        const detailedData = await useCollateralStore
+          .getState()
+          .getSavings(data.id);
 
         if (detailedData) {
           console.log("Fetched savings details:", detailedData);
@@ -542,10 +635,12 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             savingsNo: detailedData.savingsNo,
             savingsFDNo: detailedData.fdNo,
             savingsAmount: detailedData.amount?.toString(),
-            savingsMaturityDate: detailedData.maturityDate ? new Date(detailedData.maturityDate).toISOString().split('T')[0] : undefined,
+            savingsMaturityDate: detailedData.maturityDate
+              ? new Date(detailedData.maturityDate).toISOString().split("T")[0]
+              : undefined,
             savingsCompany: detailedData.company,
             savingsDescription: detailedData.description,
-            savingsBuildUpValue: detailedData.savingsBuildValue
+            savingsBuildUpValue: detailedData.savingsBuildValue,
           };
 
           setEditingId(detailedData.savingsIdx || data.id);
@@ -568,10 +663,17 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
       }
     }
     // If in update mode and it's a lease, fetch the detailed data
-    else if (mode === "update" && data && data.securityType === "LEASE" && data.id) {
+    else if (
+      mode === "update" &&
+      data &&
+      data.securityType === "LEASE" &&
+      data.id
+    ) {
       try {
         setFetchingDetail(true);
-        const detailedData = await useCollateralStore.getState().getLease(data.id);
+        const detailedData = await useCollateralStore
+          .getState()
+          .getLease(data.id);
 
         if (detailedData) {
           console.log("Fetched lease details:", detailedData);
@@ -597,13 +699,15 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             leaseDuplicateKey: detailedData.duplicateKey,
             leaseVehicleNo: detailedData.leaseVehiNo,
             leaseRegistrationBookNo: detailedData.leaseRegBookNo,
-            leaseRegistrationDate: detailedData.leaseRegDate ? new Date(detailedData.leaseRegDate) : undefined,
+            leaseRegistrationDate: detailedData.leaseRegDate
+              ? new Date(detailedData.leaseRegDate)
+              : undefined,
             leaseRegistrationYear: detailedData.leaseRegYear,
             leaseMV: detailedData.marketValue?.toString(),
             leaseFSV: detailedData.foreSaleValue?.toString(),
             leaseProvince: detailedData.leaseProvince,
             leaseInsuranceCompany: detailedData.insuCompany,
-            leaseReferenceNo: detailedData.refNo
+            leaseReferenceNo: detailedData.refNo,
           };
 
           setEditingId(detailedData.leaseIdx || data.id);
@@ -653,7 +757,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         );
         setFormData(updatedFormData);
       } else {
-        const newData = { ...data, id: uuidv4() };
+        const newData = { ...data, id: v4() };
         const updatedData = [...formData, newData];
         setFormData(updatedData);
       }
@@ -677,28 +781,36 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
   const handleDelete = (index: number) => {
     const collateralToDelete = formData[index];
 
-    if (!collateralToDelete || !collateralToDelete.id || !collateralToDelete.securityType) {
+    if (
+      !collateralToDelete ||
+      !collateralToDelete.id ||
+      !collateralToDelete.securityType
+    ) {
       message.error("Cannot delete: Invalid collateral data");
       return;
     }
 
-    setIsDeleting(true);
-
     // Show confirmation dialog
     modal.confirm({
-      title: 'Delete Collateral',
+      title: "Delete Collateral",
       icon: <ExclamationCircleOutlined />,
-      content: 'Are you sure you want to delete this collateral? This action cannot be undone.',
-      okText: 'Delete',
-      okType: 'danger',
-      cancelText: 'Cancel',
+      content:
+        "Are you sure you want to delete this collateral? This action cannot be undone.",
+      okText: "Delete",
+      okType: "danger",
+      cancelText: "Cancel",
       onOk: async () => {
         try {
           let success = false;
 
           // For vehicle, use the specialized deactivate function
-          if (collateralToDelete.securityType === "VEHICLE" && collateralToDelete.id) {
-            const result = await useCollateralStore.getState().deactivateVehicle(collateralToDelete.id, appraisalId);
+          if (
+            collateralToDelete.securityType === "VEHICLE" &&
+            collateralToDelete.id
+          ) {
+            const result = await useCollateralStore
+              .getState()
+              .deactivateVehicle(collateralToDelete.id, appraisalId);
             success = !!result;
             if (success) {
               message.success("Vehicle deactivated successfully");
@@ -707,8 +819,13 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             }
           }
           // For bank guarantees, use the specialized deactivate function
-          else if (collateralToDelete.securityType === "BANK_GUARANTEE" && collateralToDelete.id) {
-            const result = await useCollateralStore.getState().deactivateBankGuarantee(collateralToDelete.id, appraisalId);
+          else if (
+            collateralToDelete.securityType === "BANK_GUARANTEE" &&
+            collateralToDelete.id
+          ) {
+            const result = await useCollateralStore
+              .getState()
+              .deactivateBankGuarantee(collateralToDelete.id, appraisalId);
             success = !!result;
             if (success) {
               message.success("Bank guarantee deactivated successfully");
@@ -717,8 +834,13 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             }
           }
           // For land stocks, use the specialized deactivate function
-          else if (collateralToDelete.securityType === "LAND_STOCK" && collateralToDelete.id) {
-            const result = await useCollateralStore.getState().deactivateLandStock(collateralToDelete.id, appraisalId);
+          else if (
+            collateralToDelete.securityType === "LAND_STOCK" &&
+            collateralToDelete.id
+          ) {
+            const result = await useCollateralStore
+              .getState()
+              .deactivateLandStock(collateralToDelete.id, appraisalId);
             success = !!result;
             if (success) {
               message.success("Land stock deactivated successfully");
@@ -727,8 +849,13 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             }
           }
           // For machinery equipment, use the specialized deactivate function
-          else if (collateralToDelete.securityType === "MACHINERY" && collateralToDelete.id) {
-            const result = await useCollateralStore.getState().deactivateMachinery(collateralToDelete.id, appraisalId);
+          else if (
+            collateralToDelete.securityType === "MACHINERY" &&
+            collateralToDelete.id
+          ) {
+            const result = await useCollateralStore
+              .getState()
+              .deactivateMachinery(collateralToDelete.id, appraisalId);
             success = !!result;
             if (success) {
               message.success("Machinery equipment deactivated successfully");
@@ -737,8 +864,13 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             }
           }
           // For property mortgage, use the specialized deactivate function
-          else if (collateralToDelete.securityType === "PROPERTY_MORTGAGE" && collateralToDelete.id) {
-            const result = await useCollateralStore.getState().deactivatePropertyMortgage(collateralToDelete.id, appraisalId);
+          else if (
+            collateralToDelete.securityType === "PROPERTY_MORTGAGE" &&
+            collateralToDelete.id
+          ) {
+            const result = await useCollateralStore
+              .getState()
+              .deactivatePropertyMortgage(collateralToDelete.id, appraisalId);
             success = !!result;
             if (success) {
               message.success("Property mortgage deactivated successfully");
@@ -747,8 +879,13 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             }
           }
           // For savings, use the specialized deactivate function
-          else if (collateralToDelete.securityType === "SAVINGS" && collateralToDelete.id) {
-            const result = await useCollateralStore.getState().deactivateSavings(collateralToDelete.id, appraisalId);
+          else if (
+            collateralToDelete.securityType === "SAVINGS" &&
+            collateralToDelete.id
+          ) {
+            const result = await useCollateralStore
+              .getState()
+              .deactivateSavings(collateralToDelete.id, appraisalId);
             success = !!result;
             if (success) {
               message.success("Savings deactivated successfully");
@@ -757,16 +894,20 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             }
           }
           // For lease, use the specialized deactivate function
-          else if (collateralToDelete.securityType === "LEASE" && collateralToDelete.id) {
-            const result = await useCollateralStore.getState().deactivateLease(collateralToDelete.id, appraisalId);
+          else if (
+            collateralToDelete.securityType === "LEASE" &&
+            collateralToDelete.id
+          ) {
+            const result = await useCollateralStore
+              .getState()
+              .deactivateLease(collateralToDelete.id, appraisalId);
             success = !!result;
             if (success) {
               message.success("Lease deactivated successfully");
             } else {
               message.error("Failed to deactivate lease");
             }
-          }
-          else {
+          } else {
             // For other collateral types, use the general delete function
             success = await deleteCollateral(
               collateralToDelete.id!,
@@ -790,12 +931,9 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           console.error("Error deleting collateral:", error);
           message.error("Failed to delete collateral");
         } finally {
-          setIsDeleting(false);
         }
       },
-      onCancel: () => {
-        setIsDeleting(false);
-      },
+      onCancel: () => {},
     });
   };
 
@@ -820,10 +958,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         <p className="text-red-500 mb-4">
           Error loading collateral details. Please try again.
         </p>
-        <Button
-          type="primary"
-          onClick={refreshCollaterals}
-        >
+        <Button type="primary" onClick={refreshCollaterals}>
           Retry
         </Button>
       </div>
@@ -846,7 +981,9 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
 
         {formData.length === 0 ? (
           <div className="text-center p-6 bg-gray-50 rounded-lg">
-            <p className="text-gray-500">No collateral details found. Click "Add Collateral" to add one.</p>
+            <p className="text-gray-500">
+              No collateral details found. Click "Add Collateral" to add one.
+            </p>
           </div>
         ) : (
           <Row gutter={[16, 16]}>
@@ -871,7 +1008,16 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           initialData={currentFormData}
           productCategory={productCategory}
           appraisalId={appraisalId}
-          isLoading={fetchingDetail || fetchingBankGuarantee || fetchingLandStock || fetchingMachinery || fetchingPropertyMortgage || fetchingSavings || fetchingVehicle || fetchingLease}
+          isLoading={
+            fetchingDetail ||
+            fetchingBankGuarantee ||
+            fetchingLandStock ||
+            fetchingMachinery ||
+            fetchingPropertyMortgage ||
+            fetchingSavings ||
+            fetchingVehicle ||
+            fetchingLease
+          }
         />
       </div>
     </App>

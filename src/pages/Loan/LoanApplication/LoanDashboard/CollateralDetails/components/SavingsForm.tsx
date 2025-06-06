@@ -13,8 +13,8 @@ interface SavingsFormProps {
 
 // Function to submit savings data to the API
 export const submitSavings = async (
-  data: FormValues, 
-  appraisalId: string, 
+  data: FormValues,
+  appraisalId: string,
   isEdit: boolean = false
 ): Promise<boolean> => {
   try {

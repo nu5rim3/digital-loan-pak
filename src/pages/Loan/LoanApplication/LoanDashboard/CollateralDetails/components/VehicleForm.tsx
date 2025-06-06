@@ -13,8 +13,8 @@ interface VehicleFormProps {
 
 // Function to submit vehicle data to the API
 export const submitVehicle = async (
-  data: FormValues, 
-  appraisalId: string, 
+  data: FormValues,
+  appraisalId: string,
   isEdit: boolean = false
 ): Promise<boolean> => {
   try {

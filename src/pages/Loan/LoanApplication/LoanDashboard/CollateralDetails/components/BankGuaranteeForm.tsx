@@ -123,7 +123,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                 <input type="hidden" {...field} />
               )}
             />
-            
+
             <Form.Item
               label="Type"
               required
@@ -460,7 +460,7 @@ export const submitBankGuarantee = async (formData: FormValues, appraisalId: str
   try {
     const store = useCollateralStore.getState();
     const payload = prepareBankGuaranteeData(formData, appraisalId);
-    
+
     let response;
     if (isEdit && formData.id) {
       console.log("Updating Bank Guarantee with ID:", formData.id, "Payload:", payload);
@@ -474,7 +474,7 @@ export const submitBankGuarantee = async (formData: FormValues, appraisalId: str
       console.log("Bank Guarantee submission response:", response);
       message.success("Bank Guarantee added successfully");
     }
-    
+
     const result = response?.data || response;
     return result;
   } catch (error) {

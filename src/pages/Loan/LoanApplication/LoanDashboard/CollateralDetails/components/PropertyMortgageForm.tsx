@@ -13,8 +13,8 @@ interface PropertyMortgageFormProps {
 
 // Function to submit property mortgage data to the API
 export const submitPropertyMortgage = async (
-  data: FormValues, 
-  appraisalId: string, 
+  data: FormValues,
+  appraisalId: string,
   isEdit: boolean = false
 ): Promise<boolean> => {
   try {

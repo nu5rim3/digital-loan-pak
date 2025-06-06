@@ -35,7 +35,7 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
 }) => {
   // Make sure we have a valid appraisalId
   const validAppraisalId = appraisalId;
-  
+
   // Get loading states from the store
   const {
     savingBankGuarantee,
@@ -53,28 +53,28 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
     savingLease,
     updatingLease,
   } = useCollateralStore();
-  
+
   // Add state to track form submission loading
   const [submitting, setSubmitting] = useState(false);
-  
+
   // Determine if any API is currently saving or updating data
-  const isSaving = 
-    savingBankGuarantee || 
-    updatingBankGuarantee || 
-    savingLandStock || 
-    updatingLandStock || 
-    savingMachinery || 
-    updatingMachinery || 
-    savingPropertyMortgage || 
-    updatingPropertyMortgage || 
-    savingSavings || 
-    updatingSavings || 
-    savingVehicle || 
+  const isSaving =
+    savingBankGuarantee ||
+    updatingBankGuarantee ||
+    savingLandStock ||
+    updatingLandStock ||
+    savingMachinery ||
+    updatingMachinery ||
+    savingPropertyMortgage ||
+    updatingPropertyMortgage ||
+    savingSavings ||
+    updatingSavings ||
+    savingVehicle ||
     updatingVehicle ||
     savingLease ||
     updatingLease ||
     submitting;
-  
+
   const {
     control,
     handleSubmit,
@@ -147,14 +147,14 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
     try {
       // Make sure we have a valid appraisalId
       const validAppraisalId = appraisalId || "";
-      
+
       if (!validAppraisalId) {
         message.error("Cannot save: No appraisal ID available");
         return;
       }
-      
+
       setSubmitting(true);
-      
+
       // If the security type is VEHICLE, use the vehicle submit function
       if (data.securityType === "VEHICLE") {
         console.log("Submitting Vehicle with appraisalId:", validAppraisalId, data);
@@ -178,7 +178,7 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
         } else {
           // Error message is already shown in submitBankGuarantee
         }
-      } 
+      }
       // If the security type is LAND_STOCK, use the land stock submit function
       else if (data.securityType === "LAND_STOCK") {
         console.log("Submitting Land Stock with appraisalId:", validAppraisalId, data);
@@ -244,14 +244,14 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
     try {
       // Make sure we have a valid appraisalId
       const validAppraisalId = appraisalId || "";
-      
+
       if (!validAppraisalId) {
         message.error("Cannot save: No appraisal ID available");
         return;
       }
-      
+
       setSubmitting(true);
-      
+
       console.log("Submitting Lease Product with appraisalId:", validAppraisalId, data);
       const response = await submitLease(data, validAppraisalId, isEdit);
       if (response) {
@@ -284,9 +284,9 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
         <Button key="cancel" onClick={onClose} disabled={isSaving}>
           Cancel
         </Button>,
-        <Button 
-          key="submit" 
-          type="primary" 
+        <Button
+          key="submit"
+          type="primary"
           onClick={handleFormSubmit}
           loading={isSaving}
           disabled={isSaving}
@@ -349,9 +349,9 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
               )}
 
               {securityType === "BANK_GUARANTEE" && (
-                <BankGuaranteeForm 
-                  control={control} 
-                  errors={errors} 
+                <BankGuaranteeForm
+                  control={control}
+                  errors={errors}
                   appraisalId={validAppraisalId}
                   onSubmitSuccess={() => onClose()}
                 />
