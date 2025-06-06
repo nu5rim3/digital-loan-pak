@@ -255,9 +255,6 @@ const CustomerDetails: React.FC = () => {
                                         placeholder="Enter Initial"
                                         onChange={(value) => {
                                             field.onChange(value);
-                                            if (!value) {
-                                                field.disabled = false
-                                            }
                                         }}
                                     />
                                 }
@@ -267,15 +264,13 @@ const CustomerDetails: React.FC = () => {
                             <Controller
                                 name="stkSurName"
                                 control={control}
+                                disabled
                                 render={({ field }) =>
                                     <Input
                                         {...field}
                                         placeholder="Enter Surname"
                                         onChange={(value) => {
                                             field.onChange(value);
-                                            if (!value) {
-                                                field.disabled = false
-                                            }
                                         }}
                                     />
                                 }

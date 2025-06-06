@@ -218,9 +218,6 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                         placeholder="Enter Initial"
                                         onChange={(value) => {
                                             field.onChange(value);
-                                            if (!value) {
-                                                field.disabled = false
-                                            }
                                         }}
                                     />
                                 }
@@ -237,9 +234,6 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                         placeholder="Enter Surname"
                                         onChange={(value) => {
                                             field.onChange(value);
-                                            if (!value) {
-                                                field.disabled = false
-                                            }
                                         }}
                                     />
                                 }

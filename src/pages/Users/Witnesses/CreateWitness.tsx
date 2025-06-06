@@ -3,7 +3,7 @@ import { Form, Input, Select, Button } from "antd";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { formatCNIC } from '../../../utils/formatterFunctions';
+import { formatCNIC, splitInitialAndSurname } from '../../../utils/formatterFunctions';
 import useStakeholderStore, { IStakeholder } from '../../../store/stakeholderStore';
 import { SaveOutlined, UndoOutlined } from "@ant-design/icons";
 
@@ -29,7 +29,8 @@ const CreateWitness: React.FC<ICreateWitness> = ({ appId, mode, witnessDetails, 
         handleSubmit,
         formState: { errors },
         reset,
-        setValue
+        setValue,
+        watch
     } = useForm({
         resolver: yupResolver(schema),
     });
@@ -63,6 +64,19 @@ const CreateWitness: React.FC<ICreateWitness> = ({ appId, mode, witnessDetails, 
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [witnessDetails])
+
+    const fullName = watch('stkCusName')
+
+
+    useEffect(() => {
+        if (fullName !== undefined && fullName !== '') {
+            const { initial, surname } = splitInitialAndSurname(fullName?.toString());
+            setValue("stkInitials", initial);
+            setValue("stkSurName", surname);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [fullName])
+
 
     return (
         <Form
@@ -106,8 +120,16 @@ const CreateWitness: React.FC<ICreateWitness> = ({ appId, mode, witnessDetails, 
                     <Controller
                         name="stkInitials"
                         control={control}
+                        disabled
                         render={({ field }) =>
-                            <Input {...field} placeholder="Enter Initial" />}
+                            <Input
+                                {...field}
+                                placeholder="Enter Initial"
+                                onChange={(value) => {
+                                    field.onChange(value);
+                                }}
+                            />
+                        }
                     />
                 </Form.Item>
 
@@ -115,8 +137,16 @@ const CreateWitness: React.FC<ICreateWitness> = ({ appId, mode, witnessDetails, 
                     <Controller
                         name="stkSurName"
                         control={control}
+                        disabled
                         render={({ field }) =>
-                            <Input {...field} placeholder="Enter Surname" />}
+                            <Input
+                                {...field}
+                                placeholder="Enter Surname"
+                                onChange={(value) => {
+                                    field.onChange(value);
+                                }}
+                            />
+                        }
                     />
                 </Form.Item>
 
