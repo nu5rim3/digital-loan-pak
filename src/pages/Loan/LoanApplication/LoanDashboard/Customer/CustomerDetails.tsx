@@ -233,7 +233,15 @@ const CustomerDetails: React.FC = () => {
                                 disabled
                                 name="stkCusName"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Customer Name" />}
+                                render={({ field }) =>
+                                    <Input
+                                        {...field}
+                                        placeholder="Enter Customer Name"
+                                        onChange={(value) => {
+                                            field.onChange(value);
+                                        }}
+                                    />
+                                }
                             />
                         </Form.Item>
                         <Form.Item label="Initial" validateStatus={errors.stkInitials ? "error" : ""} help={errors.stkInitials?.message} required>
@@ -241,15 +249,36 @@ const CustomerDetails: React.FC = () => {
                                 name="stkInitials"
                                 control={control}
                                 disabled
-                                render={({ field }) => <Input {...field} placeholder="Enter Initial" />}
+                                render={({ field }) =>
+                                    <Input
+                                        {...field}
+                                        placeholder="Enter Initial"
+                                        onChange={(value) => {
+                                            field.onChange(value);
+                                            if (!value) {
+                                                field.disabled = false
+                                            }
+                                        }}
+                                    />
+                                }
                             />
                         </Form.Item>
                         <Form.Item label="Surname" validateStatus={errors.stkSurName ? "error" : ""} help={errors.stkSurName?.message} required>
                             <Controller
                                 name="stkSurName"
                                 control={control}
-                                disabled
-                                render={({ field }) => <Input {...field} placeholder="Enter Surname" />}
+                                render={({ field }) =>
+                                    <Input
+                                        {...field}
+                                        placeholder="Enter Surname"
+                                        onChange={(value) => {
+                                            field.onChange(value);
+                                            if (!value) {
+                                                field.disabled = false
+                                            }
+                                        }}
+                                    />
+                                }
                             />
                         </Form.Item>
                         <Form.Item label="Other Name" validateStatus={errors.stkOtherName ? "error" : ""} help={errors.stkOtherName?.message} required>
@@ -281,6 +310,7 @@ const CustomerDetails: React.FC = () => {
                                     onChange={(e) => {
                                         const formatted = formatCNIC(e.target.value);
                                         setValue("stkCNic", formatted, { shouldValidate: true });
+                                        field.onChange(e);
                                     }}
                                 />}
                             />

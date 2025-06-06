@@ -451,6 +451,11 @@ interface ICommonState {
   locationsLoading: boolean;
   locationsError: string | null;
 
+  productCategories: {
+    code: string;
+    description: string;
+  }[];
+
   fetchOperators: () => Promise<void>;
   fetchECIBReport: (cnic: string) => Promise<void>;
   fetchOrganizationType: () => Promise<void>;
@@ -677,6 +682,17 @@ const useCommonStore = create<ICommonState>(
       locations: [],
       locationsLoading: false,
       locationsError: null,
+
+      productCategories: [
+        {
+          code: "A",
+          description: "Lease",
+        },
+        {
+          code: "C",
+          description: "Loan",
+        },
+      ],
 
       fetchOperators: async () => {
         set({ operatorLoading: true, operatorError: null });

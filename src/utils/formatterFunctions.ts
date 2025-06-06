@@ -161,16 +161,20 @@ export function splitInitialAndSurname(fullName: string): {
   surname: string;
 } {
   const parts = fullName.trim().split(/\s+/).filter(Boolean);
-  if (parts.length <= 1) {
+
+  if (parts.length === 0) {
     return { initial: "", surname: "" };
   }
-  if (parts.length === 2) {
-    return { initial: "", surname: parts[1] };
+  if (parts.length === 1) {
+    return { initial: parts[0].charAt(0).toUpperCase(), surname: "" };
   }
+
   const surname = parts[parts.length - 1];
+  // Initials: first letter of each part except last, joined WITHOUT dot at end, only dots between
   const initialsArray = parts
     .slice(0, -1)
-    .map((p) => p.charAt(0).toUpperCase() + ".");
-  const initial = initialsArray.join(" ");
+    .map((p) => p.charAt(0).toUpperCase());
+  const initial = initialsArray.join(".");
+
   return { initial, surname };
 }

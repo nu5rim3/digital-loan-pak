@@ -212,7 +212,18 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                 name="stkInitials"
                                 control={control}
                                 disabled
-                                render={({ field }) => <Input {...field} placeholder="Enter Initial" />}
+                                render={({ field }) =>
+                                    <Input
+                                        {...field}
+                                        placeholder="Enter Initial"
+                                        onChange={(value) => {
+                                            field.onChange(value);
+                                            if (!value) {
+                                                field.disabled = false
+                                            }
+                                        }}
+                                    />
+                                }
                             />
                         </Form.Item>
                         <Form.Item label="Surname" validateStatus={errors.stkSurName ? "error" : ""} help={errors.stkSurName?.message} required>
@@ -220,7 +231,18 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                 name="stkSurName"
                                 control={control}
                                 disabled
-                                render={({ field }) => <Input {...field} placeholder="Enter Surname" />}
+                                render={({ field }) =>
+                                    <Input
+                                        {...field}
+                                        placeholder="Enter Surname"
+                                        onChange={(value) => {
+                                            field.onChange(value);
+                                            if (!value) {
+                                                field.disabled = false
+                                            }
+                                        }}
+                                    />
+                                }
                             />
                         </Form.Item>
                         <Form.Item label="Other Name" validateStatus={errors.stkOtherName ? "error" : ""} help={errors.stkOtherName?.message} required>
