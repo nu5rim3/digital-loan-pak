@@ -346,7 +346,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
             setSelectedSubProductType(null)
             resetProductDetails()
             fetchProductTypes(productCategory ?? '')
-            
+
             // Save the selected product category to the store
             const selectedCategory = productCategories.find(cat => cat.code === productCategory);
             if (selectedCategory) {
@@ -715,7 +715,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                             } else if (value === 'BA') {
                                                 setValue('trems', 6); // Set terms to 6 for bi-annually
                                             } else if (value === 'Q') {
-                                                setValue('trems', 4); // Set terms to 4 for quarterly
+                                                setValue('trems', 3); // Set terms to 3 for quarterly
                                             } else if (value === 'HY') {
                                                 setValue('trems', 6); // Set terms to 6 for half yearly
                                             }
