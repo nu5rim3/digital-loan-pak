@@ -456,6 +456,11 @@ interface ICommonState {
     description: string;
   }[];
 
+  selectedProductCategory: {
+    code: string;
+    description: string;
+  } | null;
+
   fetchOperators: () => Promise<void>;
   fetchECIBReport: (cnic: string) => Promise<void>;
   fetchOrganizationType: () => Promise<void>;
@@ -497,6 +502,7 @@ interface ICommonState {
   fetchProductTypes: (facilityCode: string) => Promise<void>;
   fetchSubProductTypes: (prodCode: string) => Promise<void>;
   fetchLocations: () => Promise<void>;
+  setSelectedProductCategory: (category: { code: string; description: string; } | null) => void;
 }
 
 type TPersist = (
@@ -693,6 +699,8 @@ const useCommonStore = create<ICommonState>(
           description: "Loan",
         },
       ],
+
+      selectedProductCategory: null,
 
       fetchOperators: async () => {
         set({ operatorLoading: true, operatorError: null });
@@ -1327,6 +1335,10 @@ const useCommonStore = create<ICommonState>(
         } catch (error: any) {
           set({ locationsError: error.message, locationsLoading: false });
         }
+      },
+
+      setSelectedProductCategory: (category) => {
+        set({ selectedProductCategory: category });
       },
     }),
 

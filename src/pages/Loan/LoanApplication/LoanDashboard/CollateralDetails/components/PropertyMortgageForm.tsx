@@ -4,11 +4,94 @@ import { Controller, Control } from "react-hook-form";
 import { FormValues } from "../types";
 import dayjs from "dayjs";
 import useCollateralStore from "../../../../../../store/collateralStore";
+import { message } from "antd";
 
 interface PropertyMortgageFormProps {
   control: Control<FormValues>;
   errors: Record<string, any>;
 }
+
+// Function to submit property mortgage data to the API
+export const submitPropertyMortgage = async (
+  data: FormValues,
+  appraisalId: string,
+  isEdit: boolean = false
+): Promise<boolean> => {
+  try {
+    const {
+      id,
+      propertyType,
+      propertySubType,
+      propertyOwnership,
+      propertyBondType,
+      propertyPropertyType,
+      propertyBondNo,
+      propertyBondDate,
+      propertyDeedNo,
+      propertyBondValue,
+      propertySurveyPlanNo,
+      propertyPOA,
+      propertyPOANumber,
+      propertyCompany,
+      propertyLawyerName,
+      propertyTitleInsurance,
+      propertyInsuranceOfBuilding,
+      propertyInsuranceValue,
+      propertyMarketValue,
+      propertyFSV,
+      propertyLotNo,
+      propertyInsuranceCompany,
+      propertyReferenceNo,
+    } = data;
+
+    // Prepare payload for API
+    const payload = {
+      appraisalId,
+      mortgageType: propertyType || "",
+      mortgageSubType: propertySubType || "",
+      mortgageOwnership: propertyOwnership || "",
+      mortgageBondType: propertyBondType || "",
+      mortgagePropertyType: propertyPropertyType || "",
+      mortgageBondNo: propertyBondNo || "",
+      mortgageBondDate: propertyBondDate || "",
+      mortgageDeedNo: propertyDeedNo || "",
+      mortgageBondValue: propertyBondValue ? parseFloat(propertyBondValue) : undefined,
+      mortgageSurveyPlanNo: propertySurveyPlanNo || "",
+      mortgagePoa: propertyPOA || "",
+      mortgagePoaNo: propertyPOANumber || "",
+      mortgageCompany: propertyCompany || "",
+      mortgageLawyerName: propertyLawyerName || "",
+      mortgageTitleInsurance: propertyTitleInsurance || "",
+      mortgageInsOfBuilding: propertyInsuranceOfBuilding || "",
+      mortgageInsuranceValue: propertyInsuranceValue ? parseFloat(propertyInsuranceValue) : undefined,
+      mortgageMarketValue: propertyMarketValue ? parseFloat(propertyMarketValue) : undefined,
+      mortgageFsv: propertyFSV ? parseFloat(propertyFSV) : undefined,
+      mortgageLotNo: propertyLotNo || "",
+      mortgageInsuranceCompany: propertyInsuranceCompany,
+      mortgageReferenceNo: propertyReferenceNo,
+      mortgageSecCategory: "Mortgage", // Default value
+      mortgageSecType: "Primary" // Default value
+    };
+
+    console.log(`${isEdit ? 'Updating' : 'Saving'} property mortgage with payload:`, payload);
+
+    let response;
+    if (isEdit && id) {
+      response = await useCollateralStore.getState().updatePropertyMortgage(id, payload);
+      message.success("Property mortgage updated successfully");
+    } else {
+      response = await useCollateralStore.getState().savePropertyMortgage(payload);
+      message.success("Property mortgage saved successfully");
+    }
+
+    console.log(`Property mortgage ${isEdit ? 'update' : 'save'} response:`, response);
+    return true;
+  } catch (error) {
+    console.error(`Error ${isEdit ? 'updating' : 'saving'} property mortgage:`, error);
+    message.error(`Failed to ${isEdit ? 'update' : 'save'} property mortgage`);
+    return false;
+  }
+};
 
 const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
   control,
@@ -25,11 +108,14 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
     propertyTypesLoading: propertyPropertyTypesLoading,
     companies: propertyCompanies,
     companiesLoading: propertyCompaniesLoading,
+    insuranceCompanies,
+    insuranceCompaniesLoading,
     fetchTypes,
     fetchOwnerships,
     fetchBondTypes,
     fetchPropertyTypes,
     fetchCompanies,
+    fetchInsuranceCompanies,
   } = useCollateralStore();
 
   const dataFetched = useRef(false);
@@ -41,6 +127,7 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
       fetchBondTypes();
       fetchPropertyTypes();
       fetchCompanies();
+      fetchInsuranceCompanies();
       dataFetched.current = true;
     }
   }, [
@@ -49,6 +136,7 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
     fetchBondTypes,
     fetchPropertyTypes,
     fetchCompanies,
+    fetchInsuranceCompanies,
   ]);
 
   const getOptions = (arr: any[]) =>
@@ -470,6 +558,31 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter LOT No" />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item label="Insurance Company">
+            <Controller
+              name="propertyInsuranceCompany"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  placeholder="Select Insurance Company"
+                  loading={insuranceCompaniesLoading}
+                  options={getOptions(insuranceCompanies)}
+                />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item label="Reference No">
+            <Controller
+              name="propertyReferenceNo"
+              control={control}
+              render={({ field }) => (
+                <Input {...field} placeholder="Enter Reference No" />
               )}
             />
           </Form.Item>

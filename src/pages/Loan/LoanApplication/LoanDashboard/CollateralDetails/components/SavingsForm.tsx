@@ -4,11 +4,73 @@ import { Controller, Control } from "react-hook-form";
 import { FormValues } from "../types";
 import dayjs from "dayjs";
 import useCollateralStore from "../../../../../../store/collateralStore";
+import { message } from "antd";
 
 interface SavingsFormProps {
   control: Control<FormValues>;
   errors: Record<string, any>;
 }
+
+// Function to submit savings data to the API
+export const submitSavings = async (
+  data: FormValues,
+  appraisalId: string,
+  isEdit: boolean = false
+): Promise<boolean> => {
+  try {
+    const {
+      id,
+      savingsType,
+      savingsSubType,
+      savingsOwnership,
+      savingsNo,
+      savingsFDNo,
+      savingsAmount,
+      savingsMaturityDate,
+      savingsCompany,
+      savingsDescription,
+      savingsBuildUpValue,
+    } = data;
+
+    // Prepare payload for API
+    const payload = {
+      appraisalId,
+      type: savingsType || "",
+      ownership: savingsOwnership || "",
+      savingsNo: savingsNo,
+      fdNo: savingsFDNo,
+      amount: savingsAmount ? parseFloat(savingsAmount) : undefined,
+      maturityDate: savingsMaturityDate,
+      company: savingsCompany,
+      description: savingsDescription,
+      savingsBuildValue: savingsBuildUpValue,
+      subType: savingsSubType,
+      // These fields aren't in the form yet, but we'll include them in the API payload
+      insuCompany: undefined,
+      refNo: undefined,
+      savingsSecCategory: "Main Security", // Default value
+      savingsSecType: "Fixed Deposits and Savings" // Default value
+    };
+
+    console.log(`${isEdit ? 'Updating' : 'Saving'} savings with payload:`, payload);
+
+    let response;
+    if (isEdit && id) {
+      response = await useCollateralStore.getState().updateSavings(id, payload);
+      message.success("Savings updated successfully");
+    } else {
+      response = await useCollateralStore.getState().saveSavings(payload);
+      message.success("Savings saved successfully");
+    }
+
+    console.log(`Savings ${isEdit ? 'update' : 'save'} response:`, response);
+    return true;
+  } catch (error) {
+    console.error(`Error ${isEdit ? 'updating' : 'saving'} savings:`, error);
+    message.error(`Failed to ${isEdit ? 'update' : 'save'} savings`);
+    return false;
+  }
+};
 
 const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
   const {
@@ -24,7 +86,7 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
 
   useEffect(() => {
     if (!dataFetched.current) {
-      fetchTypes('savings');
+      fetchTypes("savings");
       fetchOwnerships();
       dataFetched.current = true;
     }
@@ -61,6 +123,27 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
                   loading={savingsTypesLoading}
                   options={getOptions(savingsTypes)}
                 />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Sub Type"
+            validateStatus={errors.propertySubType ? "error" : ""}
+            help={errors.propertySubType?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="savingsSubType"
+              control={control}
+              render={({ field }) => (
+                <Select {...field} placeholder="Select Sub Type">
+                  <Select.Option value="apartment">Apartment</Select.Option>
+                  <Select.Option value="house">House</Select.Option>
+                  <Select.Option value="villa">Villa</Select.Option>
+                  <Select.Option value="plot">Plot</Select.Option>
+                </Select>
               )}
             />
           </Form.Item>
@@ -227,4 +310,4 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
   );
 };
 
-export default SavingsForm; 
+export default SavingsForm;

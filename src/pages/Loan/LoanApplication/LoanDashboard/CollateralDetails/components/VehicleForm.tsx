@@ -2,13 +2,97 @@ import React, { useEffect, useRef } from "react";
 import { Form, Input, InputNumber, Select, DatePicker } from "antd";
 import { Controller, Control, useWatch } from "react-hook-form";
 import { FormValues } from "../types";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 import useCollateralStore from "../../../../../../store/collateralStore";
+import { message } from "antd";
 
 interface VehicleFormProps {
   control: Control<FormValues>;
   errors: Record<string, any>;
 }
+
+// Function to submit vehicle data to the API
+export const submitVehicle = async (
+  data: FormValues,
+  appraisalId: string,
+  isEdit: boolean = false
+): Promise<boolean> => {
+  try {
+    const {
+      id,
+      vehicleType,
+      vehicleOwnership,
+      vehicleSupplier,
+      vehicleCondition,
+      vehicleCategory,
+      vehicleMake,
+      vehicleModel,
+      vehicleEngineNo,
+      vehicleChassisNo,
+      vehicleDescription,
+      vehicleRegistrationNo,
+      vehicleMV,
+      vehicleFSV,
+      vehicleYearManufacture,
+      vehicleDateOfFirstReg,
+      vehicleRegBookNo,
+      vehicleBookReceivedDate,
+      vehicleCRReleasedDate,
+      vehicleInsuranceCompany,
+      vehicleReferenceNo,
+    } = data;
+
+    // Format dates to strings for API
+    const formatDate = (date: Date | undefined) => {
+      return date ? dayjs(date).format('YYYY-MM-DD') : undefined;
+    };
+
+    // Prepare payload for API
+    const payload = {
+      appraisalId,
+      vehicleType: vehicleType || "",
+      vehicleSecCategory: "Main Security", // Default value
+      vehicleSecType: "VEHICLE", // Default value
+      ownership: vehicleOwnership || "",
+      supplier: vehicleSupplier || "",
+      condition: vehicleCondition || "",
+      category: vehicleCategory || "",
+      make: vehicleMake || "",
+      model: vehicleModel || "",
+      enginNo: vehicleEngineNo,
+      chasisNo: vehicleChassisNo,
+      regNo: vehicleRegistrationNo,
+      desc: vehicleDescription,
+      yearOfManufacture: vehicleYearManufacture,
+      marketValue: vehicleMV,
+      foreSaleValue: vehicleFSV,
+      dateOfFirstReg: formatDate(vehicleDateOfFirstReg),
+      regBookNo: vehicleRegBookNo,
+      bookReceivedDate: formatDate(vehicleBookReceivedDate),
+      crReleasedDate: formatDate(vehicleCRReleasedDate),
+      insuCompany: vehicleInsuranceCompany,
+      refNo: vehicleReferenceNo,
+    };
+
+    console.log(`${isEdit ? 'Updating' : 'Saving'} vehicle with payload:`, payload);
+
+    let response;
+    if (isEdit && id) {
+      response = await useCollateralStore.getState().updateVehicle(id, payload);
+      message.success("Vehicle updated successfully");
+    } else {
+      response = await useCollateralStore.getState().saveVehicle(payload);
+      message.success("Vehicle saved successfully");
+    }
+
+    console.log(`Vehicle ${isEdit ? 'update' : 'save'} response:`, response);
+    return true;
+  } catch (error) {
+    console.error(`Error ${isEdit ? 'updating' : 'saving'} vehicle:`, error);
+    message.error(`Failed to ${isEdit ? 'update' : 'save'} vehicle`);
+    return false;
+  }
+};
 
 const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
   const {
@@ -26,6 +110,8 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
     makesLoading: vehicleMakesLoading,
     models: vehicleModels,
     modelsLoading: vehicleModelsLoading,
+    insuranceCompanies,
+    insuranceCompaniesLoading,
     fetchTypes,
     fetchOwnerships,
     fetchSuppliers,
@@ -33,6 +119,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
     fetchSecurityCategories,
     fetchMakes,
     fetchModels,
+    fetchInsuranceCompanies,
   } = useCollateralStore();
 
   const dataFetched = useRef(false);
@@ -43,12 +130,13 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
 
   useEffect(() => {
     if (!dataFetched.current) {
-      fetchTypes('vehicle');
+      fetchTypes("vehicle");
       fetchOwnerships();
       fetchSuppliers();
       fetchConditions();
       fetchSecurityCategories();
       fetchMakes();
+      fetchInsuranceCompanies();
       dataFetched.current = true;
     }
   }, [
@@ -58,6 +146,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
     fetchConditions,
     fetchSecurityCategories,
     fetchMakes,
+    fetchInsuranceCompanies,
   ]);
 
   useEffect(() => {
@@ -243,7 +332,9 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
             <Controller
               name="vehicleEngineNo"
               control={control}
-              render={({ field }) => <Input {...field} placeholder="Enter Engine No" />}
+              render={({ field }) => (
+                <Input {...field} placeholder="Enter Engine No" />
+              )}
             />
           </Form.Item>
 
@@ -257,7 +348,9 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
             <Controller
               name="vehicleChassisNo"
               control={control}
-              render={({ field }) => <Input {...field} placeholder="Enter Chassis No" />}
+              render={({ field }) => (
+                <Input {...field} placeholder="Enter Chassis No" />
+              )}
             />
           </Form.Item>
 
@@ -271,7 +364,9 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
             <Controller
               name="vehicleDescription"
               control={control}
-              render={({ field }) => <Input.TextArea {...field} placeholder="Enter Description" />}
+              render={({ field }) => (
+                <Input.TextArea {...field} placeholder="Enter Description" />
+              )}
             />
           </Form.Item>
 
@@ -285,7 +380,9 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
             <Controller
               name="vehicleRegistrationNo"
               control={control}
-              render={({ field }) => <Input {...field} placeholder="Enter Registration No" />}
+              render={({ field }) => (
+                <Input {...field} placeholder="Enter Registration No" />
+              )}
             />
           </Form.Item>
 
@@ -299,7 +396,9 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
             <Controller
               name="vehicleYearManufacture"
               control={control}
-              render={({ field }) => <Input {...field} placeholder="Enter Year of Manufacture" />}
+              render={({ field }) => (
+                <Input {...field} placeholder="Enter Year of Manufacture" />
+              )}
             />
           </Form.Item>
 
@@ -318,7 +417,9 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
                   {...field}
                   style={{ width: "100%" }}
                   placeholder="Enter MV"
-                  formatter={(value) => `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                  formatter={(value) =>
+                    `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
                 />
               )}
@@ -340,7 +441,9 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
                   {...field}
                   style={{ width: "100%" }}
                   placeholder="Enter FSV"
-                  formatter={(value) => `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                  formatter={(value) =>
+                    `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
                 />
               )}
@@ -380,7 +483,9 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
             <Controller
               name="vehicleRegBookNo"
               control={control}
-              render={({ field }) => <Input {...field} placeholder="Enter Reg Book No" />}
+              render={({ field }) => (
+                <Input {...field} placeholder="Enter Reg Book No" />
+              )}
             />
           </Form.Item>
 
@@ -429,10 +534,35 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               )}
             />
           </Form.Item>
+
+          <Form.Item label="Insurance Company">
+            <Controller
+              name="vehicleInsuranceCompany"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  placeholder="Select Insurance Company"
+                  loading={insuranceCompaniesLoading}
+                  options={getOptions(insuranceCompanies)}
+                />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item label="Reference No">
+            <Controller
+              name="vehicleReferenceNo"
+              control={control}
+              render={({ field }) => (
+                <Input {...field} placeholder="Enter Reference No" />
+              )}
+            />
+          </Form.Item>
         </div>
       </div>
     </div>
   );
 };
 
-export default VehicleForm; 
+export default VehicleForm;
