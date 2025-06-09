@@ -106,6 +106,8 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
+        // TODO: have to check after Deployment
+        console.log('Form Data:', data);
         const requestData = { ...data, durOfCurrLoc: `${data.years}, ${data.months}` };
         const actions = {
             create: () => addAddressDetail(stkId ?? '', [requestData]),

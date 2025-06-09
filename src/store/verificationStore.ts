@@ -129,7 +129,14 @@ const useVerificationStore = create<IVerificationState>((set) => ({
       const response = await API.get(
         `/mobixCamsCredit/v1/credits/crib/internal/${cnic}`
       );
-      set({ cribDetails: response.data?.object, cribLoading: false });
+      // TODO: Handle the response based on the API structure
+      if (response.data?.code === "000") {
+        set({ cribDetails: response.data?.object, cribLoading: false });
+        return;
+      } else if (response.data?.code === "999") {
+        set({ cribDetails: [], cribLoading: false });
+        return;
+      }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);

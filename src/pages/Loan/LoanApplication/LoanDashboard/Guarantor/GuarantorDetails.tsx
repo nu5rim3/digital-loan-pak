@@ -80,12 +80,12 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
         if (initialSave) {
-            addStakeholder({ ...data, appraisalID: appId ?? '', new: true, stkType: 'G' })
+            addStakeholder({ ...data, stkCNic: state.cnicNumber, appraisalID: appId ?? '', new: true, stkType: 'G' })
             setInitialSave(false)
         } else if (mode === 'create') {
             addStakeholder({ ...data, appraisalID: appId ?? '', new: true, stkType: 'G' })
         } else if (mode === 'edit') {
-            updateStakeholder(stakholderId, { ...data, appraisalID: appId ?? '', update: true, stkType: 'G' })
+            updateStakeholder(stakholderId, { ...data, stkCNic: state.cnicNumber, appraisalID: appId ?? '', update: true, stkType: 'G' })
         }
         fetchStackholderByAppId(appId ?? '')
     }
@@ -201,7 +201,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                         </Form.Item>
                         <Form.Item label="Full Name" validateStatus={errors.stkCusName ? "error" : ""} help={errors.stkCusName?.message} required>
                             <Controller
-                                disabled
+                                // disabled
                                 name="stkCusName"
                                 control={control}
                                 render={({ field }) => <Input {...field} placeholder="Enter Customer Name" />}
@@ -211,7 +211,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                             <Controller
                                 name="stkInitials"
                                 control={control}
-                                disabled
+                                // disabled
                                 render={({ field }) =>
                                     <Input
                                         {...field}

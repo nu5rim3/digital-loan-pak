@@ -116,10 +116,10 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
                                 name="phoneNoType"
                                 render={({ field }) => (
                                     <Select {...field} placeholder="Select Contact Type" options={[
-                                        { label: 'Mobile', value: 'Mobile' },
-                                        { label: 'Office', value: 'Office' },
-                                        { label: 'Fixed Line', value: 'Fixed Line' },
-                                        { label: 'Additional Phone Number', value: 'Additional Phone Number' },
+                                        { label: 'Mobile', value: 'MN' },
+                                        { label: 'Office', value: 'ON' },
+                                        { label: 'Fixed Line', value: 'FN' },
+                                        { label: 'Additional Phone Number', value: 'APN' },
                                     ]} />
                                 )}
                             />
@@ -179,7 +179,7 @@ const DetailsCard: React.FC<{ detail: IContactDetails; onEdit: () => void, onDel
             <Button type="default" size="small" icon={<EditOutlined />} onClick={onEdit} disabled={detail.phoneNoType === 'OTP Phone Number'} />
         </div>
         <Descriptions column={1}>
-            <Descriptions.Item label="Contact Type">{detail.phoneNoType}</Descriptions.Item>
+            <Descriptions.Item label="Contact Type">{detail.phoneNoType === 'MN' && 'Mobile'}{detail.phoneNoType === 'ON' && 'Office'}{detail.phoneNoType === 'FN' && 'Fixed Number'}{detail.phoneNoType === 'APN' && 'Additional Phone Number'}</Descriptions.Item>
             <Descriptions.Item label="Contact Number">{detail.phoneNo}</Descriptions.Item>
         </Descriptions>
     </Card>

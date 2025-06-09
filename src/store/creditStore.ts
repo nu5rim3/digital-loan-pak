@@ -4,7 +4,7 @@ import { notification } from "antd";
 
 export interface IGoldLoanAppArticleDetails {
   articleDtls: string;
-  articleQuantity: string;
+  articleQuantity: number;
   articleStatus: string;
   masterArticleCode: string;
 }

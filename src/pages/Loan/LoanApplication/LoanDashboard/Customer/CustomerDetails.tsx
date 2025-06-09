@@ -82,6 +82,7 @@ const CustomerDetails: React.FC = () => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
+        console.log('Form Data:', data);
         if (mode === 'create') {
             addStakeholder({
                 ...data,
@@ -246,7 +247,7 @@ const CustomerDetails: React.FC = () => {
                             <Controller
                                 name="stkInitials"
                                 control={control}
-                                disabled
+                                // disabled
                                 render={({ field }) =>
                                     <Input
                                         {...field}
@@ -262,7 +263,7 @@ const CustomerDetails: React.FC = () => {
                             <Controller
                                 name="stkSurName"
                                 control={control}
-                                disabled
+                                // disabled
                                 render={({ field }) =>
                                     <Input
                                         {...field}

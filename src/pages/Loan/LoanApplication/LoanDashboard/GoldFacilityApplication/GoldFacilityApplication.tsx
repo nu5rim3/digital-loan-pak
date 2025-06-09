@@ -76,7 +76,7 @@ const schema = yup.object().shape({
 
 const schema2 = yup.object().shape({
     articleDtls: yup.string().required('Article Details is required'),
-    articleQuantity: yup.string().required('Article Quantity is required'),
+    articleQuantity: yup.number().required('Article Quantity is required'),
     masterArticleCode: yup.string().required('Article Code is required'),
     articleStatus: yup.string().required('Article Status is required'),
 });
@@ -161,7 +161,7 @@ const GoldFacilityApplication: React.FC = () => {
         const selectedItem = goldLoanAppArticleDtlsDtoList[index];
         setArticleValue('masterArticleCode', selectedItem.masterArticleCode ?? '', { shouldValidate: true });
         setArticleValue('articleStatus', selectedItem.articleStatus ?? '', { shouldValidate: true });
-        setArticleValue('articleQuantity', selectedItem.articleQuantity ?? '', { shouldValidate: true });
+        setArticleValue('articleQuantity', Number(selectedItem.articleQuantity ?? 0), { shouldValidate: true });
         setArticleValue('articleDtls', selectedItem.articleDtls ?? '', { shouldValidate: true });
         setfGoldLoanAppArticleDtlsDtoList((prev) => prev.filter((_, i) => i !== index));
     }
@@ -277,8 +277,10 @@ const GoldFacilityApplication: React.FC = () => {
                                         <Input
                                             {...field}
                                             placeholder="Article Quantity"
-                                            onChange={(value) =>
-                                                field.onChange(Number(value))
+                                            type='number'
+                                            onChange={(value) => {
+                                                field.onChange(Number(value.target.value))
+                                            }
                                             }
                                         />
                                     )}
@@ -331,7 +333,15 @@ const GoldFacilityApplication: React.FC = () => {
                                                     name="tppNumber"
                                                     control={control}
                                                     render={({ field }) => (
-                                                        <Input {...field} placeholder="TPP Number" type='number' />
+                                                        <Input
+                                                            {...field}
+                                                            placeholder="TPP Number"
+                                                            type='text'
+                                                            onChange={(e) => {
+                                                                const value = e.target.value.replace(/[^0-9]/g, '');
+                                                                field.onChange(value);
+                                                            }}
+                                                        />
                                                     )}
                                                 />
                                             </Form.Item>
