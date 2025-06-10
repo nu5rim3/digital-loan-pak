@@ -1,4 +1,4 @@
-import { Button, Card, Collapse, Descriptions, Empty, Form, Input, Select, Switch } from 'antd';
+import { Button, Card, Collapse, Descriptions, Empty, Form, Input, Select, Spin, Switch } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { PlusOutlined, EditOutlined, UndoOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -106,8 +106,6 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
-        // TODO: have to check after Deployment
-        console.log('Form Data:', data);
         const requestData = { ...data, durOfCurrLoc: `${data.years}, ${data.months}` };
         const actions = {
             create: () => addAddressDetail(stkId ?? '', [requestData]),
@@ -120,7 +118,7 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
     };
 
     const renderAddressDetails = () => {
-        if (addressDetailsLoading) return <Empty description="Loading Address Details..." />;
+        if (addressDetailsLoading) return <Spin spinning={addressDetailsLoading}><Empty description="Loading Address Details..." /></Spin>;
         if (!addressDetails?.length) return <Empty description="No Address Details Available" />;
         return (
             <div className="grid grid-cols-3 gap-4">

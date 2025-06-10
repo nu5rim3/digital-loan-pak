@@ -290,6 +290,21 @@ interface ILocations {
   creditScore: string;
   status: "A" | "I";
 }
+
+interface IModeOfSecurity {
+  code: string;
+  productCode: string;
+  description: string;
+  creditScore: string;
+  status: "A" | "I";
+}
+
+interface IRelationaShipGaurantor {
+  code: string;
+  description: string;
+  creditScore: string;
+  status: "A" | "I";
+}
 interface ICommonState {
   operators: IOperator[];
   operatorLoading: boolean;
@@ -461,6 +476,16 @@ interface ICommonState {
     description: string;
   } | null;
 
+  modeOfSecurity: IModeOfSecurity[];
+  modeOfSecurityLoading: boolean;
+  modeOfSecurityError: string | null;
+
+  relationaShipGaurantor: IRelationaShipGaurantor[];
+  relationaShipGaurantorLoading: boolean;
+  relationaShipGaurantorError: string | null;
+
+  selectedProductCode: string;
+
   fetchOperators: () => Promise<void>;
   fetchECIBReport: (cnic: string) => Promise<void>;
   fetchOrganizationType: () => Promise<void>;
@@ -502,7 +527,12 @@ interface ICommonState {
   fetchProductTypes: (facilityCode: string) => Promise<void>;
   fetchSubProductTypes: (prodCode: string) => Promise<void>;
   fetchLocations: () => Promise<void>;
-  setSelectedProductCategory: (category: { code: string; description: string; } | null) => void;
+  setSelectedProductCategory: (
+    category: { code: string; description: string } | null
+  ) => void;
+  fetchModeOfSecurity: (productCode: string) => Promise<void>;
+  fetchRelationaShipGaurantor: (productCode: string) => Promise<void>;
+  setSelectedProductCode: (productCode: string) => void;
 }
 
 type TPersist = (
@@ -701,6 +731,16 @@ const useCommonStore = create<ICommonState>(
       ],
 
       selectedProductCategory: null,
+
+      modeOfSecurity: [],
+      modeOfSecurityLoading: false,
+      modeOfSecurityError: null,
+
+      relationaShipGaurantor: [],
+      relationaShipGaurantorLoading: false,
+      relationaShipGaurantorError: null,
+
+      selectedProductCode: "",
 
       fetchOperators: async () => {
         set({ operatorLoading: true, operatorError: null });
@@ -1339,6 +1379,50 @@ const useCommonStore = create<ICommonState>(
 
       setSelectedProductCategory: (category) => {
         set({ selectedProductCategory: category });
+      },
+
+      // security-guarantees/products/
+      fetchModeOfSecurity: async (productCode: string) => {
+        set({ modeOfSecurityLoading: true, modeOfSecurityError: null });
+        try {
+          const response = await API.get(
+            `/mobixCamsCommon/v1/security-guarantees/products/${productCode}`
+          );
+          set({ modeOfSecurity: response.data, modeOfSecurityLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({
+            modeOfSecurityError: error.message,
+            modeOfSecurityLoading: false,
+          });
+        }
+      },
+
+      // guarantor-relationships/products/{product_code}
+      fetchRelationaShipGaurantor: async (productCode: string) => {
+        set({
+          relationaShipGaurantorLoading: true,
+          relationaShipGaurantorError: null,
+        });
+        try {
+          const response = await API.get(
+            `/mobixCamsCommon/v1/guarantor-relationships/products/${productCode}`
+          );
+          set({
+            relationaShipGaurantor: response.data,
+            relationaShipGaurantorLoading: false,
+          });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({
+            relationaShipGaurantorError: error.message,
+            relationaShipGaurantorLoading: false,
+          });
+        }
+      },
+
+      setSelectedProductCode: (productCode: string) => {
+        set({ selectedProductCode: productCode });
       },
     }),
 

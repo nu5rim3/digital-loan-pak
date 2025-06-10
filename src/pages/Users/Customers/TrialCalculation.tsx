@@ -177,7 +177,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         fetchFacilityTypes,
         fetchProductTypes,
         fetchSubProductTypes,
-        setSelectedProductCategory } = useCommonStore();
+        setSelectedProductCategory, setSelectedProductCode } = useCommonStore();
 
     const { productDetails, productDetailsLoading, fetchProductDetails, resetProductDetails } = useLoanStore()
     const { user } = useUserStore()
@@ -192,7 +192,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
             "pMode": "T", // const T
             "pUser": user?.idx ?? '', // log user ID heshan.pe
             "pTrhdMe": user?.meCode ?? '', // user me code
-            "pTrhdLType": productType ?? '', // Product Type
+            "pTrhdLType": productType ?? '', // Product Type 
             "pTrhdMethod": calculationMethod ?? '', // calculation method
             "pTrhdBrh": user?.branches[0].code ?? '', // branch code
             "pTrhdTerm": data.trems ?? '', // // term
@@ -437,6 +437,9 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                 countOfRollOver: facilityType === 'RO' ? rollOverDetail.countOfRollOver : '', // count of roll over
             }
         }
+        const productCode = __calculationPayload.pTrhdLType
+        console.log('productCode', productCode)
+        setSelectedProductCode(productCode)
         saveTrailCalulation(appId ?? '', cliIdx, __calculationPayload)
     }
 

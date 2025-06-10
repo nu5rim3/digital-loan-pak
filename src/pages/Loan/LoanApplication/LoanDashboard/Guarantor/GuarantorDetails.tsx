@@ -65,7 +65,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
         resolver: yupResolver(schema),
     });
 
-    const { organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, fetchEducationLevel, headOfFamily, headOfFamilyLoading, fetchHeadOfFamily, healthCondition, healthConditionLoading, fetchHealthCondition } = useCommonStore()
+    const { selectedProductCode, relationaShipGaurantor, relationaShipGaurantorLoading, modeOfSecurity, modeOfSecurityLoading, organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, fetchEducationLevel, fetchModeOfSecurity, fetchRelationaShipGaurantor } = useCommonStore()
     const { stakeholderLoading, stakeholders, fetchStackholderByAppId, addStakeholder, updateStakeholder } = useStakeholderStore()
     const { guarantors, fetchGuarantorByAppId } = useGuarantorStore();
     const [initialSave, setInitialSave] = useState(false);
@@ -94,10 +94,13 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
         fetchOrganizationType()
         fetchCNICStaus()
         fetchEducationLevel()
-        fetchHeadOfFamily()
-        fetchHealthCondition()
+        // fetchHeadOfFamily()
+        // fetchHealthCondition()
         fetchGuarantorByAppId(appId ?? '')
         fetchStackholderByAppId(appId ?? '')
+        console.log('selectedProductCode :', selectedProductCode)
+        fetchModeOfSecurity(selectedProductCode ?? '')
+        fetchRelationaShipGaurantor(selectedProductCode ?? '')
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -372,7 +375,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                 name="relationship"
                                 control={control}
                                 render={({ field }) =>
-                                    <Select {...field} placeholder="Select a Relationship" allowClear loading={headOfFamilyLoading} options={headOfFamily.map((item) => ({
+                                    <Select {...field} placeholder="Select a Relationship" allowClear loading={relationaShipGaurantorLoading} options={relationaShipGaurantor.map((item) => ({
                                         label: item.description,
                                         value: item.code
                                     }))}>
@@ -384,7 +387,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                 name="modeOfSecurity"
                                 control={control}
                                 render={({ field }) =>
-                                    <Select {...field} placeholder="Select a Mode of Security" allowClear loading={healthConditionLoading} options={healthCondition.map((item) => ({
+                                    <Select {...field} placeholder="Select a Mode of Security" allowClear loading={modeOfSecurityLoading} options={modeOfSecurity.map((item) => ({
                                         label: item.description,
                                         value: item.code
                                     }))}>

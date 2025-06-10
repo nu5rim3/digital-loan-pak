@@ -105,7 +105,7 @@ const CRIBDetails: React.FC<ICRIBDetails> = ({ cnic, fullName }) => {
                             Array.isArray(cribDetails) &&
                             <div>
                                 <Form.Item label="Name">
-                                    <b>{fullName ?? '-'}</b>
+                                    <b>{cribDetails[0].clientName ?? fullName}</b>
                                 </Form.Item>
                                 <Form.Item label="CNIC">
                                     <b>{cnic ?? '-'}</b>
