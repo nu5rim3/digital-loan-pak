@@ -154,7 +154,9 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
                             <Descriptions.Item label="Province">{getProvince(item.province, areas)}</Descriptions.Item>
                             <Descriptions.Item label="Community">{getCommunity(item.community, communities)}</Descriptions.Item>
                             <Descriptions.Item label="Nearby Popular Place">{item.nearByPopPlc}</Descriptions.Item>
-                            <Descriptions.Item label="Duration of Current Location">{item.durOfCurrLoc}</Descriptions.Item>
+                            <Descriptions.Item label="Duration of Current Location">
+                                {`${splitDuration(item.durOfCurrLoc).years}Y, ${splitDuration(item.durOfCurrLoc).months}M`}
+                            </Descriptions.Item>
                         </Descriptions>
                     </Card>
                 ))}
@@ -333,25 +335,16 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
                     <Controller
                         name="years"
                         control={control}
-                        defaultValue='0Y'
+                        defaultValue='0'
                         render={({ field }) =>
-                            <Select {...field} placeholder="Years" options={[
-                                { label: '0 Year', value: '0Y' },
-                                { label: '1 Year', value: '1Y' },
-                                { label: '2 Years', value: '2Y' },
-                                { label: '3 Years', value: '3Y' },
-                                { label: '4 Years', value: '4Y' },
-                                { label: '5 Years', value: '5Y' },
-                                { label: '6 Years', value: '6Y' },
-                                { label: '7 Years', value: '7Y' },
-                                { label: '8 Years', value: '8Y' },
-                                { label: '9 Years', value: '9Y' },
-                                { label: '10 Years', value: '10Y' },
-                                { label: '10 Years +', value: '10Y+' },
-                            ]}
+                            <Input
+                                {...field}
+                                suffix="Years"
+                                placeholder="0"
                                 onChange={(e) => {
-                                    setValue("years", e)
-                                    setValue("durOfCurrLoc", `${e}, ${getValues('months')}`)
+                                    const value = e.target.value;
+                                    setValue("years", value);
+                                    setValue("durOfCurrLoc", `${value} , ${getValues('months')}`);
                                 }}
                             />
                         }
@@ -360,26 +353,16 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
                     <Controller
                         name="months"
                         control={control}
-                        defaultValue='0M'
+                        defaultValue='0'
                         render={({ field }) =>
-                            <Select {...field} placeholder="Months" options={[
-                                { label: '0 Month', value: '0M' },
-                                { label: '1 Month', value: '1M' },
-                                { label: '2 Months', value: '2M' },
-                                { label: '3 Months', value: '3M' },
-                                { label: '4 Months', value: '4M' },
-                                { label: '5 Months', value: '5M' },
-                                { label: '6 Months', value: '6M' },
-                                { label: '7 Months', value: '7M' },
-                                { label: '8 Months', value: '8M' },
-                                { label: '9 Months', value: '9M' },
-                                { label: '10 Months', value: '10M' },
-                                { label: '11 Months', value: '11M' },
-                            ]}
+                            <Input
+                                {...field}
+                                suffix="Months"
+                                placeholder="0"
                                 onChange={(e) => {
-                                    setValue("months", e)
-                                    setValue("durOfCurrLoc", `${getValues('years')} , ${e}`)
-
+                                    const value = e.target.value;
+                                    setValue("months", value);
+                                    setValue("durOfCurrLoc", `${getValues('years')} , ${value}`);
                                 }}
                             />
                         }

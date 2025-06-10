@@ -337,7 +337,17 @@ const CustomerDetails: React.FC = () => {
                             <Controller
                                 name="stkAge"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Age is calculated automatically" type='number' />}
+                                render={({ field }) =>
+                                    <Input {...field}
+                                        placeholder="Age is calculated automatically"
+                                        type='number'
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            if (/^\d*$/.test(value)) { // Allow only digits
+                                                field.onChange(value);
+                                            }
+                                        }}
+                                    />}
                             />
                         </Form.Item>
                         <Form.Item label="Gender" validateStatus={errors.stkGender ? "error" : ""} help={errors.stkGender?.message} required>

@@ -57,14 +57,14 @@ export const formatPhoneNumber = (value: string) => {
   return [match[1], match[2]].filter(Boolean).join("");
 };
 
-// duration = 5Y, 5M
+// duration = 5, 5
 export const splitDuration = (duration: string) => {
-  const years = duration.match(/(\d+)Y/);
-  const months = duration.match(/(\d+)M/);
+  const years = duration.split(",")[0].trim().match(/(\d+)/);
+  const months = duration.split(",")[1].trim().match(/(\d+)/);
 
   return {
-    years: years ? years[1] + "Y" : "0Y",
-    months: months ? months[1] + "M" : "0M",
+    years: years ? years[1] : "0",
+    months: months ? months[1] : "0",
   };
 };
 
