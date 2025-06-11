@@ -106,7 +106,7 @@ const GoldFacilityApplication: React.FC = () => {
             masterArticleCode: '',
             articleQuantity: 0,
             articleDtls: '',
-            articleStatus: '-',
+            articleStatus: 'A',
         },
     });
 
@@ -159,7 +159,9 @@ const GoldFacilityApplication: React.FC = () => {
         console.log('Article articleQuantity:', data.articleQuantity);
         console.log('Article masterArticleCode', data.masterArticleCode);
         setGoldLoanAppArticleDtlsDtoList((prev) => [...prev, { ...data, articleQuantity: Number(data.articleQuantity), articleStatus: 'A' }]);
-        resetArticle()
+        setTimeout(() => {
+            resetArticle()
+        }, 2000);
     }
 
     const removeSelectedIndex = (index: number) => {
