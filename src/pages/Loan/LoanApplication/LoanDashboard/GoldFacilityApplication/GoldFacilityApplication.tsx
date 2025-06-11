@@ -155,7 +155,9 @@ const GoldFacilityApplication: React.FC = () => {
     };
 
     const onSubmitArticle = (data: IGoldLoanAppArticleDetails) => {
-        console.log('Article Data:', data);
+        console.log('Article articleDtls:', data.articleDtls);
+        console.log('Article articleQuantity:', data.articleQuantity);
+        console.log('Article masterArticleCode', data.masterArticleCode);
         setGoldLoanAppArticleDtlsDtoList((prev) => [...prev, { ...data, articleQuantity: Number(data.articleQuantity), articleStatus: 'A' }]);
         resetArticle()
     }
