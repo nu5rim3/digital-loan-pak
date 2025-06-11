@@ -149,7 +149,8 @@ const GoldFacilityApplication: React.FC = () => {
     };
 
     const onSubmitArticle = (data: IGoldLoanAppArticleDetails) => {
-        setfGoldLoanAppArticleDtlsDtoList((prev) => [...prev, { ...data, articleStatus: 'A' }]);
+        console.log('Article Data:', data);
+        setfGoldLoanAppArticleDtlsDtoList((prev) => [...prev, { ...data, articleQuantity: Number(data.articleQuantity), articleStatus: 'A' }]);
         resetArticle()
     }
 
@@ -214,7 +215,7 @@ const GoldFacilityApplication: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [denNetWeight, goldNetWeight, marketValue])
 
-
+    console.log('goldLoanAppArticleDtlsDtoList : ', goldLoanAppArticleDtlsDtoList)
 
     return (
         <>
@@ -223,7 +224,9 @@ const GoldFacilityApplication: React.FC = () => {
                     <Button type='primary' icon={<PlusOutlined />} onClick={() => openModal('save')}>Add Article Details</Button>
                 </div>
                 {goldLoanAppDetailsLoading ? (
-                    <Empty description="Loading  Gold Facility Application ..." />
+                    <Spin spinning={goldLoanAppDetailsLoading}>
+                        <Empty description="Loading  Gold Facility Application ..." />
+                    </Spin>
                 ) : goldLoanAppDetails.length === 0 ? (
                     <Spin spinning={goldLoanAppDetailsLoading}>
                         <Empty description="No Gold Facility Application Available" />
@@ -298,18 +301,21 @@ const GoldFacilityApplication: React.FC = () => {
                         goldLoanAppArticleDtlsDtoList.length > 0 ? (
                             <>
                                 <div className='grid grid-cols-2 gap-3 py-5'>
-                                    {goldLoanAppArticleDtlsDtoList.map((item, index) => (
-                                        <Card key={index} className='bg-gray-100'>
-                                            <div className="flex justify-end gap-1">
-                                                <Button type="default" size="small" icon={<EditOutlined />} onClick={() => { editSelectedIndex(index) }} />
-                                                <Button type="default" size="small" icon={<DeleteOutlined />} onClick={() => { removeSelectedIndex(index) }} danger />
-                                            </div>
-                                            <Descriptions column={1}>
-                                                <Descriptions.Item label="Article Details">{item.articleDtls}</Descriptions.Item>
-                                                <Descriptions.Item label="Article Quantity">{item.articleQuantity}</Descriptions.Item>
-                                            </Descriptions>
-                                        </Card>
-                                    ))}
+                                    {goldLoanAppArticleDtlsDtoList.map((item, index) => {
+                                        console.log('Item:', item);
+                                        return (
+                                            <Card key={index} className='bg-gray-100'>
+                                                <div className="flex justify-end gap-1">
+                                                    <Button type="default" size="small" icon={<EditOutlined />} onClick={() => { editSelectedIndex(index) }} />
+                                                    <Button type="default" size="small" icon={<DeleteOutlined />} onClick={() => { removeSelectedIndex(index) }} danger />
+                                                </div>
+                                                <Descriptions column={1}>
+                                                    <Descriptions.Item label="Article Details">{item.articleDtls}</Descriptions.Item>
+                                                    <Descriptions.Item label="Article Quantity">{item.articleQuantity}</Descriptions.Item>
+                                                </Descriptions>
+                                            </Card>
+                                        )
+                                    })}
                                 </div>
                                 <div>
                                     <Form layout='vertical' onFinish={handleSubmit(onSubmit)}>
