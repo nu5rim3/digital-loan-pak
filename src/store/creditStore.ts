@@ -17,6 +17,7 @@ export interface IGoldLoanAppDetails {
   goldLoanAppType: string | "GOD" | "DEN";
 
   goldsmithIdFx?: string;
+  goldsmithId?: string;
   goldCollateralValue?: string;
   goldGrossWeight?: string;
   goldLoanAppArticleDtlsDtoList?: IGoldLoanAppArticleDetails[] | null;
