@@ -18,6 +18,7 @@ const schema = yup.object().shape({
         .string()
         .required('Gold Facility Type is required')
         .oneOf(['DEN', 'GOD'], 'Gold Facility Type must be either Dencimeter or Goldsmith'),
+    // Fields required only if goldLoanAppType is GOD
     goldsmithIdFx: yup.string().when('goldLoanAppType', {
         is: 'GOD',
         then: (schema) => schema.required('Goldsmith ID is required'),
@@ -48,6 +49,8 @@ const schema = yup.object().shape({
         then: (schema) => schema.required('Gold Net Weight is required'),
         otherwise: (schema) => schema.notRequired(),
     }),
+
+    // Fields required only if goldLoanAppType is DEN
     denCollateralValue: yup.string().when('goldLoanAppType', {
         is: 'DEN',
         then: (schema) => schema.required('Den Collateral Value is required'),
@@ -73,10 +76,11 @@ const schema = yup.object().shape({
 
 const schema2 = yup.object().shape({
     articleDtls: yup.string().required('Article Details is required'),
-    articleQuantity: yup.number().required('Article Quantity is required'),
+    articleQuantity: yup.number().min(1, 'Article Quantity must be at least 1').required('Article Quantity is required'),
     masterArticleCode: yup.string().required('Article Code is required'),
     articleStatus: yup.string().required('Article Status is required'),
 });
+
 
 const GoldFacilityApplication: React.FC = () => {
 
@@ -86,7 +90,7 @@ const GoldFacilityApplication: React.FC = () => {
     const [selectedDetail, setSelectedDetail] = useState<IGoldLoanAppDetails | null>(null);
     const [goldLoanAppArticleDtlsDtoList, setGoldLoanAppArticleDtlsDtoList] = useState<IGoldLoanAppArticleDetails[]>([]);
 
-    const { control, formState: { errors }, setValue, handleSubmit, reset, watch } = useForm<IGoldLoanAppDetails>({
+    const { control, formState: { errors }, setValue, handleSubmit, reset, watch } = useForm({
         resolver: yupResolver(schema),
     });
 
@@ -96,15 +100,16 @@ const GoldFacilityApplication: React.FC = () => {
         handleSubmit: handleArticleSubmit,
         reset: resetArticle,
         setValue: setArticleValue,
-    } = useForm<IGoldLoanAppArticleDetails>({
+    } = useForm({
         resolver: yupResolver(schema2),
         defaultValues: {
-            articleDtls: '',
-            articleQuantity: undefined,
             masterArticleCode: '',
-            articleStatus: 'A',
-        }
+            articleQuantity: 0,
+            articleDtls: '',
+            articleStatus: '-',
+        },
     });
+
 
     const { goldsmiths, goldsmithLoading, marketValue, articleMaster, articleMasterLoading, fetchGoldsmith, fetchArticleMaster, fetchMarketValue } = useCommonStore();
     const { user } = useUserStore();
@@ -119,7 +124,7 @@ const GoldFacilityApplication: React.FC = () => {
             setValue('goldLoanAppType', details.goldLoanAppType);
             if (details.goldLoanAppType === 'GOD') {
                 setValue('goldsmithIdFx', details.goldsmithIdFx ?? '');
-                setValue('goldsmithId', details?.goldsmithId ?? '');
+                setValue('goldsmithIdFx', details.goldsmithIdFx ?? '');
                 setValue('goldCollateralValue', details.goldCollateralValue ?? '');
                 setValue('goldGrossWeight', details.goldGrossWeight ?? '');
                 setValue('goldMarketValue', details.goldMarketValue ?? '');
@@ -132,14 +137,11 @@ const GoldFacilityApplication: React.FC = () => {
             }
         } else {
             reset();
-            setGoldLoanAppArticleDtlsDtoList([]);
         }
     };
 
     const closeModal = () => {
         reset();
-        resetArticle();
-        setGoldLoanAppArticleDtlsDtoList([]);
         setIsModalOpen(false);
     };
 
@@ -153,8 +155,9 @@ const GoldFacilityApplication: React.FC = () => {
     };
 
     const onSubmitArticle = (data: IGoldLoanAppArticleDetails) => {
+        console.log('Article Data:', data);
         setGoldLoanAppArticleDtlsDtoList((prev) => [...prev, { ...data, articleQuantity: Number(data.articleQuantity), articleStatus: 'A' }]);
-        resetArticle();
+        resetArticle()
     }
 
     const removeSelectedIndex = (index: number) => {
@@ -184,6 +187,7 @@ const GoldFacilityApplication: React.FC = () => {
     const goldLoanType = watch('goldLoanAppType');
     const goldNetWeight = watch('goldNetWeight');
     const denNetWeight = watch('denNetWeight');
+
 
     useEffect(() => {
         if (marketValue) {
@@ -217,6 +221,8 @@ const GoldFacilityApplication: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [denNetWeight, goldNetWeight, marketValue])
 
+    console.log('goldLoanAppArticleDtlsDtoList : ', goldLoanAppArticleDtlsDtoList)
+
     return (
         <>
             <div className='flex flex-col gap-2'>
@@ -248,10 +254,9 @@ const GoldFacilityApplication: React.FC = () => {
                 size='large'
             >
                 <Card>
-                    <form onSubmit={handleArticleSubmit(onSubmitArticle)}>
+                    <Form layout='vertical' onFinish={handleArticleSubmit(onSubmitArticle)}>
                         <div className='grid grid-cols-2 gap-3'>
-                            <div>
-                                <label>Article Type</label>
+                            <Form.Item label="Article Type" validateStatus={articleErrors.masterArticleCode ? 'error' : ''} help={articleErrors.masterArticleCode?.message} required>
                                 <Controller
                                     name="masterArticleCode"
                                     control={articleControl}
@@ -261,19 +266,20 @@ const GoldFacilityApplication: React.FC = () => {
                                             allowClear
                                             placeholder="Select Article Details"
                                             onChange={(value) => {
-                                                field.onChange(value); // only update field
+                                                field.onChange(value);
+                                                setArticleValue('masterArticleCode', value, { shouldValidate: true });
                                                 setArticleValue('articleStatus', 'A', { shouldValidate: true });
-                                                setArticleValue('articleDtls', articleMaster.find((item) => item.code === value)?.description ?? '', { shouldValidate: true });
+                                                setArticleValue('articleDtls', articleMaster.find((item) => item.code === value)?.description ?? '', {
+                                                    shouldValidate: true,
+                                                });
                                             }}
                                             options={articleMaster.map((item) => ({ label: item.description, value: item.code }))}
                                             loading={articleMasterLoading}
                                         />
                                     )}
                                 />
-                                {articleErrors.masterArticleCode && <span className="text-red-500">{articleErrors.masterArticleCode.message}</span>}
-                            </div>
-                            <div>
-                                <label>Article Quantity</label>
+                            </Form.Item>
+                            <Form.Item label="Article Quantity" validateStatus={articleErrors.articleQuantity ? 'error' : ''} help={articleErrors.articleQuantity?.message} required>
                                 <Controller
                                     name="articleQuantity"
                                     control={articleControl}
@@ -282,38 +288,43 @@ const GoldFacilityApplication: React.FC = () => {
                                             {...field}
                                             placeholder="Article Quantity"
                                             type='number'
-                                            onChange={(e) => {
-                                                const numericValue = e.target.value.replace(/[^0-9.]/g, '');
-                                                field.onChange(numericValue ? Number(numericValue) : undefined);
-                                            }}
+                                            onChange={(value) => {
+                                                const numericValue = value.target.value.replace(/[^0-9]/g, '');
+                                                setArticleValue('articleQuantity', Number(numericValue), { shouldValidate: true });
+                                                field.onChange(Number(value.target.value))
+                                            }
+                                            }
                                         />
                                     )}
                                 />
-                                {articleErrors.articleQuantity && <span className="text-red-500">{articleErrors.articleQuantity.message}</span>}
-                            </div>
+                            </Form.Item>
                         </div>
                         <div className='flex justify-end gap-2'>
                             <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>Add</Button>
                             <Button type="default" htmlType="reset" onClick={() => resetArticle()} danger icon={<UndoOutlined />}>Reset</Button>
                         </div>
-                    </form>
+                    </Form>
+
 
                     {
                         goldLoanAppArticleDtlsDtoList.length > 0 ? (
                             <>
                                 <div className='grid grid-cols-2 gap-3 py-5'>
-                                    {goldLoanAppArticleDtlsDtoList.map((item, index) => (
-                                        <Card key={index} className='bg-gray-100'>
-                                            <div className="flex justify-end gap-1">
-                                                <Button type="default" size="small" icon={<EditOutlined />} onClick={() => { editSelectedIndex(index) }} />
-                                                <Button type="default" size="small" icon={<DeleteOutlined />} onClick={() => { removeSelectedIndex(index) }} danger />
-                                            </div>
-                                            <Descriptions column={1}>
-                                                <Descriptions.Item label="Article Details">{item.articleDtls}</Descriptions.Item>
-                                                <Descriptions.Item label="Article Quantity">{item.articleQuantity}</Descriptions.Item>
-                                            </Descriptions>
-                                        </Card>
-                                    ))}
+                                    {goldLoanAppArticleDtlsDtoList.map((item, index) => {
+                                        console.log('Item:', item);
+                                        return (
+                                            <Card key={index} className='bg-gray-100'>
+                                                <div className="flex justify-end gap-1">
+                                                    <Button type="default" size="small" icon={<EditOutlined />} onClick={() => { editSelectedIndex(index) }} />
+                                                    <Button type="default" size="small" icon={<DeleteOutlined />} onClick={() => { removeSelectedIndex(index) }} danger />
+                                                </div>
+                                                <Descriptions column={1}>
+                                                    <Descriptions.Item label="Article Details">{item.articleDtls}</Descriptions.Item>
+                                                    <Descriptions.Item label="Article Quantity">{item.articleQuantity}</Descriptions.Item>
+                                                </Descriptions>
+                                            </Card>
+                                        )
+                                    })}
                                 </div>
                                 <div>
                                     <Form layout='vertical' onFinish={handleSubmit(onSubmit)}>
@@ -487,6 +498,7 @@ const GoldFacilityApplication: React.FC = () => {
                                                                 )}
                                                             />
                                                         </Form.Item>
+
                                                     </>
                                                 )
                                             }
@@ -506,6 +518,7 @@ const GoldFacilityApplication: React.FC = () => {
                         )
                     }
                 </Card>
+
             </CommonModal>
         </>
     )
@@ -559,8 +572,10 @@ const DetailsCard: React.FC<{ detail: IGoldLoanAppDetails; onEdit: () => void; o
                         )
                     }
                 </Descriptions>
+
             </>
         )}
+
     </Card>
 );
 
