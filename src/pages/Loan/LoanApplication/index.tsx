@@ -1,5 +1,5 @@
-import React, { act, useEffect, useState } from 'react'
-import { Button, Card, Divider, Layout, Tag, Tabs } from 'antd'
+import React, { useEffect, useState } from 'react'
+import { Button, Card, Divider, Layout, Tabs } from 'antd'
 import SearchBar from '../../../components/common/searchBar/SearchBar'
 import PaginatedTable from '../../../components/common/tables/PaginatedTable'
 import APIPaginatedTable from '../../../components/common/tables/APIPaginatedTable'
@@ -9,7 +9,6 @@ import useLoanStore from '../../../store/loanStore'
 import { mainURL } from '../../../App'
 import useCustomerStore from '../../../store/customerStore'
 import { PlusOutlined } from '@ant-design/icons';
-import useUserStore from '../../../store/userStore'
 import moment from 'moment'
 
 const { Content } = Layout
@@ -18,9 +17,8 @@ const { Content } = Layout
 const LoanApplication: React.FC = () => {
 
     const navigate = useNavigate();
-    const { pageableLoans, pageableLoading, loading, addLoan, fetchLoans, fetchPageableLoans } = useLoanStore();
+    const { pageableLoans, pageableLoading, loading, addLoan, fetchPageableLoans } = useLoanStore();
     const { resetCustomer } = useCustomerStore()
-    const { user } = useUserStore()
     const [activeTab, setActiveTab] = useState('PENDING');
     const [currentPage, setCurrentPage] = useState(1);
 
