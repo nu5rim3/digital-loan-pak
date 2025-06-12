@@ -103,9 +103,9 @@ const GoldFacilityApplication: React.FC = () => {
     } = useForm({
         resolver: yupResolver(schema2),
         defaultValues: {
-            masterArticleCode: '',
-            articleQuantity: 0,
-            articleDtls: '',
+            masterArticleCode: undefined,
+            articleQuantity: 1,
+            articleDtls: undefined,
             articleStatus: 'A',
         },
     });
@@ -141,6 +141,7 @@ const GoldFacilityApplication: React.FC = () => {
     };
 
     const closeModal = () => {
+        setGoldLoanAppArticleDtlsDtoList([]);
         reset();
         setIsModalOpen(false);
     };
@@ -155,9 +156,6 @@ const GoldFacilityApplication: React.FC = () => {
     };
 
     const onSubmitArticle = (data: IGoldLoanAppArticleDetails) => {
-        console.log('Article articleDtls:', data.articleDtls);
-        console.log('Article articleQuantity:', data.articleQuantity);
-        console.log('Article masterArticleCode', data.masterArticleCode);
         setGoldLoanAppArticleDtlsDtoList((prev) => [...prev, { ...data, articleQuantity: Number(data.articleQuantity), articleStatus: 'A' }]);
         setTimeout(() => {
             resetArticle()
@@ -224,8 +222,6 @@ const GoldFacilityApplication: React.FC = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [denNetWeight, goldNetWeight, marketValue])
-
-    console.log('goldLoanAppArticleDtlsDtoList : ', goldLoanAppArticleDtlsDtoList)
 
     return (
         <>
@@ -315,7 +311,6 @@ const GoldFacilityApplication: React.FC = () => {
                             <>
                                 <div className='grid grid-cols-2 gap-3 py-5'>
                                     {goldLoanAppArticleDtlsDtoList.map((item, index) => {
-                                        console.log('Item:', item);
                                         return (
                                             <Card key={index} className='bg-gray-100'>
                                                 <div className="flex justify-end gap-1">
