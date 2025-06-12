@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { API, APIAuth } from "../services/api";
 import { notification } from "antd";
+import { PagableResponse } from "./types/Pagables";
 
 interface ILoan {
   id?: number;
@@ -31,6 +32,39 @@ interface ILoanResponse {
   createdBy: string | null;
   lastModifiedDate: string;
   creationDate: string;
+}
+
+interface ILoanApplication {
+  appIdx: string;
+  appStatus: string;
+  appCategory: string;
+  appLongitude: number;
+  appLatitude: number;
+  appVersion: string | null;
+  createdBy: string;
+  creationDate: string;
+  lastModifiedDate: string;
+  isReturned: string | null;
+  contractNo: string | null;
+  contractStatus: string | null;
+  contractDescription: string | null;
+  client: string;
+  financialUnit: string;
+  cliIdx: string;
+  cliType: string;
+  cliIdentifier: string;
+  cliIdentifierType: string;
+  fullName: string;
+  cliSequence: string;
+  cliStatus: string;
+  cliCity: string | null;
+  cliContactNumber: string;
+  cliTelcoProvider: string;
+  geoLocation: string | null;
+  cliRefNo: string | null;
+  loanType: string;
+  loanAmount: string;
+  tcNo: string | null;
 }
 
 export interface IProductDetails {
@@ -176,6 +210,10 @@ interface ILoanState {
   productDetailsLoading: boolean;
   productDetailsError: string | null;
 
+  pageableLoans: PagableResponse<ILoanApplication> | null;
+  pageableLoading: boolean;
+  pageableError: string | null;
+
   fetchLoans: (status: string, username: string) => Promise<void>;
   fetchLoanById: (id: number) => Promise<void>;
   addLoan: (loan: ILoan) => Promise<void>;
@@ -218,6 +256,18 @@ interface ILoanState {
   ) => Promise<void>;
 
   resetProductDetails: () => void;
+
+  fetchPageableLoans: (params?: {
+    status?: string;
+    appraisalId?: string;
+    fromDate?: string;
+    toDate?: string;
+    customerName?: string;
+    loanType?: string;
+    loanAmount?: string;
+    page?: number;
+    size?: number;
+  }) => Promise<void>;
 }
 
 const useLoanStore = create<ILoanState>((set) => ({
@@ -247,6 +297,10 @@ const useLoanStore = create<ILoanState>((set) => ({
   productDetails: null,
   productDetailsLoading: false,
   productDetailsError: null,
+
+  pageableLoans: null,
+  pageableLoading: false,
+  pageableError: null,
 
   fetchLoans: async (status: string, username: string) => {
     set({ loading: true, error: null });
@@ -636,6 +690,54 @@ const useLoanStore = create<ILoanState>((set) => ({
       productDetailsLoading: false,
       productDetailsError: null,
     });
+  },
+
+  fetchPageableLoans: async (params = {}) => {
+    set({ pageableLoading: true, pageableError: null });
+
+    // Build query string from params
+    const defaultParams = {
+      status: "PENDING",
+      appraisalId: "",
+      fromDate: "",
+      toDate: "",
+      customerName: "",
+      loanType: "",
+      loanAmount: "",
+      page: 0,
+      size: 7,
+    };
+    const query = new URLSearchParams({
+      ...defaultParams,
+      ...(Object.fromEntries(
+        Object.entries(params).map(([key, value]) => [key, String(value)])
+      ) as unknown as [string, string][]),
+    }).toString();
+
+    try {
+      const response = await API.get(
+        `/mobixCamsLoan/v1/loan-request/filters?${query}`
+      );
+      if (!response.data) {
+        throw new Error("No data received from the server");
+      }
+      if (!response.data.content) {
+        throw new Error("No content found in the response");
+      }
+      if (!response.data.pageable) {
+        throw new Error("Pageable information is missing in the response");
+      }
+      console.log("response : ", response);
+      const data: PagableResponse<ILoanApplication> = response.data;
+
+      set({ pageableLoans: data, pageableLoading: false });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        pageableError: error.message ?? "Failed to fetch loans",
+        pageableLoading: false,
+      });
+    }
   },
 }));
 
