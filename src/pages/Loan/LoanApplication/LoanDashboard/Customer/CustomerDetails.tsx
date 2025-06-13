@@ -233,7 +233,6 @@ const CustomerDetails: React.FC = () => {
                         </Form.Item>
                         <Form.Item label="Full Name" validateStatus={errors.stkCusName ? "error" : ""} help={errors.stkCusName?.message} required>
                             <Controller
-                                disabled
                                 name="stkCusName"
                                 control={control}
                                 render={({ field }) =>
@@ -243,6 +242,7 @@ const CustomerDetails: React.FC = () => {
                                         onChange={(value) => {
                                             field.onChange(value);
                                         }}
+                                        disabled
                                     />
                                 }
                             />
@@ -251,7 +251,6 @@ const CustomerDetails: React.FC = () => {
                             <Controller
                                 name="stkInitials"
                                 control={control}
-                                disabled
                                 render={({ field }) =>
                                     <Input
                                         {...field}
@@ -259,6 +258,7 @@ const CustomerDetails: React.FC = () => {
                                         onChange={(value) => {
                                             field.onChange(value);
                                         }}
+                                        disabled
                                     />
                                 }
                             />
@@ -267,7 +267,6 @@ const CustomerDetails: React.FC = () => {
                             <Controller
                                 name="stkSurName"
                                 control={control}
-                                disabled
                                 render={({ field }) =>
                                     <Input
                                         {...field}
@@ -275,6 +274,7 @@ const CustomerDetails: React.FC = () => {
                                         onChange={(value) => {
                                             field.onChange(value);
                                         }}
+                                        disabled
                                     />
                                 }
                             />

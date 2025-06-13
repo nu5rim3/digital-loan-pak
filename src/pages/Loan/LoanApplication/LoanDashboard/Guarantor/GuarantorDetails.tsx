@@ -204,17 +204,15 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                         </Form.Item>
                         <Form.Item label="Full Name" validateStatus={errors.stkCusName ? "error" : ""} help={errors.stkCusName?.message} required>
                             <Controller
-                                // disabled
                                 name="stkCusName"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Customer Name" />}
+                                render={({ field }) => <Input {...field} placeholder="Enter Customer Name" disabled />}
                             />
                         </Form.Item>
                         <Form.Item label="Initial" validateStatus={errors.stkInitials ? "error" : ""} help={errors.stkInitials?.message} required>
                             <Controller
                                 name="stkInitials"
                                 control={control}
-                                // disabled
                                 render={({ field }) =>
                                     <Input
                                         {...field}
@@ -222,6 +220,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                         onChange={(value) => {
                                             field.onChange(value);
                                         }}
+                                        disabled
                                     />
                                 }
                             />
@@ -230,7 +229,6 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                             <Controller
                                 name="stkSurName"
                                 control={control}
-                                disabled
                                 render={({ field }) =>
                                     <Input
                                         {...field}
@@ -238,6 +236,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                         onChange={(value) => {
                                             field.onChange(value);
                                         }}
+                                        disabled
                                     />
                                 }
                             />
