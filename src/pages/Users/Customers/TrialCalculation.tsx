@@ -55,17 +55,22 @@ const schema = yup.object().shape({
         is: (val: string) => val === '9' || val === 'E9',
         then: (schema) => schema.required('Execution Date is required'),
         otherwise: (schema) => schema.notRequired(),
-    }),
+    }).default(() => moment().format('YYYY-MM-DD')),
     capitalPaid: yup.string().when('productType', {
         is: (val: string) => val === '9' || val === 'E9',
         then: (schema) => schema.required('Capital Paid is required'),
         otherwise: (schema) => schema.notRequired(),
     }),
-    gracePeriod: yup.string().when('productType', {
-        is: (val: string) => val === '9' || val === 'E9',
-        then: (schema) => schema.required('Grace Period is required'),
-        otherwise: (schema) => schema.notRequired(),
-    }),
+    gracePeriod: yup.string()
+        .test('is-valid', 'Grace Period must be a number between 1 and 84', (value) => {
+            const num = Number(value);
+            return !isNaN(num) && num >= 1 && num <= 84;
+        })
+        .when('productType', {
+            is: (val: string) => val === '9' || val === 'E9',
+            then: (schema) => schema.required('Grace Period is required'),
+            otherwise: (schema) => schema.notRequired(),
+        }),
     expiryDate: yup.string().when('productType', {
         is: (val: string) => val === '9' || val === 'E9',
         then: (schema) => schema.required('Expiry Date is required'),
@@ -79,7 +84,7 @@ const schema = yup.object().shape({
     remark: yup.string(),
     insuranceVE: yup.string().when('productType', {
         is: (val: string) => val === '1',
-        then: (schema) => schema.required('Insurance VE is required'),
+        then: (schema) => schema.required('Insurance V/E is required'),
         otherwise: (schema) => schema.notRequired(),
     }),
     cost: yup.number().when('insuranceVE', {
@@ -342,6 +347,8 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
     const productSubType = watch('productSubType');
     const calculationMethod = watch('calculationMethod');
     const facilityType = watch('productFacility');
+    const gracePeriod = watch('gracePeriod');
+    const executionDate = watch('executionDate');
 
     useEffect(() => {
         if (productCategory !== undefined) {
@@ -425,6 +432,15 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                         .min(Number(productDetails?.generalInfo.minRate), `Markup rate must be at least ${productDetails?.generalInfo.minRate}`)
                         .max(Number(productDetails?.generalInfo.maxRate), `Markup rate must be at most ${productDetails?.generalInfo.maxRate}`)
                         .default(Number(productDetails?.generalInfo.defaultRate)),
+                    expiryDate: yup.string().when('productType', {
+                        is: (val: string) => val === '9' || val === 'E9',
+                        then: (schema) => schema.required('Expiry Date is required')
+                            .test('is-after-execution-date', 'Expiry Date must be after Execution Date', function (value) {
+                                const expiryMoment = moment(executionDate).add(gracePeriod, 'months');
+                                return !expiryMoment || !value || moment(value).isSameOrAfter(moment(expiryMoment));
+                            }),
+                        otherwise: (schema) => schema.notRequired(),
+                    }),
 
                 }),
             );
@@ -433,6 +449,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                 setValue('trems', Number(productDetails?.generalInfo.defaultTerm))
             } else {
                 setValue('trems', 1) // Reset terms for product type 9 or E9
+
             }
             setValue('markup', Number(productDetails?.generalInfo.defaultRate))
         } else {
@@ -442,7 +459,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
             setValue('markup', 0)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [productDetails, selectedSubProductType, selectedProductType]);
+    }, [productDetails, selectedSubProductType, selectedProductType, gracePeriod]);
 
     const saveCalculationHandle = () => {
 
@@ -502,9 +519,6 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [productType, loanAmount])
 
-    const executionDate = watch('executionDate');
-    const gracePeriod = watch('gracePeriod');
-
     useEffect(() => {
         if (productType === '9' || productType === 'E9') {
             if (executionDate && gracePeriod) {
@@ -514,9 +528,6 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [executionDate, gracePeriod])
-
-
-
 
     return (
         <div className='flex flex-col gap-3'>
@@ -822,7 +833,15 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                 name="executionDate"
                                 control={control}
                                 render={({ field }) => (
-                                    <Input {...field} placeholder="Enter Execution Date" type='date' />
+                                    <Input {...field} placeholder="Enter Execution Date" type='date'
+                                        // current date
+                                        value={moment().format('YYYY-MM-DD')}
+                                        disabled
+                                        onChange={(e) => {
+                                            field.onChange(moment(e.target.value).format('YYYY-MM-DD'))
+                                            setValue('executionDate', moment(e.target.value).format('YYYY-MM-DD'))
+                                        }}
+                                    />
                                 )}
                             />
                         </Form.Item>
@@ -832,7 +851,17 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                 name="gracePeriod"
                                 control={control}
                                 render={({ field }) => (
-                                    <Input {...field} placeholder="Enter Grace Period" />
+                                    <Input {...field}
+                                        placeholder="Enter Grace Period"
+                                        //  only numbers
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            if (/^\d*$/.test(value)) {
+                                                field.onChange(value);
+                                                setValue('gracePeriod', value);
+                                            }
+                                        }}
+                                    />
                                 )}
                             />
                         </Form.Item>
@@ -874,12 +903,12 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                 )}
                             />
                         </Form.Item>
-                        <Form.Item label={'Insurance VE'} validateStatus={errors.insuranceVE ? "error" : ""} help={errors.insuranceVE?.message} required hidden={productType !== '1'}>
+                        <Form.Item label={'Insurance V/E'} validateStatus={errors.insuranceVE ? "error" : ""} help={errors.insuranceVE?.message} required hidden={productType !== '1'}>
                             <Controller
                                 name="insuranceVE"
                                 control={control}
                                 render={({ field }) => (
-                                    <Select {...field} placeholder="Enter Insurance VE"
+                                    <Select {...field} placeholder="Enter Insurance V/E"
                                         options={[
                                             {
                                                 value: 'V',
