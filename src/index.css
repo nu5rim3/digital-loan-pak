@@ -22,3 +22,17 @@ body {
 .ant-tabs-card .ant-tabs-tab-active .ant-tabs-tab-btn {
   color: white !important;
 }
+
+.ant-descriptions-item-label {
+  font-weight: 600;
+  color: #747373 !important;
+}
+.ant-input:disabled {
+  /* background-color: #000080 !important; Navy Blue */
+  /* Add other styles as needed, such as text color, border, etc. */
+}
+
+.ant-select-disabled .ant-select-selector {
+  /* background-color: #000080 !important; Navy Blue */
+  /* Add other styles as needed, e.g., border-color, text-color, etc. */
+}

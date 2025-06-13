@@ -62,10 +62,6 @@ const schema = yup.object().shape({
         otherwise: (schema) => schema.notRequired(),
     }),
     gracePeriod: yup.string()
-        .test('is-valid', 'Grace Period must be a number between 1 and 84', (value) => {
-            const num = Number(value);
-            return !isNaN(num) && num >= 1 && num <= 84;
-        })
         .when('productType', {
             is: (val: string) => val === '9' || val === 'E9',
             then: (schema) => schema.required('Grace Period is required'),
@@ -173,6 +169,8 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         }
     });
 
+    console.log(errors)
+
     const { fields, append, remove } = useFieldArray({
         control,
         name: 'structuredPayment', // This matches the name in your schema
@@ -191,7 +189,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
     const { productDetails, productDetailsLoading, fetchProductDetails, resetProductDetails } = useLoanStore()
     const { user } = useUserStore()
     const { cribDetails, cribLoading, fetchCRIBByCnic, resetCRIBDetails } = useVerificationStore()
-    const { trailCalulationDetails, trailCalulationDetailsLoading, trailCalucationData, trailCalucationDataLoading, trailCalulationLoading, sendTrailCalulation, fetchTrailCalulation, resetTrailCalculationDetails, saveTrailCalulation, fetchTrailCalulationDetailsByAppId } = useCreditStore()
+    const { trailCalulation, trailCalulationDetails, trailCalulationDetailsLoading, trailCalucationData, trailCalucationDataLoading, trailCalulationLoading, sendTrailCalulation, fetchTrailCalulation, resetTrailCalculationDetails, saveTrailCalulation, fetchTrailCalulationDetailsByAppId } = useCreditStore()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = (data: any) => {
@@ -475,7 +473,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         }
         const productCode = __calculationPayload.pTrhdLType
         setSelectedProductCode(productCode)
-        saveTrailCalulation(appId ?? '', cliIdx, __calculationPayload)
+        saveTrailCalulation(appId ?? '', cliIdx, { ...__calculationPayload, tcNo: trailCalulation?.object.tcNo ?? '' })
     }
 
     useEffect(() => {
