@@ -90,7 +90,9 @@ const CustomerDetails: React.FC = () => {
                 new: true,
                 stkType: 'C',
                 stkCNic: customers[0]?.identificationNumber ?? '',
-                stkCusName: customers[0]?.fullName ?? ''
+                stkCusName: customers[0]?.fullName ?? '',
+                stkInitials: data.stkInitials ?? '',
+                stkSurName: data.stkSurName ?? '',
             }).finally(() => navigate(-1)) // Navigate back after adding stakeholder
             // TODO: histroy back
         } else if (mode === 'edit') {
@@ -100,7 +102,9 @@ const CustomerDetails: React.FC = () => {
                 update: true,
                 stkType: 'C',
                 stkCNic: customers[0]?.identificationNumber ?? '',
-                stkCusName: customers[0]?.fullName ?? ''
+                stkCusName: customers[0]?.fullName ?? '',
+                stkInitials: data.stkInitials ?? '',
+                stkSurName: data.stkSurName ?? '',
             }).finally(() => navigate(-1)) // Navigate back after adding stakeholder
             // TODO: histroy back
         }
@@ -247,7 +251,7 @@ const CustomerDetails: React.FC = () => {
                             <Controller
                                 name="stkInitials"
                                 control={control}
-                                // disabled
+                                disabled
                                 render={({ field }) =>
                                     <Input
                                         {...field}
@@ -263,7 +267,7 @@ const CustomerDetails: React.FC = () => {
                             <Controller
                                 name="stkSurName"
                                 control={control}
-                                // disabled
+                                disabled
                                 render={({ field }) =>
                                     <Input
                                         {...field}

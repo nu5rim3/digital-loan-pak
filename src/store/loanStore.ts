@@ -727,7 +727,6 @@ const useLoanStore = create<ILoanState>((set) => ({
       if (!response.data.pageable) {
         throw new Error("Pageable information is missing in the response");
       }
-      console.log("response : ", response);
       const data: PagableResponse<ILoanApplication> = response.data;
 
       set({ pageableLoans: data, pageableLoading: false });

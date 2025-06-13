@@ -629,7 +629,11 @@ interface ICreditState {
     data: ITrailCalulation
   ) => Promise<void>;
 
-  fetchTrailCalulationDetailsByAppId: (appId: string) => Promise<void>;
+  fetchTrailCalulationDetailsByAppId: (
+    appId: string
+  ) => Promise<ITrailCalulationDetailsResponse | undefined>;
+
+  resetTrailCalulationDetails: () => void;
 }
 
 const useCreditStore = create<ICreditState>((set) => ({
@@ -1677,7 +1681,9 @@ const useCreditStore = create<ICreditState>((set) => ({
   },
 
   // /mobixCamsCredit/v1/credit/tc/{appId}
-  fetchTrailCalulationDetailsByAppId: async (appId: string) => {
+  fetchTrailCalulationDetailsByAppId: async (
+    appId: string
+  ): Promise<ITrailCalulationDetailsResponse | undefined> => {
     set({ trailCalucationDataLoading: true });
     try {
       const response = await API.get(`/mobixCamsCredit/v1/credit/tc/${appId}`);
@@ -1685,6 +1691,7 @@ const useCreditStore = create<ICreditState>((set) => ({
         trailCalucationData: response.data,
         trailCalucationDataLoading: false,
       });
+      return response.data;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({
@@ -1693,6 +1700,8 @@ const useCreditStore = create<ICreditState>((set) => ({
       });
     }
   },
+
+  resetTrailCalulationDetails: () => set(() => ({ trailCalucationData: null })),
 }));
 
 export default useCreditStore;
