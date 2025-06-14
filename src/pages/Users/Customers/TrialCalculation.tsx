@@ -447,7 +447,6 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                 setValue('trems', Number(productDetails?.generalInfo.defaultTerm))
             } else {
                 setValue('trems', 1) // Reset terms for product type 9 or E9
-
             }
             setValue('markup', Number(productDetails?.generalInfo.defaultRate))
         } else {
@@ -556,10 +555,18 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                 name="productCategory"
                                 control={control}
                                 render={({ field }) => (
-                                    <Select {...field} placeholder="Enter Product Category" options={productCategories.map((item) => ({
-                                        value: item.code,
-                                        label: item.description
-                                    }))} />
+                                    <Select {...field}
+                                        placeholder="Enter Product Category"
+                                        options={productCategories.map((item) => ({
+                                            value: item.code,
+                                            label: item.description
+                                        }))}
+                                        onChange={(value) => {
+                                            field.onChange(value);
+                                            setValue('productType', ''); // Reset product type when category changes
+                                            setValue('productSubType', ''); // Reset product sub type when category changes
+                                        }}
+                                    />
                                 )}
                             />
 
@@ -655,6 +662,20 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                                 label: formatSentence(item.prodName),
                                             }))
                                         }
+                                        onChange={(value) => {
+                                            field.onChange(value);
+                                            if (value === '9' || value === 'E9') {
+                                                // Reset product sub type
+                                                setValue('productSubType', '');
+                                                setValue('trems', 1); // Set terms to 1 for product type 9 or E9
+                                                setValue('executionDate', moment().format('YYYY-MM-DD')); // Set execution date to today
+                                                setValue('gracePeriod', ''); // Reset grace period
+                                                setValue('expiryDate', undefined); // Reset expiry date
+                                            } else {
+                                                setValue('productSubType', ''); // Reset product sub type
+                                                // resetPartialForm(); // Reset other fields for other product types
+                                            }
+                                        }}
                                     />
                                 )}
                             />
