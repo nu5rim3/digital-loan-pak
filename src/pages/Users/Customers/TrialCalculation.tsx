@@ -28,7 +28,7 @@ const schema = yup.object().shape({
     trems: yup
         .number()
         .typeError('Terms must be a number')
-        .min(0, 'Terms must be greater than or equal to 0')
+        .min(1, 'Terms must be greater than or equal to 1')
         .when('productType', {
             is: (val: string) => val === '9' || val === 'E9',
             then: (schema) => schema.notRequired(),
@@ -46,7 +46,7 @@ const schema = yup.object().shape({
         then: (schema) => schema.required('Payment Frequency is required'),
         otherwise: (schema) => schema.notRequired(),
     }),
-    leaseKeyMoney: yup.string().when('productType', {
+    leaseKeyMoney: yup.number().when('productType', {
         is: (val: string) => val === '5' || val === '1',
         then: (schema) => schema.required('Lease Key Money is required'),
         otherwise: (schema) => schema.notRequired(),
@@ -61,7 +61,10 @@ const schema = yup.object().shape({
         then: (schema) => schema.required('Capital Paid is required'),
         otherwise: (schema) => schema.notRequired(),
     }),
-    gracePeriod: yup.string()
+    gracePeriod: yup.number()
+        .typeError('Grace Period must be a number')
+        .min(1, 'Grace Period must be greater than or equal to 1')
+        .max(84, 'Grace Period must be at most 84 months')
         .when('productType', {
             is: (val: string) => val === '9' || val === 'E9',
             then: (schema) => schema.required('Grace Period is required'),
@@ -155,7 +158,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
             irr: undefined,
             calculationMethod: undefined,
             paymentFrequency: undefined,
-            leaseKeyMoney: undefined,
+            leaseKeyMoney: 0.00,
             executionDate: undefined,
             capitalPaid: undefined,
             gracePeriod: undefined,
@@ -234,6 +237,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
             "pInsuOption": "",
             "pTrhdStmPer": '',
             "pInsuAddCrit": "",
+            "prodCat": data.productCategory ?? '', // product category code
             "pTrhdColMeth": calculationMethod === 'B' ? data.paymentFrequency : '', // payment frequency code
             "pStru": calculationMethod === 'S' ? data.structuredPayment : [], // TODO: stucture payment
             "pTrhdDep": data.leaseKeyMoney ?? '', // "" Lease Key Money
@@ -524,6 +528,18 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [executionDate, gracePeriod])
 
+
+    useEffect(() => {
+        if (trailCalucationData?.prodCat && trailCalucationData?.prodCat !== '') {
+            fetchProductTypes(trailCalucationData?.prodCat ?? '')
+        }
+        if (trailCalucationData?.pTrhdLType && trailCalucationData?.pTrhdLType !== '') {
+            fetchSubProductTypes(trailCalucationData?.pTrhdLType ?? '')
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [trailCalucationData])
+
+
     return (
         <div className='flex flex-col gap-3'>
             <Card title="Trial Calculation" className='w-full'>
@@ -667,7 +683,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                                 setValue('productSubType', '');
                                                 setValue('trems', 1); // Set terms to 1 for product type 9 or E9
                                                 setValue('executionDate', moment().format('YYYY-MM-DD')); // Set execution date to today
-                                                setValue('gracePeriod', ''); // Reset grace period
+                                                setValue('gracePeriod', 1); // Reset grace period
                                                 setValue('expiryDate', undefined); // Reset expiry date
                                             } else {
                                                 setValue('productSubType', ''); // Reset product sub type
@@ -798,15 +814,15 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                         onChange={(value) => {
                                             field.onChange(value);
                                             if (value === 'M') {
-                                                setValue('trems', 1); // Set terms to 1 for monthly payment frequency
+                                                setValue('trems', 1); // Set Terms to 1 for monthly payment frequency
                                             } else if (value === 'A') {
-                                                setValue('trems', 12); // Set terms to 12 for annually
+                                                setValue('trems', 12); // Set Terms to 12 for annually
                                             } else if (value === 'BA') {
-                                                setValue('trems', 6); // Set terms to 6 for bi-annually
+                                                setValue('trems', 6); // Set Terms to 6 for bi-annually
                                             } else if (value === 'Q') {
-                                                setValue('trems', 3); // Set terms to 3 for quarterly
+                                                setValue('trems', 3); // Set Terms to 3 for quarterly
                                             } else if (value === 'HY') {
-                                                setValue('trems', 6); // Set terms to 6 for half yearly
+                                                setValue('trems', 6); // Set Terms to 6 for half yearly
                                             }
                                         }}
                                     />
@@ -819,7 +835,18 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                 name="leaseKeyMoney"
                                 control={control}
                                 render={({ field }) => (
-                                    <Input {...field} placeholder="Enter Lease Key Money" />
+                                    <InputNumber
+                                        {...field}
+                                        placeholder="Enter Lease Key Money"
+                                        style={{ width: '100%' }}
+                                        formatter={(value) =>
+                                            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
+                                        }
+                                        step={0.01}
+                                        min={0}
+                                        stringMode
+                                        prefix={'Rs.'}
+                                    />
                                 )}
                             />
                         </Form.Item>
@@ -875,9 +902,10 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                             const value = e.target.value;
                                             if (/^\d*$/.test(value)) {
                                                 field.onChange(value);
-                                                setValue('gracePeriod', value);
+                                                setValue('gracePeriod', Number(value));
                                             }
                                         }}
+                                        suffix={'Months'}
                                     />
                                 )}
                             />
@@ -1179,7 +1207,16 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                     },
                                 }}
                                 loading={trailCalulationDetailsLoading}
-                            >
+                            >{
+                                    trailCalucationData !== null && trailCalucationData?.tcNo !== '' &&
+                                    <Descriptions column={2} className='mb-3' bordered>
+                                        <Descriptions.Item label="Product Facility">{facilityTypes.filter(item => item.code === trailCalucationData?.pFacilityType)[0]?.description ?? '-'}</Descriptions.Item>
+                                        <Descriptions.Item label="Product Category">{productCategories.filter(item => item.code === trailCalucationData?.prodCat)[0]?.description ?? '-'}</Descriptions.Item>
+                                        <Descriptions.Item label="Product Type">{productTypes.filter(item => item.prodCode === trailCalucationData?.pTrhdLType)[0]?.prodName ?? '-'}</Descriptions.Item>
+                                        <Descriptions.Item label="Product Sub Type">{subProductTypes.filter(item => item.subTypeCode === trailCalucationData?.pTrhdBus)[0]?.subTypeDesc ?? '-'}</Descriptions.Item>
+                                    </Descriptions>
+                                }
+
                                 {trailCalulationDetails?.object?.facilityDetails !== undefined &&
                                     <div className='grid grid-cols-2 gap-3'>
                                         <Card size='small' title={'Installment Details'} className='mb-3'>

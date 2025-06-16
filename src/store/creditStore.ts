@@ -322,6 +322,7 @@ export interface ITrailCalulation {
   tcNo?: string;
   pMode: string;
   pUser: string;
+  prodCat: string;
   pFacilityType: string;
   pTrhdMe: string;
   pTrhdLType: string;
