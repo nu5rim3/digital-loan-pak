@@ -7,7 +7,7 @@ import { useParams } from 'react-router-dom';
 
 const Summary: React.FC = () => {
     const { appId } = useParams()
-    const { cashFlows, cashFlowsLoading, taxableAmount, bnsOrAgriExpenses, houseHoldExpenses, houseHoldContribution, applicantRevenue, totExpense, totBusinessExpense, totHouseholdExpense, totRevenue, totHouseholdIncome, totBusinessIncome, isAlegibleFroLoan, grossSalaryIncome, annualRevenue, annualDisposable, annualHousehold, maxDebtBurden, netMonthlyDisposable, maxLoanValue, product, productDefinition, fetchProduct, fetchProductDefinition, addCashFlows, fetchCashFlows } = useCreditStore();
+    const { cashFlows, cashFlowsLoading, taxableAmount, bnsOrAgriExpenses, houseHoldExpenses, houseHoldContribution, applicantRevenue, totExpense, totBusinessExpense, totHouseholdExpense, totRevenue, totHouseholdIncome, totBusinessIncome, isAlegibleFroLoan, grossSalaryIncome, annualDisposable, annualHousehold, maxDebtBurden, netMonthlyDisposable, maxLoanValue, product, productDefinition, fetchProduct, fetchProductDefinition, addCashFlows, fetchCashFlows } = useCreditStore();
 
     useEffect(() => {
         fetchProduct(appId ?? '')
