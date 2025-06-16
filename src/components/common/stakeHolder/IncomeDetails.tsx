@@ -86,7 +86,7 @@ const IncomeDetails: React.FC<IIncomeDetail> = ({ stkId, subTitle }) => {
                         children: (
                             <>
                                 <div className='flex justify-end pb-3'>
-                                    <Button type="primary" onClick={() => openModal('create')} icon={<PlusOutlined />}>
+                                    <Button type="primary" onClick={() => openModal('create')} icon={<PlusOutlined />} disabled={subTitle !== '' && incomesDetails?.length >= 1}>
                                         Add Income/Assets Details
                                     </Button>
                                 </div>
