@@ -114,7 +114,7 @@ const GuarantorOnboarding: React.FC = () => {
                 {
                     approvalStatus === 'INVALID' &&
                     <>
-                        <Tag color='red' className='text-center'>Cannot apply loan for {guarantorCNIC ?? ''} as it is not valid</Tag>
+                        <Tag color='red' className='text-center'><b>Cannot apply loan for {guarantorCNIC ?? ''} as it is not valid</b></Tag>
                         <div className='flex gap-3'>
                             <Button onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
                         </div>
@@ -124,7 +124,7 @@ const GuarantorOnboarding: React.FC = () => {
                 {
                     approvalStatus === 'CLOSE' &&
                     <>
-                        <Tag color='red' className='text-center'>Cannot apply loan for {guarantorCNIC ?? ''} as it is not valid</Tag>
+                        <Tag color='red' className='text-center'><b>Cannot apply loan for {guarantorCNIC ?? ''} as it is not valid</b></Tag>
                         <div className='flex gap-3'>
                             <Button onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
                         </div>
