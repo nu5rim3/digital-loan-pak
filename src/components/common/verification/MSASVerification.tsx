@@ -14,7 +14,8 @@ interface IMSASVerification {
 
 const MSASVerification: React.FC<IMSASVerification> = ({ idx, setApprovalStatus, setRuleStatus }) => {
 
-    const { msasLoading, msasDetails, fetchMSASByIdx } = useVerificationStore()
+    const { blacklistDetails, msasLoading, msasDetails, fetchMSASByIdx } = useVerificationStore()
+
     const [verfication, setVerfication] = useState<{ name: string; status: string; }[]>([])
     const onRefresh = () => {
         fetchMSASByIdx(idx)
@@ -27,7 +28,9 @@ const MSASVerification: React.FC<IMSASVerification> = ({ idx, setApprovalStatus,
 
     useEffect(() => {
         setVerfication(getVerificationStatus(msasDetails?.rules ?? []))
-        if (msasDetails !== null) {
+        if (blacklistDetails?.blacklistStatus === 'REJECT') {
+            setApprovalStatus('INVALID')
+        } else if (msasDetails !== null) {
             setApprovalStatus(getApprovalStatus(msasDetails?.rules))
         } else {
             setApprovalStatus('PENDING')

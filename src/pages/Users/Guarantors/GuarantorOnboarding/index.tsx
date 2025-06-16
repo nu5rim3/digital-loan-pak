@@ -85,7 +85,7 @@ const GuarantorOnboarding: React.FC = () => {
                 }
 
                 {
-                    guarantorCNIC && <BlacklistVerification idx={guarantorIdx ?? ''} cnic={guarantorCNIC ?? ''} />
+                    guarantorCNIC && <BlacklistVerification idx={guarantorIdx ?? ''} cnic={guarantorCNIC ?? ''} setApprovalStatus={setApprovalStatus} />
                 }
 
                 {
@@ -114,7 +114,7 @@ const GuarantorOnboarding: React.FC = () => {
                 {
                     approvalStatus === 'INVALID' &&
                     <>
-                        <Tag color='red' className='text-center'>Cannot proceed {guarantorIdx ?? ''} is not valid</Tag>
+                        <Tag color='red' className='text-center'>Cannot apply loan for {guarantorCNIC ?? ''} as it is not valid</Tag>
                         <div className='flex gap-3'>
                             <Button onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
                         </div>
@@ -124,7 +124,7 @@ const GuarantorOnboarding: React.FC = () => {
                 {
                     approvalStatus === 'CLOSE' &&
                     <>
-                        <Tag color='red' className='text-center'>Cannot proceed {guarantorIdx ?? ''} is not valid</Tag>
+                        <Tag color='red' className='text-center'>Cannot apply loan for {guarantorCNIC ?? ''} as it is not valid</Tag>
                         <div className='flex gap-3'>
                             <Button onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
                         </div>

@@ -7,9 +7,10 @@ import { formatName, formatSentence, dateFormats } from '../../../utils/formatte
 interface IBlacklistVerification {
     idx: string;
     cnic: string;
+    setApprovalStatus: (status: string) => void;
 }
 
-const BlacklistVerification: React.FC<IBlacklistVerification> = ({ cnic }) => {
+const BlacklistVerification: React.FC<IBlacklistVerification> = ({ cnic, setApprovalStatus }) => {
 
 
     const { blacklistDetails, fetchBlacklistByCnic, blLoading } = useVerificationStore()
@@ -22,6 +23,14 @@ const BlacklistVerification: React.FC<IBlacklistVerification> = ({ cnic }) => {
         fetchBlacklistByCnic(cnic)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cnic])
+
+    useEffect(() => {
+        if (blacklistDetails?.blacklistStatus === 'REJECT') {
+            setApprovalStatus('INVALID')
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [blacklistDetails?.blacklistStatus])
+
 
     if (blacklistDetails?.detail === null) {
         return (
