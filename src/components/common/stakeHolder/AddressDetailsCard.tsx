@@ -1,4 +1,4 @@
-import { Button, Card, Collapse, Descriptions, Empty, Form, Input, Select, Spin, Switch } from 'antd';
+import { Button, Card, Checkbox, Collapse, Descriptions, Empty, Form, Input, Select, Spin, Switch } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { PlusOutlined, EditOutlined, UndoOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -31,7 +31,8 @@ const schema = yup.object().shape({
     durOfCurrLoc: yup.string().required("Duration of Current Location is required"),
     years: yup.string(),
     months: yup.string(),
-    status: yup.string(),
+    status: yup.string().default('A'),
+    sameAsPermanent: yup.boolean().default(false),
 });
 
 const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) => {
@@ -378,24 +379,59 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
                     }
                 />
             </Form.Item>
-
             <Form.Item>
                 <Controller
-                    name="status"
                     control={control}
-                    render={({ field }) =>
-                        <div className='flex items-center gap-2'>
+                    name="status"
+                    render={({ field }) => (
+                        <div className="flex items-center gap-2">
                             <Switch
                                 checked={field.value === 'A'}
                                 onChange={(checked) => {
-                                    setValue("status", checked ? 'A' : 'I')
-                                    setMode('remove')
-                                }} />
+                                    setValue('status', checked ? 'A' : 'I')
+                                    // setMode('remove')
+                                }}
+                            />
                             <span>{field.value === 'A' ? 'Active' : 'Inactive'}</span>
                         </div>
-                    }
+                    )}
                 />
-
+            </Form.Item>
+            {/* form item check box that ask same as the permenet address to fill */}
+            <Form.Item hidden={mode !== 'edit'}>
+                <Controller
+                    name="sameAsPermanent"
+                    control={control}
+                    render={({ field }) => (
+                        <div className='flex items-center gap-2'>
+                            <Checkbox
+                                checked={field.value}
+                                onChange={(checked) => {
+                                    field.onChange(checked);
+                                    if (checked) {
+                                        const permentAddress = addressDetails.filter(a => a.addressType === 'PERMANANT' && a.status === 'A')[0];
+                                        setValue("residenceType", permentAddress?.residenceType ?? '');
+                                        setValue("addressLine1", permentAddress?.addressLine1 ?? '');
+                                        setValue("addressLine2", permentAddress?.addressLine2 ?? '');
+                                        setValue("addressLine3", permentAddress?.addressLine3 ?? '');
+                                        setValue("addressLine4", permentAddress?.addressLine4 ?? '');
+                                        setValue("area", permentAddress?.area ?? '');
+                                        setValue("city", permentAddress?.city ?? '');
+                                        setValue("district", permentAddress?.district ?? '');
+                                        setValue("province", permentAddress?.province ?? '');
+                                        setValue("community", permentAddress?.community ?? '');
+                                        setValue("nearByPopPlc", permentAddress?.nearByPopPlc ?? '');
+                                        setValue("durOfCurrLoc", permentAddress?.durOfCurrLoc ?? '');
+                                        const { years, months } = splitDuration(permentAddress?.durOfCurrLoc ?? '');
+                                        setValue("years", years);
+                                        setValue("months", months);
+                                    }
+                                }}
+                            />
+                            <span>Same as Permanent Address</span>
+                        </div>
+                    )}
+                />
             </Form.Item>
         </>
     );

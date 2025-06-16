@@ -486,6 +486,16 @@ interface ICommonState {
 
   selectedProductCode: string;
 
+  contactTypes: {
+    label: string;
+    value: string;
+  }[];
+
+  incomeSources: {
+    label: string;
+    value: string;
+  }[];
+
   fetchOperators: () => Promise<void>;
   fetchECIBReport: (cnic: string) => Promise<void>;
   fetchOrganizationType: () => Promise<void>;
@@ -741,6 +751,22 @@ const useCommonStore = create<ICommonState>(
       relationaShipGaurantorError: null,
 
       selectedProductCode: "",
+
+      contactTypes: [
+        { label: "Mobile", value: "MN" },
+        { label: "Office", value: "ON" },
+        { label: "Fixed Line", value: "FN" },
+        { label: "Additional Phone Number", value: "APN" },
+      ],
+
+      incomeSources: [
+        { label: "Salary Income", value: "SI" },
+        { label: "Business Income", value: "BI" },
+        { label: "Agriculture Income", value: "AI" },
+        { label: "Rental Income", value: "RI" },
+        { label: "Live Stock", value: "LS" },
+        { label: "Pension", value: "PN" },
+      ],
 
       fetchOperators: async () => {
         set({ operatorLoading: true, operatorError: null });

@@ -169,8 +169,6 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         }
     });
 
-    console.log(errors)
-
     const { fields, append, remove } = useFieldArray({
         control,
         name: 'structuredPayment', // This matches the name in your schema

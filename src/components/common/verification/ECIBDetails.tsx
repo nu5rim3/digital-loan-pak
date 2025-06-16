@@ -31,7 +31,7 @@ const ECIBDetails: React.FC<IECIBDetails> = ({ idx, cnic }) => {
             <Card title={'Extrenal CIB Details'} loading={ecibLoading} extra={
                 <Button type="text" icon={<ReloadOutlined />} onClick={onRefresh} />
             }>
-                <Empty description={<span><b>Unable to find matching record</b></span>} />
+                <Empty description={<span><b>No data found</b></span>} />
             </Card>
         )
     }

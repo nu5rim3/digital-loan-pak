@@ -54,7 +54,7 @@ const schema = yup.object().shape({
     stkMaritialStatus: yup.string().required("Marital Status is required"),
     stkTitle: yup.string().required("Title is required"),
     stkFatherOrHusName: yup.string().required("Father or Husband Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
-    currentResidences: yup.string().required("Current Residence is required"),
+    currentResPlace: yup.string().required("Current Residence is required"),
     relationship: yup.string().required("Relationship is required"),
     modeOfSecurity: yup.string().required("Mode of Security is required"),
 });
@@ -98,7 +98,6 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
         // fetchHealthCondition()
         fetchGuarantorByAppId(appId ?? '')
         fetchStackholderByAppId(appId ?? '')
-        console.log('selectedProductCode :', selectedProductCode)
         fetchModeOfSecurity(selectedProductCode ?? '')
         fetchRelationaShipGaurantor(selectedProductCode ?? '')
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -127,7 +126,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                 setValue("stkMaritialStatus", formDetails?.stkMaritialStatus ?? '');
                 setValue("stkTitle", formDetails?.stkTitle);
                 setValue("stkFatherOrHusName", formDetails?.stkFatherOrHusName);
-                setValue("currentResidences", formDetails?.currentResidences);
+                setValue("currentResPlace", formDetails?.currentResPlace);
                 setValue("relationship", formDetails?.relationship);
                 setValue("modeOfSecurity", formDetails?.modeOfSecurity);
             } else if (__selectedGuarantor) {
@@ -362,9 +361,9 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                 render={({ field }) => <Input {...field} placeholder="Enter Father or Husband Name" />}
                             />
                         </Form.Item>
-                        <Form.Item label="Current Residence" validateStatus={errors.currentResidences ? "error" : ""} help={errors.currentResidences?.message} required>
+                        <Form.Item label="Current Residence" validateStatus={errors.currentResPlace ? "error" : ""} help={errors.currentResPlace?.message} required>
                             <Controller
-                                name="currentResidences"
+                                name="currentResPlace"
                                 control={control}
                                 render={({ field }) => <Input {...field} placeholder="Enter Current Residence" />}
                             />

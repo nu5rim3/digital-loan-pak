@@ -7,6 +7,7 @@ import * as yup from 'yup';
 import CommonModal from '../modal/commonModal';
 import useStakeholderStore, { IContactDetails } from '../../../store/stakeholderStore';
 import ContactInput from '../inputs/ContactInput';
+import useCommonStore from '../../../store/commonStore';
 
 const schema = yup.object().shape({
     phoneNoType: yup.string().required('Contact Type is required'),
@@ -30,6 +31,7 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
     });
 
     const { contactDetails, contactDetailsLoading, fetchContactDetailsByStkId, addContactDetail, updateContactDetail, inActivateContactDetail } = useStakeholderStore();
+    const { contactTypes } = useCommonStore()
     const openModal = (mode: 'create' | 'edit', contact: IContactDetails | null = null) => {
         setMode(mode);
         setSelectedContact(contact);
@@ -61,6 +63,16 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
             fetchContactDetailsByStkId(stkId);
         }
     }, [stkId, isModalOpen, fetchContactDetailsByStkId]);
+
+    const usedContactTypes = React.useMemo(
+        () => contactDetails?.filter(a => a.status === 'A').map(a => a.phoneNoType) ?? [],
+        [contactDetails]
+    );
+
+    const disabledContactTypeOptions = contactTypes.map(option => ({
+        ...option,
+        disabled: usedContactTypes.includes(option.value as "MN" | "ON" | "FN" | "APN"),
+    }));
 
     return (
         <>
@@ -115,12 +127,7 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
                                 control={control}
                                 name="phoneNoType"
                                 render={({ field }) => (
-                                    <Select {...field} placeholder="Select Contact Type" options={[
-                                        { label: 'Mobile', value: 'MN' },
-                                        { label: 'Office', value: 'ON' },
-                                        { label: 'Fixed Line', value: 'FN' },
-                                        { label: 'Additional Phone Number', value: 'APN' },
-                                    ]} />
+                                    <Select {...field} placeholder="Select Contact Type" options={disabledContactTypeOptions} />
                                 )}
                             />
                         </Form.Item>
@@ -150,7 +157,7 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
                                             checked={field.value === 'A'}
                                             onChange={(checked) => {
                                                 setValue('status', checked ? 'A' : 'I')
-                                                setMode('remove')
+                                                // setMode('remove')
                                             }}
                                         />
                                         <span>{field.value === 'A' ? 'Active' : 'Inactive'}</span>

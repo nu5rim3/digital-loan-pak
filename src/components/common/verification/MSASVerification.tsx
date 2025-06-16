@@ -45,7 +45,7 @@ const MSASVerification: React.FC<IMSASVerification> = ({ idx, setApprovalStatus,
                 <Button type="text" icon={<ReloadOutlined />} onClick={onRefresh} />
             }>
                 <Form>
-                    <Empty description={<span><b>Unable to find matching record</b></span>} />
+                    <Empty description={<span><b>No data found</b></span>} />
                 </Form>
             </Card>
         )

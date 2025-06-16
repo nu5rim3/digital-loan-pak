@@ -63,7 +63,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
     const { control, formState: { errors }, setValue, watch } = useForm({
         resolver: yupResolver(schema),
     });
-    const { selectedProductCode, relationaShipGaurantor, relationaShipGaurantorLoading, organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, fetchRelationaShipGaurantor } = useCommonStore()
+    const { selectedProductCode, relationaShipGaurantor, relationaShipGaurantorLoading, organizationType, organizationTypeLoading, modeOfSecurity, modeOfSecurityLoading, fetchModeOfSecurity, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, fetchRelationaShipGaurantor } = useCommonStore()
     const { appId } = useParams()
     const navigate = useNavigate();
     const [selectedIndex, setSelectedIndex] = useState(0);
@@ -73,6 +73,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
     useEffect(() => {
         fetchGuarantorByAppId(appId ?? '')
         fetchRelationaShipGaurantor(selectedProductCode ?? '')
+        fetchModeOfSecurity(selectedProductCode ?? '')
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -114,6 +115,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
             setValue("stkFatherOrHusName", selected?.stkFatherOrHusName);
             setValue("relationship", selected?.relationship);
             setValue("currentResPlace", selected?.currentResPlace);
+            setValue("modeOfSecurity", selected?.modeOfSecurity);
         } else if (__selected) {
             setSelectedIdx('');
             setValue("idx", __selected?.idx ?? '');
@@ -366,6 +368,25 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                                                 }))}>
                                                 </Select>
                                             }
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Mode of Security" validateStatus={errors.modeOfSecurity ? "error" : ""} help={errors.modeOfSecurity?.message} required>
+                                        <Controller
+                                            name="modeOfSecurity"
+                                            control={control}
+                                            render={({ field }) =>
+                                                <Select {...field} placeholder="Select a Mode of Security" allowClear loading={modeOfSecurityLoading} options={modeOfSecurity.map((item) => ({
+                                                    label: item.description,
+                                                    value: item.code
+                                                }))}>
+                                                </Select>}
+                                        />
+                                    </Form.Item>
+                                    <Form.Item label="Current Residence" validateStatus={errors.currentResPlace ? "error" : ""} help={errors.currentResPlace?.message} required>
+                                        <Controller
+                                            name="currentResPlace"
+                                            control={control}
+                                            render={({ field }) => <Input {...field} placeholder="Enter Current Residence" />}
                                         />
                                     </Form.Item>
                                     <Form.Item hidden>

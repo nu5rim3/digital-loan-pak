@@ -86,7 +86,7 @@ const CRIBDetails: React.FC<ICRIBDetails> = ({ cnic, fullName }) => {
             <Card title={'Internal CRIB Details'} loading={cribLoading} extra={
                 <Button type="text" icon={<ReloadOutlined />} onClick={onRefresh} />
             }>
-                <Empty description={<span><b>Unable to find matching record</b></span>} />
+                <Empty description={<span><b>No data found</b></span>} />
             </Card>
         )
     }

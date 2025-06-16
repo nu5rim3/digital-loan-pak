@@ -28,11 +28,13 @@ body {
   color: #747373 !important;
 }
 .ant-input:disabled {
-  /* background-color: #000080 !important; Navy Blue */
+  color: #002140bc !important;
+  /* background-color: #0303149c !important; */
   /* Add other styles as needed, such as text color, border, etc. */
 }
 
 .ant-select-disabled .ant-select-selector {
+  color: #002140bc !important;
   /* background-color: #000080 !important; Navy Blue */
   /* Add other styles as needed, e.g., border-color, text-color, etc. */
 }
