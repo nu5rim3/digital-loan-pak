@@ -32,7 +32,8 @@ const APIPaginatedTable: React.FC<APIPaginatedTableProps> = ({
                 current: currentPage,
                 pageSize: pageSize,
                 total: total,
-                showSizeChanger: false,
+                showSizeChanger: true,
+                showQuickJumper: true,
                 onChange: onPageChange,
             }}
             rowKey={record => record.applicationId || record.key}
