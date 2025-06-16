@@ -63,7 +63,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
     const { control, formState: { errors }, setValue, watch } = useForm({
         resolver: yupResolver(schema),
     });
-    const { organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus } = useCommonStore()
+    const { selectedProductCode, relationaShipGaurantor, relationaShipGaurantorLoading, organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, fetchRelationaShipGaurantor } = useCommonStore()
     const { appId } = useParams()
     const navigate = useNavigate();
     const [selectedIndex, setSelectedIndex] = useState(0);
@@ -72,6 +72,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
 
     useEffect(() => {
         fetchGuarantorByAppId(appId ?? '')
+        fetchRelationaShipGaurantor(selectedProductCode ?? '')
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -358,7 +359,13 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                                         <Controller
                                             name="relationship"
                                             control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Relationship" />}
+                                            render={({ field }) =>
+                                                <Select {...field} placeholder="Select a Relationship" allowClear loading={relationaShipGaurantorLoading} options={relationaShipGaurantor.map((item) => ({
+                                                    label: item.description,
+                                                    value: item.code
+                                                }))}>
+                                                </Select>
+                                            }
                                         />
                                     </Form.Item>
                                     <Form.Item hidden>

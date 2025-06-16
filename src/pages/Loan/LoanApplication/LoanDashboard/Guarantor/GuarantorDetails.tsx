@@ -378,7 +378,8 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                         label: item.description,
                                         value: item.code
                                     }))}>
-                                    </Select>}
+                                    </Select>
+                                }
                             />
                         </Form.Item>
                         <Form.Item label="Mode of Security" validateStatus={errors.modeOfSecurity ? "error" : ""} help={errors.modeOfSecurity?.message} required>
