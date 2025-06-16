@@ -84,21 +84,21 @@ const Summary: React.FC = () => {
                                     <Descriptions.Item label="Max Loan Value">
                                         {formatCurrency(Number(maxLoanValue ?? 0))}
                                     </Descriptions.Item>
-                                    <Descriptions.Item label="Tax Rate (%)">
+                                    {/* <Descriptions.Item label="Tax Rate (%)">
                                         {productDefinition?.taxRate ?? 0}
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="Taxable Amount">
+                                    </Descriptions.Item> */}
+                                    {/* <Descriptions.Item label="Taxable Amount">
                                         {formatCurrency(Number(taxableAmount ?? 0))}
-                                    </Descriptions.Item>
+                                    </Descriptions.Item> */}
                                     <Descriptions.Item label="Annual Household">
                                         {formatCurrency(Number(annualHousehold ?? 0))}
                                     </Descriptions.Item>
                                     <Descriptions.Item label="Annual Disposable">
                                         {formatCurrency(Number(annualDisposable ?? 0))}
                                     </Descriptions.Item>
-                                    <Descriptions.Item label="Annual Revenue">
+                                    {/* <Descriptions.Item label="Annual Revenue">
                                         {formatCurrency(Number(annualRevenue ?? 0))}
-                                    </Descriptions.Item>
+                                    </Descriptions.Item> */}
                                     <Descriptions.Item label="Loan Eligibility Status">
                                         <Tag color={isAlegibleFroLoan ? 'green' : 'red'}><b>{isAlegibleFroLoan ? 'Suceess' : 'Reject'}</b></Tag>
                                     </Descriptions.Item>
