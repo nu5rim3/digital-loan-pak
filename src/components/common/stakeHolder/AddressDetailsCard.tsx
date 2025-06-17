@@ -398,7 +398,7 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
                 />
             </Form.Item> */}
             {/* form item check box that ask same as the permenet address to fill */}
-            <Form.Item hidden={mode !== 'edit'}>
+            <Form.Item hidden={mode === 'edit'}>
                 <Controller
                     name="sameAsPermanent"
                     control={control}
