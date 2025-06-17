@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Collapse, Descriptions, Empty, Form, Select, Spin, Switch } from 'antd';
+import { Button, Card, Collapse, Descriptions, Empty, Form, Select, Spin } from 'antd';
 import { PlusOutlined, EditOutlined, SaveOutlined, UndoOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -147,7 +147,7 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
                                 )}
                             />
                         </Form.Item>
-                        <Form.Item>
+                        {/* <Form.Item>
                             <Controller
                                 control={control}
                                 name="status"
@@ -164,7 +164,7 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
                                     </div>
                                 )}
                             />
-                        </Form.Item>
+                        </Form.Item> */}
                     </div>
                     <div className="flex justify-end gap-3">
                         <Button type="primary" htmlType="submit" loading={contactDetailsLoading} icon={<SaveOutlined />}>

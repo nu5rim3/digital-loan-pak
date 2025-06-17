@@ -1,4 +1,4 @@
-import { Button, Card, Checkbox, Collapse, Descriptions, Empty, Form, Input, Select, Spin, Switch } from 'antd';
+import { Button, Card, Checkbox, Collapse, Descriptions, Empty, Form, Input, Select, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { PlusOutlined, EditOutlined, UndoOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -379,7 +379,7 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
                     }
                 />
             </Form.Item>
-            <Form.Item>
+            {/* <Form.Item>
                 <Controller
                     control={control}
                     name="status"
@@ -396,7 +396,7 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
                         </div>
                     )}
                 />
-            </Form.Item>
+            </Form.Item> */}
             {/* form item check box that ask same as the permenet address to fill */}
             <Form.Item hidden={mode !== 'edit'}>
                 <Controller
