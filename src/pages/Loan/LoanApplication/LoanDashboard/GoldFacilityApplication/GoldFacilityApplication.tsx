@@ -151,7 +151,7 @@ const GoldFacilityApplication: React.FC = () => {
         if (mode === 'update') {
             updateGoldLoanAppDetails(selectedDetail?.appIdx ?? '', _data).finally(closeModal);
         } else if (mode === 'save') {
-            addGoldLoanAppDetails({ ..._data, appIdx: appId ?? '', goldMarketValue: removeCurrencySymbol(data.goldMarketValue ?? '') }).finally(closeModal);
+            addGoldLoanAppDetails({ ..._data, appIdx: appId ?? '', goldMarketValue: removeCurrencySymbol(_data.goldMarketValue ?? '0'), denMarketValue: removeCurrencySymbol(_data.denMarketValue ?? '0') }).finally(closeModal);
         }
     };
 
