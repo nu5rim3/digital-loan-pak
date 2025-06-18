@@ -464,9 +464,8 @@ const GoldFacilityApplication: React.FC = () => {
                                                             <Controller
                                                                 name="denMarketValue"
                                                                 control={control}
-                                                                disabled
                                                                 render={({ field }) => (
-                                                                    <Input {...field} placeholder="Den Market Value" />
+                                                                    <Input {...field} placeholder="Den Market Value" disabled />
                                                                 )}
                                                             />
                                                         </Form.Item>
