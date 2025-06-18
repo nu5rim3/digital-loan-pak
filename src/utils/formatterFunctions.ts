@@ -5,6 +5,11 @@ export function formatCurrency(value: number): string {
   return formattedValue;
 }
 
+export function removeCurrencySymbol(value: string): string {
+  // Remove currency symbols and commas
+  return value.replace(/[,]/g, "").trim();
+}
+
 export function formatSentence(sentence: string) {
   if (!sentence) return "";
   return sentence.charAt(0).toUpperCase() + sentence.slice(1).toLowerCase();
