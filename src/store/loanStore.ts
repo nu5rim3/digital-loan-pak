@@ -265,6 +265,7 @@ interface ILoanState {
     customerName?: string;
     loanType?: string;
     loanAmount?: string;
+    createdBy?: string;
     page?: number;
     size?: number;
   }) => Promise<void>;
@@ -704,6 +705,7 @@ const useLoanStore = create<ILoanState>((set) => ({
       customerName: "",
       loanType: "",
       loanAmount: "",
+      createdBy: "",
       page: 0,
       size: 7,
     };

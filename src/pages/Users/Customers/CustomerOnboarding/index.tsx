@@ -87,7 +87,7 @@ const CustomerOnboarding: React.FC = () => {
                 }
 
                 {
-                    approvalStatus === 'SPECIAL_APPROVAL' && <ExceptionalApproval setOtpModalOpen={approval} setNadraModalOpen={() => setNadraModalOpen(true)} otpVerification={otpVerification} />
+                    approvalStatus === 'SPECIAL_APPROVAL' && <ExceptionalApproval setOtpModalOpen={approval} setNadraModalOpen={() => setNadraModalOpen(true)} otpVerification={otpVerification} idx={customerIdx ?? ''} />
                 }
 
                 {

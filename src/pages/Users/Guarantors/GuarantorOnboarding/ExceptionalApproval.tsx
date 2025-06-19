@@ -1,5 +1,5 @@
-import { Button, Card, Form, Input, Select } from 'antd'
-import React, { useEffect } from 'react'
+import { Button, Card, Form, Select } from 'antd'
+import React from 'react'
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -7,83 +7,69 @@ import TextArea from 'antd/es/input/TextArea';
 import { CheckSquareOutlined } from '@ant-design/icons';
 import useApprovalStore from '../../../../store/approvalStore';
 import useLoanStore from '../../../../store/loanStore';
-import useUserStore from '../../../../store/userStore';
 import { QrcodeOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
+import { mainURL } from '../../../../App';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
-    category: yup.string().required("Exceptional method is required"),
-    categoryDec: yup.string().required("Exceptional method is required"),
+    type: yup.string().required("Exceptional method is required"),
     remark: yup.string().required("Comment is required"),
 });
 
 interface IExceptionalApproval {
     setOtpModalOpen: () => void;
     setNadraModalOpen: () => void;
+    idx: string; // Assuming idx is required for the component
+    otpVerification?: string; // Optional prop for OTP verification status
     // NADRAStatus: string | null | undefined;
 }
 
-const ExceptionalApproval: React.FC<IExceptionalApproval> = ({ setOtpModalOpen, setNadraModalOpen }) => {
+const ExceptionalApproval: React.FC<IExceptionalApproval> = ({ setOtpModalOpen, setNadraModalOpen, otpVerification, idx }) => {
     const { control, handleSubmit, formState: { errors }, setValue } = useForm({
         resolver: yupResolver(schema),
     });
 
     const { loan } = useLoanStore()
-    const { currentRole } = useUserStore()
+    const navigate = useNavigate();
 
-    const { exceptionalApprovalCategories, exceptionalApprovalCategoriesLoading, appraisalApprovalLoading, fetchExceptionalApprovalCategories, requestExceptionalApproval } = useApprovalStore()
+    const { appraisalApprovalLoading, requestExceptionalApproval } = useApprovalStore()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = (data: any) => {
-        requestExceptionalApproval({ ...data, roleCode: currentRole?.code, role: currentRole?.description, appraisalIdx: loan?.idx }).then(() => {
+        requestExceptionalApproval({ ...data, appraisalIdx: loan?.idx, clienteleIdx: idx }).finally(() => {
             setOtpModalOpen();
         })
-    }
-
-    useEffect(() => {
-        fetchExceptionalApprovalCategories()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
-
-    // Function to get the description of the selected category
-    const getCategoryDescription = (categoryCode: string) => {
-        const category = exceptionalApprovalCategories.find(item => item.code === categoryCode);
-        return category ? category.description : '';
     }
 
     return (
         <Card title="Exceptional Approval">
             <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
                 <div className='grid grid-cols-2 gap-3'>
-                    <Form.Item label="Exceptional Method" validateStatus={errors.category ? "error" : ""} help={errors.category?.message} required>
+                    <Form.Item label="Exceptional Method" validateStatus={errors.type ? "error" : ""} help={errors.type?.message} required hidden={otpVerification === 'Y'}>
                         <Controller
-                            name='category'
+                            name='type'
                             control={control}
-                            render={({ field }) => {
-                                const options = exceptionalApprovalCategories
-                                    .filter(item => item.status === 'A')  // Filter out items with status other than 'A'
-                                    .map(item => ({
-                                        label: item.description,
-                                        value: item.code
-                                    }));
+                            render={({ field }) =>
+                                <Select
+                                    {...field}
+                                    placeholder="Select Exceptional Method"
+                                    options={[
+                                        { label: 'Black List', value: 'BLACKLIST' },
+                                        { label: 'MSAS', value: 'MSASPRO' },
+                                        { label: 'Internal Crib', value: 'INTCRIB' },
 
-                                return (
-                                    <Select
-                                        {...field}
-                                        placeholder="Select Exceptional Method"
-                                        loading={exceptionalApprovalCategoriesLoading}
-                                        options={options}
-                                        onChange={(value) => {
-                                            field.onChange(value);
-                                            setValue('categoryDec', getCategoryDescription(value));
-                                        }}
-                                    />
-                                )
-                            }}
+                                    ]}
+                                    onChange={(value) => {
+                                        field.onChange(value);
+                                        setValue('type', value);
+                                    }}
+                                />
+                            }
                         />
                     </Form.Item>
 
-                    <Form.Item label="Comment" validateStatus={errors.remark ? "error" : ""} help={errors.remark?.message} required>
+                    <Form.Item label="Comment" validateStatus={errors.remark ? "error" : ""} help={errors.remark?.message} required hidden={otpVerification === 'Y'}>
                         <Controller
                             name='remark'
                             control={control}
@@ -92,19 +78,13 @@ const ExceptionalApproval: React.FC<IExceptionalApproval> = ({ setOtpModalOpen, 
                             )}
                         />
                     </Form.Item>
-                    <Form.Item validateStatus={errors.categoryDec ? "error" : ""} help={errors.categoryDec?.message} required hidden>
-                        <Controller
-                            name='categoryDec'
-                            control={control}
-                            render={({ field }) => (
-                                <Input {...field} />
-                            )}
-                        />
-                    </Form.Item>
                 </div>
                 <div>
-                    <Button type="primary" htmlType="submit" danger icon={<CheckSquareOutlined />} loading={appraisalApprovalLoading}>Exceptional Approval</Button>
-                    <Button type='default' onClick={setNadraModalOpen} icon={<QrcodeOutlined />} >Scan QR</Button>
+                    <Button type="primary" htmlType="submit" danger icon={<CheckSquareOutlined />} loading={appraisalApprovalLoading} className='mr-3' hidden={otpVerification === 'Y'}>Exceptional Approval</Button>
+                    <Button type='primary' onClick={() => {
+                        navigate(`${mainURL}/loan/application/${loan?.idx ?? ''}`)
+                    }} icon={<QrcodeOutlined />} hidden={otpVerification === 'P'} className='mr-3'>Calculate TC</Button>
+                    <Button type='default' onClick={setNadraModalOpen} icon={<QrcodeOutlined />}>Scan QR</Button>
                 </div>
             </Form>
         </Card>

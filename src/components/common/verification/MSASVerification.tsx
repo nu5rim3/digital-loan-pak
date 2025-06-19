@@ -29,7 +29,7 @@ const MSASVerification: React.FC<IMSASVerification> = ({ idx, setApprovalStatus,
     useEffect(() => {
         setVerfication(getVerificationStatus(msasDetails?.rules ?? []))
         if (blacklistDetails?.blacklistStatus !== undefined && blacklistDetails?.blacklistStatus === 'REJECT') {
-            setApprovalStatus('INVALID')
+            setApprovalStatus('SPECIAL_APPROVAL')
         } else if (msasDetails !== null) {
             setApprovalStatus(getApprovalStatus(msasDetails?.rules))
         } else {

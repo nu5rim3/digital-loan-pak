@@ -9,6 +9,7 @@ import { mainURL } from '../../../App'
 import useCustomerStore from '../../../store/customerStore'
 import { PlusOutlined } from '@ant-design/icons';
 import moment from 'moment'
+import useUserStore from '../../../store/userStore'
 
 const { Content } = Layout
 
@@ -20,6 +21,7 @@ const LoanApplication: React.FC = () => {
     const { resetCustomer } = useCustomerStore()
     const [activeTab, setActiveTab] = useState('PENDING');
     const [currentPage, setCurrentPage] = useState(1);
+    const { user } = useUserStore();
 
     const columns = [
         {
@@ -85,7 +87,7 @@ const LoanApplication: React.FC = () => {
 
 
     useEffect(() => {
-        fetchPageableLoans({ status: activeTab, page: currentPage - 1, size: 7 });
+        fetchPageableLoans({ status: activeTab, page: currentPage - 1, size: 7, createdBy: user?.idx });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTab, currentPage]);
 

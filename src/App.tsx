@@ -180,6 +180,7 @@ const App: React.FC = () => {
                     <Route path="application/:appId" element={<LoanDashboard />} />
                     <Route path="application/:appId/customer" element={<CustomerDetails />} />
                     <Route path="application/:appId/guarantor" element={<GuarantorDetail />} />
+                    <Route path="application/:appId/guarantor/set" element={<GuarantorOnboarding />} />
                     <Route path="application/:appId/witness" element={<WitnessDetails />} />
                     <Route path="application/:appId/loan-application" element={<LoanFormApplication />} />
                   </Route>

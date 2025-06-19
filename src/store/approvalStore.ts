@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { API, APIAuth } from "../services/api";
+import { notification } from "antd";
 
 interface IExceptionalApprovalCategory {
   code: string;
@@ -10,11 +11,8 @@ interface IExceptionalApprovalCategory {
 interface IExceptionalApprovalPayload {
   appraisalIdx: string;
   type: string;
-  category: string;
+  clienteleIdx: string;
   remark: string;
-  roleCode: string;
-  role: string;
-  categoryDec: string;
 }
 
 interface IApproval {
@@ -109,12 +107,17 @@ const useApprovalStore = create<IApprovalState>((set) => ({
     });
     try {
       const response = await APIAuth.post(
-        `/mobixCamsApproval/v1/approvals/appraisal`,
+        `/mobixCamsApproval/v1/approvals/on-boarding`,
         payload
       );
       set({
         appraisalApprovalResponse: response.data,
         appraisalApprovalLoading: false,
+      });
+      notification.success({
+        message: "Exceptional Approval Request Sent",
+        description:
+          "Your exceptional approval request has been sent successfully.",
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
