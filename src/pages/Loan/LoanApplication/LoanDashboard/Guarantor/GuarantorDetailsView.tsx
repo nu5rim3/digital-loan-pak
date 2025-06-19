@@ -85,9 +85,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
 
 
     const onClickCreate = () => {
-        // navigate(`${mainURL}/loan/application/${appId}/guarantor/set`, { state: { appId: appId } })
         navigate(`${mainURL}/loan/application/${appId}/guarantor/set`, { state: { appId: appId } })
-        // console.log('hello')
     }
 
     const selectedGuarantor = (identificationNumber: string) => {
