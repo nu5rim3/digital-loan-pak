@@ -33,11 +33,11 @@ const ExceptionalApproval: React.FC<IExceptionalApproval> = ({ setOtpModalOpen, 
     const { loan } = useLoanStore()
     const navigate = useNavigate();
 
-    const { appraisalApprovalLoading, requestExceptionalApproval } = useApprovalStore()
+    const { obExceptionalApprovalLoading, obExceptionalApproval } = useApprovalStore()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = (data: any) => {
-        requestExceptionalApproval({ ...data, appraisalIdx: loan?.idx, clienteleIdx: idx }).finally(() => {
+        obExceptionalApproval({ ...data, appraisalIdx: loan?.idx, clienteleIdx: idx }).finally(() => {
             setOtpModalOpen();
         })
     }
@@ -80,7 +80,7 @@ const ExceptionalApproval: React.FC<IExceptionalApproval> = ({ setOtpModalOpen, 
                     </Form.Item>
                 </div>
                 <div>
-                    <Button type="primary" htmlType="submit" danger icon={<CheckSquareOutlined />} loading={appraisalApprovalLoading} className='mr-3' hidden={otpVerification === 'Y'}>Exceptional Approval</Button>
+                    <Button type="primary" htmlType="submit" danger icon={<CheckSquareOutlined />} loading={obExceptionalApprovalLoading} className='mr-3' hidden={otpVerification === 'Y'}>Exceptional Approval</Button>
                     <Button type='primary' onClick={() => {
                         navigate(`${mainURL}/loan/application/${loan?.idx ?? ''}`)
                     }} icon={<QrcodeOutlined />} hidden={otpVerification === 'P'} className='mr-3'>Calculate TC</Button>

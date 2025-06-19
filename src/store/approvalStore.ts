@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { API, APIAuth } from "../services/api";
-import { notification } from "antd";
 
 interface IExceptionalApprovalCategory {
   code: string;
@@ -11,8 +10,18 @@ interface IExceptionalApprovalCategory {
 interface IExceptionalApprovalPayload {
   appraisalIdx: string;
   type: string;
-  clienteleIdx: string;
+  category: string;
   remark: string;
+  roleCode: string;
+  role: string;
+  categoryDec: string;
+}
+
+interface IOBExceptionalPayload {
+  appraisalIdx: string;
+  type: string;
+  remark: string;
+  clienteleIdx: string;
 }
 
 interface IApproval {
@@ -51,6 +60,10 @@ interface IApprovalState {
   approvalsLoading: boolean;
   approvalsError: string | null;
 
+  obExceptionalApprovalResponse: null;
+  obExceptionalApprovalLoading: boolean;
+  obExceptionalApprovalError: string | null;
+
   fetchExceptionalApprovalCategories: () => Promise<void>;
   requestExceptionalApproval: (
     payload: IExceptionalApprovalPayload
@@ -58,6 +71,7 @@ interface IApprovalState {
   fetchExceptionalApprovalPerson: (category: string) => Promise<void>;
   fetchApprovals: (appraisalIdx: string) => Promise<void>;
   deleteApproval: (idx: string) => Promise<void>;
+  obExceptionalApproval: (payload: IOBExceptionalPayload) => Promise<void>;
 }
 
 const useApprovalStore = create<IApprovalState>((set) => ({
@@ -76,6 +90,10 @@ const useApprovalStore = create<IApprovalState>((set) => ({
   approvals: [],
   approvalsLoading: false,
   approvalsError: null,
+
+  obExceptionalApprovalResponse: null,
+  obExceptionalApprovalLoading: false,
+  obExceptionalApprovalError: null,
 
   fetchExceptionalApprovalCategories: async () => {
     set({
@@ -107,17 +125,12 @@ const useApprovalStore = create<IApprovalState>((set) => ({
     });
     try {
       const response = await APIAuth.post(
-        `/mobixCamsApproval/v1/approvals/on-boarding`,
+        `/mobixCamsApproval/v1/approvals/appraisal`,
         payload
       );
       set({
         appraisalApprovalResponse: response.data,
         appraisalApprovalLoading: false,
-      });
-      notification.success({
-        message: "Exceptional Approval Request Sent",
-        description:
-          "Your exceptional approval request has been sent successfully.",
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -191,6 +204,30 @@ const useApprovalStore = create<IApprovalState>((set) => ({
       set({
         appraisalApprovalError: error.message,
         appraisalApprovalLoading: false,
+      });
+    }
+  },
+
+  obExceptionalApproval: async (payload) => {
+    set({
+      obExceptionalApprovalLoading: true,
+      obExceptionalApprovalError: null,
+      obExceptionalApprovalResponse: null,
+    });
+    try {
+      const response = await APIAuth.post(
+        `/mobixCamsApproval/v1/approvals/on-boarding`,
+        payload
+      );
+      set({
+        obExceptionalApprovalResponse: response.data,
+        obExceptionalApprovalLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        obExceptionalApprovalError: error.message,
+        obExceptionalApprovalLoading: false,
       });
     }
   },
