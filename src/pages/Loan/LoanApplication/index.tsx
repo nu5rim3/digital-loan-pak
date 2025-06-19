@@ -21,6 +21,7 @@ const LoanApplication: React.FC = () => {
     const { resetCustomer } = useCustomerStore()
     const [activeTab, setActiveTab] = useState('PENDING');
     const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(7)
     const { user } = useUserStore();
 
     const columns = [
@@ -36,8 +37,11 @@ const LoanApplication: React.FC = () => {
         },
         {
             title: 'Application Category',
-            dataIndex: 'appCategory',
-            key: 'appCategory',
+            dataIndex: 'prodCat',
+            key: 'prodCat',
+            render: (category: string) => {
+                return <span>{category === 'C' ? 'Loan' : 'Lease'}</span>
+            }
         },
         {
             title: 'Loan Amount',
@@ -87,12 +91,13 @@ const LoanApplication: React.FC = () => {
 
 
     useEffect(() => {
-        fetchPageableLoans({ status: activeTab, page: currentPage - 1, size: 7, createdBy: user?.idx });
+        fetchPageableLoans({ status: activeTab, page: currentPage - 1, size: pageSize, createdBy: user?.idx });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeTab, currentPage]);
+    }, [activeTab, currentPage, pageSize]);
 
-    const handlePageChange = (page: number) => {
+    const handlePageChange = (page: number, pageSize: number) => {
         setCurrentPage(page);
+        setPageSize(pageSize);
     };
 
     // Extract data for the table from pageableLoans
@@ -125,7 +130,7 @@ const LoanApplication: React.FC = () => {
                                         data={tableData}
                                         loading={pageableLoading}
                                         currentPage={currentPage}
-                                        pageSize={7}
+                                        pageSize={pageSize}
                                         total={total}
                                         onPageChange={handlePageChange}
                                     />
@@ -144,7 +149,7 @@ const LoanApplication: React.FC = () => {
                                         data={tableData}
                                         loading={pageableLoading}
                                         currentPage={currentPage}
-                                        pageSize={7}
+                                        pageSize={pageSize}
                                         total={total}
                                         onPageChange={handlePageChange}
                                     />
@@ -162,7 +167,7 @@ const LoanApplication: React.FC = () => {
                                         data={tableData}
                                         loading={pageableLoading}
                                         currentPage={currentPage}
-                                        pageSize={7}
+                                        pageSize={pageSize}
                                         total={total}
                                         onPageChange={handlePageChange}
                                     />

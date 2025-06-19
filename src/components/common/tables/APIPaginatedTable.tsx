@@ -10,7 +10,7 @@ interface APIPaginatedTableProps {
     currentPage: number;
     pageSize: number;
     total: number;
-    onPageChange: (page: number, pageSize?: number) => void;
+    onPageChange: (page: number, pageSize: number) => void;
 }
 
 const APIPaginatedTable: React.FC<APIPaginatedTableProps> = ({
@@ -34,6 +34,11 @@ const APIPaginatedTable: React.FC<APIPaginatedTableProps> = ({
                 total: total,
                 showSizeChanger: true,
                 showQuickJumper: true,
+                pageSizeOptions: ['5', '7', '10', '20', '50'],
+                onShowSizeChange: (page, size) => {
+                    console.log(`Page: ${page}, Size: ${size}`);
+                    onPageChange(page, size);
+                },
                 onChange: onPageChange,
             }}
             rowKey={record => record.applicationId || record.key}
