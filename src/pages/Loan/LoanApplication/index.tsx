@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Card, Divider, Layout, Tabs } from 'antd'
+import { Button, Card, Divider, Layout, Tabs, Tag } from 'antd'
 import SearchBar from '../../../components/common/searchBar/SearchBar'
 import APIPaginatedTable from '../../../components/common/tables/APIPaginatedTable'
 import { formatCurrency } from '../../../utils/formatterFunctions'
@@ -40,7 +40,11 @@ const LoanApplication: React.FC = () => {
             dataIndex: 'prodCat',
             key: 'prodCat',
             render: (category: string) => {
-                return <span>{category === 'C' ? 'Loan' : 'Lease'}</span>
+                if (category === 'C') {
+                    return <Tag color='cyan-inverse'><b>Loan</b></Tag>
+                } else if (category === 'A') {
+                    return <Tag color='lime-inverse'><b>Lease</b></Tag>
+                }
             }
         },
         {

@@ -1209,6 +1209,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                 loading={trailCalulationDetailsLoading}
                             >{
                                     trailCalucationData !== null && trailCalucationData?.tcNo !== '' &&
+                                    // TODO: add calculation details when call the calculate
                                     <Descriptions column={2} className='mb-3' bordered>
                                         <Descriptions.Item label="Product Facility">{facilityTypes.filter(item => item.code === trailCalucationData?.pFacilityType)[0]?.description ?? '-'}</Descriptions.Item>
                                         <Descriptions.Item label="Product Category">{productCategories.filter(item => item.code === trailCalucationData?.prodCat)[0]?.description ?? '-'}</Descriptions.Item>
