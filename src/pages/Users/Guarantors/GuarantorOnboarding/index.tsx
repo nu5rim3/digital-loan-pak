@@ -15,6 +15,7 @@ import FormDetails from '../../../../components/common/verification/FormDetails'
 import { getStatusByName, TRule } from '../../../../utils/MSASActionFunctions';
 import { mainURL } from '../../../../App';
 import useGuarantorStore from '../../../../store/guarantorStore';
+import ViewDetails from '../../../../components/common/verification/ViewDetails';
 // import useGuarantorStore from '../../../../store/guarantorStore';
 
 const GuarantorOnboarding: React.FC = () => {
@@ -37,6 +38,7 @@ const GuarantorOnboarding: React.FC = () => {
 
     const { appId } = state as { appId: string };
 
+
     const approval = () => {
 
         if (otpVerification !== 'Y') {
@@ -56,14 +58,12 @@ const GuarantorOnboarding: React.FC = () => {
     }, [ruleStatus])
 
     useEffect(() => {
-        if (appId === undefined) {
-            navigate(-1)
-        }
+        // if (appId === undefined) {
+        //     navigate(-1)
+        // }
         // fetchGuarantorByAppId(appId ?? '')
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loan, appId])
-
-    console.log('guarantor:', selectedGuarantor);
 
 
     return (
@@ -71,13 +71,13 @@ const GuarantorOnboarding: React.FC = () => {
             <div className='flex flex-col gap-3'>
 
 
-                {/* {guarantor === null ?
-                    <FormDetails setIdx={setGuarantorIdx} setCNIC={setGuarantorCNIC} setApprovalStatus={setApprovalStatus} type='G' />
+                {selectedGuarantor === null ?
+                    <FormDetails setIdx={setGuarantorIdx} setCNIC={setGuarantorCNIC} setApprovalStatus={setApprovalStatus} type='G' appId={appId ?? ''} />
                     :
                     <ViewDetails type='G' setIdx={setGuarantorIdx} setCnic={setGuarantorCNIC} />
-                } */}
+                }
 
-                <FormDetails setIdx={setGuarantorIdx} setCNIC={setGuarantorCNIC} setApprovalStatus={setApprovalStatus} type='G' appId={appId ?? ''} />
+                {/* <FormDetails setIdx={setGuarantorIdx} setCNIC={setGuarantorCNIC} setApprovalStatus={setApprovalStatus} type='G' appId={appId ?? ''} /> */}
 
 
                 {
@@ -97,7 +97,7 @@ const GuarantorOnboarding: React.FC = () => {
                 }
 
                 {
-                    approvalStatus === 'SPECIAL_APPROVAL' && <ExceptionalApproval setOtpModalOpen={approval} setNadraModalOpen={() => setNadraModalOpen(true)} idx={guarantorIdx ?? ''} />
+                    approvalStatus === 'SPECIAL_APPROVAL' && <ExceptionalApproval setOtpModalOpen={approval} setNadraModalOpen={() => setNadraModalOpen(true)} idx={guarantorIdx ?? ''} appId={appId ?? ''} />
                 }
 
                 {
@@ -155,7 +155,10 @@ const GuarantorOnboarding: React.FC = () => {
             {
                 guarantorIdx !== '' &&
                 <>
-                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={guarantorIdx ?? ''} onCompleted={() => navigate(`${mainURL}/loan/application/${appId ?? ''}`)} />
+                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={guarantorIdx ?? ''} onCompleted={() => navigate(`${mainURL}/loan/application/${appId ?? ''}`)} resetUser={() => {
+                        setGuarantorIdx('')
+                        setGuarantorCNIC('')
+                    }} />
                     {/* onCompleted={() => navigate(`${appId}`)}  */}
                     <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={guarantorIdx ?? ''} />
                 </>

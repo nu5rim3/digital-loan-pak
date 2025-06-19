@@ -35,6 +35,7 @@ interface ICustomerState {
   fetchGuarantorByAppId: (appId: string) => Promise<void>;
   fetchGuarantorByCNIC: (cnic: string) => Promise<void>;
   addGuarantor: (guarantor: IGuarantor) => Promise<void>;
+  deleteGuarantor: (idx: string) => Promise<void>;
   updateGuarantor: (idx: string, updatedUser: IGuarantor) => Promise<void>;
   resetGuarantor: () => void;
 }
@@ -63,7 +64,11 @@ const useGuarantorStore = create<ICustomerState>((set) => ({
       const response = await API.get(
         `/mobixCamsClientele/v1/clienteles/${appId}/type/guarantor`
       );
-      set({ guarantors: response.data, guarantorLoading: false });
+      set({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        guarantors: response.data.filter((item: any) => item.status !== "D"),
+        guarantorLoading: false,
+      });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({ guarantorError: error.message, guarantorLoading: false });
@@ -114,6 +119,22 @@ const useGuarantorStore = create<ICustomerState>((set) => ({
           guarantor.idx === idx
             ? { ...guarantor, ...updatedCustomer }
             : guarantor
+        ),
+        guarantorLoading: false,
+      }));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ guarantorError: error.message, guarantorLoading: false });
+    }
+  },
+
+  deleteGuarantor: async (idx: string) => {
+    set({ guarantorLoading: true, guarantorError: null });
+    try {
+      await APIAuth.put(`/mobixCamsClientele/v1/clienteles/${idx}/inactive`);
+      set((state) => ({
+        guarantors: state.guarantors.filter(
+          (guarantor) => guarantor.idx !== idx
         ),
         guarantorLoading: false,
       }));

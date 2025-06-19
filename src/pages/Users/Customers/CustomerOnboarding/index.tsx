@@ -87,7 +87,7 @@ const CustomerOnboarding: React.FC = () => {
                 }
 
                 {
-                    approvalStatus === 'SPECIAL_APPROVAL' && <ExceptionalApproval setOtpModalOpen={approval} setNadraModalOpen={() => setNadraModalOpen(true)} otpVerification={otpVerification} idx={customerIdx ?? ''} />
+                    approvalStatus === 'SPECIAL_APPROVAL' && <ExceptionalApproval setOtpModalOpen={approval} setNadraModalOpen={() => setNadraModalOpen(true)} otpVerification={otpVerification} idx={customerIdx ?? ''} appId={loan?.idx ?? ''} />
                 }
 
                 {
@@ -148,7 +148,10 @@ const CustomerOnboarding: React.FC = () => {
             {
                 customerIdx !== '' &&
                 <>
-                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={customerIdx ?? ''} onCompleted={triggerMSAS} />
+                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={customerIdx ?? ''} onCompleted={triggerMSAS} resetUser={() => {
+                        setCustomerIdx('')
+                        setCustomerCNIC('')
+                    }} />
                     <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={customerIdx ?? ''} />
                 </>
             }

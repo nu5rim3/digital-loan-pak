@@ -7,13 +7,14 @@ import useCommonStore from '../../../../../store/commonStore';
 import { formatCNIC } from '../../../../../utils/formatterFunctions';
 import { useNavigate, useParams } from 'react-router-dom';
 import { mainURL } from '../../../../../App';
-import { PlusOutlined, EditOutlined, QrcodeOutlined } from '@ant-design/icons';
-import { IStakeholder } from '../../../../../store/stakeholderStore';
+import { PlusOutlined, EditOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons';
+import useStakeholderStore, { IStakeholder } from '../../../../../store/stakeholderStore';
 import useGuarantorStore from '../../../../../store/guarantorStore';
 import ContactDetailsCard from '../../../../../components/common/stakeHolder/ContactDetailsCard';
 import AddressDetailsCard from '../../../../../components/common/stakeHolder/AddressDetailsCard';
 import IncomeDetails from '../../../../../components/common/stakeHolder/IncomeDetails';
 import NADRAModal from '../../../../../components/common/modal/NADRAModal';
+import useVerificationStore from '../../../../../store/verificationStore';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
@@ -68,7 +69,11 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
     const navigate = useNavigate();
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [selectedIdx, setSelectedIdx] = useState('');
-    const { guarantors, guarantorLoading, fetchGuarantorByAppId } = useGuarantorStore()
+    const [selectedCliIdx, setSelectedCliIdx] = useState('');
+
+    const { guarantors, guarantorLoading, fetchGuarantorByAppId, deleteGuarantor } = useGuarantorStore()
+    const { resetAll } = useVerificationStore()
+    const { deleteStakeholder } = useStakeholderStore()
 
     useEffect(() => {
         fetchGuarantorByAppId(appId ?? '')
@@ -85,12 +90,15 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
 
 
     const onClickCreate = () => {
+        resetAll()
         navigate(`${mainURL}/loan/application/${appId}/guarantor/set`, { state: { appId: appId } })
     }
 
     const selectedGuarantor = (identificationNumber: string) => {
         const selected = formDetails?.find((item) => item.stkCNic === identificationNumber);
         const __selected = guarantors?.find((item) => item.identificationNumber === identificationNumber);
+        setSelectedIdx(selected?.idx ?? '');
+        setSelectedCliIdx(__selected?.idx ?? '');
         if (selected) {
             setSelectedIdx(selected?.idx);
             setValue("idx", selected?.idx ?? '');
@@ -145,6 +153,15 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
     const idx = watch("idx");
     const cnicNumber = watch("stkCNic");
 
+    const onDeleteGuarantor = () => {
+        if (selectedCliIdx !== '') {
+            deleteGuarantor(selectedCliIdx)
+        }
+        if (selectedIdx !== '') {
+            deleteStakeholder(selectedIdx)
+        }
+    }
+
     if (guarantors?.length === 0) {
         return (
             <div>
@@ -175,11 +192,12 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                     <>
                         <Card title={`Personal Details: Guarantor ${selectedIndex}`}
                             extra={
-                                <div className='grid grid-cols-2 gap-2'>
+                                <div className='grid grid-cols-3 gap-2'>
                                     <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} >Scan QR</Button>
                                     <Button type="default" onClick={() => {
                                         navigate(`${mainURL}/loan/application/${appId}/guarantor`, { state: { mode: 'edit', idx: idx, cnicNumber: cnicNumber } })
                                     }} icon={<EditOutlined />}>Update details</Button>
+                                    <Button type='default' danger icon={<DeleteOutlined />} onClick={onDeleteGuarantor}>Delete</Button>
                                 </div>
                             }
                         >

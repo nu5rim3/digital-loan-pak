@@ -16,6 +16,7 @@ interface IOTPState {
 
   sendOTP: (idx: string) => Promise<void>;
   verifyOTP: (idx: string, code: string) => Promise<void>;
+  restOtpVerificationResponse: () => void;
 }
 
 const useOTPStore = create<IOTPState>()(
@@ -68,6 +69,9 @@ const useOTPStore = create<IOTPState>()(
             otpVerificationLoading: false,
           });
         }
+      },
+      restOtpVerificationResponse: () => {
+        set({ otpVerificationResponse: null });
       },
     }),
     { name: "OTPStore" }

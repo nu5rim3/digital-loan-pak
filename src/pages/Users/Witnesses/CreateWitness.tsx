@@ -120,7 +120,6 @@ const CreateWitness: React.FC<ICreateWitness> = ({ appId, mode, witnessDetails, 
                     <Controller
                         name="stkInitials"
                         control={control}
-                        disabled
                         render={({ field }) =>
                             <Input
                                 {...field}
@@ -128,6 +127,7 @@ const CreateWitness: React.FC<ICreateWitness> = ({ appId, mode, witnessDetails, 
                                 onChange={(value) => {
                                     field.onChange(value);
                                 }}
+                                disabled
                             />
                         }
                     />
@@ -137,7 +137,6 @@ const CreateWitness: React.FC<ICreateWitness> = ({ appId, mode, witnessDetails, 
                     <Controller
                         name="stkSurName"
                         control={control}
-                        disabled
                         render={({ field }) =>
                             <Input
                                 {...field}
@@ -145,6 +144,7 @@ const CreateWitness: React.FC<ICreateWitness> = ({ appId, mode, witnessDetails, 
                                 onChange={(value) => {
                                     field.onChange(value);
                                 }}
+                                disabled
                             />
                         }
                     />

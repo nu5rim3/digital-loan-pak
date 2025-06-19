@@ -186,6 +186,7 @@ interface IStackholderState {
   addStakeholder: (stakeholder: IStakeholder) => Promise<void>;
   fetchStackholderByAppId: (appraisalId: string) => Promise<void>;
   updateStakeholder: (idx: string, updatedUser: IStakeholder) => Promise<void>;
+  deleteStakeholder: (idx: string) => Promise<void>;
   resetStakeholder: () => void;
 
   fetchContactDetailsByStkId: (stkId: string) => Promise<void>;
@@ -323,6 +324,24 @@ const useStakeholderStore = create<IStackholderState>((set) => ({
         message: "Success",
         description:
           response.data.message ?? "Stakeholder Updated successfully!",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ stakeholderError: error.message, stakeholderLoading: false });
+    }
+  },
+
+  deleteStakeholder: async (idx: string) => {
+    set({ stakeholderLoading: true, stakeholderError: null });
+    try {
+      const response = await APIAuth.put(
+        `/mobixCamsClientele/v1/clienteles/stakeholder/${idx}/inactive`
+      );
+      set({ stakeholderLoading: false });
+      notification.success({
+        message: "Success",
+        description:
+          response.data.message ?? "Stakeholder Deleted successfully!",
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

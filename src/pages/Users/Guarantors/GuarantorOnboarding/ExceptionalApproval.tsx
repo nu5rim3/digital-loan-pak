@@ -22,10 +22,11 @@ interface IExceptionalApproval {
     setNadraModalOpen: () => void;
     idx: string; // Assuming idx is required for the component
     otpVerification?: string; // Optional prop for OTP verification status
+    appId?: string; // Optional prop for application ID
     // NADRAStatus: string | null | undefined;
 }
 
-const ExceptionalApproval: React.FC<IExceptionalApproval> = ({ setOtpModalOpen, setNadraModalOpen, otpVerification, idx }) => {
+const ExceptionalApproval: React.FC<IExceptionalApproval> = ({ setOtpModalOpen, setNadraModalOpen, otpVerification, idx, appId }) => {
     const { control, handleSubmit, formState: { errors }, setValue } = useForm({
         resolver: yupResolver(schema),
     });
@@ -37,7 +38,7 @@ const ExceptionalApproval: React.FC<IExceptionalApproval> = ({ setOtpModalOpen, 
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = (data: any) => {
-        obExceptionalApproval({ ...data, appraisalIdx: loan?.idx, clienteleIdx: idx }).finally(() => {
+        obExceptionalApproval({ ...data, appraisalIdx: appId ?? '', clienteleIdx: idx }).finally(() => {
             setOtpModalOpen();
         })
     }

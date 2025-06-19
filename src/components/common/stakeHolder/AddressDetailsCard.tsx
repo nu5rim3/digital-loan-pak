@@ -40,7 +40,7 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
     const [mode, setMode] = useState<'create' | 'edit' | 'remove'>('create');
     const [selectedResId, setSelectedResId] = useState('');
 
-    const { control, formState: { errors }, setValue, handleSubmit, reset, getValues } = useForm({
+    const { control, formState: { errors }, setValue, handleSubmit, reset, getValues, watch } = useForm({
         resolver: yupResolver(schema),
         defaultValues: { status: 'A' },
     });
@@ -178,6 +178,8 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
         ...option,
         disabled: usedAddressTypes.includes(option.value as "PERMANANT" | "TEMPORARY" | "OTHER")
     }));
+
+    const addressType = watch('addressType');
 
 
     const renderFormItems = () => (
@@ -398,7 +400,7 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
                 />
             </Form.Item> */}
             {/* form item check box that ask same as the permenet address to fill */}
-            <Form.Item hidden={mode === 'edit'}>
+            <Form.Item hidden={mode === 'edit' || addressType === 'PERMANANT'}>
                 <Controller
                     name="sameAsPermanent"
                     control={control}

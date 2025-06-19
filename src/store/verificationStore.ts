@@ -82,6 +82,8 @@ interface IVerificationState {
   fetchCRIBByCnic: (cnic: string) => Promise<void>;
   fetchECIBById: (cnic: string) => Promise<void>;
   resetCRIBDetails: () => void;
+
+  resetAll: () => void;
 }
 
 const useVerificationStore = create<IVerificationState>((set) => ({
@@ -160,6 +162,19 @@ const useVerificationStore = create<IVerificationState>((set) => ({
 
   resetCRIBDetails: () =>
     set({ cribDetails: null, cribLoading: false, error: null }),
+
+  resetAll: () =>
+    set(() => ({
+      blacklistDetails: null,
+      msasDetails: null,
+      cribDetails: null,
+      ecibDetails: null,
+      blLoading: false,
+      msasLoading: false,
+      cribLoading: false,
+      ecibLoading: false,
+      error: null,
+    })),
 }));
 
 export default useVerificationStore;
