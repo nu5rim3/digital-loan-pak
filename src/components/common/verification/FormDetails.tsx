@@ -40,7 +40,7 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
     const [searchValue, setSearchValue] = useState('');
 
     const { selectedCustomer, customer, customerLoading, addCustomer, fetchCustomerByCNIC, resetCustomer } = useCustomerStore();
-    const { selectedGuarantor, guarantor, guarantorLoading, addGuarantor, fetchGuarantorByCNIC } = useGuarantorStore()
+    const { selectedGuarantor, guarantorLoading, addGuarantor, fetchGuarantorByCNIC } = useGuarantorStore()
     const { operatorLoading, operators, fetchOperators } = useCommonStore();
     const { loan } = useLoanStore();
     // const navigate = useNavigate();
