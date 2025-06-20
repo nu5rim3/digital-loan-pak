@@ -135,7 +135,14 @@ const useCustomerStore = create<ICustomerState>((set) => ({
     }
   },
 
-  resetCustomer: () => set({ customer: null }),
+  resetCustomer: () =>
+    set({
+      customer: null,
+      selectedCustomer: null,
+      customerLoading: false,
+      customerError: null,
+      customers: [],
+    }),
 }));
 
 export default useCustomerStore;

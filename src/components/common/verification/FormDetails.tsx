@@ -62,11 +62,10 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
             }
         } else if (type === 'G') {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const response: any = await addGuarantor({ ...postData, fullName: data.name, type: type, client: 'WEB' })
-            if (response) {
-                setIdx(response?.idx);
+            await addGuarantor({ ...postData, fullName: data.name, type: type, client: 'WEB' }).then((response) => {
+                setIdx(response?.idx ?? '');
                 setCNIC(response?.identificationNumber);
-            }
+            })
         }
     };
 
@@ -75,12 +74,7 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
             setCNIC(customer?.identificationNumber);
             setIdx(customer?.idx || '');
         }
-        if (guarantor && type === 'G') {
-            setCNIC(guarantor?.identificationNumber);
-            setIdx(guarantor?.idx || '');
-        }
-    }, [type, guarantor, customer, setCNIC, setIdx]);
-
+    }, [type, customer, setCNIC, setIdx]);
 
     const handleSearch = (value: string) => {
         if (type === 'C') {
@@ -88,7 +82,6 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
         } else if (type === 'G') {
             fetchGuarantorByCNIC(value)
         }
-        setCNIC(value)
     }
 
     const clearSreach = () => {

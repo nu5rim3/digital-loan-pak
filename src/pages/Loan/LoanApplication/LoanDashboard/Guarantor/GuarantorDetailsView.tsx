@@ -72,7 +72,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
     const [selectedIdx, setSelectedIdx] = useState('');
     const [selectedCliIdx, setSelectedCliIdx] = useState('');
 
-    const { guarantors, guarantorLoading, fetchGuarantorByAppId, deleteGuarantor } = useGuarantorStore()
+    const { guarantors, guarantorLoading, fetchGuarantorByAppId, deleteGuarantor, resetSelectedGuarantor } = useGuarantorStore()
     const { resetAll } = useVerificationStore()
     const { deleteStakeholder } = useStakeholderStore()
 
@@ -92,6 +92,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
 
     const onClickCreate = () => {
         resetAll()
+        resetSelectedGuarantor()
         navigate(`${mainURL}/loan/application/${appId}/guarantor/set`, { state: { appId: appId } })
     }
 

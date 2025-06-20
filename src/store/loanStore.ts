@@ -706,6 +706,7 @@ const useLoanStore = create<ILoanState>((set) => ({
       loanType: "",
       loanAmount: "",
       createdBy: "",
+      unit: "IBU",
       page: 0,
       size: 7,
     };

@@ -5,7 +5,6 @@ import NADRAModal from '../../../../components/common/modal/NADRAModal';
 import OTPModal from '../../../../components/common/modal/OTPModal';
 import { QrcodeOutlined, CaretLeftOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
-import useLoanStore from '../../../../store/loanStore';
 import CRIBDetails from '../../../../components/common/verification/CRIBDetails';
 import ECIBDetails from '../../../../components/common/verification/ECIBDetails';
 import MSASVerification from '../../../../components/common/verification/MSASVerification';
@@ -15,7 +14,6 @@ import FormDetails from '../../../../components/common/verification/FormDetails'
 import { getStatusByName, TRule } from '../../../../utils/MSASActionFunctions';
 import { mainURL } from '../../../../App';
 import useGuarantorStore from '../../../../store/guarantorStore';
-import ViewDetails from '../../../../components/common/verification/ViewDetails';
 // import useGuarantorStore from '../../../../store/guarantorStore';
 
 const GuarantorOnboarding: React.FC = () => {
@@ -28,8 +26,6 @@ const GuarantorOnboarding: React.FC = () => {
     const [otpVerification, setOtpVerification] = useState('P');
     const [msasTrigger, setMsasTrigger] = useState(0);
     const [ruleStatus, setRuleStatus] = useState<TRule[]>([]);
-
-    const { loan } = useLoanStore();
 
     const { state } = useLocation();
 
@@ -58,12 +54,11 @@ const GuarantorOnboarding: React.FC = () => {
     }, [ruleStatus])
 
     useEffect(() => {
-        // if (appId === undefined) {
-        //     navigate(-1)
-        // }
-        // fetchGuarantorByAppId(appId ?? '')
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [loan, appId])
+        return () => {
+            setGuarantorIdx('')
+            setGuarantorCNIC('')
+        }
+    }, [])
 
 
     return (
@@ -71,13 +66,13 @@ const GuarantorOnboarding: React.FC = () => {
             <div className='flex flex-col gap-3'>
 
 
-                {selectedGuarantor === null ?
+                {/* {selectedGuarantor === null ?
                     <FormDetails setIdx={setGuarantorIdx} setCNIC={setGuarantorCNIC} setApprovalStatus={setApprovalStatus} type='G' appId={appId ?? ''} />
                     :
                     <ViewDetails type='G' setIdx={setGuarantorIdx} setCnic={setGuarantorCNIC} />
-                }
+                } */}
 
-                {/* <FormDetails setIdx={setGuarantorIdx} setCNIC={setGuarantorCNIC} setApprovalStatus={setApprovalStatus} type='G' appId={appId ?? ''} /> */}
+                <FormDetails setIdx={setGuarantorIdx} setCNIC={setGuarantorCNIC} setApprovalStatus={setApprovalStatus} type='G' appId={appId ?? ''} />
 
 
                 {

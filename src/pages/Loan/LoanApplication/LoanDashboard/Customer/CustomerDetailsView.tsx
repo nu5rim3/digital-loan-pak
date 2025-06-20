@@ -153,7 +153,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
         return (
             <>
                 <div className='pb-5'>
-                    <TrialCalculation cliIdx={customers[0].idx ?? ''} cnic={customers[0].identificationNumber} />
+                    <TrialCalculation cliIdx={customers[0]?.idx ?? ''} cnic={customers[0]?.identificationNumber} />
                 </div>
                 <Card title={'Customer Details'}
                     extra={
@@ -192,7 +192,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
     return (
         <div className='flex flex-col gap-3'>
             <div className='pb-5'>
-                <TrialCalculation cliIdx={customers[0].idx ?? ''} cnic={customers[0].identificationNumber} />
+                <TrialCalculation cliIdx={customers[0]?.idx ?? ''} cnic={customers[0]?.identificationNumber} />
             </div>
             <Collapse
                 size='small'

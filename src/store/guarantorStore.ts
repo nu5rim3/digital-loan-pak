@@ -34,10 +34,11 @@ interface ICustomerState {
   fetchGuarantor: () => Promise<void>;
   fetchGuarantorByAppId: (appId: string) => Promise<void>;
   fetchGuarantorByCNIC: (cnic: string) => Promise<void>;
-  addGuarantor: (guarantor: IGuarantor) => Promise<void>;
+  addGuarantor: (guarantor: IGuarantor) => Promise<IGuarantor>;
   deleteGuarantor: (idx: string) => Promise<void>;
   updateGuarantor: (idx: string, updatedUser: IGuarantor) => Promise<void>;
   resetGuarantor: () => void;
+  resetSelectedGuarantor: () => void;
 }
 
 const useGuarantorStore = create<ICustomerState>((set) => ({
@@ -104,6 +105,7 @@ const useGuarantorStore = create<ICustomerState>((set) => ({
         message: "Success",
         description: "Customer Created successfully!",
       });
+      return response.data;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({ guarantorError: error.message, guarantorLoading: false });
@@ -144,7 +146,17 @@ const useGuarantorStore = create<ICustomerState>((set) => ({
     }
   },
 
-  resetGuarantor: () => set({ guarantor: null }),
+  resetGuarantor: () => {
+    console.log("Resetting guarantor store");
+    set({
+      guarantor: null,
+      selectedGuarantor: null,
+      guarantorError: null,
+      guarantorLoading: false,
+      guarantors: [],
+    });
+  },
+  resetSelectedGuarantor: () => set({ selectedGuarantor: null }),
 }));
 
 export default useGuarantorStore;

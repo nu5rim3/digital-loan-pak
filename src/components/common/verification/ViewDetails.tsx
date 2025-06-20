@@ -2,6 +2,7 @@ import { Card, Form, Input } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import useCustomerStore from '../../../store/customerStore';
 import useGuarantorStore from '../../../store/guarantorStore';
+import { useEffect } from 'react';
 // import useGuarantorStore from '../../../store/guarantorStore';
 
 interface IViewDetails {
@@ -31,8 +32,10 @@ const ViewDetails: React.FC<IViewDetails> = ({ type, setCnic, setIdx, setName })
         }
     };
 
-    loadData();
-
+    useEffect(() => {
+        loadData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [customer, selectedGuarantor]);
 
     return (
         <Card title={type === 'C' ? 'Customer' : 'Guarantor' + ` Details`}>
