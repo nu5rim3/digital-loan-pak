@@ -33,7 +33,7 @@ interface ICustomerState {
   fetchCustomer: () => Promise<void>;
   fetchCustomerByAppId: (idx: string) => Promise<void>;
   fetchCustomerByCNIC: (cnic: string) => Promise<void>;
-  addCustomer: (customer: ICustomer) => Promise<void>;
+  addCustomer: (customer: ICustomer) => Promise<ICustomer>;
   updateCustomer: (idx: string, updatedUser: ICustomer) => Promise<void>;
   deleteCustomer: (idx: string) => Promise<void>;
   resetCustomer: () => void;
@@ -95,10 +95,12 @@ const useCustomerStore = create<ICustomerState>((set) => ({
         customers: [...state.customers, response.data],
         customerLoading: false,
       }));
+
       notification.success({
         message: "Success",
         description: "Customer Created successfully!",
       });
+      return response.data;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({ customerError: error.message, customerLoading: false });
