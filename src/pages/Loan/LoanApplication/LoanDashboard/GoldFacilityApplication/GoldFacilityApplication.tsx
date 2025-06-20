@@ -10,7 +10,7 @@ import { PlusOutlined, EditOutlined, SaveOutlined, DeleteOutlined, UndoOutlined 
 import useUserStore from '../../../../../store/userStore';
 import { useParams } from 'react-router-dom';
 import CommonModal from '../../../../../components/common/modal/commonModal';
-import { convertStringToNumber, formatSentence, removeCurrencySymbol } from '../../../../../utils/formatterFunctions';
+import { convertStringToNumber, formatCurrency, formatSentence, removeCurrencySymbol } from '../../../../../utils/formatterFunctions';
 
 const schema = yup.object().shape({
     tppNumber: yup.string().required('TPP Number is required').matches(/^[0-9]+$/, 'TPP Number must be a number'),
@@ -177,7 +177,9 @@ const GoldFacilityApplication: React.FC = () => {
 
     useEffect(() => {
         if (!isModalOpen) {
-            fetachGoldLoanAppDetails(appId ?? '')
+            setTimeout(() => {
+                fetachGoldLoanAppDetails(appId ?? '')
+            }, 1000);
         } else {
             fetchGoldsmith(user?.branches[0].code ?? '')
             fetchArticleMaster()
@@ -375,7 +377,7 @@ const GoldFacilityApplication: React.FC = () => {
                                                                         loading={goldsmithLoading}
                                                                         onChange={(value) => {
                                                                             setValue('goldsmithId', value, { shouldValidate: true });
-                                                                            setValue('goldsmithIdFx', goldsmiths.find((item) => item.id === value)?.branchIdFx ?? '', { shouldValidate: true });
+                                                                            setValue('goldsmithIdFx', value ?? '', { shouldValidate: true });
                                                                         }}
                                                                     />
                                                                 )}
@@ -402,6 +404,7 @@ const GoldFacilityApplication: React.FC = () => {
                                                                         onChange={(value) =>
                                                                             field.onChange(Number(value))
                                                                         }
+                                                                        prefix="Rs."
                                                                         disabled
                                                                     />
                                                                 )}
@@ -449,6 +452,7 @@ const GoldFacilityApplication: React.FC = () => {
                                                                             field.onChange(Number(value))
                                                                         }
                                                                         disabled
+                                                                        prefix="Rs."
                                                                     />
                                                                 )}
                                                             />
@@ -465,7 +469,24 @@ const GoldFacilityApplication: React.FC = () => {
                                                                 name="denMarketValue"
                                                                 control={control}
                                                                 render={({ field }) => (
-                                                                    <Input {...field} placeholder="Den Market Value" disabled />
+                                                                    <InputNumber
+                                                                        {...field}
+                                                                        placeholder="Den Market Value"
+                                                                        style={{ width: '100%' }}
+                                                                        formatter={(value) =>
+                                                                            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
+                                                                        }
+                                                                        parser={(value) =>
+                                                                            value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
+                                                                        }
+                                                                        step={0.01}
+                                                                        stringMode // keeps precision in string format
+                                                                        onChange={(value) =>
+                                                                            field.onChange(Number(value))
+                                                                        }
+                                                                        disabled
+                                                                        prefix="Rs."
+                                                                    />
                                                                 )}
                                                             />
                                                         </Form.Item>
@@ -490,6 +511,7 @@ const GoldFacilityApplication: React.FC = () => {
                                                                             field.onChange(Number(value))
                                                                         }
                                                                         disabled
+                                                                        prefix="Rs."
                                                                     />
                                                                 )}
                                                             />
@@ -568,9 +590,9 @@ const DetailsCard: React.FC<{ detail: IGoldLoanAppDetails; onEdit: () => void; o
                         detail.goldLoanAppType === 'GOD' && (
                             <>
                                 <Descriptions.Item label="Goldsmith ID">{detail.goldsmithName ?? detail.goldsmithIdFx}</Descriptions.Item>
-                                <Descriptions.Item label="Gold Collateral Value">{detail.goldCollateralValue}</Descriptions.Item>
+                                <Descriptions.Item label="Gold Collateral Value">{formatCurrency(Number(detail.goldCollateralValue))}</Descriptions.Item>
                                 <Descriptions.Item label="Gold Gross Weight">{detail.goldGrossWeight}</Descriptions.Item>
-                                <Descriptions.Item label="Gold Market Value">{detail.goldMarketValue}</Descriptions.Item>
+                                <Descriptions.Item label="Gold Market Value">{formatCurrency(Number(detail.goldMarketValue))}</Descriptions.Item>
                                 <Descriptions.Item label="Gold Net Weight">{detail.goldNetWeight}</Descriptions.Item>
                             </>
                         )
@@ -578,9 +600,9 @@ const DetailsCard: React.FC<{ detail: IGoldLoanAppDetails; onEdit: () => void; o
                     {
                         detail.goldLoanAppType === 'DEN' && (
                             <>
-                                <Descriptions.Item label="Den Collateral Value">{detail.denCollateralValue}</Descriptions.Item>
+                                <Descriptions.Item label="Den Collateral Value">{formatCurrency(Number(detail.denCollateralValue))}</Descriptions.Item>
                                 <Descriptions.Item label="Den Gross Weight">{detail.denGrossWeight}</Descriptions.Item>
-                                <Descriptions.Item label="Den Market Value">{detail.denMarketValue}</Descriptions.Item>
+                                <Descriptions.Item label="Den Market Value">{formatCurrency(Number(detail.denMarketValue))}</Descriptions.Item>
                                 <Descriptions.Item label="Den Net Weight">{detail.denNetWeight}</Descriptions.Item>
                             </>
                         )
