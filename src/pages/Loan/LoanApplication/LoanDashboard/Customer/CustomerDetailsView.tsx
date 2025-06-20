@@ -18,6 +18,7 @@ import TrialCalculation from '../../../../Users/Customers/TrialCalculation';
 import OtherDetails from '../../../../../components/common/stakeHolder/OtherDetails';
 import BankDetails from '../../../../../components/common/stakeHolder/BankDetails';
 import NADRAModal from '../../../../../components/common/modal/NADRAModal';
+import moment from 'moment';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
@@ -25,7 +26,14 @@ const schema = yup.object().shape({
     stkOrgType: yup.string().required("Organization Type is required"),
     stkCNic: yup.string().required("CNIC is required").matches(/^\d{5}-\d{7}-\d$/, 'CNIC must be in format xxxxx-xxxxxxx-x'),
     stkCNicIssuedDate: yup.string().required("CNIC Issued Date is required"),
-    stkCNicExpDate: yup.string().required("CNIC Expired Date is required"),
+    stkCNicExpDate: yup
+        .string()
+        .required("CNIC Expired Date is required")
+        .test(
+            "is-today-or-future",
+            "Date cannot be in the past",
+            value => moment(value).isSameOrAfter(moment(), 'day')
+        ),
     stkCNicStatus: yup.string().required("CNIC Status is required"),
     stkCusName: yup.string().required("Customer Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     stkInitials: yup.string().required("Initial is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
@@ -295,7 +303,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                     <Controller
                                         name="stkCNicExpDate"
                                         control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter CNIC Expired Date" type='date' />}
+                                        render={({ field }) => <Input {...field} placeholder="Enter CNIC Expired Date" type='date' min={moment().format("YYYY-MM-DD")} />}
                                     />
                                 </Form.Item>
 

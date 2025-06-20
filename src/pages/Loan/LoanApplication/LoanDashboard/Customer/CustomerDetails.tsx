@@ -11,6 +11,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import useCustomerStore from '../../../../../store/customerStore';
 import { CaretLeftOutlined, EditOutlined, UndoOutlined } from '@ant-design/icons';
 import { getStakeholderByType } from '../../../../../utils/stakholderFunction';
+import moment from 'moment';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
@@ -36,12 +37,14 @@ const schema = yup.object().shape({
             const { stkDob } = this.parent;
             return value && stkDob ? new Date(value) >= new Date(stkDob) : true;
         }),
-    stkCNicExpDate: yup.string()
+    stkCNicExpDate: yup
+        .string()
         .required("CNIC Expired Date is required")
-        .test('is-later', 'CNIC Expired Date must be later than CNIC Issued Date', function (value) {
-            const { stkCNicIssuedDate } = this.parent;
-            return value && stkCNicIssuedDate ? new Date(value) > new Date(stkCNicIssuedDate) : true;
-        }),
+        .test(
+            "is-today-or-future",
+            "Date cannot be in the past",
+            value => moment(value).isSameOrAfter(moment(), 'day')
+        ),
     stkCNicStatus: yup.string().required("CNIC Status is required"),
     stkCusName: yup.string().required("Customer Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     stkInitials: yup.string().required("Initials is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
@@ -334,7 +337,7 @@ const CustomerDetails: React.FC = () => {
                             <Controller
                                 name="stkCNicExpDate"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter CNIC Expired Date" type='date' />}
+                                render={({ field }) => <Input {...field} placeholder="Enter CNIC Expired Date" type='date' min={moment().format("YYYY-MM-DD")} />}
                             />
                         </Form.Item>
                         <Form.Item label="Age" validateStatus={errors.stkAge ? "error" : ""} help={errors.stkAge?.message} required>

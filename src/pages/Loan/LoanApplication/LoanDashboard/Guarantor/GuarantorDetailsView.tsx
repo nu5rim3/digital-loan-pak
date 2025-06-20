@@ -15,6 +15,7 @@ import AddressDetailsCard from '../../../../../components/common/stakeHolder/Add
 import IncomeDetails from '../../../../../components/common/stakeHolder/IncomeDetails';
 import NADRAModal from '../../../../../components/common/modal/NADRAModal';
 import useVerificationStore from '../../../../../store/verificationStore';
+import moment from 'moment';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
@@ -292,7 +293,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                                         <Controller
                                             name="stkCNicExpDate"
                                             control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter CNIC Expired Date" type='date' />}
+                                            render={({ field }) => <Input {...field} placeholder="Enter CNIC Expired Date" type='date' min={moment().format("YYYY-MM-DD")} />}
                                         />
                                     </Form.Item>
 
