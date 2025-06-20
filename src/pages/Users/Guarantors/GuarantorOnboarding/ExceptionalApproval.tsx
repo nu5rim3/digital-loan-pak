@@ -6,10 +6,8 @@ import * as yup from "yup";
 import TextArea from 'antd/es/input/TextArea';
 import { CheckSquareOutlined } from '@ant-design/icons';
 import useApprovalStore from '../../../../store/approvalStore';
-import useLoanStore from '../../../../store/loanStore';
-import { QrcodeOutlined } from '@ant-design/icons';
+import { QrcodeOutlined, CaretLeftOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { mainURL } from '../../../../App';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
@@ -31,7 +29,6 @@ const ExceptionalApproval: React.FC<IExceptionalApproval> = ({ setOtpModalOpen, 
         resolver: yupResolver(schema),
     });
 
-    const { loan } = useLoanStore()
     const navigate = useNavigate();
 
     const { obExceptionalApprovalLoading, obExceptionalApproval } = useApprovalStore()
@@ -81,10 +78,13 @@ const ExceptionalApproval: React.FC<IExceptionalApproval> = ({ setOtpModalOpen, 
                     </Form.Item>
                 </div>
                 <div>
+                    <Button type="default" icon={<CaretLeftOutlined />} onClick={() => navigate(-1)} className='mr-3'>
+                        Back
+                    </Button>
                     <Button type="primary" htmlType="submit" danger icon={<CheckSquareOutlined />} loading={obExceptionalApprovalLoading} className='mr-3' hidden={otpVerification === 'Y'}>Exceptional Approval</Button>
-                    <Button type='primary' onClick={() => {
+                    {/* <Button type='primary' onClick={() => {
                         navigate(`${mainURL}/loan/application/${loan?.idx ?? ''}`)
-                    }} icon={<QrcodeOutlined />} hidden={otpVerification === 'P'} className='mr-3'>Calculate TC</Button>
+                    }} icon={<QrcodeOutlined />} hidden={otpVerification === 'P'} className='mr-3'>Calculate TC</Button> */}
                     <Button type='default' onClick={setNadraModalOpen} icon={<QrcodeOutlined />}>Scan QR</Button>
                 </div>
             </Form>
