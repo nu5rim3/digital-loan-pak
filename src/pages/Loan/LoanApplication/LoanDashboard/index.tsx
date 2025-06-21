@@ -176,18 +176,18 @@ const LoanDaashboard: React.FC = () => {
             "enabled": null,
             "status": "A"
         },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2024-07-11T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 6,
-            "section": "gold-facility-application",
-            "isMandatory": "0",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
+        // {
+        //     "createdBy": "SYSTEM",
+        //     "creationDate": "2024-07-11T09:24:51.357+00:00",
+        //     "lastModifiedBy": null,
+        //     "lastModifiedDate": null,
+        //     "id": 6,
+        //     "section": "gold-facility-application",
+        //     "isMandatory": "0",
+        //     "completed": "1",
+        //     "enabled": null,
+        //     "status": "A"
+        // },
         {
             "createdBy": "SYSTEM",
             "creationDate": "2022-08-09T09:24:51.357+00:00",
@@ -224,18 +224,18 @@ const LoanDaashboard: React.FC = () => {
             "enabled": null,
             "status": "A"
         },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 11,
-            "section": "customer-risk-profiling",
-            "isMandatory": "0",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
+        // {
+        //     "createdBy": "SYSTEM",
+        //     "creationDate": "2022-08-09T09:24:51.357+00:00",
+        //     "lastModifiedBy": null,
+        //     "lastModifiedDate": null,
+        //     "id": 11,
+        //     "section": "customer-risk-profiling",
+        //     "isMandatory": "0",
+        //     "completed": "1",
+        //     "enabled": null,
+        //     "status": "A"
+        // },
         {
             "createdBy": "SYSTEM",
             "creationDate": "2022-08-09T09:24:51.357+00:00",
@@ -372,7 +372,7 @@ const LoanDaashboard: React.FC = () => {
 
                 <div className="mt-5">
                     <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
-                    <Button type="primary" className="ml-3">Ready to Apply</Button>
+                    {/* <Button type="primary" className="ml-3">Ready to Apply</Button> */}
                 </div>
             </Card>
         </>
