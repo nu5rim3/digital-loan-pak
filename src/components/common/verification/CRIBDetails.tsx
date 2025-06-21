@@ -79,8 +79,6 @@ const CRIBDetails: React.FC<ICRIBDetails> = ({ cnic, fullName }) => {
         }
     }, [cribDetails]);
 
-    console.log('CRIB Details:', cribDetails);
-
     if (cribDetails?.length === 0) {
         return (
             <Card title={'Internal CRIB Details'} loading={cribLoading} extra={

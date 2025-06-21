@@ -10,6 +10,7 @@ interface APIPaginatedTableProps {
     currentPage: number;
     pageSize: number;
     total: number;
+    rowKey: string;
     onPageChange: (page: number, pageSize: number) => void;
 }
 
@@ -20,10 +21,12 @@ const APIPaginatedTable: React.FC<APIPaginatedTableProps> = ({
     currentPage,
     pageSize,
     total,
+    rowKey,
     onPageChange,
 }) => {
     return (
         <Table
+            rowKey={rowKey}
             size='small'
             columns={columns}
             dataSource={data}
@@ -41,7 +44,6 @@ const APIPaginatedTable: React.FC<APIPaginatedTableProps> = ({
                 },
                 onChange: onPageChange,
             }}
-            rowKey={record => record.applicationId || record.key}
         />
     );
 };

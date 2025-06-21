@@ -130,6 +130,7 @@ const LoanApplication: React.FC = () => {
                                     <SearchBar />
                                     <Divider />
                                     <APIPaginatedTable
+                                        rowKey="appIdx"
                                         columns={columns}
                                         data={tableData}
                                         loading={pageableLoading}
@@ -149,6 +150,7 @@ const LoanApplication: React.FC = () => {
                                     <SearchBar />
                                     <Divider />
                                     <APIPaginatedTable
+                                        rowKey="appIdx"
                                         columns={columns}
                                         data={tableData}
                                         loading={pageableLoading}
@@ -167,6 +169,7 @@ const LoanApplication: React.FC = () => {
                                     <SearchBar />
                                     <Divider />
                                     <APIPaginatedTable
+                                        rowKey="appIdx"
                                         columns={columns}
                                         data={tableData}
                                         loading={pageableLoading}

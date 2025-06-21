@@ -52,13 +52,6 @@ const CustomerOnboarding: React.FC = () => {
 
     }, [ruleStatus])
 
-    useEffect(() => {
-        if (loan?.idx === undefined) {
-            navigate(-1)
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [loan])
-
     return (
         <>
             <div className='flex flex-col gap-3'>
@@ -148,10 +141,7 @@ const CustomerOnboarding: React.FC = () => {
             {
                 customerIdx !== '' &&
                 <>
-                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={customerIdx ?? ''} onCompleted={triggerMSAS} resetUser={() => {
-                        setCustomerIdx('')
-                        setCustomerCNIC('')
-                    }} />
+                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={customerIdx ?? ''} onCompleted={triggerMSAS} resetUser={() => { }} />
                     <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={customerIdx ?? ''} />
                 </>
             }
