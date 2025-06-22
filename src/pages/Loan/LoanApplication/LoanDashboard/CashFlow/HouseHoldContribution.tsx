@@ -141,6 +141,27 @@ const HouseHoldContribution: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [annually]);
 
+    const usedTypes = React.useMemo(
+        () => houseHoldContribution.map((detail) => detail.key),
+        [houseHoldContribution]
+    );
+
+    const options = [
+        { value: 'Salaries', label: 'Salaries' },
+        { value: 'Wages', label: 'Wages' },
+        { value: 'Pension', label: 'Pension' },
+        { value: 'Remittance', label: 'Remittance' },
+        { value: 'Business', label: 'Business' },
+        { value: 'Other', label: 'Other' },
+    ];
+
+    const diabledOptions = options.map(option => {
+        return {
+            ...option,
+            disabled: usedTypes.includes(option.value)
+        }
+    })
+
     return (
         <>
             <Collapse
@@ -205,14 +226,7 @@ const HouseHoldContribution: React.FC = () => {
                                     <Select
                                         {...field}
                                         placeholder="Select Key"
-                                        options={[
-                                            { value: 'Salaries', label: 'Salaries' },
-                                            { value: 'Wages', label: 'Wages' },
-                                            { value: 'Pension', label: 'Pension' },
-                                            { value: 'Remittance', label: 'Remittance' },
-                                            { value: 'Business', label: 'Business' },
-                                            { value: 'Other', label: 'Other' },
-                                        ]}
+                                        options={diabledOptions}
                                     />
                                 )}
                             />

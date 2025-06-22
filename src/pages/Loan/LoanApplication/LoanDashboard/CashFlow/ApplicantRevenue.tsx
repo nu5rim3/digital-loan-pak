@@ -145,6 +145,31 @@ const ApplicantRevenue: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [annually]);
 
+    const usedRevenueTypes = React.useMemo(
+        () => applicantRevenue.map((detail) => detail.key),
+        [applicantRevenue]
+    );
+
+    const revenueOptions = [
+        { value: 'Agriculture', label: 'Agriculture' },
+        { value: 'Business 1', label: 'Business 1' },
+        { value: 'Business 2', label: 'Business 2' },
+        { value: 'Salary', label: 'Salary' },
+        { value: 'Pension', label: 'Pension' },
+        { value: 'Remittance', label: 'Remittance' },
+        { value: 'Rental', label: 'Rental' },
+        { value: 'Lev_Revenue', label: 'Lev Revenue' },
+        { value: 'Other', label: 'Other' },
+    ];
+
+    const diabledRevenueOptions = revenueOptions.map(option => {
+        return {
+            ...option,
+            disabled: usedRevenueTypes.includes(option.value)
+        }
+    })
+
+
     return (
         <>
             <Collapse
@@ -209,17 +234,7 @@ const ApplicantRevenue: React.FC = () => {
                                     <Select
                                         {...field}
                                         placeholder="Select Key"
-                                        options={[
-                                            { value: 'Agriculture', label: 'Agriculture' },
-                                            { value: 'Business 1', label: 'Business 1' },
-                                            { value: 'Business 2', label: 'Business 2' },
-                                            { value: 'Salary', label: 'Salary' },
-                                            { value: 'Pension', label: 'Pension' },
-                                            { value: 'Remittance', label: 'Remittance' },
-                                            { value: 'Rental', label: 'Rental' },
-                                            { value: 'Lev_Revenue', label: 'Lev Revenue' },
-                                            { value: 'Other', label: 'Other' },
-                                        ]}
+                                        options={diabledRevenueOptions}
                                     />
                                 )}
                             />

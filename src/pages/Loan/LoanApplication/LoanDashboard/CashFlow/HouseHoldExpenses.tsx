@@ -150,6 +150,40 @@ const HouseHoldExpenses: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [annually]);
 
+
+    const usedTypes = React.useMemo(
+        () => houseHoldExpenses.map((detail) => detail.key),
+        [houseHoldExpenses]
+    );
+
+    const options = [
+        { value: 'Food', label: 'Food' },
+        { value: 'Rent', label: 'Rent' },
+        { value: 'Utilities', label: 'Utilities' },
+        { value: 'Transportation', label: 'Transportation' },
+        { value: 'Insurance', label: 'Insurance' },
+        { value: 'Healthcare', label: 'Healthcare' },
+        { value: 'Entertainment', label: 'Entertainment' },
+        { value: 'Clothing', label: 'Clothing' },
+        { value: 'Education', label: 'Education' },
+        { value: 'Miscellaneous', label: 'Miscellaneous' },
+        { value: 'Loan Repayment', label: 'Loan Repayment' },
+        { value: 'Religious', label: 'Religious' },
+        { value: 'Events', label: 'Events' },
+        { value: 'Coummunication', label: 'Communication' },
+        { value: 'Tax', label: 'Tax' },
+        { value: 'License', label: 'License' },
+        { value: 'Other', label: 'Other' },
+    ];
+
+    const diabledOptions = options.map(option => {
+        return {
+            ...option,
+            disabled: usedTypes.includes(option.value)
+        }
+    })
+
+
     return (
         <>
             <Collapse
@@ -214,25 +248,7 @@ const HouseHoldExpenses: React.FC = () => {
                                     <Select
                                         {...field}
                                         placeholder="Select Key"
-                                        options={[
-                                            { value: 'Food', label: 'Food' },
-                                            { value: 'Rent', label: 'Rent' },
-                                            { value: 'Utilities', label: 'Utilities' },
-                                            { value: 'Transportation', label: 'Transportation' },
-                                            { value: 'Insurance', label: 'Insurance' },
-                                            { value: 'Healthcare', label: 'Healthcare' },
-                                            { value: 'Entertainment', label: 'Entertainment' },
-                                            { value: 'Clothing', label: 'Clothing' },
-                                            { value: 'Education', label: 'Education' },
-                                            { value: 'Miscellaneous', label: 'Miscellaneous' },
-                                            { value: 'Loan Repayment', label: 'Loan Repayment' },
-                                            { value: 'Religious', label: 'Religious' },
-                                            { value: 'Events', label: 'Events' },
-                                            { value: 'Coummunication', label: 'Communication' },
-                                            { value: 'Tax', label: 'Tax' },
-                                            { value: 'License', label: 'License' },
-                                            { value: 'Other', label: 'Other' },
-                                        ]}
+                                        options={diabledOptions}
                                     />
                                 )}
                             />

@@ -144,6 +144,32 @@ const BnsOrAgriExpenses: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [annually]);
 
+    const usedTypes = React.useMemo(
+        () => bnsOrAgriExpenses.map((detail) => detail.key),
+        [bnsOrAgriExpenses]
+    );
+
+    const options = [
+        { value: 'Agri_Expenses', label: 'Agri Expenses' },
+        { value: 'Business 1', label: 'Business 1' },
+        { value: 'Business 2', label: 'Business 2' },
+        { value: 'Lev Expenses', label: 'Lev Expenses' },
+        { value: 'Salary & Wages', label: 'Salary & Wages' },
+        { value: 'Rental', label: 'Rental' },
+        { value: 'Utilities', label: 'Utilities' },
+        { value: 'Transportation', label: 'Transportation' },
+        { value: 'Communication', label: 'Communication' },
+        { value: 'Taxes & Licenses', label: 'Taxes & Licenses' },
+        { value: 'Other', label: 'Other' },
+    ];
+
+    const diabledOptions = options.map(option => {
+        return {
+            ...option,
+            disabled: usedTypes.includes(option.value)
+        }
+    })
+
 
     return (
         <>
@@ -209,19 +235,7 @@ const BnsOrAgriExpenses: React.FC = () => {
                                     <Select
                                         {...field}
                                         placeholder="Select Key"
-                                        options={[
-                                            { value: 'Agri_Expenses', label: 'Agri Expenses' },
-                                            { value: 'Business 1', label: 'Business 1' },
-                                            { value: 'Business 2', label: 'Business 2' },
-                                            { value: 'Lev Expenses', label: 'Lev Expenses' },
-                                            { value: 'Salary & Wages', label: 'Salary & Wages' },
-                                            { value: 'Rental', label: 'Rental' },
-                                            { value: 'Utilities', label: 'Utilities' },
-                                            { value: 'Transportation', label: 'Transportation' },
-                                            { value: 'Communication', label: 'Communication' },
-                                            { value: 'Taxes & Licenses', label: 'Taxes & Licenses' },
-                                            { value: 'Other', label: 'Other' },
-                                        ]}
+                                        options={diabledOptions}
                                     />
                                 )}
                             />
