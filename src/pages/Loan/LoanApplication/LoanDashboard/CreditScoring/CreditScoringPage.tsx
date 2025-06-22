@@ -23,7 +23,7 @@ const customerDetailsFields = [
   { key: "maritalStatus", label: "Marital Status" },
   { key: "familyMembers", label: "Family Members" },
   { key: "guardian", label: "Guardian of Family" },
-  { key: "otherIncome", label: "Other Source of Income" },
+  { key: "otherIncome", label: "Other Source of Income of Customer" },
   { key: "incomeSupport", label: "Household Income Support" },
   { key: "incomeContribution", label: "Household Income Contribution" },
   { key: "residenceStatus", label: "Current Residence Place Status" },
@@ -191,7 +191,7 @@ const CreditScoringPage: React.FC<{
               field: "description",
             },
             {
-              label: "Other Source of Income",
+              label: "Other Source of Income of Customer",
               name: "otherSourceOfIncome",
               data: dropdowns.income,
               field: "description",
@@ -203,7 +203,7 @@ const CreditScoringPage: React.FC<{
               field: "description",
             },
             {
-              label: "Utility Bill Repayment",
+              label: "Utility Bill Repayment Behaviour",
               name: "utilityBillRepayment",
               data: dropdowns.bills,
               field: "billName",
@@ -215,7 +215,7 @@ const CreditScoringPage: React.FC<{
               field: "subPerName",
             },
             {
-              label: "Max Days in Arrears",
+              label: "Maximum Days in arrears of Taken",
               name: "maxLoanArrears",
               data: dropdowns.arrears,
               field: "loanArrearsName",
