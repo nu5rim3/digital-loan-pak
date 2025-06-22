@@ -635,6 +635,8 @@ interface ICreditState {
   ) => Promise<ITrailCalulationDetailsResponse | undefined>;
 
   resetTrailCalulationDetails: () => void;
+
+  resetAllTrailCalucationData: () => void;
 }
 
 const useCreditStore = create<ICreditState>((set) => ({
@@ -1703,6 +1705,19 @@ const useCreditStore = create<ICreditState>((set) => ({
   },
 
   resetTrailCalulationDetails: () => set(() => ({ trailCalucationData: null })),
+
+  resetAllTrailCalucationData: () =>
+    set(() => ({
+      trailCalucationData: null,
+      trailCalucationDataLoading: false,
+      trailCalucationDataError: null,
+      trailCalulationDetails: null,
+      trailCalulationDetailsLoading: false,
+      trailCalulationDetailsError: null,
+      trailCalulation: null,
+      trailCalulationLoading: false,
+      trailCalulationError: null,
+    })),
 }));
 
 export default useCreditStore;

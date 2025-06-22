@@ -10,6 +10,7 @@ import useCustomerStore from '../../../store/customerStore'
 import { PlusOutlined } from '@ant-design/icons';
 import moment from 'moment'
 import useUserStore from '../../../store/userStore'
+import useCreditStore from '../../../store/creditStore'
 
 const { Content } = Layout
 
@@ -18,6 +19,7 @@ const LoanApplication: React.FC = () => {
 
     const navigate = useNavigate();
     const { pageableLoans, pageableLoading, loading, addLoan, fetchPageableLoans } = useLoanStore();
+    const { resetAllTrailCalucationData } = useCreditStore()
     const { resetCustomer } = useCustomerStore()
     const [activeTab, setActiveTab] = useState('PENDING');
     const [currentPage, setCurrentPage] = useState(1);
@@ -70,7 +72,11 @@ const LoanApplication: React.FC = () => {
             align: 'right',
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             render: (_: string, item: any) => (
-                <a onClick={() => navigate(`${item.appIdx}`)}>View</a>
+                <a onClick={() => {
+                    resetAllTrailCalucationData();
+                    navigate(`${item.appIdx}`)
+                }}>
+                    View</a>
             ),
         },
     ];
@@ -89,6 +95,7 @@ const LoanApplication: React.FC = () => {
             client: "WEB",
         }).then(() => {
             navigate(`${mainURL}/users/customer`, { state: { newLoan: true } })
+            resetAllTrailCalucationData();
             resetCustomer();
         })
     };
