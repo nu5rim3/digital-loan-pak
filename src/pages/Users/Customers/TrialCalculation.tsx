@@ -143,6 +143,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
     const [selectedProductType, setSelectedProductType] = useState<any | null>(null);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selectedSubProductType, setSelectedSubProductType] = useState<any | null>(null);
+    const [hideDetails, setHideDetails] = useState(false);
 
     const { control, handleSubmit, formState: { errors }, reset, watch, setValue, getValues } = useForm({
         resolver: yupResolver(validationSchema),
@@ -190,7 +191,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
     const { productDetails, productDetailsLoading, fetchProductDetails, resetProductDetails } = useLoanStore()
     const { user } = useUserStore()
     const { cribDetails, cribLoading, fetchCRIBByCnic, resetCRIBDetails } = useVerificationStore()
-    const { trailCalulation, trailCalulationDetails, trailCalulationDetailsLoading, trailCalucationData, trailCalucationDataLoading, trailCalulationLoading, sendTrailCalulation, fetchTrailCalulation, resetTrailCalculationDetails, saveTrailCalulation, fetchTrailCalulationDetailsByAppId } = useCreditStore()
+    const { trailCalulation, trailCalulationDetails, trailCalulationDetailsLoading, trailCalulationDetailsByAppId, trailCalulationDetailsByAppIdLoading, trailCalulationLoading, sendTrailCalulation, fetchTrailCalulation, resetTrailCalculationDetails, saveTrailCalulation, fetchTrailCalulationDetailsByAppId } = useCreditStore()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = (data: any) => {
@@ -287,6 +288,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                 setCalculationPayload(__data ?? null)
                 fetchTrailCalulation(res?.object.tcNo ?? '', 'T')
                 setIsSaveShow(true)
+                setHideDetails(false);
             } else if (res.code === '999') {
                 notification.error({
                     message: res.object?.message,
@@ -390,7 +392,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
     useEffect(() => {
         // if (facilityType !== 'RO') {
         if (selectedSubProductType !== null && selectedProductType !== null) {
-            fetchProductDetails(selectedProductType?.prodCode, selectedSubProductType?.subTypeCode, user?.branches[0]?.lsbrProv?.toString() ?? '', selectedProductType?.prodCurrency ?? trailCalucationData?.pTrhdCurCode)
+            fetchProductDetails(selectedProductType?.prodCode, selectedSubProductType?.subTypeCode, user?.branches[0]?.lsbrProv?.toString() ?? '', selectedProductType?.prodCurrency)
             // }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -474,7 +476,9 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         }
         const productCode = __calculationPayload.pTrhdLType
         setSelectedProductCode(productCode)
-        saveTrailCalulation(appId ?? '', cliIdx, { ...__calculationPayload, tcNo: trailCalulation?.object.tcNo ?? '' })
+        saveTrailCalulation(appId ?? '', cliIdx, { ...__calculationPayload, tcNo: trailCalulation?.object.tcNo ?? '' }).finally(() => {
+            fetchTrailCalulationDetailsByAppId(appId ?? '')
+        });
     }
 
     useEffect(() => {
@@ -496,18 +500,18 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
     }, [isSaveShow, watch]);
 
     useEffect(() => {
-        if (trailCalucationData?.tcNo !== '') {
-            setSelectedProductCode(trailCalucationData?.pTrhdLType ?? '')
-            fetchTrailCalulation(trailCalucationData?.tcNo ?? '', 'T')
+        if (trailCalulationDetailsByAppId?.tcNo !== '') {
+            setSelectedProductCode(trailCalulationDetailsByAppId?.pTrhdLType ?? '')
+            fetchTrailCalulation(trailCalulationDetailsByAppId?.tcNo ?? '', 'T')
         } else {
-            resetTrailCalculationDetails();
+            // resetTrailCalculationDetails();
             resetCRIBDetails();
             resetProductDetails();
             setSelectedProductCategory(null);
             setSelectedProductCode('');
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [trailCalucationData?.tcNo])
+    }, [trailCalulationDetailsByAppId?.tcNo])
 
     const loanAmount = watch('loanAmount');
 
@@ -530,14 +534,17 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
 
 
     useEffect(() => {
-        if (trailCalucationData?.prodCat && trailCalucationData?.prodCat !== '') {
-            fetchProductTypes(trailCalucationData?.prodCat ?? '')
+        if (trailCalulationDetailsByAppId !== null) {
+            setHideDetails(true);
         }
-        if (trailCalucationData?.pTrhdLType && trailCalucationData?.pTrhdLType !== '') {
-            fetchSubProductTypes(trailCalucationData?.pTrhdLType ?? '')
+        if (trailCalulationDetailsByAppId !== null && trailCalulationDetailsByAppId?.prodCat && trailCalulationDetailsByAppId?.prodCat !== '') {
+            fetchProductTypes(trailCalulationDetailsByAppId?.prodCat ?? '')
+        }
+        if (trailCalulationDetailsByAppId !== null && trailCalulationDetailsByAppId?.pTrhdLType && trailCalulationDetailsByAppId?.pTrhdLType !== '') {
+            fetchSubProductTypes(trailCalulationDetailsByAppId?.pTrhdLType ?? '')
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [trailCalucationData])
+    }, [trailCalulationDetailsByAppId])
 
 
     return (
@@ -1149,7 +1156,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                 <Empty description='No Special Charges' />
                             }
                             {
-                                (trailCalucationData === null || trailCalucationData?.pTrtx?.length === 0) && facilityType === 'RO' &&
+                                (trailCalulationDetailsByAppId === null || trailCalulationDetailsByAppId?.pTrtx?.length === 0) && facilityType === 'RO' &&
                                 <Empty description='No Special Charges' />
                             }
                             <div className='grid grid-cols-4 gap-3'>
@@ -1175,7 +1182,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
 
 
                                 {
-                                    facilityType === 'RO' && trailCalucationData !== null && trailCalucationData?.pTrtx?.map((item, index) => (
+                                    facilityType === 'RO' && trailCalulationDetailsByAppId !== null && trailCalulationDetailsByAppId?.pTrtx?.map((item, index) => (
                                         <Card key={index} size='small' title={`${specialChargesByCode(item?.trtxCalMethod ?? '')}`} extra={
                                             <Checkbox
                                                 checked={item?.prtbMndFlg === '1'}
@@ -1207,14 +1214,15 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                     },
                                 }}
                                 loading={trailCalulationDetailsLoading}
-                            >{
-                                    trailCalucationData !== null && trailCalucationData?.tcNo !== '' &&
+                            >
+                                {
+                                    trailCalulationDetailsByAppId !== null && hideDetails &&
                                     // TODO: add calculation details when call the calculate
                                     <Descriptions column={2} className='mb-3' bordered>
-                                        <Descriptions.Item label="Product Facility">{facilityTypes.filter(item => item.code === trailCalucationData?.pFacilityType)[0]?.description ?? '-'}</Descriptions.Item>
-                                        <Descriptions.Item label="Product Category">{productCategories.filter(item => item.code === trailCalucationData?.prodCat)[0]?.description ?? '-'}</Descriptions.Item>
-                                        <Descriptions.Item label="Product Type">{productTypes.filter(item => item.prodCode === trailCalucationData?.pTrhdLType)[0]?.prodName ?? '-'}</Descriptions.Item>
-                                        <Descriptions.Item label="Product Sub Type">{subProductTypes.filter(item => item.subTypeCode === trailCalucationData?.pTrhdBus)[0]?.subTypeDesc ?? '-'}</Descriptions.Item>
+                                        <Descriptions.Item label="Product Facility">{facilityTypes.filter(item => item.code === trailCalulationDetailsByAppId?.pFacilityType)[0]?.description ?? '-'}</Descriptions.Item>
+                                        <Descriptions.Item label="Product Category">{productCategories.filter(item => item.code === trailCalulationDetailsByAppId?.prodCat)[0]?.description ?? '-'}</Descriptions.Item>
+                                        <Descriptions.Item label="Product Type">{productTypes.filter(item => item.prodCode === trailCalulationDetailsByAppId?.pTrhdLType)[0]?.prodName ?? '-'}</Descriptions.Item>
+                                        <Descriptions.Item label="Product Sub Type">{subProductTypes.filter(item => item.subTypeCode === trailCalulationDetailsByAppId?.pTrhdBus)[0]?.subTypeDesc ?? '-'}</Descriptions.Item>
                                     </Descriptions>
                                 }
 
@@ -1234,7 +1242,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                             }
                                         </Card>
 
-                                        <Card size='small' title={'Applied Charges Details'} className='mb-3' hidden={trailCalulationDetails?.object?.facilityDetails === undefined}>
+                                        <Card size='small' title={'Applied Charges Details'} className='mb-3' hidden={trailCalulationDetails?.object?.trtx.length === 0}>
                                             {
                                                 trailCalulationDetails?.object?.trtx.map((item, index) => (
                                                     <Descriptions column={2} key={index}>
@@ -1272,7 +1280,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                         <Button type="primary" htmlType="submit" className='mr-2' icon={<CalculatorOutlined />} loading={trailCalulationLoading || trailCalulationDetailsLoading} hidden={isSaveShow}>
                             Trial Calculate
                         </Button>
-                        <Button type="default" onClick={onRestHandle} className='mr-2' danger icon={<UndoOutlined />} loading={trailCalucationDataLoading}>
+                        <Button type="default" onClick={onRestHandle} className='mr-2' danger icon={<UndoOutlined />} loading={trailCalulationDetailsByAppIdLoading}>
                             Reset
                         </Button>
                     </div>

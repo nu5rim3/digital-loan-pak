@@ -494,9 +494,9 @@ interface ICreditState {
   trailCalulationDetailsLoading: boolean;
   trailCalulationDetailsError: string | null;
 
-  trailCalucationData: ITrailCalulation | null;
-  trailCalucationDataLoading: boolean;
-  trailCalucationDataError: string | null;
+  trailCalulationDetailsByAppId: ITrailCalulation | null;
+  trailCalulationDetailsByAppIdLoading: boolean;
+  trailCalulationDetailsByAppIdError: string | null;
 
   fetachGoldLoanAppDetails: (appId: string) => Promise<void>;
   addGoldLoanAppDetails: (data: IGoldLoanAppDetails) => Promise<void>;
@@ -634,7 +634,9 @@ interface ICreditState {
     appId: string
   ) => Promise<ITrailCalulationDetailsResponse | undefined>;
 
-  resetTrailCalulationDetails: () => void;
+  resetTrailCalucationDetailsByAppId: () => void;
+
+  resetTrailCalulation: () => void;
 
   resetAllTrailCalucationData: () => void;
 }
@@ -717,9 +719,9 @@ const useCreditStore = create<ICreditState>((set) => ({
   trailCalulationDetailsLoading: false,
   trailCalulationDetailsError: null,
 
-  trailCalucationData: null,
-  trailCalucationDataLoading: false,
-  trailCalucationDataError: null,
+  trailCalulationDetailsByAppId: null,
+  trailCalulationDetailsByAppIdLoading: false,
+  trailCalulationDetailsByAppIdError: null,
 
   fetachGoldLoanAppDetails: async (appId: string) => {
     set({ goldLoanAppDetailsLoading: true });
@@ -1687,24 +1689,32 @@ const useCreditStore = create<ICreditState>((set) => ({
   fetchTrailCalulationDetailsByAppId: async (
     appId: string
   ): Promise<ITrailCalulationDetailsResponse | undefined> => {
-    set({ trailCalucationDataLoading: true });
+    set({ trailCalulationDetailsByAppIdLoading: true });
     try {
       const response = await API.get(`/mobixCamsCredit/v1/credit/tc/${appId}`);
       set({
-        trailCalucationData: response.data,
-        trailCalucationDataLoading: false,
+        trailCalulationDetailsByAppId: response.data,
+        trailCalulationDetailsByAppIdLoading: false,
       });
       return response.data;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({
-        trailCalucationDataError: error.message,
-        trailCalucationDataLoading: false,
+        trailCalulationDetailsByAppIdError: error.message,
+        trailCalulationDetailsByAppIdLoading: false,
       });
     }
   },
 
-  resetTrailCalulationDetails: () => set(() => ({ trailCalucationData: null })),
+  resetTrailCalucationDetailsByAppId: () =>
+    set(() => ({ trailCalulationDetailsByAppId: null })),
+
+  resetTrailCalulation: () =>
+    set(() => ({
+      trailCalulation: null,
+      trailCalulationLoading: false,
+      trailCalulationError: null,
+    })),
 
   resetAllTrailCalucationData: () =>
     set(() => ({
