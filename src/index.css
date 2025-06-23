@@ -45,3 +45,9 @@ input {
 textarea {
   text-transform: capitalize !important;
 }
+.search-fixed-select,
+.search-fixed-select .ant-select-selector {
+  width: 150px !important;
+  min-width: 150px !important;
+  max-width: 150px !important;
+}

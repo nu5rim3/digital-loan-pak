@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Card, Divider, Layout, Tabs, Tag } from 'antd'
-import SearchBar from '../../../components/common/searchBar/SearchBar'
 import APIPaginatedTable from '../../../components/common/tables/APIPaginatedTable'
 import { formatCurrency } from '../../../utils/formatterFunctions'
 import { useNavigate } from 'react-router-dom'
@@ -11,7 +10,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import moment from 'moment'
 import useUserStore from '../../../store/userStore'
 import useCreditStore from '../../../store/creditStore'
-
+import AdvanceSearch from '../../../components/common/searchBar/AdvanceSearch'
 const { Content } = Layout
 
 
@@ -24,6 +23,12 @@ const LoanApplication: React.FC = () => {
     const [activeTab, setActiveTab] = useState('PENDING');
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(7)
+    const [params, setParams] = useState({
+        appraisalId: '',
+        customerName: '',
+        fromDate: '',
+        toDate: ''
+    })
     const { user } = useUserStore();
 
     const columns = [
@@ -102,9 +107,9 @@ const LoanApplication: React.FC = () => {
 
 
     useEffect(() => {
-        fetchPageableLoans({ status: activeTab, page: currentPage - 1, size: pageSize, createdBy: user?.idx });
+        fetchPageableLoans({ ...params, status: activeTab, page: currentPage - 1, size: pageSize, createdBy: user?.idx });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [activeTab, currentPage, pageSize]);
+    }, [activeTab, currentPage, pageSize, params]);
 
     const handlePageChange = (page: number, pageSize: number) => {
         setCurrentPage(page);
@@ -134,7 +139,20 @@ const LoanApplication: React.FC = () => {
                             key: 'PENDING',
                             children:
                                 <>
-                                    <SearchBar />
+                                    <AdvanceSearch
+                                        options={[
+                                            { label: 'Application ID', value: 'appraisalId' },
+                                            { label: 'Customer Name', value: 'customerName' },
+                                        ]}
+                                        setParams={(value) => {
+                                            setParams({
+                                                ...params,
+                                                ...value,
+                                                fromDate: value.fromDate || '',
+                                                toDate: value.toDate || ''
+                                            });
+                                        }}
+                                    />
                                     <Divider />
                                     <APIPaginatedTable
                                         rowKey="appIdx"
@@ -154,7 +172,20 @@ const LoanApplication: React.FC = () => {
                             key: 'RETURNED',
                             children:
                                 <>
-                                    <SearchBar />
+                                    <AdvanceSearch
+                                        options={[
+                                            { label: 'Application ID', value: 'appraisalId' },
+                                            { label: 'Customer Name', value: 'customerName' },
+                                        ]}
+                                        setParams={(value) => {
+                                            setParams({
+                                                ...params,
+                                                ...value,
+                                                fromDate: value.fromDate || '',
+                                                toDate: value.toDate || ''
+                                            });
+                                        }}
+                                    />
                                     <Divider />
                                     <APIPaginatedTable
                                         rowKey="appIdx"
@@ -173,7 +204,20 @@ const LoanApplication: React.FC = () => {
                             key: 'COMPLETED',
                             children:
                                 <>
-                                    <SearchBar />
+                                    <AdvanceSearch
+                                        options={[
+                                            { label: 'Application ID', value: 'appraisalId' },
+                                            { label: 'Customer Name', value: 'customerName' },
+                                        ]}
+                                        setParams={(value) => {
+                                            setParams({
+                                                ...params,
+                                                ...value,
+                                                fromDate: value.fromDate || '',
+                                                toDate: value.toDate || ''
+                                            });
+                                        }}
+                                    />
                                     <Divider />
                                     <APIPaginatedTable
                                         rowKey="appIdx"

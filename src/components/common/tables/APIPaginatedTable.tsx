@@ -27,6 +27,7 @@ const APIPaginatedTable: React.FC<APIPaginatedTableProps> = ({
     return (
         <Table
             rowKey={rowKey}
+            // bordered
             size='small'
             columns={columns}
             dataSource={data}
