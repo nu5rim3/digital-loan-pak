@@ -1718,6 +1718,7 @@ const useCreditStore = create<ICreditState>((set) => ({
 
   resetAllTrailCalucationData: () =>
     set(() => ({
+      trailCalulationDetailsByAppId: null,
       trailCalucationData: null,
       trailCalucationDataLoading: false,
       trailCalucationDataError: null,
