@@ -12,9 +12,18 @@ import { useParams } from 'react-router-dom';
 
 const schema = yup.object().shape({
     key: yup.string().required('Key is required'),
-    monthly: yup.string(),
-    semiAnnual: yup.string(),
-    annually: yup.string(),
+    monthly: yup.string().required('Monthly is required').test('is-positive', 'Monthly must be a positive number', (value) => {
+        const num = parseFloat(value ?? '0');
+        return !isNaN(num) && num > 0;
+    }),
+    semiAnnual: yup.string().required('Semi-Annual is required').test('is-positive', 'Semi-Annual must be a positive number', (value) => {
+        const num = parseFloat(value ?? '0');
+        return !isNaN(num) && num > 0;
+    }),
+    annually: yup.string().required('Annually is required').test('is-positive', 'Annually must be a positive number', (value) => {
+        const num = parseFloat(value ?? '0');
+        return !isNaN(num) && num > 0;
+    }),
 }).test(
     'at-least-one-value',
     'At least one of Monthly, Semi-Annual, or Annually must be provided',
@@ -66,9 +75,9 @@ const HouseHoldExpenses: React.FC = () => {
         setIsModalOpen(true);
         if (details) {
             setValue('key', details.key);
-            setValue('monthly', details.monthly);
-            setValue('semiAnnual', details.semiAnnual);
-            setValue('annually', details.annually);
+            setValue('monthly', details.monthly ?? '0.00');
+            setValue('semiAnnual', details.semiAnnual ?? '0.00');
+            setValue('annually', details.annually ?? '0.00');
         } else {
             reset();
         }
@@ -157,23 +166,16 @@ const HouseHoldExpenses: React.FC = () => {
     );
 
     const options = [
-        { value: 'Food', label: 'Food' },
-        { value: 'Rent', label: 'Rent' },
-        { value: 'Utilities', label: 'Utilities' },
-        { value: 'Transportation', label: 'Transportation' },
-        { value: 'Insurance', label: 'Insurance' },
-        { value: 'Healthcare', label: 'Healthcare' },
-        { value: 'Entertainment', label: 'Entertainment' },
-        { value: 'Clothing', label: 'Clothing' },
-        { value: 'Education', label: 'Education' },
-        { value: 'Miscellaneous', label: 'Miscellaneous' },
-        { value: 'Loan Repayment', label: 'Loan Repayment' },
-        { value: 'Religious', label: 'Religious' },
-        { value: 'Events', label: 'Events' },
-        { value: 'Coummunication', label: 'Communication' },
-        { value: 'Tax', label: 'Tax' },
-        { value: 'License', label: 'License' },
-        { value: 'Other', label: 'Other' },
+        { label: 'Food', value: 'Food' },
+        { label: 'Education', value: 'Education' },
+        { label: 'Utilities', value: 'Utilities' },
+        { label: 'Transport', value: 'Transport' },
+        { label: 'Rent', value: 'Rent' },
+        { label: 'Medical', value: 'Medical' },
+        { label: 'Loan Payment', value: 'Loan Payment' },
+        { label: 'Religious', value: 'Religious' },
+        { label: 'Event/Wedding/Ceremony', value: 'Event/Wedding/Ceremony' },
+        { label: 'Other', value: 'Other' }
     ];
 
     const diabledOptions = options.map(option => {

@@ -431,7 +431,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                             )
                         }
 
-                        <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={guarantors[selectedIndex]?.idx ?? ''} />
+                        <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={guarantors[selectedIndex]?.idx ?? selectedCliIdx} />
 
                     </>
                 )

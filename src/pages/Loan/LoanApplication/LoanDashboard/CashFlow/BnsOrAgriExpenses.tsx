@@ -12,9 +12,18 @@ import { useParams } from 'react-router-dom';
 
 const schema = yup.object().shape({
     key: yup.string().required('Key is required'),
-    monthly: yup.string(),
-    semiAnnual: yup.string(),
-    annually: yup.string(),
+    monthly: yup.string().required('Monthly is required').test('is-positive', 'Monthly must be a positive number', (value) => {
+        const num = parseFloat(value ?? '0');
+        return !isNaN(num) && num > 0;
+    }),
+    semiAnnual: yup.string().required('Semi-Annual is required').test('is-positive', 'Semi-Annual must be a positive number', (value) => {
+        const num = parseFloat(value ?? '0');
+        return !isNaN(num) && num > 0;
+    }),
+    annually: yup.string().required('Annually is required').test('is-positive', 'Annually must be a positive number', (value) => {
+        const num = parseFloat(value ?? '0');
+        return !isNaN(num) && num > 0;
+    }),
 }).test(
     'at-least-one-value',
     'At least one of Monthly, Semi-Annual, or Annually must be provided',
@@ -61,9 +70,9 @@ const BnsOrAgriExpenses: React.FC = () => {
         setIsModalOpen(true);
         if (details) {
             setValue('key', details.key);
-            setValue('monthly', details.monthly);
-            setValue('semiAnnual', details.semiAnnual);
-            setValue('annually', details.annually);
+            setValue('monthly', details.monthly ?? '0.00');
+            setValue('semiAnnual', details.semiAnnual ?? '0.00');
+            setValue('annually', details.annually ?? '0.00');
         } else {
             reset();
         }
@@ -150,10 +159,11 @@ const BnsOrAgriExpenses: React.FC = () => {
     );
 
     const options = [
-        { value: 'Agri_Expenses', label: 'Agri Expenses' },
+        { value: 'Agri Expenses', label: 'Agri Expenses' },
         { value: 'Business 1', label: 'Business 1' },
         { value: 'Business 2', label: 'Business 2' },
         { value: 'Lev Expenses', label: 'Lev Expenses' },
+        { value: 'Loan Payments', label: 'Loan Payments' },
         { value: 'Salary & Wages', label: 'Salary & Wages' },
         { value: 'Rental', label: 'Rental' },
         { value: 'Utilities', label: 'Utilities' },

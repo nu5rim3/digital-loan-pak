@@ -14,6 +14,8 @@ const Summary: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    console.log('product', product);
+
     useEffect(() => {
         if (product?.pTrhdLType) {
             fetchProductDefinition(product?.pTrhdLType ?? '')
