@@ -170,7 +170,14 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                             <Controller
                                 name="name"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Full Name" maxLength={50} />}
+                                render={({ field }) =>
+                                    <Input {...field} placeholder="Enter Full Name" value={field.value || ''} maxLength={50}
+                                        onChange={(e) => {
+                                            const formatted = e.target.value.replace(/[^a-zA-Z\s.]/g, '');
+                                            setValue("name", formatted, { shouldValidate: true });
+                                        }}
+                                    />
+                                }
                             />
                         </Form.Item>
 

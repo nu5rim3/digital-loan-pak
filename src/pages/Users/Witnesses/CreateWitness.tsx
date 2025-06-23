@@ -112,7 +112,12 @@ const CreateWitness: React.FC<ICreateWitness> = ({ appId, mode, witnessDetails, 
                         name="stkCusName"
                         control={control}
                         render={({ field }) =>
-                            <Input {...field} placeholder="Enter Full Name" />}
+                            <Input {...field} placeholder="Enter Full Name" value={field.value || ''} maxLength={50}
+                                onChange={(e) => {
+                                    const formatted = e.target.value.replace(/[^a-zA-Z\s.]/g, '');
+                                    setValue("stkCusName", formatted, { shouldValidate: true });
+                                }}
+                            />}
                     />
                 </Form.Item>
 
