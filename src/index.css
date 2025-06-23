@@ -42,3 +42,6 @@ body {
 input {
   text-transform: capitalize !important;
 }
+textarea {
+  text-transform: capitalize !important;
+}
