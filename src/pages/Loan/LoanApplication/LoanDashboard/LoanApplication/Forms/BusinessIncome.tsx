@@ -49,7 +49,7 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
     const { businessOwnership, businessOwnershipLoading, repeatCustomers, repeatCustomersLoading,
         natureOfBusiness, natureOfBusinessLoading,
         facilityPurpose, facilityPurposeLoading, fetchFacilityPurpose, fetchBusinessOwnership,
-        fetchRepeatCustomers } = useCommonStore()
+        fetchRepeatCustomers, fetchNatureOfBusiness } = useCommonStore()
 
     const { saveBusinessIncome, resetBusinessIncomeList, updateBusinessIncome } = useCreditStore()
 
@@ -75,6 +75,7 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
         fetchRepeatCustomers()
         fetchFacilityPurpose()
         resetBusinessIncomeList()
+        fetchNatureOfBusiness()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [appId])
 

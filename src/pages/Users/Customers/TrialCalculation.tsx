@@ -804,6 +804,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                             {
                                                 value: 'M',
                                                 label: 'Monthly',
+                                                disabled: true,
                                             }, {
                                                 value: 'A',
                                                 label: 'Annually',

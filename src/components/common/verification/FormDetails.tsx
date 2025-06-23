@@ -152,6 +152,7 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                                     const formatted = formatCNIC(e.target.value);
                                     setSearchValue(formatted)
                                 }}
+                                maxLength={15} // Max length considering dashes
                                 placeholder="Search..."
                                 enterButton
                                 style={{ width: 500 }}

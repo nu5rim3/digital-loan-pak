@@ -100,8 +100,8 @@ const GuarantorOnboarding: React.FC = () => {
                     <>
                         <div className='flex gap-3'>
                             <Button onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
-                            <Button type="primary" loading={false} onClick={approval} icon={<CheckCircleOutlined />} hidden={otpVerification === 'Y'}>Approval</Button>
-                            <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />}>Scan QR</Button>
+                            <Button type="primary" loading={false} onClick={approval} icon={<CheckCircleOutlined />} hidden={otpVerification === 'Y'}>Verify Contact</Button>
+                            <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />}>Guarantor QR</Button>
                         </div>
                     </>
                 }

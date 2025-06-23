@@ -85,7 +85,7 @@ const ExceptionalApproval: React.FC<IExceptionalApproval> = ({ setOtpModalOpen, 
                     {/* <Button type='primary' onClick={() => {
                         navigate(`${mainURL}/loan/application/${loan?.idx ?? ''}`)
                     }} icon={<QrcodeOutlined />} hidden={otpVerification === 'P'} className='mr-3'>Calculate TC</Button> */}
-                    <Button type='default' onClick={setNadraModalOpen} icon={<QrcodeOutlined />}>Scan QR</Button>
+                    <Button type='default' onClick={setNadraModalOpen} icon={<QrcodeOutlined />}>Guarantor QR</Button>
                 </div>
             </Form>
         </Card>
