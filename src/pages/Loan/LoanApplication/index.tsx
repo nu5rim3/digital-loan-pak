@@ -51,7 +51,10 @@ const LoanApplication: React.FC = () => {
                     return <Tag color='cyan-inverse'><b>Loan</b></Tag>
                 } else if (category === 'A') {
                     return <Tag color='lime-inverse'><b>Lease</b></Tag>
+                } else {
+                    return <Tag color='red-inverse'><b>Not Applied</b></Tag>
                 }
+
             }
         },
         {
@@ -152,6 +155,7 @@ const LoanApplication: React.FC = () => {
                                                 toDate: value.toDate || ''
                                             });
                                         }}
+                                        loading={pageableLoading}
                                     />
                                     <Divider />
                                     <APIPaginatedTable
@@ -185,6 +189,7 @@ const LoanApplication: React.FC = () => {
                                                 toDate: value.toDate || ''
                                             });
                                         }}
+                                        loading={pageableLoading}
                                     />
                                     <Divider />
                                     <APIPaginatedTable
@@ -217,6 +222,7 @@ const LoanApplication: React.FC = () => {
                                                 toDate: value.toDate || ''
                                             });
                                         }}
+                                        loading={pageableLoading}
                                     />
                                     <Divider />
                                     <APIPaginatedTable

@@ -62,6 +62,11 @@ const AdvanceSearch: React.FC<AdvanceSearchProps> = ({ options, loading, setPara
                 onChange={(e) => setSearchValue(e.target.value)}
                 placeholder="Search..."
                 allowClear
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                        handleSearch();
+                    }
+                }}
             />
 
             <RangePicker
