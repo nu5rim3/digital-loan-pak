@@ -157,7 +157,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                 </div>
                 <Card title={'Customer Details'}
                     extra={
-                        <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} >Scan QR</Button>
+                        <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} >Customer QR</Button>
                     }
                 >
                     <Form layout="vertical">
@@ -203,7 +203,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                     children: <>
                         <div className='flex justify-end'>
                             <>
-                                <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} className='mr-2'>Scan QR</Button>
+                                <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} className='mr-2'>Customer QR</Button>
                                 <Button
                                     icon={<EditOutlined />}
                                     type="default"

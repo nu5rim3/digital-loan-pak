@@ -195,7 +195,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                         <Card title={`Personal Details: Guarantor ${selectedIndex}`}
                             extra={
                                 <div className='grid grid-cols-3 gap-2'>
-                                    <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} >Scan QR</Button>
+                                    <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} >Guarantor QR</Button>
                                     <Button type="default" onClick={() => {
                                         navigate(`${mainURL}/loan/application/${appId}/guarantor`, { state: { mode: 'edit', idx: idx, cnicNumber: cnicNumber } })
                                     }} icon={<EditOutlined />}>Update details</Button>

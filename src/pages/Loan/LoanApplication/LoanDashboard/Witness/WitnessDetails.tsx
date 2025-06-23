@@ -81,7 +81,7 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
                                     }
                                         extra={
                                             <div className='grid grid-cols-2 gap-2'>
-                                                <Button type="default" onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />}>Scan QR</Button>
+                                                <Button type="default" onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />}>Witness QR</Button>
                                                 <Button type="default" onClick={onClickUpdate} icon={<EditOutlined />}>Update Details</Button>
                                             </div>
                                         }
