@@ -38,3 +38,7 @@ body {
   /* background-color: #000080 !important; Navy Blue */
   /* Add other styles as needed, e.g., border-color, text-color, etc. */
 }
+
+input {
+  text-transform: capitalize !important;
+}
