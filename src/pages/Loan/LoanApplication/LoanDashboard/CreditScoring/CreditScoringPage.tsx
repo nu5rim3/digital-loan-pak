@@ -12,7 +12,6 @@ import {
   Tag,
   InputNumber,
 } from "antd";
-import axios from "axios";
 import { APIAuth } from "../../../../../services/api";
 
 const { Panel } = Collapse;
