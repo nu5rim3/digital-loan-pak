@@ -85,7 +85,7 @@ const AdvanceSearch: React.FC<AdvanceSearchProps> = ({ options, loading, setPara
                 id='rangepicker'
                 enterKeyHint='search'
             />
-            <Button icon={<SearchOutlined />} type='primary' loading={loading} onClick={handleSearch}>Search</Button>
+            <Button icon={<SearchOutlined />} type='primary' loading={loading} onClick={handleSearch} style={{ boxShadow: 'none' }}>Search</Button>
             <Button
                 type="primary"
                 onClick={handleReset}
