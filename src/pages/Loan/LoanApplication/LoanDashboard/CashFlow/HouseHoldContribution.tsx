@@ -46,7 +46,7 @@ const HouseHoldContribution: React.FC = () => {
     });
     const [activeField, setActiveField] = useState<'monthly' | 'semiAnnual' | 'annually' | null>(null);
     const { cashFlows, cashFlowsLoading, houseHoldContribution, addHouseHoldContribution, updateHouseHoldContribution,
-        fetchHouseHoldContribution, removeHouseHoldContribution, calculateTotalHouseRevenue, calculateTotalRevenue,
+        fetchHouseHoldContribution, removeHouseHoldContribution, calculateTotalHouseRevenue, calculateTotalRevenue, calculateApplicantRevenue,
         calculateNetMonthlyDisposable, calculateAnnualDisposable, calculateAnnualHousehold, calculateAnnualRevenue,
         calculateMaxDebtBurden, checkAlegibleFroLoan, calucalteMaxLoanValue, calculateTaxableAmount, fetchCashFlows } = useCreditStore();
 
@@ -95,6 +95,7 @@ const HouseHoldContribution: React.FC = () => {
         fetchHouseHoldContribution()
         calculateTotalHouseRevenue()
         calculateTotalRevenue()
+        calculateApplicantRevenue()
         calculateNetMonthlyDisposable()
         calculateAnnualDisposable()
         calculateAnnualHousehold()

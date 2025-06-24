@@ -13,6 +13,7 @@ import BusinessIntroducer from './BusinessIntroducer/BusinessIntroducer';
 import CreditScoringPage from './CreditScoring/CreditScoringPage';
 import CollateralDetails from './CollateralDetails';
 import CustomerRiskProfiling from './CustomerRiskProfiling';
+import { SendOutlined } from '@ant-design/icons';
 
 const CustomerDetailsView = lazy(() => import('./Customer/CustomerDetailsView'))
 const WitnessDetails = lazy(() => import('./Witness/WitnessDetails'))
@@ -372,7 +373,7 @@ const LoanDaashboard: React.FC = () => {
 
                 <div className="mt-5">
                     <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
-                    {/* <Button type="primary" className="ml-3">Ready to Apply</Button> */}
+                    <Button type="primary" className="ml-3" icon={<SendOutlined />}>Submit to Approval</Button>
                 </div>
             </Card>
         </>

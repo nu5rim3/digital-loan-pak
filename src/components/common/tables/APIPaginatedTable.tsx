@@ -36,6 +36,7 @@ const APIPaginatedTable: React.FC<APIPaginatedTableProps> = ({
                 current: currentPage,
                 pageSize: pageSize,
                 total: total,
+                showTotal: (total) => `Total ${total} items`,
                 showSizeChanger: true,
                 showQuickJumper: true,
                 pageSizeOptions: ['5', '7', '10', '20', '50'],
