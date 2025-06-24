@@ -141,9 +141,10 @@ const CreditScoringPage: React.FC<{
     },
   };
 
-  const fetchScore = async () => {
+  const fetchScore = async (productCode: string) => {
     try {
-      const res = await axios.get(
+     
+      const res = await APIAuth.get(
         `/mobixCamsCredit/v1/credits-scores/products/${productCode}/appraisals/${appraisalId}`
       );
       setResult(res.data);
@@ -154,20 +155,24 @@ const CreditScoringPage: React.FC<{
 
   useEffect(() => {
     fetchDropdowns();
-    fetchScore();
+    // fetchScore();
   }, [appraisalId]);
 
   const onFinish = async (values: any) => {
     setLoading(true);
     try {
+      const resProduct = await APIAuth.get(
+        `/mobixCamsCredit/v1/credit/tc/${appraisalId}`
+      );
+
       await APIAuth.post("/mobixCamsCredit/v1/credits-info/scores", {
         appraisalId,
-        prodCode: productCode,
+        prodCode: resProduct.data?.pTrhdLType,
         ...values,
         status: "A",
       });
       message.success("Scoring submitted");
-      //   fetchScore();
+        // fetchScore(resProduct.data?.pTrhdLType);
       setResult(mockResult);
     } catch {
       message.error("Submit failed");
