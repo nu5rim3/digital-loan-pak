@@ -39,11 +39,15 @@ body {
   /* Add other styles as needed, e.g., border-color, text-color, etc. */
 }
 
-input {
-  text-transform: capitalize !important;
-}
+input,
 textarea {
   text-transform: capitalize !important;
+}
+
+/* Override for placeholder: */
+input::placeholder,
+textarea::placeholder {
+  text-transform: none !important;
 }
 .search-fixed-select,
 .search-fixed-select .ant-select-selector {

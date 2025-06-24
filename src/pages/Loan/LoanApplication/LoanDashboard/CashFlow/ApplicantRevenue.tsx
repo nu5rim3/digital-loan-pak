@@ -46,7 +46,7 @@ const ApplicantRevenue: React.FC = () => {
     });
     const [activeField, setActiveField] = useState<'monthly' | 'semiAnnual' | 'annually' | null>(null);
     const { cashFlows, cashFlowsLoading, applicantRevenue, addApplicantRevenue, updateApplicantRevenue, fetchApplicantRevenue,
-        removeApplicantRevenue, calculateTotalHouseRevenue, calculateTotalRevenue, calulateGrossSalary, calculateNetMonthlyDisposable,
+        removeApplicantRevenue, calculateTotalHouseRevenue, calculateTotalRevenue, calculateApplicantRevenue, calulateGrossSalary, calculateNetMonthlyDisposable,
         calculateAnnualDisposable, calculateAnnualHousehold, calculateAnnualRevenue, calculateMaxDebtBurden, checkAlegibleFroLoan, calucalteMaxLoanValue,
         calculateTaxableAmount, fetchCashFlows } = useCreditStore()
 
@@ -83,6 +83,7 @@ const ApplicantRevenue: React.FC = () => {
     useEffect(() => {
         fetchApplicantRevenue()
         calculateTotalHouseRevenue()
+        calculateApplicantRevenue()
         calculateTotalRevenue()
         calulateGrossSalary()
         calculateNetMonthlyDisposable()

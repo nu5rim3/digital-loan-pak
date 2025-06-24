@@ -433,6 +433,7 @@ interface ICreditState {
   grossSalaryIncome: number | string | null;
   totBusinessIncome: number | string | null;
   totHouseholdIncome: number | string | null;
+  totApplicantRevenue: number | string | null;
   totRevenue: number | string | null;
 
   totHouseholdExpense: number | string | null;
@@ -550,6 +551,7 @@ interface ICreditState {
   calculateTotalHouseRevenue: () => void;
   getTotalBusinessRevenue: () => void;
   calculateTotalRevenue: () => void;
+  calculateApplicantRevenue: () => void;
 
   getMonthValueBasedOnKeyExpenses: (key: string) => number;
   calculateTotalHouseholdExpense: () => void;
@@ -659,6 +661,7 @@ const useCreditStore = create<ICreditState>((set) => ({
   totBusinessIncome: null,
   totHouseholdIncome: null,
   totRevenue: null,
+  totApplicantRevenue: null,
 
   totHouseholdExpense: null,
   totBusinessExpense: null,
@@ -1013,13 +1016,18 @@ const useCreditStore = create<ICreditState>((set) => ({
     }));
   },
 
+  calculateApplicantRevenue: () => {
+    set((state) => ({
+      totApplicantRevenue: state.applicantRevenue.reduce((acc, item) => {
+        return acc + Number(item.monthly ?? 0);
+      }, 0),
+    }));
+  },
+
   calculateTotalRevenue: () => {
     set((state) => ({
-      totRevenue: state.applicantRevenue.reduce((acc, item) => {
-        return (
-          acc + Number(item.monthly ?? 0) + Number(state.totHouseholdIncome)
-        );
-      }, 0),
+      totRevenue:
+        Number(state.totApplicantRevenue) + Number(state.totHouseholdIncome),
     }));
   },
 
