@@ -57,8 +57,7 @@ const initialCustomerDetailsFields = [
 
 const CreditScoringPage: React.FC<{
   appraisalId: string;
-  productCode: string;
-}> = ({ appraisalId, productCode }) => {
+}> = ({ appraisalId }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -97,48 +96,48 @@ const CreditScoringPage: React.FC<{
     }
   };
 
-  const mockResult = {
-    totalScore: 82,
-    risk: "Low Risk",
-    eligibility: "Eligible",
-    maxLoanAmount: 50000,
-    customerDetails: {
-      gender: "Female",
-      age: "31-35 Years",
-      maritalStatus: "Un-married",
-      familyMembers: "01 to 02",
-      guardian: "Own self",
-      otherIncome: "Nil",
-      incomeSupport: "Father or Brother Income",
-      incomeContribution: "Not Applicable",
-      residenceStatus: "Client ownself own ownership",
-      billBehaviour: "No default in last three months",
-      perception: "Positive",
-    },
-    businessDetails: {
-      incomeSource: "Own Business/Work",
-      salaryPerson: "Not Applicable",
-      saving: "Not Applicable",
-      loanTaken: "Not Applicable",
-      experience: "More than 10 years",
-      maxArrears: "90+ days or more",
-      assetValue: "Less than 100,000",
-      prevLoanArrears: "90+ days or more",
-      ownership: "Partnership",
-      location: "Peshawar",
-      placeStatus: "Rent",
-    },
-    initialCustomerDetails: {
-      branchName: "TAXILA",
-      customerName: "shabira",
-      customerCnic: "55888-6666666-6",
-      dob: "1992-12-09",
-      product: "PAK OMAN FORI QARZA",
-      appliedAmount: 50000,
-      tenure: 3,
-      sector: "Retail",
-    },
-  };
+  // const mockResult = {
+  //   totalScore: 82,
+  //   risk: "Low Risk",
+  //   eligibility: "Eligible",
+  //   maxLoanAmount: 50000,
+  //   customerDetails: {
+  //     gender: "Female",
+  //     age: "31-35 Years",
+  //     maritalStatus: "Un-married",
+  //     familyMembers: "01 to 02",
+  //     guardian: "Own self",
+  //     otherIncome: "Nil",
+  //     incomeSupport: "Father or Brother Income",
+  //     incomeContribution: "Not Applicable",
+  //     residenceStatus: "Client ownself own ownership",
+  //     billBehaviour: "No default in last three months",
+  //     perception: "Positive",
+  //   },
+  //   businessDetails: {
+  //     incomeSource: "Own Business/Work",
+  //     salaryPerson: "Not Applicable",
+  //     saving: "Not Applicable",
+  //     loanTaken: "Not Applicable",
+  //     experience: "More than 10 years",
+  //     maxArrears: "90+ days or more",
+  //     assetValue: "Less than 100,000",
+  //     prevLoanArrears: "90+ days or more",
+  //     ownership: "Partnership",
+  //     location: "Peshawar",
+  //     placeStatus: "Rent",
+  //   },
+  //   initialCustomerDetails: {
+  //     branchName: "TAXILA",
+  //     customerName: "shabira",
+  //     customerCnic: "55888-6666666-6",
+  //     dob: "1992-12-09",
+  //     product: "PAK OMAN FORI QARZA",
+  //     appliedAmount: 50000,
+  //     tenure: 3,
+  //     sector: "Retail",
+  //   },
+  // };
 
   const fetchScore = async (productCode: string) => {
     try {
@@ -171,8 +170,8 @@ const CreditScoringPage: React.FC<{
         status: "A",
       });
       message.success("Scoring submitted");
-        // fetchScore(resProduct.data?.pTrhdLType);
-      setResult(mockResult);
+        fetchScore(resProduct.data?.pTrhdLType);
+      // setResult(mockResult);
     } catch {
       message.error("Submit failed");
     } finally {
