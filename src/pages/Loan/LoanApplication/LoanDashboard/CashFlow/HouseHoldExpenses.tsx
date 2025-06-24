@@ -214,7 +214,6 @@ const HouseHoldExpenses: React.FC = () => {
                                                     <DetailsCard
                                                         key={index}
                                                         loading={cashFlowsLoading}
-                                                        cashFlows={cashFlows}
                                                         detail={detail}
                                                         onEdit={() => openModal('update', detail)}
                                                         onRemove={() => openModal('remove', detail)}
@@ -364,9 +363,9 @@ const HouseHoldExpenses: React.FC = () => {
 
 
 
-const DetailsCard: React.FC<{ detail: IFinancialEntry; onEdit: () => void; onRemove: () => void; loading: boolean; cashFlows: any }> = ({ detail, loading, cashFlows, onEdit, onRemove }) => (
+const DetailsCard: React.FC<{ detail: IFinancialEntry; onEdit: () => void; onRemove: () => void; loading: boolean; }> = ({ detail, loading, onEdit, onRemove }) => (
     <Card loading={loading}>
-        <div className="flex justify-end gap-1" hidden={cashFlows.houseHoldExpenses !== null}>
+        <div className="flex justify-end gap-1">
             <Button type="default" size="small" icon={<EditOutlined />} onClick={onEdit} />
             <Button type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
         </div>

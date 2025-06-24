@@ -199,7 +199,6 @@ const HouseHoldContribution: React.FC = () => {
                                                 houseHoldContribution.map((detail, index) => (
                                                     <DetailsCard
                                                         key={index}
-                                                        cashFlows={cashFlows}
                                                         loading={cashFlowsLoading}
                                                         detail={detail}
                                                         onEdit={() => openModal('update', detail)}
@@ -348,9 +347,9 @@ const HouseHoldContribution: React.FC = () => {
     )
 }
 
-const DetailsCard: React.FC<{ detail: IFinancialEntry; onEdit: () => void; onRemove: () => void; loading: boolean; cashFlows: any }> = ({ detail, loading, cashFlows, onEdit, onRemove }) => (
+const DetailsCard: React.FC<{ detail: IFinancialEntry; onEdit: () => void; onRemove: () => void; loading: boolean; }> = ({ detail, loading, onEdit, onRemove }) => (
     <Card loading={loading}>
-        <div className="flex justify-end gap-1" hidden={cashFlows.houseHoldContribution !== null}>
+        <div className="flex justify-end gap-1">
             <Button type="default" size="small" icon={<EditOutlined />} onClick={onEdit} />
             <Button type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
         </div>

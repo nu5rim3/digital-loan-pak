@@ -1,5 +1,5 @@
 import { Button, Card, Collapse, CollapseProps, Empty } from 'antd'
-import React, { lazy, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { getLoanStatusByName, getOnlyStatusByName } from '../../../../utils/MSASActionFunctions';
 import useLoanStore from '../../../../store/loanStore';
@@ -14,15 +14,14 @@ import CreditScoringPage from './CreditScoring/CreditScoringPage';
 import CollateralDetails from './CollateralDetails';
 import CustomerRiskProfiling from './CustomerRiskProfiling';
 import { SendOutlined } from '@ant-design/icons';
-
-const CustomerDetailsView = lazy(() => import('./Customer/CustomerDetailsView'))
-const WitnessDetails = lazy(() => import('./Witness/WitnessDetails'))
-const GuarantorDetailsView = lazy(() => import('./Guarantor/GuarantorDetailsView'))
-const LiabilityAffidavit = lazy(() => import('./LiabilityAffidavit'))
-const GoldFacilityApplication = lazy(() => import('./GoldFacilityApplication/GoldFacilityApplication'))
-const CashFlow = lazy(() => import('./CashFlow'))
-const LoanApplication = lazy(() => import('./LoanApplication'))
-const ExceptionalApproval = lazy(() => import('./ExceptionalApproval'))
+import CustomerDetailsView from './Customer/CustomerDetailsView';
+import GuarantorDetailsView from './Guarantor/GuarantorDetailsView';
+import WitnessDetails from './Witness/WitnessDetails';
+import LiabilityAffidavit from './LiabilityAffidavit';
+import GoldFacilityApplication from './GoldFacilityApplication/GoldFacilityApplication';
+import CashFlow from './CashFlow';
+import ExceptionalApproval from './ExceptionalApproval';
+import LoanApplication from './LoanApplication';
 
 interface StatusProps {
     isCompleted: string;
