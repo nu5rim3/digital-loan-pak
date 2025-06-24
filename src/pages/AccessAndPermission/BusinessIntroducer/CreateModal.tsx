@@ -61,7 +61,12 @@ const CreateModal: React.FC<Props> = ({
             <Form.Item
               label="Employee CNIC (12345-1234567-8)"
               name="empCnic"
-              // rules={[{ required: true, message: "Required" }]}
+              rules={[
+                {
+                  pattern: /^\d{5}-\d{7}-\d{1}$/,
+                  message: "CNIC must be in format 12345-1234567-8",
+                },
+              ]}
             >
               <Input placeholder="Enter Employee CNIC" />
             </Form.Item>
@@ -70,7 +75,13 @@ const CreateModal: React.FC<Props> = ({
             <Form.Item
               label="Employee Name"
               name="empName"
-              rules={[{ required: true, message: "Required" }]}
+              rules={[
+      { required: true, message: "Required" },
+      {
+        pattern: /^[A-Za-z\s]+$/,
+        message: "Only letters and spaces are allowed",
+      },
+    ]}
             >
               <Input placeholder="Enter Employee Name" />
             </Form.Item>
@@ -79,7 +90,13 @@ const CreateModal: React.FC<Props> = ({
             <Form.Item
               label="Display Name"
               name="empDisplayName"
-              rules={[{ required: true, message: "Required" }]}
+               rules={[
+      { required: true, message: "Required" },
+      {
+        pattern: /^[A-Za-z\s]+$/,
+        message: "Only letters and spaces are allowed",
+      },
+    ]}
             >
               <Input placeholder="Enter Display Name" />
             </Form.Item>
