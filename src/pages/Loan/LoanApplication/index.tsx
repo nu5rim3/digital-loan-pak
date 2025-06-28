@@ -1,40 +1,61 @@
-import React from 'react'
-import { Button, Card, Divider, Layout, Tag, Tabs } from 'antd'
-import SearchBar from '../../../components/common/searchBar/SearchBar'
-import PaginatedTable from '../../../components/common/tables/PaginatedTable'
+import React, { useEffect, useState } from 'react'
+import { Button, Card, Divider, Layout, Tabs, Tag } from 'antd'
+import APIPaginatedTable from '../../../components/common/tables/APIPaginatedTable'
 import { formatCurrency } from '../../../utils/formatterFunctions'
 import { useNavigate } from 'react-router-dom'
 import useLoanStore from '../../../store/loanStore'
 import { mainURL } from '../../../App'
 import useCustomerStore from '../../../store/customerStore'
 import { PlusOutlined } from '@ant-design/icons';
+import moment from 'moment'
 import useUserStore from '../../../store/userStore'
-
+import useCreditStore from '../../../store/creditStore'
+import AdvanceSearch from '../../../components/common/searchBar/AdvanceSearch'
 const { Content } = Layout
 
 
 const LoanApplication: React.FC = () => {
 
     const navigate = useNavigate();
-    const { loading, addLoan, fetchLoans } = useLoanStore();
+    const { pageableLoans, pageableLoading, loading, addLoan, fetchPageableLoans } = useLoanStore();
+    const { resetAllTrailCalucationData } = useCreditStore()
     const { resetCustomer } = useCustomerStore()
-    const { user } = useUserStore()
+    const [activeTab, setActiveTab] = useState('PENDING');
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(7)
+    const [params, setParams] = useState({
+        appraisalId: '',
+        customerName: '',
+        fromDate: '',
+        toDate: ''
+    })
+    const { user } = useUserStore();
 
     const columns = [
         {
             title: 'Application ID',
-            dataIndex: 'applicationId',
-            key: 'applicationId',
+            dataIndex: 'appIdx',
+            key: 'appIdx',
         },
         {
             title: 'Customer Name',
-            dataIndex: 'cusName',
-            key: 'cusName',
+            dataIndex: 'fullName',
+            key: 'fullName',
         },
         {
-            title: 'Loan Type',
-            dataIndex: 'loanType',
-            key: 'loanType',
+            title: 'Application Category',
+            dataIndex: 'prodCat',
+            key: 'prodCat',
+            render: (category: string) => {
+                if (category === 'C') {
+                    return <Tag color='cyan-inverse'><b>Loan</b></Tag>
+                } else if (category === 'A') {
+                    return <Tag color='lime-inverse'><b>Lease</b></Tag>
+                } else {
+                    return <Tag color='red-inverse'><b>Not Applied</b></Tag>
+                }
+
+            }
         },
         {
             title: 'Loan Amount',
@@ -46,29 +67,12 @@ const LoanApplication: React.FC = () => {
             }
         },
         {
-            title: 'Status',
-            dataIndex: 'status',
-            key: 'status',
-            render: (status: string) => {
-                switch (status) {
-                    case 'C':
-                        return <Tag color='green'>Completed</Tag>;
-                        break;
-                    case 'P':
-                        return <Tag color='yellow'>Pending</Tag>;
-                        break;
-                    case 'F':
-                        return <Tag color='red'>Rejected</Tag>;
-                        break;
-                    default:
-                        break;
-                }
-            },
-        },
-        {
             title: 'Created Date',
-            dataIndex: 'createdDate',
-            key: 'createdDate',
+            dataIndex: 'creationDate',
+            key: 'creationDate',
+            render: (date: string) => {
+                return moment(date).format('YYYY-MM-DD');
+            },
         },
         {
             title: 'Action',
@@ -76,97 +80,18 @@ const LoanApplication: React.FC = () => {
             align: 'right',
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             render: (_: string, item: any) => (
-                <a onClick={() => navigate(`${item.applicationId}`)}>View</a>
+                <a onClick={() => {
+                    resetAllTrailCalucationData();
+                    navigate(`${item.appIdx}`)
+                }}>
+                    View</a>
             ),
         },
     ];
 
-    const dummyData = [
-        {
-            key: '1',
-            applicationId: 'APP0000000066427',
-            cusName: 'Shabira',
-            loanType: 'Gold Loan',
-            loanAmount: '100',
-            status: 'C',
-            clidx: 'CLI0000000000003',
-            createdDate: '2023-10-01'
-        },
-        {
-            key: '2',
-            applicationId: 'APP0000000066425',
-            cusName: 'Shabira',
-            loanType: 'Gold Loan',
-            loanAmount: '100000',
-            status: 'P',
-            clidx: 'CLI0000000000003',
-            createdDate: '2023-10-01'
-
-        },
-        {
-            key: '3',
-            applicationId: "APP0000000066623",
-            cusName: 'Shabira',
-            loanType: 'Gold Loan',
-            loanAmount: '100000',
-            status: 'F',
-            clidx: 'CLI0000000103833',
-            createdDate: '2023-10-01'
-        },
-        {
-            key: '4',
-            applicationId: 'APP0000000066602',
-            cusName: 'Shabira',
-            loanType: 'Gold Loan',
-            loanAmount: '100000',
-            status: 'C',
-            clidx: 'CLI0000000000003',
-            createdDate: '2023-10-01'
-        },
-        {
-            key: '5',
-            applicationId: 'APP0000000066447',
-            cusName: 'Shabira',
-            loanType: 'Gold Loan',
-            loanAmount: '1000',
-            status: 'C',
-            clidx: 'CLI0000000000003',
-            createdDate: '2023-10-01'
-        },
-        {
-            key: '6',
-            applicationId: 'APP0000000066411',
-            cusName: 'Shabira',
-            loanType: 'Gold Loan',
-            loanAmount: '1054000',
-            status: 'C',
-            clidx: 'CLI0000000103951',
-            createdDate: '2023-10-01'
-        },
-        {
-            key: '7',
-            applicationId: 'APP0000000066707',
-            cusName: 'Shabira',
-            loanType: 'Gold Loan',
-            loanAmount: '134000',
-            status: 'F',
-            clidx: 'CLI0000000000003',
-            createdDate: '2023-10-01'
-        },
-        {
-            key: '8',
-            applicationId: 'APP0000000066660',
-            cusName: 'Shabira',
-            loanType: 'Gold Loan',
-            loanAmount: '6100000',
-            status: 'C',
-            clidx: 'CLI0000000000003',
-            createdDate: '2023-10-01'
-        }
-    ];
-
     const onChange = (key: string) => {
-        fetchLoans(key, user?.idx ?? '');
+        setActiveTab(key);
+        setCurrentPage(1);
     }
 
     const newLoanHandler = async () => {
@@ -178,9 +103,26 @@ const LoanApplication: React.FC = () => {
             client: "WEB",
         }).then(() => {
             navigate(`${mainURL}/users/customer`, { state: { newLoan: true } })
+            resetAllTrailCalucationData();
             resetCustomer();
         })
     };
+
+
+    useEffect(() => {
+        fetchPageableLoans({ ...params, status: activeTab, page: currentPage - 1, size: pageSize, createdBy: user?.idx });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeTab, currentPage, pageSize, params]);
+
+    const handlePageChange = (page: number, pageSize: number) => {
+        setCurrentPage(page);
+        setPageSize(pageSize);
+    };
+
+    // Extract data for the table from pageableLoans
+    const tableData = pageableLoans?.content || [];
+    const total = pageableLoans?.totalElements || 0;
+
 
     return (
         <Content>
@@ -193,15 +135,39 @@ const LoanApplication: React.FC = () => {
                     tabBarExtraContent={{
                         right: <Button type='primary' onClick={newLoanHandler} loading={loading} icon={<PlusOutlined />}>New Loan</Button>
                     }}
+                    defaultActiveKey={activeTab}
                     items={[
                         {
                             label: `Pending`,
                             key: 'PENDING',
                             children:
                                 <>
-                                    <SearchBar />
+                                    <AdvanceSearch
+                                        options={[
+                                            { label: 'Application ID', value: 'appraisalId' },
+                                            { label: 'Customer Name', value: 'customerName' },
+                                        ]}
+                                        setParams={(value) => {
+                                            setParams({
+                                                ...params,
+                                                ...value,
+                                                fromDate: value.fromDate || '',
+                                                toDate: value.toDate || ''
+                                            });
+                                        }}
+                                        loading={pageableLoading}
+                                    />
                                     <Divider />
-                                    <PaginatedTable columns={columns} data={dummyData} />
+                                    <APIPaginatedTable
+                                        rowKey="appIdx"
+                                        columns={columns}
+                                        data={tableData}
+                                        loading={pageableLoading}
+                                        currentPage={currentPage}
+                                        pageSize={pageSize}
+                                        total={total}
+                                        onPageChange={handlePageChange}
+                                    />
                                 </>
                             ,
                         },
@@ -210,9 +176,32 @@ const LoanApplication: React.FC = () => {
                             key: 'RETURNED',
                             children:
                                 <>
-                                    <SearchBar />
+                                    <AdvanceSearch
+                                        options={[
+                                            { label: 'Application ID', value: 'appraisalId' },
+                                            { label: 'Customer Name', value: 'customerName' },
+                                        ]}
+                                        setParams={(value) => {
+                                            setParams({
+                                                ...params,
+                                                ...value,
+                                                fromDate: value.fromDate || '',
+                                                toDate: value.toDate || ''
+                                            });
+                                        }}
+                                        loading={pageableLoading}
+                                    />
                                     <Divider />
-                                    <PaginatedTable columns={columns} data={dummyData} />
+                                    <APIPaginatedTable
+                                        rowKey="appIdx"
+                                        columns={columns}
+                                        data={tableData}
+                                        loading={pageableLoading}
+                                        currentPage={currentPage}
+                                        pageSize={pageSize}
+                                        total={total}
+                                        onPageChange={handlePageChange}
+                                    />
                                 </>
                         },
                         {
@@ -220,9 +209,32 @@ const LoanApplication: React.FC = () => {
                             key: 'COMPLETED',
                             children:
                                 <>
-                                    <SearchBar />
+                                    <AdvanceSearch
+                                        options={[
+                                            { label: 'Application ID', value: 'appraisalId' },
+                                            { label: 'Customer Name', value: 'customerName' },
+                                        ]}
+                                        setParams={(value) => {
+                                            setParams({
+                                                ...params,
+                                                ...value,
+                                                fromDate: value.fromDate || '',
+                                                toDate: value.toDate || ''
+                                            });
+                                        }}
+                                        loading={pageableLoading}
+                                    />
                                     <Divider />
-                                    <PaginatedTable columns={columns} data={dummyData} />
+                                    <APIPaginatedTable
+                                        rowKey="appIdx"
+                                        columns={columns}
+                                        data={tableData}
+                                        loading={pageableLoading}
+                                        currentPage={currentPage}
+                                        pageSize={pageSize}
+                                        total={total}
+                                        onPageChange={handlePageChange}
+                                    />
                                 </>
                         },
                     ]}

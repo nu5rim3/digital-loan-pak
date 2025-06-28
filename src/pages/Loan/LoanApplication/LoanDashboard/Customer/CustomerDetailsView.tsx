@@ -18,6 +18,7 @@ import TrialCalculation from '../../../../Users/Customers/TrialCalculation';
 import OtherDetails from '../../../../../components/common/stakeHolder/OtherDetails';
 import BankDetails from '../../../../../components/common/stakeHolder/BankDetails';
 import NADRAModal from '../../../../../components/common/modal/NADRAModal';
+import moment from 'moment';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
@@ -25,7 +26,14 @@ const schema = yup.object().shape({
     stkOrgType: yup.string().required("Organization Type is required"),
     stkCNic: yup.string().required("CNIC is required").matches(/^\d{5}-\d{7}-\d$/, 'CNIC must be in format xxxxx-xxxxxxx-x'),
     stkCNicIssuedDate: yup.string().required("CNIC Issued Date is required"),
-    stkCNicExpDate: yup.string().required("CNIC Expired Date is required"),
+    stkCNicExpDate: yup
+        .string()
+        .required("CNIC Expired Date is required")
+        .test(
+            "is-today-or-future",
+            "Date cannot be in the past",
+            value => moment(value).isSameOrAfter(moment(), 'day')
+        ),
     stkCNicStatus: yup.string().required("CNIC Status is required"),
     stkCusName: yup.string().required("Customer Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     stkInitials: yup.string().required("Initial is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
@@ -139,18 +147,17 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [formDetails, customers])
 
-
     const physDisability = watch('stkPhysDisability');
 
     if (formDetails === null) {
         return (
             <>
                 <div className='pb-5'>
-                    <TrialCalculation cliIdx={customers[0].idx ?? ''} cnic={customers[0].identificationNumber} />
+                    <TrialCalculation cliIdx={customers[0]?.idx ?? ''} cnic={customers[0]?.identificationNumber} />
                 </div>
                 <Card title={'Customer Details'}
                     extra={
-                        <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} >Scan QR</Button>
+                        <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} >Customer QR</Button>
                     }
                 >
                     <Form layout="vertical">
@@ -185,7 +192,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
     return (
         <div className='flex flex-col gap-3'>
             <div className='pb-5'>
-                <TrialCalculation cliIdx={customers[0].idx ?? ''} cnic={customers[0].identificationNumber} />
+                <TrialCalculation cliIdx={customers[0]?.idx ?? ''} cnic={customers[0]?.identificationNumber} />
             </div>
             <Collapse
                 size='small'
@@ -196,7 +203,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                     children: <>
                         <div className='flex justify-end'>
                             <>
-                                <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} className='mr-2'>Scan QR</Button>
+                                <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} className='mr-2'>Customer QR</Button>
                                 <Button
                                     icon={<EditOutlined />}
                                     type="default"
@@ -296,7 +303,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                     <Controller
                                         name="stkCNicExpDate"
                                         control={control}
-                                        render={({ field }) => <Input {...field} placeholder="Enter CNIC Expired Date" type='date' />}
+                                        render={({ field }) => <Input {...field} placeholder="Enter CNIC Expired Date" type='date' min={moment().format("YYYY-MM-DD")} />}
                                     />
                                 </Form.Item>
 
@@ -397,14 +404,14 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
                                         render={({ field }) => <Input {...field} placeholder="Enter Father or Husband Name" />}
                                     />
                                 </Form.Item>
-                                <Form.Item label="Number of Dependents" validateStatus={errors.stkNumOfDependents ? "error" : ""} help={errors.stkNumOfDependents?.message} hidden>
+                                <Form.Item label="Number of Dependents" validateStatus={errors.stkNumOfDependents ? "error" : ""} help={errors.stkNumOfDependents?.message}>
                                     <Controller
                                         name="stkNumOfDependents"
                                         control={control}
                                         render={({ field }) => <Input {...field} placeholder="Enter Number of Dependents" />}
                                     />
                                 </Form.Item>
-                                <Form.Item label="Number of Earners" validateStatus={errors.stkNumOfEarners ? "error" : ""} help={errors.stkNumOfEarners?.message} hidden>
+                                <Form.Item label="Number of Earners" validateStatus={errors.stkNumOfEarners ? "error" : ""} help={errors.stkNumOfEarners?.message}>
                                     <Controller
                                         name="stkNumOfEarners"
                                         control={control}

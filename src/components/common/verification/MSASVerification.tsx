@@ -1,4 +1,4 @@
-import { Button, Card, Form } from 'antd'
+import { Button, Card, Empty, Form } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { ReloadOutlined } from "@ant-design/icons";
 import useVerificationStore from '../../../store/verificationStore';
@@ -14,7 +14,8 @@ interface IMSASVerification {
 
 const MSASVerification: React.FC<IMSASVerification> = ({ idx, setApprovalStatus, setRuleStatus }) => {
 
-    const { msasLoading, msasDetails, fetchMSASByIdx } = useVerificationStore()
+    const { blacklistDetails, msasLoading, msasDetails, fetchMSASByIdx } = useVerificationStore()
+
     const [verfication, setVerfication] = useState<{ name: string; status: string; }[]>([])
     const onRefresh = () => {
         fetchMSASByIdx(idx)
@@ -27,7 +28,9 @@ const MSASVerification: React.FC<IMSASVerification> = ({ idx, setApprovalStatus,
 
     useEffect(() => {
         setVerfication(getVerificationStatus(msasDetails?.rules ?? []))
-        if (msasDetails !== null) {
+        if (blacklistDetails?.blacklistStatus !== undefined && blacklistDetails?.blacklistStatus === 'REJECT') {
+            setApprovalStatus('SPECIAL_APPROVAL')
+        } else if (msasDetails !== null) {
             setApprovalStatus(getApprovalStatus(msasDetails?.rules))
         } else {
             setApprovalStatus('PENDING')
@@ -35,6 +38,18 @@ const MSASVerification: React.FC<IMSASVerification> = ({ idx, setApprovalStatus,
         setRuleStatus(msasDetails?.rules ?? [])
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [msasDetails])
+
+    if (msasDetails === null) {
+        return (
+            <Card title={'MSAS Verification'} loading={msasLoading} extra={
+                <Button type="text" icon={<ReloadOutlined />} onClick={onRefresh} />
+            }>
+                <Form>
+                    <Empty description={<span><b>No data found</b></span>} />
+                </Form>
+            </Card>
+        )
+    }
 
 
     return (
@@ -44,18 +59,16 @@ const MSASVerification: React.FC<IMSASVerification> = ({ idx, setApprovalStatus,
             <Form>
                 <div className="grid grid-cols-3 gap-3">
                     {
-                        msasDetails === null ?
-                            <Form.Item><b>Data not found for given clientele idx</b></Form.Item>
-                            :
-                            <>
-                                {
-                                    verfication.map((verify, idx) => (
-                                        <Form.Item key={idx} label={verify.name}>
-                                            <StatusTag status={verify.status ?? 'P'} />
-                                        </Form.Item>
-                                    ))
-                                }
-                            </>
+                        msasDetails !== null &&
+                        <>
+                            {
+                                verfication.map((verify, idx) => (
+                                    <Form.Item key={idx} label={verify.name}>
+                                        <StatusTag status={verify.status ?? 'P'} />
+                                    </Form.Item>
+                                ))
+                            }
+                        </>
                     }
                 </div>
             </Form>

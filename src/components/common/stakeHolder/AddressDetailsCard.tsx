@@ -1,4 +1,4 @@
-import { Button, Card, Collapse, Descriptions, Empty, Form, Input, Select, Switch } from 'antd';
+import { Button, Card, Checkbox, Collapse, Descriptions, Empty, Form, Input, Select, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { PlusOutlined, EditOutlined, UndoOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -31,7 +31,8 @@ const schema = yup.object().shape({
     durOfCurrLoc: yup.string().required("Duration of Current Location is required"),
     years: yup.string(),
     months: yup.string(),
-    status: yup.string(),
+    status: yup.string().default('A'),
+    sameAsPermanent: yup.boolean().default(false),
 });
 
 const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) => {
@@ -39,7 +40,7 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
     const [mode, setMode] = useState<'create' | 'edit' | 'remove'>('create');
     const [selectedResId, setSelectedResId] = useState('');
 
-    const { control, formState: { errors }, setValue, handleSubmit, reset, getValues } = useForm({
+    const { control, formState: { errors }, setValue, handleSubmit, reset, getValues, watch } = useForm({
         resolver: yupResolver(schema),
         defaultValues: { status: 'A' },
     });
@@ -118,7 +119,7 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
     };
 
     const renderAddressDetails = () => {
-        if (addressDetailsLoading) return <Empty description="Loading Address Details..." />;
+        if (addressDetailsLoading) return <Spin spinning={addressDetailsLoading}><Empty description="Loading Address Details..." /></Spin>;
         if (!addressDetails?.length) return <Empty description="No Address Details Available" />;
         return (
             <div className="grid grid-cols-3 gap-4">
@@ -152,7 +153,9 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
                             <Descriptions.Item label="Province">{getProvince(item.province, areas)}</Descriptions.Item>
                             <Descriptions.Item label="Community">{getCommunity(item.community, communities)}</Descriptions.Item>
                             <Descriptions.Item label="Nearby Popular Place">{item.nearByPopPlc}</Descriptions.Item>
-                            <Descriptions.Item label="Duration of Current Location">{item.durOfCurrLoc}</Descriptions.Item>
+                            <Descriptions.Item label="Duration of Current Location">
+                                {`${splitDuration(item.durOfCurrLoc).years}Y, ${splitDuration(item.durOfCurrLoc).months}M`}
+                            </Descriptions.Item>
                         </Descriptions>
                     </Card>
                 ))}
@@ -175,6 +178,8 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
         ...option,
         disabled: usedAddressTypes.includes(option.value as "PERMANANT" | "TEMPORARY" | "OTHER")
     }));
+
+    const addressType = watch('addressType');
 
 
     const renderFormItems = () => (
@@ -331,25 +336,16 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
                     <Controller
                         name="years"
                         control={control}
-                        defaultValue='0Y'
+                        defaultValue='0'
                         render={({ field }) =>
-                            <Select {...field} placeholder="Years" options={[
-                                { label: '0 Year', value: '0Y' },
-                                { label: '1 Year', value: '1Y' },
-                                { label: '2 Years', value: '2Y' },
-                                { label: '3 Years', value: '3Y' },
-                                { label: '4 Years', value: '4Y' },
-                                { label: '5 Years', value: '5Y' },
-                                { label: '6 Years', value: '6Y' },
-                                { label: '7 Years', value: '7Y' },
-                                { label: '8 Years', value: '8Y' },
-                                { label: '9 Years', value: '9Y' },
-                                { label: '10 Years', value: '10Y' },
-                                { label: '10 Years +', value: '10Y+' },
-                            ]}
+                            <Input
+                                {...field}
+                                suffix="Years"
+                                placeholder="0"
                                 onChange={(e) => {
-                                    setValue("years", e)
-                                    setValue("durOfCurrLoc", `${e}, ${getValues('months')}`)
+                                    const value = e.target.value;
+                                    setValue("years", value);
+                                    setValue("durOfCurrLoc", `${value} , ${getValues('months')}`);
                                 }}
                             />
                         }
@@ -358,26 +354,16 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
                     <Controller
                         name="months"
                         control={control}
-                        defaultValue='0M'
+                        defaultValue='0'
                         render={({ field }) =>
-                            <Select {...field} placeholder="Months" options={[
-                                { label: '0 Month', value: '0M' },
-                                { label: '1 Month', value: '1M' },
-                                { label: '2 Months', value: '2M' },
-                                { label: '3 Months', value: '3M' },
-                                { label: '4 Months', value: '4M' },
-                                { label: '5 Months', value: '5M' },
-                                { label: '6 Months', value: '6M' },
-                                { label: '7 Months', value: '7M' },
-                                { label: '8 Months', value: '8M' },
-                                { label: '9 Months', value: '9M' },
-                                { label: '10 Months', value: '10M' },
-                                { label: '11 Months', value: '11M' },
-                            ]}
+                            <Input
+                                {...field}
+                                suffix="Months"
+                                placeholder="0"
                                 onChange={(e) => {
-                                    setValue("months", e)
-                                    setValue("durOfCurrLoc", `${getValues('years')} , ${e}`)
-
+                                    const value = e.target.value;
+                                    setValue("months", value);
+                                    setValue("durOfCurrLoc", `${getValues('years')} , ${value}`);
                                 }}
                             />
                         }
@@ -395,24 +381,59 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
                     }
                 />
             </Form.Item>
-
-            <Form.Item>
+            {/* <Form.Item>
                 <Controller
-                    name="status"
                     control={control}
-                    render={({ field }) =>
-                        <div className='flex items-center gap-2'>
+                    name="status"
+                    render={({ field }) => (
+                        <div className="flex items-center gap-2">
                             <Switch
                                 checked={field.value === 'A'}
                                 onChange={(checked) => {
-                                    setValue("status", checked ? 'A' : 'I')
-                                    setMode('remove')
-                                }} />
+                                    setValue('status', checked ? 'A' : 'I')
+                                    // setMode('remove')
+                                }}
+                            />
                             <span>{field.value === 'A' ? 'Active' : 'Inactive'}</span>
                         </div>
-                    }
+                    )}
                 />
-
+            </Form.Item> */}
+            {/* form item check box that ask same as the permenet address to fill */}
+            <Form.Item hidden={mode === 'edit' || addressType === 'PERMANANT'}>
+                <Controller
+                    name="sameAsPermanent"
+                    control={control}
+                    render={({ field }) => (
+                        <div className='flex items-center gap-2'>
+                            <Checkbox
+                                checked={field.value}
+                                onChange={(checked) => {
+                                    field.onChange(checked);
+                                    if (checked) {
+                                        const permentAddress = addressDetails.filter(a => a.addressType === 'PERMANANT' && a.status === 'A')[0];
+                                        setValue("residenceType", permentAddress?.residenceType ?? '');
+                                        setValue("addressLine1", permentAddress?.addressLine1 ?? '');
+                                        setValue("addressLine2", permentAddress?.addressLine2 ?? '');
+                                        setValue("addressLine3", permentAddress?.addressLine3 ?? '');
+                                        setValue("addressLine4", permentAddress?.addressLine4 ?? '');
+                                        setValue("area", permentAddress?.area ?? '');
+                                        setValue("city", permentAddress?.city ?? '');
+                                        setValue("district", permentAddress?.district ?? '');
+                                        setValue("province", permentAddress?.province ?? '');
+                                        setValue("community", permentAddress?.community ?? '');
+                                        setValue("nearByPopPlc", permentAddress?.nearByPopPlc ?? '');
+                                        setValue("durOfCurrLoc", permentAddress?.durOfCurrLoc ?? '');
+                                        const { years, months } = splitDuration(permentAddress?.durOfCurrLoc ?? '');
+                                        setValue("years", years);
+                                        setValue("months", months);
+                                    }
+                                }}
+                            />
+                            <span>Same as Permanent Address</span>
+                        </div>
+                    )}
+                />
             </Form.Item>
         </>
     );

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import * as yup from 'yup'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Card, Descriptions, Empty, Form, Input, InputNumber, Select, Tag, Checkbox } from 'antd';
+import { Button, Card, Descriptions, Empty, Form, Input, InputNumber, Select, Tag, Checkbox, notification } from 'antd';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { formatCNIC, formatCurrency, formatName, formatSentence, getDistrict } from '../../../../../../utils/formatterFunctions';
 import useCommonStore from '../../../../../../store/commonStore';
@@ -132,10 +132,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = (data: any) => {
-        console.log(data);
         if (formMode === 'save') {
-
-
             delete data.isAgriSecured
             addAgricultureIncome(appId ?? '', data).finally(onReset)
         } else if (formMode === 'update') {
@@ -155,7 +152,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
     useEffect(() => {
         setValue('sourceOfIncome', sourceOfIncome)
         const productCode = product?.pTrhdLType ?? ''
-        if (product?.pTrhdLType) {
+        if (productCode !== '') {
             fetchOwnership(productCode)
             fetchIrrigation(productCode)
             fetchFloodsFactor(productCode)
@@ -164,6 +161,11 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
             fetchCultLoanPurposes(productCode)
             fetchMarketCheck(productCode)
             fetchRepeatCustomersWithProdCode(productCode)
+        } else {
+            notification.error({
+                message: 'Error',
+                description: 'Product code not found. Please check the product details.',
+            });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])

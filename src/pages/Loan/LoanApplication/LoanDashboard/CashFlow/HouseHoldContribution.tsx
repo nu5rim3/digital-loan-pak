@@ -12,9 +12,18 @@ import { useParams } from 'react-router-dom';
 
 const schema = yup.object().shape({
     key: yup.string().required('Key is required'),
-    monthly: yup.string(),
-    semiAnnual: yup.string(),
-    annually: yup.string(),
+    monthly: yup.string().required('Monthly is required').test('is-positive', 'Monthly must be a positive number', (value) => {
+        const num = parseFloat(value ?? '0');
+        return !isNaN(num) && num > 0;
+    }),
+    semiAnnual: yup.string().required('Semi-Annual is required').test('is-positive', 'Semi-Annual must be a positive number', (value) => {
+        const num = parseFloat(value ?? '0');
+        return !isNaN(num) && num > 0;
+    }),
+    annually: yup.string().required('Annually is required').test('is-positive', 'Annually must be a positive number', (value) => {
+        const num = parseFloat(value ?? '0');
+        return !isNaN(num) && num > 0;
+    }),
 }).test(
     'at-least-one-value',
     'At least one of Monthly, Semi-Annual, or Annually must be provided',
@@ -37,7 +46,7 @@ const HouseHoldContribution: React.FC = () => {
     });
     const [activeField, setActiveField] = useState<'monthly' | 'semiAnnual' | 'annually' | null>(null);
     const { cashFlows, cashFlowsLoading, houseHoldContribution, addHouseHoldContribution, updateHouseHoldContribution,
-        fetchHouseHoldContribution, removeHouseHoldContribution, calculateTotalHouseRevenue, calculateTotalRevenue,
+        fetchHouseHoldContribution, removeHouseHoldContribution, calculateTotalHouseRevenue, calculateTotalRevenue, calculateApplicantRevenue,
         calculateNetMonthlyDisposable, calculateAnnualDisposable, calculateAnnualHousehold, calculateAnnualRevenue,
         calculateMaxDebtBurden, checkAlegibleFroLoan, calucalteMaxLoanValue, calculateTaxableAmount, fetchCashFlows } = useCreditStore();
 
@@ -59,9 +68,9 @@ const HouseHoldContribution: React.FC = () => {
         setIsModalOpen(true);
         if (details) {
             setValue('key', details.key);
-            setValue('monthly', details.monthly);
-            setValue('semiAnnual', details.semiAnnual);
-            setValue('annually', details.annually);
+            setValue('monthly', details.monthly ?? '0.00');
+            setValue('semiAnnual', details.semiAnnual ?? '0.00');
+            setValue('annually', details.annually ?? '0.00');
         } else {
             reset();
         }
@@ -86,6 +95,7 @@ const HouseHoldContribution: React.FC = () => {
         fetchHouseHoldContribution()
         calculateTotalHouseRevenue()
         calculateTotalRevenue()
+        calculateApplicantRevenue()
         calculateNetMonthlyDisposable()
         calculateAnnualDisposable()
         calculateAnnualHousehold()
@@ -141,6 +151,27 @@ const HouseHoldContribution: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [annually]);
 
+    const usedTypes = React.useMemo(
+        () => houseHoldContribution.map((detail) => detail.key),
+        [houseHoldContribution]
+    );
+
+    const options = [
+        { value: 'Salaries', label: 'Salaries' },
+        { value: 'Wages', label: 'Wages' },
+        { value: 'Pension', label: 'Pension' },
+        { value: 'Remittance', label: 'Remittance' },
+        { value: 'Business', label: 'Business' },
+        { value: 'Other', label: 'Other' },
+    ];
+
+    const diabledOptions = options.map(option => {
+        return {
+            ...option,
+            disabled: usedTypes.includes(option.value)
+        }
+    })
+
     return (
         <>
             <Collapse
@@ -168,7 +199,6 @@ const HouseHoldContribution: React.FC = () => {
                                                 houseHoldContribution.map((detail, index) => (
                                                     <DetailsCard
                                                         key={index}
-                                                        cashFlows={cashFlows}
                                                         loading={cashFlowsLoading}
                                                         detail={detail}
                                                         onEdit={() => openModal('update', detail)}
@@ -205,14 +235,7 @@ const HouseHoldContribution: React.FC = () => {
                                     <Select
                                         {...field}
                                         placeholder="Select Key"
-                                        options={[
-                                            { value: 'Salaries', label: 'Salaries' },
-                                            { value: 'Wages', label: 'Wages' },
-                                            { value: 'Pension', label: 'Pension' },
-                                            { value: 'Remittance', label: 'Remittance' },
-                                            { value: 'Business', label: 'Business' },
-                                            { value: 'Other', label: 'Other' },
-                                        ]}
+                                        options={diabledOptions}
                                     />
                                 )}
                             />
@@ -324,9 +347,9 @@ const HouseHoldContribution: React.FC = () => {
     )
 }
 
-const DetailsCard: React.FC<{ detail: IFinancialEntry; onEdit: () => void; onRemove: () => void; loading: boolean; cashFlows: any }> = ({ detail, loading, cashFlows, onEdit, onRemove }) => (
+const DetailsCard: React.FC<{ detail: IFinancialEntry; onEdit: () => void; onRemove: () => void; loading: boolean; }> = ({ detail, loading, onEdit, onRemove }) => (
     <Card loading={loading}>
-        <div className="flex justify-end gap-1" hidden={cashFlows.houseHoldContribution !== null}>
+        <div className="flex justify-end gap-1">
             <Button type="default" size="small" icon={<EditOutlined />} onClick={onEdit} />
             <Button type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
         </div>

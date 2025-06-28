@@ -10,6 +10,7 @@ import { getStakeholderByType } from '../../../../../utils/stakholderFunction';
 import { formatCNIC, formatName, splitInitialAndSurname, titleGenderMaritalMap } from '../../../../../utils/formatterFunctions';
 import { CaretLeftOutlined, EditOutlined, UndoOutlined } from '@ant-design/icons';
 import useGuarantorStore from '../../../../../store/guarantorStore';
+import moment from 'moment';
 
 interface IGuarantorDetails {
     formDetails?: IStakeholder[];
@@ -39,12 +40,14 @@ const schema = yup.object().shape({
             const { stkDob } = this.parent;
             return value && stkDob ? new Date(value) >= new Date(stkDob) : true;
         }),
-    stkCNicExpDate: yup.string()
+    stkCNicExpDate: yup
+        .string()
         .required("CNIC Expired Date is required")
-        .test('is-later', 'CNIC Expired Date must be later than CNIC Issued Date', function (value) {
-            const { stkCNicIssuedDate } = this.parent;
-            return value && stkCNicIssuedDate ? new Date(value) > new Date(stkCNicIssuedDate) : true;
-        }),
+        .test(
+            "is-today-or-future",
+            "Date cannot be in the past",
+            value => moment(value).isSameOrAfter(moment(), 'day')
+        ),
     stkCNicStatus: yup.string().required("CNIC Status is required"),
     stkCusName: yup.string().required("Customer Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     stkInitials: yup.string().required("Initial is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
@@ -54,7 +57,7 @@ const schema = yup.object().shape({
     stkMaritialStatus: yup.string().required("Marital Status is required"),
     stkTitle: yup.string().required("Title is required"),
     stkFatherOrHusName: yup.string().required("Father or Husband Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
-    currentResidences: yup.string().required("Current Residence is required"),
+    currentResPlace: yup.string().required("Current Residence is required"),
     relationship: yup.string().required("Relationship is required"),
     modeOfSecurity: yup.string().required("Mode of Security is required"),
 });
@@ -65,7 +68,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
         resolver: yupResolver(schema),
     });
 
-    const { organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, fetchEducationLevel, headOfFamily, headOfFamilyLoading, fetchHeadOfFamily, healthCondition, healthConditionLoading, fetchHealthCondition } = useCommonStore()
+    const { selectedProductCode, relationaShipGaurantor, relationaShipGaurantorLoading, modeOfSecurity, modeOfSecurityLoading, organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, fetchEducationLevel, fetchModeOfSecurity, fetchRelationaShipGaurantor } = useCommonStore()
     const { stakeholderLoading, stakeholders, fetchStackholderByAppId, addStakeholder, updateStakeholder } = useStakeholderStore()
     const { guarantors, fetchGuarantorByAppId } = useGuarantorStore();
     const [initialSave, setInitialSave] = useState(false);
@@ -80,12 +83,12 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
         if (initialSave) {
-            addStakeholder({ ...data, appraisalID: appId ?? '', new: true, stkType: 'G' })
+            addStakeholder({ ...data, stkCNic: state.cnicNumber, appraisalID: appId ?? '', new: true, stkType: 'G' })
             setInitialSave(false)
         } else if (mode === 'create') {
             addStakeholder({ ...data, appraisalID: appId ?? '', new: true, stkType: 'G' })
         } else if (mode === 'edit') {
-            updateStakeholder(stakholderId, { ...data, appraisalID: appId ?? '', update: true, stkType: 'G' })
+            updateStakeholder(stakholderId, { ...data, stkCNic: state.cnicNumber, appraisalID: appId ?? '', update: true, stkType: 'G' })
         }
         fetchStackholderByAppId(appId ?? '')
     }
@@ -94,10 +97,12 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
         fetchOrganizationType()
         fetchCNICStaus()
         fetchEducationLevel()
-        fetchHeadOfFamily()
-        fetchHealthCondition()
+        // fetchHeadOfFamily()
+        // fetchHealthCondition()
         fetchGuarantorByAppId(appId ?? '')
         fetchStackholderByAppId(appId ?? '')
+        fetchModeOfSecurity(selectedProductCode ?? '')
+        fetchRelationaShipGaurantor(selectedProductCode ?? '')
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -124,7 +129,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                 setValue("stkMaritialStatus", formDetails?.stkMaritialStatus ?? '');
                 setValue("stkTitle", formDetails?.stkTitle);
                 setValue("stkFatherOrHusName", formDetails?.stkFatherOrHusName);
-                setValue("currentResidences", formDetails?.currentResidences);
+                setValue("currentResPlace", formDetails?.currentResPlace);
                 setValue("relationship", formDetails?.relationship);
                 setValue("modeOfSecurity", formDetails?.modeOfSecurity);
             } else if (__selectedGuarantor) {
@@ -201,27 +206,23 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                         </Form.Item>
                         <Form.Item label="Full Name" validateStatus={errors.stkCusName ? "error" : ""} help={errors.stkCusName?.message} required>
                             <Controller
-                                disabled
                                 name="stkCusName"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Customer Name" />}
+                                render={({ field }) => <Input {...field} placeholder="Enter Customer Name" disabled />}
                             />
                         </Form.Item>
                         <Form.Item label="Initial" validateStatus={errors.stkInitials ? "error" : ""} help={errors.stkInitials?.message} required>
                             <Controller
                                 name="stkInitials"
                                 control={control}
-                                disabled
                                 render={({ field }) =>
                                     <Input
                                         {...field}
                                         placeholder="Enter Initial"
                                         onChange={(value) => {
                                             field.onChange(value);
-                                            if (!value) {
-                                                field.disabled = false
-                                            }
                                         }}
+                                        disabled
                                     />
                                 }
                             />
@@ -230,17 +231,14 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                             <Controller
                                 name="stkSurName"
                                 control={control}
-                                disabled
                                 render={({ field }) =>
                                     <Input
                                         {...field}
                                         placeholder="Enter Surname"
                                         onChange={(value) => {
                                             field.onChange(value);
-                                            if (!value) {
-                                                field.disabled = false
-                                            }
                                         }}
+                                        disabled
                                     />
                                 }
                             />
@@ -289,7 +287,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                             <Controller
                                 name="stkCNicExpDate"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter CNIC Expired Date" type='date' />}
+                                render={({ field }) => <Input {...field} placeholder="Enter CNIC Expired Date" type='date' min={moment().format("YYYY-MM-DD")} />}
                             />
                         </Form.Item>
 
@@ -366,9 +364,9 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                 render={({ field }) => <Input {...field} placeholder="Enter Father or Husband Name" />}
                             />
                         </Form.Item>
-                        <Form.Item label="Current Residence" validateStatus={errors.currentResidences ? "error" : ""} help={errors.currentResidences?.message} required>
+                        <Form.Item label="Current Residence" validateStatus={errors.currentResPlace ? "error" : ""} help={errors.currentResPlace?.message} required>
                             <Controller
-                                name="currentResidences"
+                                name="currentResPlace"
                                 control={control}
                                 render={({ field }) => <Input {...field} placeholder="Enter Current Residence" />}
                             />
@@ -378,11 +376,12 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                 name="relationship"
                                 control={control}
                                 render={({ field }) =>
-                                    <Select {...field} placeholder="Select a Relationship" allowClear loading={headOfFamilyLoading} options={headOfFamily.map((item) => ({
+                                    <Select {...field} placeholder="Select a Relationship" allowClear loading={relationaShipGaurantorLoading} options={relationaShipGaurantor.map((item) => ({
                                         label: item.description,
                                         value: item.code
                                     }))}>
-                                    </Select>}
+                                    </Select>
+                                }
                             />
                         </Form.Item>
                         <Form.Item label="Mode of Security" validateStatus={errors.modeOfSecurity ? "error" : ""} help={errors.modeOfSecurity?.message} required>
@@ -390,7 +389,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                 name="modeOfSecurity"
                                 control={control}
                                 render={({ field }) =>
-                                    <Select {...field} placeholder="Select a Mode of Security" allowClear loading={healthConditionLoading} options={healthCondition.map((item) => ({
+                                    <Select {...field} placeholder="Select a Mode of Security" allowClear loading={modeOfSecurityLoading} options={modeOfSecurity.map((item) => ({
                                         label: item.description,
                                         value: item.code
                                     }))}>

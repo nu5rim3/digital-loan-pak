@@ -12,9 +12,18 @@ import { useParams } from 'react-router-dom';
 
 const schema = yup.object().shape({
     key: yup.string().required('Key is required'),
-    monthly: yup.string(),
-    semiAnnual: yup.string(),
-    annually: yup.string(),
+    monthly: yup.string().required('Monthly is required').test('is-positive', 'Monthly must be a positive number', (value) => {
+        const num = parseFloat(value ?? '0');
+        return !isNaN(num) && num > 0;
+    }),
+    semiAnnual: yup.string().required('Semi-Annual is required').test('is-positive', 'Semi-Annual must be a positive number', (value) => {
+        const num = parseFloat(value ?? '0');
+        return !isNaN(num) && num > 0;
+    }),
+    annually: yup.string().required('Annually is required').test('is-positive', 'Annually must be a positive number', (value) => {
+        const num = parseFloat(value ?? '0');
+        return !isNaN(num) && num > 0;
+    }),
 }).test(
     'at-least-one-value',
     'At least one of Monthly, Semi-Annual, or Annually must be provided',
@@ -61,9 +70,9 @@ const BnsOrAgriExpenses: React.FC = () => {
         setIsModalOpen(true);
         if (details) {
             setValue('key', details.key);
-            setValue('monthly', details.monthly);
-            setValue('semiAnnual', details.semiAnnual);
-            setValue('annually', details.annually);
+            setValue('monthly', details.monthly ?? '0.00');
+            setValue('semiAnnual', details.semiAnnual ?? '0.00');
+            setValue('annually', details.annually ?? '0.00');
         } else {
             reset();
         }
@@ -144,6 +153,33 @@ const BnsOrAgriExpenses: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [annually]);
 
+    const usedTypes = React.useMemo(
+        () => bnsOrAgriExpenses.map((detail) => detail.key),
+        [bnsOrAgriExpenses]
+    );
+
+    const options = [
+        { value: 'Agri Expenses', label: 'Agri Expenses' },
+        { value: 'Business 1', label: 'Business 1' },
+        { value: 'Business 2', label: 'Business 2' },
+        { value: 'Lev Expenses', label: 'Lev Expenses' },
+        { value: 'Loan Payments', label: 'Loan Payments' },
+        { value: 'Salary & Wages', label: 'Salary & Wages' },
+        { value: 'Rental', label: 'Rental' },
+        { value: 'Utilities', label: 'Utilities' },
+        { value: 'Transportation', label: 'Transportation' },
+        { value: 'Communication', label: 'Communication' },
+        { value: 'Taxes & Licenses', label: 'Taxes & Licenses' },
+        { value: 'Other', label: 'Other' },
+    ];
+
+    const diabledOptions = options.map(option => {
+        return {
+            ...option,
+            disabled: usedTypes.includes(option.value)
+        }
+    })
+
 
     return (
         <>
@@ -172,7 +208,6 @@ const BnsOrAgriExpenses: React.FC = () => {
                                                 bnsOrAgriExpenses.map((detail, index) => (
                                                     <DetailsCard
                                                         key={index}
-                                                        cashFlows={cashFlows}
                                                         loading={cashFlowsLoading}
                                                         detail={detail}
                                                         onEdit={() => openModal('update', detail)}
@@ -209,19 +244,7 @@ const BnsOrAgriExpenses: React.FC = () => {
                                     <Select
                                         {...field}
                                         placeholder="Select Key"
-                                        options={[
-                                            { value: 'Agri_Expenses', label: 'Agri Expenses' },
-                                            { value: 'Business 1', label: 'Business 1' },
-                                            { value: 'Business 2', label: 'Business 2' },
-                                            { value: 'Lev Expenses', label: 'Lev Expenses' },
-                                            { value: 'Salary & Wages', label: 'Salary & Wages' },
-                                            { value: 'Rental', label: 'Rental' },
-                                            { value: 'Utilities', label: 'Utilities' },
-                                            { value: 'Transportation', label: 'Transportation' },
-                                            { value: 'Communication', label: 'Communication' },
-                                            { value: 'Taxes & Licenses', label: 'Taxes & Licenses' },
-                                            { value: 'Other', label: 'Other' },
-                                        ]}
+                                        options={diabledOptions}
                                     />
                                 )}
                             />
@@ -333,9 +356,9 @@ const BnsOrAgriExpenses: React.FC = () => {
     )
 }
 
-const DetailsCard: React.FC<{ detail: IFinancialEntry; onEdit: () => void; onRemove: () => void; loading: boolean; cashFlows: any }> = ({ detail, loading, cashFlows, onEdit, onRemove }) => (
+const DetailsCard: React.FC<{ detail: IFinancialEntry; onEdit: () => void; onRemove: () => void; loading: boolean; }> = ({ detail, loading, onEdit, onRemove }) => (
     <Card loading={loading}>
-        <div className="flex justify-end gap-1" hidden={cashFlows.bnsOrAgriExpenses !== null}>
+        <div className="flex justify-end gap-1">
             <Button type="default" size="small" icon={<EditOutlined />} onClick={onEdit} />
             <Button type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
         </div>

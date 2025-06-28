@@ -34,9 +34,11 @@ interface ICustomerState {
   fetchGuarantor: () => Promise<void>;
   fetchGuarantorByAppId: (appId: string) => Promise<void>;
   fetchGuarantorByCNIC: (cnic: string) => Promise<void>;
-  addGuarantor: (guarantor: IGuarantor) => Promise<void>;
+  addGuarantor: (guarantor: IGuarantor) => Promise<IGuarantor>;
+  deleteGuarantor: (idx: string) => Promise<void>;
   updateGuarantor: (idx: string, updatedUser: IGuarantor) => Promise<void>;
   resetGuarantor: () => void;
+  resetSelectedGuarantor: () => void;
 }
 
 const useGuarantorStore = create<ICustomerState>((set) => ({
@@ -63,7 +65,11 @@ const useGuarantorStore = create<ICustomerState>((set) => ({
       const response = await API.get(
         `/mobixCamsClientele/v1/clienteles/${appId}/type/guarantor`
       );
-      set({ guarantors: response.data, guarantorLoading: false });
+      set({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        guarantors: response.data.filter((item: any) => item.status !== "D"),
+        guarantorLoading: false,
+      });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({ guarantorError: error.message, guarantorLoading: false });
@@ -99,6 +105,7 @@ const useGuarantorStore = create<ICustomerState>((set) => ({
         message: "Success",
         description: "Customer Created successfully!",
       });
+      return response.data;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({ guarantorError: error.message, guarantorLoading: false });
@@ -123,7 +130,33 @@ const useGuarantorStore = create<ICustomerState>((set) => ({
     }
   },
 
-  resetGuarantor: () => set({ guarantor: null }),
+  deleteGuarantor: async (idx: string) => {
+    set({ guarantorLoading: true, guarantorError: null });
+    try {
+      await APIAuth.put(`/mobixCamsClientele/v1/clienteles/${idx}/inactive`);
+      set((state) => ({
+        guarantors: state.guarantors.filter(
+          (guarantor) => guarantor.idx !== idx
+        ),
+        guarantorLoading: false,
+      }));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({ guarantorError: error.message, guarantorLoading: false });
+    }
+  },
+
+  resetGuarantor: () => {
+    console.log("Resetting guarantor store");
+    set({
+      guarantor: null,
+      selectedGuarantor: null,
+      guarantorError: null,
+      guarantorLoading: false,
+      guarantors: [],
+    });
+  },
+  resetSelectedGuarantor: () => set({ selectedGuarantor: null }),
 }));
 
 export default useGuarantorStore;

@@ -3,18 +3,21 @@ import { Modal, Input, Button, Form, Divider } from 'antd';
 import { useForm, Controller } from 'react-hook-form';
 import useOTPStore from '../../../store/otpStore';
 import OTPTimer from '../timer/OTPTimer';
+import useVerificationStore from '../../../store/verificationStore';
 
 interface OTPModalProps {
     idx: string;
     visible: boolean;
     onCancel: () => void;
     onCompleted: () => void;
+    resetUser: () => void;
 }
 
-const OTPModal: React.FC<OTPModalProps> = ({ idx, visible, onCancel, onCompleted }) => {
+const OTPModal: React.FC<OTPModalProps> = ({ idx, visible, onCancel, onCompleted, resetUser }) => {
 
     const { control, handleSubmit, setValue, watch, reset } = useForm();
-    const { sendOTP, verifyOTP, otpLoading, otpVerificationLoading, otpVerificationResponse } = useOTPStore()
+    const { sendOTP, verifyOTP, otpLoading, otpVerificationLoading, otpVerificationResponse, restOtpVerificationResponse } = useOTPStore()
+    const { resetAll } = useVerificationStore()
     const otpRefs = useRef<(HTMLInputElement | null)[]>(Array(6).fill(null));
     const [isResendDisabled, setIsResendDisabled] = useState(true);
     const [resetTrigger, setResetTrigger] = useState(0);
@@ -22,7 +25,11 @@ const OTPModal: React.FC<OTPModalProps> = ({ idx, visible, onCancel, onCompleted
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
         const otpValue = Object.values(data).join("");
-        verifyOTP(idx, otpValue);
+        verifyOTP(idx, otpValue).finally(() => {
+            restOtpVerificationResponse();
+            resetAll();
+            resetUser()
+        })
     };
 
     useEffect(() => {

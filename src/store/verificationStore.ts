@@ -56,6 +56,7 @@ interface IVerificationCRIBResponse {
   contractExpiryDate: string;
   detail: string;
   message: string;
+  code?: string;
 }
 
 interface IVerificationECIBResponse {
@@ -81,6 +82,8 @@ interface IVerificationState {
   fetchCRIBByCnic: (cnic: string) => Promise<void>;
   fetchECIBById: (cnic: string) => Promise<void>;
   resetCRIBDetails: () => void;
+
+  resetAll: () => void;
 }
 
 const useVerificationStore = create<IVerificationState>((set) => ({
@@ -128,7 +131,14 @@ const useVerificationStore = create<IVerificationState>((set) => ({
       const response = await API.get(
         `/mobixCamsCredit/v1/credits/crib/internal/${cnic}`
       );
-      set({ cribDetails: response.data?.object, cribLoading: false });
+      // TODO: Handle the response based on the API structure
+      if (response.data?.code === "000") {
+        set({ cribDetails: response.data?.object, cribLoading: false });
+        return;
+      } else if (response.data?.code === "999") {
+        set({ cribDetails: [], cribLoading: false });
+        return;
+      }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);
@@ -152,6 +162,19 @@ const useVerificationStore = create<IVerificationState>((set) => ({
 
   resetCRIBDetails: () =>
     set({ cribDetails: null, cribLoading: false, error: null }),
+
+  resetAll: () =>
+    set(() => ({
+      blacklistDetails: null,
+      msasDetails: null,
+      cribDetails: null,
+      ecibDetails: null,
+      blLoading: false,
+      msasLoading: false,
+      cribLoading: false,
+      ecibLoading: false,
+      error: null,
+    })),
 }));
 
 export default useVerificationStore;

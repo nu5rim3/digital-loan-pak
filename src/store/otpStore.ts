@@ -16,6 +16,7 @@ interface IOTPState {
 
   sendOTP: (idx: string) => Promise<void>;
   verifyOTP: (idx: string, code: string) => Promise<void>;
+  restOtpVerificationResponse: () => void;
 }
 
 const useOTPStore = create<IOTPState>()(
@@ -36,6 +37,10 @@ const useOTPStore = create<IOTPState>()(
             `/mobixCamsClientele/v1/clienteles/verifications/send-sms/${idx}`
           );
           set({ otpResponse: response.data, otpLoading: false });
+          notification.success({
+            message: "OTP Sent",
+            description: "An OTP has been sent to your mobile number.",
+          });
         } catch (error: any) {
           console.error(error);
           set({ otpError: error.message, otpLoading: false });
@@ -64,6 +69,9 @@ const useOTPStore = create<IOTPState>()(
             otpVerificationLoading: false,
           });
         }
+      },
+      restOtpVerificationResponse: () => {
+        set({ otpVerificationResponse: null });
       },
     }),
     { name: "OTPStore" }

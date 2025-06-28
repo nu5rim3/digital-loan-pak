@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Collapse, Descriptions, Empty, Form, Select, Spin, Switch } from 'antd';
+import { Button, Card, Collapse, Descriptions, Empty, Form, Select, Spin } from 'antd';
 import { PlusOutlined, EditOutlined, SaveOutlined, UndoOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -7,6 +7,7 @@ import * as yup from 'yup';
 import CommonModal from '../modal/commonModal';
 import useStakeholderStore, { IContactDetails } from '../../../store/stakeholderStore';
 import ContactInput from '../inputs/ContactInput';
+import useCommonStore from '../../../store/commonStore';
 
 const schema = yup.object().shape({
     phoneNoType: yup.string().required('Contact Type is required'),
@@ -30,6 +31,7 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
     });
 
     const { contactDetails, contactDetailsLoading, fetchContactDetailsByStkId, addContactDetail, updateContactDetail, inActivateContactDetail } = useStakeholderStore();
+    const { contactTypes } = useCommonStore()
     const openModal = (mode: 'create' | 'edit', contact: IContactDetails | null = null) => {
         setMode(mode);
         setSelectedContact(contact);
@@ -61,6 +63,16 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
             fetchContactDetailsByStkId(stkId);
         }
     }, [stkId, isModalOpen, fetchContactDetailsByStkId]);
+
+    const usedContactTypes = React.useMemo(
+        () => contactDetails?.filter(a => a.status === 'A').map(a => a.phoneNoType) ?? [],
+        [contactDetails]
+    );
+
+    const disabledContactTypeOptions = contactTypes.map(option => ({
+        ...option,
+        disabled: usedContactTypes.includes(option.value as "MN" | "ON" | "FN" | "APN"),
+    }));
 
     return (
         <>
@@ -115,12 +127,7 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
                                 control={control}
                                 name="phoneNoType"
                                 render={({ field }) => (
-                                    <Select {...field} placeholder="Select Contact Type" options={[
-                                        { label: 'Mobile', value: 'Mobile' },
-                                        { label: 'Office', value: 'Office' },
-                                        { label: 'Fixed Line', value: 'Fixed Line' },
-                                        { label: 'Additional Phone Number', value: 'Additional Phone Number' },
-                                    ]} />
+                                    <Select {...field} placeholder="Select Contact Type" options={disabledContactTypeOptions} />
                                 )}
                             />
                         </Form.Item>
@@ -140,7 +147,7 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
                                 )}
                             />
                         </Form.Item>
-                        <Form.Item>
+                        {/* <Form.Item>
                             <Controller
                                 control={control}
                                 name="status"
@@ -150,14 +157,14 @@ const ContactDetailsCard: React.FC<IContactDetailsCard> = ({ stkId, subTitle }) 
                                             checked={field.value === 'A'}
                                             onChange={(checked) => {
                                                 setValue('status', checked ? 'A' : 'I')
-                                                setMode('remove')
+                                                // setMode('remove')
                                             }}
                                         />
                                         <span>{field.value === 'A' ? 'Active' : 'Inactive'}</span>
                                     </div>
                                 )}
                             />
-                        </Form.Item>
+                        </Form.Item> */}
                     </div>
                     <div className="flex justify-end gap-3">
                         <Button type="primary" htmlType="submit" loading={contactDetailsLoading} icon={<SaveOutlined />}>
@@ -179,7 +186,7 @@ const DetailsCard: React.FC<{ detail: IContactDetails; onEdit: () => void, onDel
             <Button type="default" size="small" icon={<EditOutlined />} onClick={onEdit} disabled={detail.phoneNoType === 'OTP Phone Number'} />
         </div>
         <Descriptions column={1}>
-            <Descriptions.Item label="Contact Type">{detail.phoneNoType}</Descriptions.Item>
+            <Descriptions.Item label="Contact Type">{detail.phoneNoType === 'MN' && 'Mobile'}{detail.phoneNoType === 'ON' && 'Office'}{detail.phoneNoType === 'FN' && 'Fixed Number'}{detail.phoneNoType === 'APN' && 'Additional Phone Number'}</Descriptions.Item>
             <Descriptions.Item label="Contact Number">{detail.phoneNo}</Descriptions.Item>
         </Descriptions>
     </Card>

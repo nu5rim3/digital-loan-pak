@@ -17,6 +17,13 @@ interface IExceptionalApprovalPayload {
   categoryDec: string;
 }
 
+interface IOBExceptionalPayload {
+  appraisalIdx: string;
+  type: string;
+  remark: string;
+  clienteleIdx: string;
+}
+
 interface IApproval {
   idx: string;
   appraisalIdx: string;
@@ -53,6 +60,10 @@ interface IApprovalState {
   approvalsLoading: boolean;
   approvalsError: string | null;
 
+  obExceptionalApprovalResponse: null;
+  obExceptionalApprovalLoading: boolean;
+  obExceptionalApprovalError: string | null;
+
   fetchExceptionalApprovalCategories: () => Promise<void>;
   requestExceptionalApproval: (
     payload: IExceptionalApprovalPayload
@@ -60,6 +71,7 @@ interface IApprovalState {
   fetchExceptionalApprovalPerson: (category: string) => Promise<void>;
   fetchApprovals: (appraisalIdx: string) => Promise<void>;
   deleteApproval: (idx: string) => Promise<void>;
+  obExceptionalApproval: (payload: IOBExceptionalPayload) => Promise<void>;
 }
 
 const useApprovalStore = create<IApprovalState>((set) => ({
@@ -78,6 +90,10 @@ const useApprovalStore = create<IApprovalState>((set) => ({
   approvals: [],
   approvalsLoading: false,
   approvalsError: null,
+
+  obExceptionalApprovalResponse: null,
+  obExceptionalApprovalLoading: false,
+  obExceptionalApprovalError: null,
 
   fetchExceptionalApprovalCategories: async () => {
     set({
@@ -188,6 +204,30 @@ const useApprovalStore = create<IApprovalState>((set) => ({
       set({
         appraisalApprovalError: error.message,
         appraisalApprovalLoading: false,
+      });
+    }
+  },
+
+  obExceptionalApproval: async (payload) => {
+    set({
+      obExceptionalApprovalLoading: true,
+      obExceptionalApprovalError: null,
+      obExceptionalApprovalResponse: null,
+    });
+    try {
+      const response = await APIAuth.post(
+        `/mobixCamsApproval/v1/approvals/on-boarding`,
+        payload
+      );
+      set({
+        obExceptionalApprovalResponse: response.data,
+        obExceptionalApprovalLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        obExceptionalApprovalError: error.message,
+        obExceptionalApprovalLoading: false,
       });
     }
   },

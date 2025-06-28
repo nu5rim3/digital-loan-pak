@@ -1,4 +1,4 @@
-import { Button, Card, Form, Tag } from 'antd'
+import { Button, Card, Empty, Form, Tag } from 'antd'
 import React, { useEffect } from 'react'
 import { ReloadOutlined } from "@ant-design/icons";
 import useVerificationStore from '../../../store/verificationStore';
@@ -7,9 +7,10 @@ import { formatName, formatSentence, dateFormats } from '../../../utils/formatte
 interface IBlacklistVerification {
     idx: string;
     cnic: string;
+    setApprovalStatus: (status: string) => void;
 }
 
-const BlacklistVerification: React.FC<IBlacklistVerification> = ({ cnic }) => {
+const BlacklistVerification: React.FC<IBlacklistVerification> = ({ cnic, setApprovalStatus }) => {
 
 
     const { blacklistDetails, fetchBlacklistByCnic, blLoading } = useVerificationStore()
@@ -23,6 +24,23 @@ const BlacklistVerification: React.FC<IBlacklistVerification> = ({ cnic }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cnic])
 
+    useEffect(() => {
+        if (blacklistDetails?.blacklistStatus === 'REJECT') {
+            setApprovalStatus('INVALID')
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [blacklistDetails?.blacklistStatus])
+
+
+    if (blacklistDetails?.detail === null) {
+        return (
+            <Card title={'Blacklist Verification'} loading={blLoading} extra={
+                <Button type="text" icon={<ReloadOutlined />} onClick={onRefresh} />
+            }>
+                <Empty description={<span><b>No data found</b></span>} />
+            </Card>
+        )
+    }
 
     return (
         <Card title={'Blacklist Verification'} loading={blLoading} extra={
@@ -30,7 +48,7 @@ const BlacklistVerification: React.FC<IBlacklistVerification> = ({ cnic }) => {
         }>
             <Form>
                 <div className="grid grid-cols-2 gap-3">
-                    {blacklistDetails?.detail === null ? <Form.Item><b>{blacklistDetails.message}</b></Form.Item> :
+                    {blacklistDetails?.detail !== null &&
                         <>
                             <Form.Item label="Name">
                                 <b>{formatName(blacklistDetails?.rejectClientName ?? '-')}</b>

@@ -11,6 +11,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import useCustomerStore from '../../../../../store/customerStore';
 import { CaretLeftOutlined, EditOutlined, UndoOutlined } from '@ant-design/icons';
 import { getStakeholderByType } from '../../../../../utils/stakholderFunction';
+import moment from 'moment';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
@@ -36,12 +37,14 @@ const schema = yup.object().shape({
             const { stkDob } = this.parent;
             return value && stkDob ? new Date(value) >= new Date(stkDob) : true;
         }),
-    stkCNicExpDate: yup.string()
+    stkCNicExpDate: yup
+        .string()
         .required("CNIC Expired Date is required")
-        .test('is-later', 'CNIC Expired Date must be later than CNIC Issued Date', function (value) {
-            const { stkCNicIssuedDate } = this.parent;
-            return value && stkCNicIssuedDate ? new Date(value) > new Date(stkCNicIssuedDate) : true;
-        }),
+        .test(
+            "is-today-or-future",
+            "Date cannot be in the past",
+            value => moment(value).isSameOrAfter(moment(), 'day')
+        ),
     stkCNicStatus: yup.string().required("CNIC Status is required"),
     stkCusName: yup.string().required("Customer Name is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
     stkInitials: yup.string().required("Initials is required").matches(/^[a-zA-Z.\s]+$/, "Name must contain only letters and spaces"),
@@ -82,6 +85,7 @@ const CustomerDetails: React.FC = () => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
+        console.log('Form Data:', data);
         if (mode === 'create') {
             addStakeholder({
                 ...data,
@@ -89,8 +93,10 @@ const CustomerDetails: React.FC = () => {
                 new: true,
                 stkType: 'C',
                 stkCNic: customers[0]?.identificationNumber ?? '',
-                stkCusName: customers[0]?.fullName ?? ''
-            })
+                stkCusName: customers[0]?.fullName ?? '',
+                stkInitials: data.stkInitials ?? '',
+                stkSurName: data.stkSurName ?? '',
+            }).finally(() => navigate(-1)) // Navigate back after adding stakeholder
             // TODO: histroy back
         } else if (mode === 'edit') {
             updateStakeholder(stakholderId, {
@@ -99,8 +105,10 @@ const CustomerDetails: React.FC = () => {
                 update: true,
                 stkType: 'C',
                 stkCNic: customers[0]?.identificationNumber ?? '',
-                stkCusName: customers[0]?.fullName ?? ''
-            })
+                stkCusName: customers[0]?.fullName ?? '',
+                stkInitials: data.stkInitials ?? '',
+                stkSurName: data.stkSurName ?? '',
+            }).finally(() => navigate(-1)) // Navigate back after adding stakeholder
             // TODO: histroy back
         }
     }
@@ -198,8 +206,6 @@ const CustomerDetails: React.FC = () => {
         }
     }, [watchedTitle, setValue]);
 
-
-
     return (
         <div className='flex flex-col gap-3'>
             <Card title="Personal Details">
@@ -230,7 +236,6 @@ const CustomerDetails: React.FC = () => {
                         </Form.Item>
                         <Form.Item label="Full Name" validateStatus={errors.stkCusName ? "error" : ""} help={errors.stkCusName?.message} required>
                             <Controller
-                                disabled
                                 name="stkCusName"
                                 control={control}
                                 render={({ field }) =>
@@ -240,6 +245,7 @@ const CustomerDetails: React.FC = () => {
                                         onChange={(value) => {
                                             field.onChange(value);
                                         }}
+                                        disabled
                                     />
                                 }
                             />
@@ -248,17 +254,14 @@ const CustomerDetails: React.FC = () => {
                             <Controller
                                 name="stkInitials"
                                 control={control}
-                                disabled
                                 render={({ field }) =>
                                     <Input
                                         {...field}
                                         placeholder="Enter Initial"
                                         onChange={(value) => {
                                             field.onChange(value);
-                                            if (!value) {
-                                                field.disabled = false
-                                            }
                                         }}
+                                        disabled
                                     />
                                 }
                             />
@@ -273,10 +276,8 @@ const CustomerDetails: React.FC = () => {
                                         placeholder="Enter Surname"
                                         onChange={(value) => {
                                             field.onChange(value);
-                                            if (!value) {
-                                                field.disabled = false
-                                            }
                                         }}
+                                        disabled
                                     />
                                 }
                             />
@@ -336,14 +337,24 @@ const CustomerDetails: React.FC = () => {
                             <Controller
                                 name="stkCNicExpDate"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter CNIC Expired Date" type='date' />}
+                                render={({ field }) => <Input {...field} placeholder="Enter CNIC Expired Date" type='date' min={moment().format("YYYY-MM-DD")} />}
                             />
                         </Form.Item>
                         <Form.Item label="Age" validateStatus={errors.stkAge ? "error" : ""} help={errors.stkAge?.message} required>
                             <Controller
                                 name="stkAge"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Age is calculated automatically" type='number' />}
+                                render={({ field }) =>
+                                    <Input {...field}
+                                        placeholder="Age is calculated automatically"
+                                        type='number'
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            if (/^\d*$/.test(value)) { // Allow only digits
+                                                field.onChange(value);
+                                            }
+                                        }}
+                                    />}
                             />
                         </Form.Item>
                         <Form.Item label="Gender" validateStatus={errors.stkGender ? "error" : ""} help={errors.stkGender?.message} required>

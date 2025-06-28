@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, Form, Input, Select, message } from "antd";
 import { SaveOutlined } from "@ant-design/icons";
-import { API, APIAuth } from "../../../../../services/api";
+import { APIAuth } from "../../../../../services/api";
+import { useParams } from "react-router-dom";
 
 type Employee = {
   empNo: string;
@@ -13,17 +14,13 @@ const BusinessIntroducerForm: React.FC = () => {
   const [form] = Form.useForm();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(false);
+  const { appId } = useParams();
 
   useEffect(() => {
     const fetchEmployees = async () => {
       setLoading(true);
       try {
-        const res = await
-          // axios.get(
-          //   "https://pomicroapiuat.lolc.com.pk/mobixCamsCommon/v1/employees"
-          // );
-
-          APIAuth.get('/mobixCamsCommon/v1/employees');
+        const res = await  APIAuth.get("/mobixCamsCommon/v1/employees");
         setEmployees(res.data || []);
       } catch (err) {
         message.error("Failed to fetch employees");
@@ -49,9 +46,45 @@ const BusinessIntroducerForm: React.FC = () => {
 
   const onAdd = async () => {
     const values = form.getFieldsValue();
-    console.log("Form submitted:", values);
     try {
-      await API.post("/mobixCamsCommon/v1/employees", values);
+      await APIAuth.post("mobixCamsClientele/v1/clienteles/stakeholder", {
+        appraisalID: appId,
+        idx: null,
+        lastModifiedDate: null,
+        modeOfSecurity: null,
+        relationship: null,
+        status: null,
+        stkAge: "0",
+        stkCNic: values?.employeeCnic,
+        stkCNicExpDate: null,
+        stkCNicIssuedDate: null,
+        stkCNicStatus: null,
+        stkCusCode: null,
+        stkCusName: values.employeeName,
+        stkDob: null,
+        stkEduLevel: null,
+        stkFatherOrHusName: "",
+        stkGender: null,
+        stkGrpRefNo: null,
+        stkInitials: null,
+        stkMaritialStatus: null,
+        stkNumOfDependents: null,
+        stkNumOfEarners: null,
+        stkOrgType: null,
+        stkOtherName: null,
+        stkPhysDisability: null,
+        stkPhysDisabilityDesce: null,
+        stkSequence: null,
+        stkSurName: null,
+        stkTitle: null,
+        stkType: "BI",
+        currentResidences: null,
+        maritalStatus: "",
+        disabilityChecked: false,
+        eduOther: false,
+        new: true,
+        update: false,
+      });
       message.success("Business Introducer Saved");
     } catch (error: any) {
       message.error("Error while saving");

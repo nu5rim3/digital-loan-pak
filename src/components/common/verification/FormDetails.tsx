@@ -39,8 +39,8 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
 
     const [searchValue, setSearchValue] = useState('');
 
-    const { selectedCustomer, customer, customerLoading, addCustomer, fetchCustomerByCNIC, resetCustomer } = useCustomerStore();
-    const { selectedGuarantor, guarantor, guarantorLoading, addGuarantor, fetchGuarantorByCNIC } = useGuarantorStore()
+    const { selectedCustomer, customerLoading, addCustomer, fetchCustomerByCNIC, resetCustomer } = useCustomerStore();
+    const { selectedGuarantor, guarantorLoading, addGuarantor, fetchGuarantorByCNIC } = useGuarantorStore()
     const { operatorLoading, operators, fetchOperators } = useCommonStore();
     const { loan } = useLoanStore();
     // const navigate = useNavigate();
@@ -55,32 +55,18 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
 
         if (type === 'C') {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const response: any = await addCustomer({ ...postData, fullName: data.name, type: type, client: 'WEB' })
-            if (response) {
+            await addCustomer({ ...postData, fullName: data.name, type: type, client: 'WEB' }).then((response: any) => {
                 setIdx(response?.idx);
                 setCNIC(response?.identificationNumber);
-            }
+            })
         } else if (type === 'G') {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const response: any = await addGuarantor({ ...postData, fullName: data.name, type: type, client: 'WEB' })
-            if (response) {
-                setIdx(response?.idx);
+            await addGuarantor({ ...postData, fullName: data.name, type: type, client: 'WEB' }).then((response) => {
+                setIdx(response?.idx ?? '');
                 setCNIC(response?.identificationNumber);
-            }
+            })
         }
     };
-
-    useEffect(() => {
-        if (customer && type === 'C') {
-            setCNIC(customer?.identificationNumber);
-            setIdx(customer?.idx || '');
-        }
-        if (guarantor && type === 'G') {
-            setCNIC(guarantor?.identificationNumber);
-            setIdx(guarantor?.idx || '');
-        }
-    }, [type, guarantor, customer, setCNIC, setIdx]);
-
 
     const handleSearch = (value: string) => {
         if (type === 'C') {
@@ -88,7 +74,6 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
         } else if (type === 'G') {
             fetchGuarantorByCNIC(value)
         }
-        setCNIC(value)
     }
 
     const clearSreach = () => {
@@ -167,6 +152,7 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                                     const formatted = formatCNIC(e.target.value);
                                     setSearchValue(formatted)
                                 }}
+                                maxLength={15} // Max length considering dashes
                                 placeholder="Search..."
                                 enterButton
                                 style={{ width: 500 }}
@@ -185,7 +171,14 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                             <Controller
                                 name="name"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Full Name" maxLength={50} />}
+                                render={({ field }) =>
+                                    <Input {...field} placeholder="Enter Full Name" value={field.value || ''} maxLength={50}
+                                        onChange={(e) => {
+                                            const formatted = e.target.value.replace(/[^a-zA-Z\s.]/g, '');
+                                            setValue("name", formatted, { shouldValidate: true });
+                                        }}
+                                    />
+                                }
                             />
                         </Form.Item>
 

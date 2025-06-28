@@ -9,7 +9,7 @@ interface PaginatedTableProps {
 
 const PaginatedTable: React.FC<PaginatedTableProps> = ({ columns, data }) => {
     const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 10; // Number of items to display per page
+    const pageSize = 7; // Number of items to display per page
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);

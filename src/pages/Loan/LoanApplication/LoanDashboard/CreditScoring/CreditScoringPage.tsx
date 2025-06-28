@@ -12,7 +12,6 @@ import {
   Tag,
   InputNumber,
 } from "antd";
-import axios from "axios";
 import { APIAuth } from "../../../../../services/api";
 
 const { Panel } = Collapse;
@@ -23,7 +22,7 @@ const customerDetailsFields = [
   { key: "maritalStatus", label: "Marital Status" },
   { key: "familyMembers", label: "Family Members" },
   { key: "guardian", label: "Guardian of Family" },
-  { key: "otherIncome", label: "Other Source of Income" },
+  { key: "otherIncome", label: "Other Source of Income of Customer" },
   { key: "incomeSupport", label: "Household Income Support" },
   { key: "incomeContribution", label: "Household Income Contribution" },
   { key: "residenceStatus", label: "Current Residence Place Status" },
@@ -58,8 +57,7 @@ const initialCustomerDetailsFields = [
 
 const CreditScoringPage: React.FC<{
   appraisalId: string;
-  productCode: string;
-}> = ({ appraisalId, productCode }) => {
+}> = ({ appraisalId }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
@@ -98,52 +96,53 @@ const CreditScoringPage: React.FC<{
     }
   };
 
-  const mockResult = {
-    totalScore: 82,
-    risk: "Low Risk",
-    eligibility: "Eligible",
-    maxLoanAmount: 50000,
-    customerDetails: {
-      gender: "Female",
-      age: "31-35 Years",
-      maritalStatus: "Un-married",
-      familyMembers: "01 to 02",
-      guardian: "Own self",
-      otherIncome: "Nil",
-      incomeSupport: "Father or Brother Income",
-      incomeContribution: "Not Applicable",
-      residenceStatus: "Client ownself own ownership",
-      billBehaviour: "No default in last three months",
-      perception: "Positive",
-    },
-    businessDetails: {
-      incomeSource: "Own Business/Work",
-      salaryPerson: "Not Applicable",
-      saving: "Not Applicable",
-      loanTaken: "Not Applicable",
-      experience: "More than 10 years",
-      maxArrears: "90+ days or more",
-      assetValue: "Less than 100,000",
-      prevLoanArrears: "90+ days or more",
-      ownership: "Partnership",
-      location: "Peshawar",
-      placeStatus: "Rent",
-    },
-    initialCustomerDetails: {
-      branchName: "TAXILA",
-      customerName: "shabira",
-      customerCnic: "55888-6666666-6",
-      dob: "1992-12-09",
-      product: "PAK OMAN FORI QARZA",
-      appliedAmount: 50000,
-      tenure: 3,
-      sector: "Retail",
-    },
-  };
+  // const mockResult = {
+  //   totalScore: 82,
+  //   risk: "Low Risk",
+  //   eligibility: "Eligible",
+  //   maxLoanAmount: 50000,
+  //   customerDetails: {
+  //     gender: "Female",
+  //     age: "31-35 Years",
+  //     maritalStatus: "Un-married",
+  //     familyMembers: "01 to 02",
+  //     guardian: "Own self",
+  //     otherIncome: "Nil",
+  //     incomeSupport: "Father or Brother Income",
+  //     incomeContribution: "Not Applicable",
+  //     residenceStatus: "Client ownself own ownership",
+  //     billBehaviour: "No default in last three months",
+  //     perception: "Positive",
+  //   },
+  //   businessDetails: {
+  //     incomeSource: "Own Business/Work",
+  //     salaryPerson: "Not Applicable",
+  //     saving: "Not Applicable",
+  //     loanTaken: "Not Applicable",
+  //     experience: "More than 10 years",
+  //     maxArrears: "90+ days or more",
+  //     assetValue: "Less than 100,000",
+  //     prevLoanArrears: "90+ days or more",
+  //     ownership: "Partnership",
+  //     location: "Peshawar",
+  //     placeStatus: "Rent",
+  //   },
+  //   initialCustomerDetails: {
+  //     branchName: "TAXILA",
+  //     customerName: "shabira",
+  //     customerCnic: "55888-6666666-6",
+  //     dob: "1992-12-09",
+  //     product: "PAK OMAN FORI QARZA",
+  //     appliedAmount: 50000,
+  //     tenure: 3,
+  //     sector: "Retail",
+  //   },
+  // };
 
-  const fetchScore = async () => {
+  const fetchScore = async (productCode: string) => {
     try {
-      const res = await axios.get(
+     
+      const res = await APIAuth.get(
         `/mobixCamsCredit/v1/credits-scores/products/${productCode}/appraisals/${appraisalId}`
       );
       setResult(res.data);
@@ -154,21 +153,25 @@ const CreditScoringPage: React.FC<{
 
   useEffect(() => {
     fetchDropdowns();
-    fetchScore();
+    // fetchScore();
   }, [appraisalId]);
 
   const onFinish = async (values: any) => {
     setLoading(true);
     try {
+      const resProduct = await APIAuth.get(
+        `/mobixCamsCredit/v1/credit/tc/${appraisalId}`
+      );
+
       await APIAuth.post("/mobixCamsCredit/v1/credits-info/scores", {
         appraisalId,
-        prodCode: productCode,
+        prodCode: resProduct.data?.pTrhdLType,
         ...values,
         status: "A",
       });
       message.success("Scoring submitted");
-      //   fetchScore();
-      setResult(mockResult);
+        fetchScore(resProduct.data?.pTrhdLType);
+      // setResult(mockResult);
     } catch {
       message.error("Submit failed");
     } finally {
@@ -191,7 +194,7 @@ const CreditScoringPage: React.FC<{
               field: "description",
             },
             {
-              label: "Other Source of Income",
+              label: "Other Source of Income of Customer",
               name: "otherSourceOfIncome",
               data: dropdowns.income,
               field: "description",
@@ -203,7 +206,7 @@ const CreditScoringPage: React.FC<{
               field: "description",
             },
             {
-              label: "Utility Bill Repayment",
+              label: "Utility Bill Repayment Behaviour",
               name: "utilityBillRepayment",
               data: dropdowns.bills,
               field: "billName",
@@ -215,7 +218,7 @@ const CreditScoringPage: React.FC<{
               field: "subPerName",
             },
             {
-              label: "Max Days in Arrears",
+              label: "Maximum Days in arrears of Taken",
               name: "maxLoanArrears",
               data: dropdowns.arrears,
               field: "loanArrearsName",

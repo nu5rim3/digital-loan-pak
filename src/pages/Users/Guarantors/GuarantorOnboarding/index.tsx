@@ -5,7 +5,6 @@ import NADRAModal from '../../../../components/common/modal/NADRAModal';
 import OTPModal from '../../../../components/common/modal/OTPModal';
 import { QrcodeOutlined, CaretLeftOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
-import useLoanStore from '../../../../store/loanStore';
 import CRIBDetails from '../../../../components/common/verification/CRIBDetails';
 import ECIBDetails from '../../../../components/common/verification/ECIBDetails';
 import MSASVerification from '../../../../components/common/verification/MSASVerification';
@@ -28,14 +27,13 @@ const GuarantorOnboarding: React.FC = () => {
     const [msasTrigger, setMsasTrigger] = useState(0);
     const [ruleStatus, setRuleStatus] = useState<TRule[]>([]);
 
-    const { loan } = useLoanStore();
-
     const { state } = useLocation();
 
     const navigate = useNavigate();
 
 
     const { appId } = state as { appId: string };
+
 
     const approval = () => {
 
@@ -56,14 +54,11 @@ const GuarantorOnboarding: React.FC = () => {
     }, [ruleStatus])
 
     useEffect(() => {
-        if (appId === undefined) {
-            navigate(-1)
+        return () => {
+            setGuarantorIdx('')
+            setGuarantorCNIC('')
         }
-        // fetchGuarantorByAppId(appId ?? '')
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [loan, appId])
-
-    console.log('guarantor:', selectedGuarantor);
+    }, [])
 
 
     return (
@@ -71,8 +66,8 @@ const GuarantorOnboarding: React.FC = () => {
             <div className='flex flex-col gap-3'>
 
 
-                {/* {guarantor === null ?
-                    <FormDetails setIdx={setGuarantorIdx} setCNIC={setGuarantorCNIC} setApprovalStatus={setApprovalStatus} type='G' />
+                {/* {selectedGuarantor === null ?
+                    <FormDetails setIdx={setGuarantorIdx} setCNIC={setGuarantorCNIC} setApprovalStatus={setApprovalStatus} type='G' appId={appId ?? ''} />
                     :
                     <ViewDetails type='G' setIdx={setGuarantorIdx} setCnic={setGuarantorCNIC} />
                 } */}
@@ -85,7 +80,7 @@ const GuarantorOnboarding: React.FC = () => {
                 }
 
                 {
-                    guarantorCNIC && <BlacklistVerification idx={guarantorIdx ?? ''} cnic={guarantorCNIC ?? ''} />
+                    guarantorCNIC && <BlacklistVerification idx={guarantorIdx ?? ''} cnic={guarantorCNIC ?? ''} setApprovalStatus={setApprovalStatus} />
                 }
 
                 {
@@ -97,7 +92,7 @@ const GuarantorOnboarding: React.FC = () => {
                 }
 
                 {
-                    approvalStatus === 'SPECIAL_APPROVAL' && <ExceptionalApproval setOtpModalOpen={approval} setNadraModalOpen={() => setNadraModalOpen(true)} />
+                    approvalStatus === 'SPECIAL_APPROVAL' && <ExceptionalApproval setOtpModalOpen={approval} setNadraModalOpen={() => setNadraModalOpen(true)} idx={guarantorIdx ?? ''} appId={appId ?? ''} />
                 }
 
                 {
@@ -105,8 +100,8 @@ const GuarantorOnboarding: React.FC = () => {
                     <>
                         <div className='flex gap-3'>
                             <Button onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
-                            <Button type="primary" loading={false} onClick={approval} icon={<CheckCircleOutlined />} hidden={otpVerification === 'Y'}>Approval</Button>
-                            <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />}>Scan QR</Button>
+                            <Button type="primary" loading={false} onClick={approval} icon={<CheckCircleOutlined />} hidden={otpVerification === 'Y'}>Verify Contact</Button>
+                            <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />}>Guarantor QR</Button>
                         </div>
                     </>
                 }
@@ -114,7 +109,7 @@ const GuarantorOnboarding: React.FC = () => {
                 {
                     approvalStatus === 'INVALID' &&
                     <>
-                        <Tag color='red' className='text-center'>Cannot proceed {guarantorIdx ?? ''} is not valid</Tag>
+                        <Tag color='red' className='text-center'><b>Cannot apply loan for {guarantorCNIC ?? ''} as it is not valid</b></Tag>
                         <div className='flex gap-3'>
                             <Button onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
                         </div>
@@ -124,7 +119,7 @@ const GuarantorOnboarding: React.FC = () => {
                 {
                     approvalStatus === 'CLOSE' &&
                     <>
-                        <Tag color='red' className='text-center'>Cannot proceed {guarantorIdx ?? ''} is not valid</Tag>
+                        <Tag color='red' className='text-center'><b>Cannot apply loan for {guarantorCNIC ?? ''} as it is not valid</b></Tag>
                         <div className='flex gap-3'>
                             <Button onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
                         </div>
@@ -155,7 +150,10 @@ const GuarantorOnboarding: React.FC = () => {
             {
                 guarantorIdx !== '' &&
                 <>
-                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={guarantorIdx ?? ''} onCompleted={() => navigate(`${mainURL}/loan/application/${appId ?? ''}`)} />
+                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={guarantorIdx ?? ''} onCompleted={() => navigate(`${mainURL}/loan/application/${appId ?? ''}`)} resetUser={() => {
+                        setGuarantorIdx('')
+                        setGuarantorCNIC('')
+                    }} />
                     {/* onCompleted={() => navigate(`${appId}`)}  */}
                     <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={guarantorIdx ?? ''} />
                 </>

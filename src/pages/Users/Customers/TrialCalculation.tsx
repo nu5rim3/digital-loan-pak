@@ -13,6 +13,7 @@ import { specialChargesByCode } from '../../../utils/loanStats'
 import useCreditStore, { ITrailCalulationResponse } from '../../../store/creditStore'
 import { useParams } from 'react-router-dom'
 import useVerificationStore from '../../../store/verificationStore'
+import moment from 'moment'
 
 const schema = yup.object().shape({
     productFacility: yup.string().required('Type of Facility is required'),
@@ -27,8 +28,12 @@ const schema = yup.object().shape({
     trems: yup
         .number()
         .typeError('Terms must be a number')
-        .required('Terms is required')
-        .min(0, 'Terms must be greater than or equal to 0'),
+        .min(1, 'Terms must be greater than or equal to 1')
+        .when('productType', {
+            is: (val: string) => val === '9' || val === 'E9',
+            then: (schema) => schema.notRequired(),
+            otherwise: (schema) => schema.required('Terms is required'),
+        }),
     markup: yup
         .number()
         .typeError('Markup rate must be a number')
@@ -41,7 +46,7 @@ const schema = yup.object().shape({
         then: (schema) => schema.required('Payment Frequency is required'),
         otherwise: (schema) => schema.notRequired(),
     }),
-    leaseKeyMoney: yup.string().when('productType', {
+    leaseKeyMoney: yup.number().when('productType', {
         is: (val: string) => val === '5' || val === '1',
         then: (schema) => schema.required('Lease Key Money is required'),
         otherwise: (schema) => schema.notRequired(),
@@ -50,17 +55,21 @@ const schema = yup.object().shape({
         is: (val: string) => val === '9' || val === 'E9',
         then: (schema) => schema.required('Execution Date is required'),
         otherwise: (schema) => schema.notRequired(),
-    }),
+    }).default(() => moment().format('YYYY-MM-DD')),
     capitalPaid: yup.string().when('productType', {
         is: (val: string) => val === '9' || val === 'E9',
         then: (schema) => schema.required('Capital Paid is required'),
         otherwise: (schema) => schema.notRequired(),
     }),
-    gracePeriod: yup.string().when('productType', {
-        is: (val: string) => val === '9' || val === 'E9',
-        then: (schema) => schema.required('Grace Period is required'),
-        otherwise: (schema) => schema.notRequired(),
-    }),
+    gracePeriod: yup.number()
+        .typeError('Grace Period must be a number')
+        .min(1, 'Grace Period must be greater than or equal to 1')
+        .max(84, 'Grace Period must be at most 84 months')
+        .when('productType', {
+            is: (val: string) => val === '9' || val === 'E9',
+            then: (schema) => schema.required('Grace Period is required'),
+            otherwise: (schema) => schema.notRequired(),
+        }),
     expiryDate: yup.string().when('productType', {
         is: (val: string) => val === '9' || val === 'E9',
         then: (schema) => schema.required('Expiry Date is required'),
@@ -74,7 +83,7 @@ const schema = yup.object().shape({
     remark: yup.string(),
     insuranceVE: yup.string().when('productType', {
         is: (val: string) => val === '1',
-        then: (schema) => schema.required('Insurance VE is required'),
+        then: (schema) => schema.required('Insurance V/E is required'),
         otherwise: (schema) => schema.notRequired(),
     }),
     cost: yup.number().when('insuranceVE', {
@@ -134,6 +143,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
     const [selectedProductType, setSelectedProductType] = useState<any | null>(null);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [selectedSubProductType, setSelectedSubProductType] = useState<any | null>(null);
+    const [hideDetails, setHideDetails] = useState(false);
 
     const { control, handleSubmit, formState: { errors }, reset, watch, setValue, getValues } = useForm({
         resolver: yupResolver(validationSchema),
@@ -149,7 +159,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
             irr: undefined,
             calculationMethod: undefined,
             paymentFrequency: undefined,
-            leaseKeyMoney: undefined,
+            leaseKeyMoney: 0.00,
             executionDate: undefined,
             capitalPaid: undefined,
             gracePeriod: undefined,
@@ -176,14 +186,12 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         fetchFacilityTypes,
         fetchProductTypes,
         fetchSubProductTypes,
-        setTrialCalculationData,
-        resetTrialCalculationData,
-        trialCalculationData } = useCommonStore();
+        setSelectedProductCategory, setSelectedProductCode, trialCalculationData, setTrialCalculationData, resetTrialCalculationData } = useCommonStore();
 
     const { productDetails, productDetailsLoading, fetchProductDetails, resetProductDetails } = useLoanStore()
     const { user } = useUserStore()
     const { cribDetails, cribLoading, fetchCRIBByCnic, resetCRIBDetails } = useVerificationStore()
-    const { trailCalulationDetails, trailCalulationDetailsLoading, trailCalucationData, trailCalucationDataLoading, trailCalulationLoading, sendTrailCalulation, fetchTrailCalulation, resetTrailCalculationDetails, saveTrailCalulation } = useCreditStore()
+    const { trailCalulation, trailCalulationDetails, trailCalulationDetailsLoading, trailCalulationDetailsByAppId, trailCalulationDetailsByAppIdLoading, trailCalulationLoading, sendTrailCalulation, fetchTrailCalulation, resetTrailCalculationDetails, saveTrailCalulation, fetchTrailCalulationDetailsByAppId } = useCreditStore()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = (data: any) => {
@@ -193,7 +201,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
             "pMode": "T", // const T
             "pUser": user?.idx ?? '', // log user ID heshan.pe
             "pTrhdMe": user?.meCode ?? '', // user me code
-            "pTrhdLType": productType ?? '', // Product Type
+            "pTrhdLType": productType ?? '', // Product Type 
             "pTrhdMethod": calculationMethod ?? '', // calculation method
             "pTrhdBrh": user?.branches[0].code ?? '', // branch code
             "pTrhdTerm": data.trems ?? '', // // term
@@ -230,6 +238,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
             "pInsuOption": "",
             "pTrhdStmPer": '',
             "pInsuAddCrit": "",
+            "prodCat": data.productCategory ?? '', // product category code
             "pTrhdColMeth": calculationMethod === 'B' ? data.paymentFrequency : '', // payment frequency code
             "pStru": calculationMethod === 'S' ? data.structuredPayment : [], // TODO: stucture payment
             "pTrhdDep": data.leaseKeyMoney ?? '', // "" Lease Key Money
@@ -244,8 +253,8 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                 [
                     {
                         "snrvFac": data.loanAmount ?? '0',
-                        "snrvCap": data.capitalPaid ?? '0',
-                        "snrvExpDate": data.expiryDate ?? '',
+                        "snrvCap": data.capitalPaid ?? '0', //data.loanAmount
+                        "snrvExpDate": moment(data.expiryDate).format('YYYYMMDD') ?? '',
                         "snrvIntRt": "10",
                         "snrvPInt": "0",
                         "snrvDtPay": data.dateOfPaymenent ?? '',
@@ -279,6 +288,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                 setCalculationPayload(__data ?? null)
                 fetchTrailCalulation(res?.object.tcNo ?? '', 'T')
                 setIsSaveShow(true)
+                setHideDetails(false);
             } else if (res.code === '999') {
                 notification.error({
                     message: res.object?.message,
@@ -330,6 +340,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
 
     useEffect(() => {
         fetchFacilityTypes()
+        fetchTrailCalulationDetailsByAppId(appId ?? '')
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
@@ -346,6 +357,8 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
     const productSubType = watch('productSubType');
     const calculationMethod = watch('calculationMethod');
     const facilityType = watch('productFacility');
+    const gracePeriod = watch('gracePeriod');
+    const executionDate = watch('executionDate');
 
     useEffect(() => {
         if (productCategory !== undefined) {
@@ -356,6 +369,12 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
             setSelectedSubProductType(null)
             resetProductDetails()
             fetchProductTypes(productCategory ?? '')
+
+            // Save the selected product category to the store
+            const selectedCategory = productCategories.find(cat => cat.code === productCategory);
+            if (selectedCategory) {
+                setSelectedProductCategory(selectedCategory);
+            }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [productCategory])
@@ -389,7 +408,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
     useEffect(() => {
         // if (facilityType !== 'RO') {
         if (selectedSubProductType !== null && selectedProductType !== null) {
-            fetchProductDetails(selectedProductType?.prodCode, selectedSubProductType?.subTypeCode, user?.branches[0]?.lsbrProv?.toString() ?? '', selectedProductType?.prodCurrency ?? trailCalucationData?.pTrhdCurCode)
+            fetchProductDetails(selectedProductType?.prodCode, selectedSubProductType?.subTypeCode, user?.branches[0]?.lsbrProv?.toString() ?? '', selectedProductType?.prodCurrency)
             // }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -404,16 +423,26 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                         .number()
                         .typeError('Loan Amount must be a number')
                         .required('Loan Amount is required')
-                        .min(Number(productDetails?.generalInfo.minLoanAmt), `Loan Amount must be at least ${productDetails?.generalInfo.minLoanAmt}`)
-                        .max(Number(productDetails?.generalInfo.maxLoanAmt), `Loan Amount must be at most ${productDetails?.generalInfo.maxLoanAmt}`)
+                        .min(Number(productDetails?.generalInfo.minLoanAmt), `Loan Amount must be at least ${formatCurrency(Number(productDetails?.generalInfo.minLoanAmt))}`)
+                        .max(Number(productDetails?.generalInfo.maxLoanAmt), `Loan Amount must be at most ${formatCurrency(Number(productDetails?.generalInfo.maxLoanAmt))}`)
                         .default(Number(productDetails?.generalInfo.defaultLoanAmt)),
-                    trems: yup
+                    terms: yup
                         .number()
                         .typeError('Terms must be a number')
-                        .required('Terms is required')
-                        .min(Number(productDetails?.generalInfo.minTerm), `Terms must be at least ${productDetails?.generalInfo.minTerm}`)
-                        .max(Number(productDetails?.generalInfo.maxTerm), `Terms must be at most ${productDetails?.generalInfo.maxTerm}`)
-                        .default(Number(productDetails?.generalInfo.defaultTerm)),
+                        .when('productType', {
+                            is: (val: string) => val === '9' || val === 'E9',
+                            then: (schema) => schema.notRequired(),
+                            otherwise: (schema) => schema.required('Terms is required'),
+                        })
+                        .min(
+                            Number(productDetails?.generalInfo.minTerm ?? 1),
+                            `Terms must be at least ${productDetails?.generalInfo.minTerm ?? 1}`
+                        )
+                        .max(
+                            Number(productDetails?.generalInfo.maxTerm ?? 999),
+                            `Terms must be at most ${productDetails?.generalInfo.maxTerm ?? 999}`
+                        )
+                        .default(Number(productDetails?.generalInfo.defaultTerm ?? 1)),
                     markup: yup
                         .number()
                         .typeError('Markup rate must be a number')
@@ -421,11 +450,24 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                         .min(Number(productDetails?.generalInfo.minRate), `Markup rate must be at least ${productDetails?.generalInfo.minRate}`)
                         .max(Number(productDetails?.generalInfo.maxRate), `Markup rate must be at most ${productDetails?.generalInfo.maxRate}`)
                         .default(Number(productDetails?.generalInfo.defaultRate)),
+                    expiryDate: yup.string().when('productType', {
+                        is: (val: string) => val === '9' || val === 'E9',
+                        then: (schema) => schema.required('Expiry Date is required')
+                            .test('is-after-execution-date', 'Expiry Date must be after Execution Date', function (value) {
+                                const expiryMoment = moment(executionDate).add(gracePeriod, 'months');
+                                return !expiryMoment || !value || moment(value).isSameOrAfter(moment(expiryMoment));
+                            }),
+                        otherwise: (schema) => schema.notRequired(),
+                    }),
 
                 }),
             );
             setValue('loanAmount', Number(productDetails?.generalInfo.defaultLoanAmt))
-            setValue('trems', Number(productDetails?.generalInfo.defaultTerm))
+            if (productType !== '9' && productType !== 'E9') {
+                setValue('trems', Number(productDetails?.generalInfo.defaultTerm))
+            } else {
+                setValue('trems', 1) // Reset terms for product type 9 or E9
+            }
             setValue('markup', Number(productDetails?.generalInfo.defaultRate))
         } else {
             setValidationSchema(schema);
@@ -434,7 +476,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
             setValue('markup', 0)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [productDetails, selectedSubProductType, selectedProductType]);
+    }, [productDetails, selectedSubProductType, selectedProductType, gracePeriod]);
 
     const saveCalculationHandle = () => {
 
@@ -448,13 +490,16 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                 countOfRollOver: facilityType === 'RO' ? rollOverDetail.countOfRollOver : '', // count of roll over
             }
         }
-        saveTrailCalulation(appId ?? '', cliIdx, __calculationPayload)
+        const productCode = __calculationPayload.pTrhdLType
+        setSelectedProductCode(productCode)
+        saveTrailCalulation(appId ?? '', cliIdx, { ...__calculationPayload, tcNo: trailCalulation?.object.tcNo ?? '' }).finally(() => {
+            fetchTrailCalulationDetailsByAppId(appId ?? '')
+        });
     }
 
     useEffect(() => {
 
         if (facilityType === 'RO') {
-            console.log('hello')
             fetchCRIBByCnic(cnic ?? '')
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -470,8 +515,56 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         }
     }, [isSaveShow, watch]);
 
+    useEffect(() => {
+        if (trailCalulationDetailsByAppId?.tcNo !== '') {
+            setSelectedProductCode(trailCalulationDetailsByAppId?.pTrhdLType ?? '')
+            fetchTrailCalulation(trailCalulationDetailsByAppId?.tcNo ?? '', 'T')
+        } else {
+            // resetTrailCalculationDetails();
+            resetCRIBDetails();
+            resetProductDetails();
+            setSelectedProductCategory(null);
+            setSelectedProductCode('');
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [trailCalulationDetailsByAppId?.tcNo])
+
+    const loanAmount = watch('loanAmount');
+
+    useEffect(() => {
+        if (productType === '9' || productType === 'E9') {
+            setValue('capitalPaid', loanAmount.toString());
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [productType, loanAmount])
+
+    useEffect(() => {
+        if (productType === '9' || productType === 'E9') {
+            if (executionDate && gracePeriod) {
+                const expiryMoment = moment(executionDate).add(gracePeriod, 'months');
+                setValue('expiryDate', expiryMoment.format('YYYY-MM-DD'));
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [executionDate, gracePeriod])
+
+
+    useEffect(() => {
+        if (trailCalulationDetailsByAppId !== null) {
+            setHideDetails(true);
+        }
+        if (trailCalulationDetailsByAppId !== null && trailCalulationDetailsByAppId?.prodCat && trailCalulationDetailsByAppId?.prodCat !== '') {
+            fetchProductTypes(trailCalulationDetailsByAppId?.prodCat ?? '')
+        }
+        if (trailCalulationDetailsByAppId !== null && trailCalulationDetailsByAppId?.pTrhdLType && trailCalulationDetailsByAppId?.pTrhdLType !== '') {
+            fetchSubProductTypes(trailCalulationDetailsByAppId?.pTrhdLType ?? '')
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [trailCalulationDetailsByAppId])
+
+
     return (
-        <div>
+        <div className='flex flex-col gap-3'>
             <Card title="Trial Calculation" className='w-full'>
                 <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
                     <div className="grid grid-cols-4 gap-3">
@@ -499,10 +592,18 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                 name="productCategory"
                                 control={control}
                                 render={({ field }) => (
-                                    <Select {...field} placeholder="Enter Product Category" options={productCategories.map((item) => ({
-                                        value: item.code,
-                                        label: item.description
-                                    }))} />
+                                    <Select {...field}
+                                        placeholder="Enter Product Category"
+                                        options={productCategories.map((item) => ({
+                                            value: item.code,
+                                            label: item.description
+                                        }))}
+                                        onChange={(value) => {
+                                            field.onChange(value);
+                                            setValue('productType', ''); // Reset product type when category changes
+                                            setValue('productSubType', ''); // Reset product sub type when category changes
+                                        }}
+                                    />
                                 )}
                             />
 
@@ -598,6 +699,20 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                                 label: formatSentence(item.prodName),
                                             }))
                                         }
+                                        onChange={(value) => {
+                                            field.onChange(value);
+                                            if (value === '9' || value === 'E9') {
+                                                // Reset product sub type
+                                                setValue('productSubType', '');
+                                                setValue('trems', 1); // Set terms to 1 for product type 9 or E9
+                                                setValue('executionDate', moment().format('YYYY-MM-DD')); // Set execution date to today
+                                                setValue('gracePeriod', 1); // Reset grace period
+                                                setValue('expiryDate', undefined); // Reset expiry date
+                                            } else {
+                                                setValue('productSubType', ''); // Reset product sub type
+                                                // resetPartialForm(); // Reset other fields for other product types
+                                            }
+                                        }}
                                     />
                                 )}
                             />
@@ -630,7 +745,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                 render={({ field }) => (
                                     <InputNumber
                                         {...field}
-                                        placeholder="Loan Value"
+                                        placeholder="Loan Amount"
                                         style={{ width: '100%' }}
                                         formatter={(value) =>
                                             `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
@@ -644,7 +759,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                             />
                         </Form.Item>
 
-                        <Form.Item label={'Terms'} validateStatus={errors.trems ? "error" : ""} help={errors.trems?.message} required>
+                        <Form.Item label={'Terms'} validateStatus={errors.trems ? "error" : ""} help={errors.trems?.message} required hidden={productType === '9' || productType === 'E9'}>
                             <Controller
                                 name="trems"
                                 control={control}
@@ -686,6 +801,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                         options={productDetails?.calMethods.map((item) => ({
                                             value: item.calMethodCode,
                                             label: formatSentence(item.calMethodDesc),
+                                            // disabled: item.calMethodCode === 'S'
                                         }))} />
                                 )}
                             />
@@ -704,6 +820,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                             {
                                                 value: 'M',
                                                 label: 'Monthly',
+                                                disabled: true,
                                             }, {
                                                 value: 'A',
                                                 label: 'Annually',
@@ -721,15 +838,15 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                         onChange={(value) => {
                                             field.onChange(value);
                                             if (value === 'M') {
-                                                setValue('trems', 1); // Set terms to 1 for monthly payment frequency
+                                                setValue('trems', 1); // Set Terms to 1 for monthly payment frequency
                                             } else if (value === 'A') {
-                                                setValue('trems', 12); // Set terms to 12 for annually
+                                                setValue('trems', 12); // Set Terms to 12 for annually
                                             } else if (value === 'BA') {
-                                                setValue('trems', 6); // Set terms to 6 for bi-annually
+                                                setValue('trems', 6); // Set Terms to 6 for bi-annually
                                             } else if (value === 'Q') {
-                                                setValue('trems', 4); // Set terms to 4 for quarterly
+                                                setValue('trems', 3); // Set Terms to 3 for quarterly
                                             } else if (value === 'HY') {
-                                                setValue('trems', 6); // Set terms to 6 for half yearly
+                                                setValue('trems', 6); // Set Terms to 6 for half yearly
                                             }
                                         }}
                                     />
@@ -742,35 +859,78 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                 name="leaseKeyMoney"
                                 control={control}
                                 render={({ field }) => (
-                                    <Input {...field} placeholder="Enter Lease Key Money" />
+                                    <InputNumber
+                                        {...field}
+                                        placeholder="Enter Lease Key Money"
+                                        style={{ width: '100%' }}
+                                        formatter={(value) =>
+                                            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
+                                        }
+                                        step={0.01}
+                                        min={0}
+                                        stringMode
+                                        prefix={'Rs.'}
+                                    />
                                 )}
                             />
                         </Form.Item>
                         {/* only in  */}
-                        <Form.Item label={'Execution Date'} validateStatus={errors.executionDate ? "error" : ""} help={errors.executionDate?.message} required hidden={productType !== '9' && productType !== 'E9'}>
-                            <Controller
-                                name="executionDate"
-                                control={control}
-                                render={({ field }) => (
-                                    <Input {...field} placeholder="Enter Execution Date" type='date' />
-                                )}
-                            />
-                        </Form.Item>
                         <Form.Item label={'Capital Paid'} validateStatus={errors.capitalPaid ? "error" : ""} help={errors.capitalPaid?.message} required hidden={productType !== '9' && productType !== 'E9'}>
                             <Controller
                                 name="capitalPaid"
                                 control={control}
                                 render={({ field }) => (
-                                    <Input {...field} placeholder="Enter Capital Paid" />
+                                    <InputNumber
+                                        {...field}
+                                        placeholder="Capital Paid"
+                                        style={{ width: '100%' }}
+                                        formatter={(value) =>
+                                            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
+                                        }
+                                        step={0.01}
+                                        min={0}
+                                        stringMode
+                                        prefix={'Rs.'}
+                                        disabled
+                                    />
                                 )}
                             />
                         </Form.Item>
+                        <Form.Item label={'Execution Date'} validateStatus={errors.executionDate ? "error" : ""} help={errors.executionDate?.message} required hidden={productType !== '9' && productType !== 'E9'}>
+                            <Controller
+                                name="executionDate"
+                                control={control}
+                                render={({ field }) => (
+                                    <Input {...field} placeholder="Enter Execution Date" type='date'
+                                        // current date
+                                        value={moment().format('YYYY-MM-DD')}
+                                        disabled
+                                        onChange={(e) => {
+                                            field.onChange(moment(e.target.value).format('YYYY-MM-DD'))
+                                            setValue('executionDate', moment(e.target.value).format('YYYY-MM-DD'))
+                                        }}
+                                    />
+                                )}
+                            />
+                        </Form.Item>
+
                         <Form.Item label={'Grace Period'} validateStatus={errors.gracePeriod ? "error" : ""} help={errors.gracePeriod?.message} required hidden={productType !== '9' && productType !== 'E9'}>
                             <Controller
                                 name="gracePeriod"
                                 control={control}
                                 render={({ field }) => (
-                                    <Input {...field} placeholder="Enter Grace Period" />
+                                    <Input {...field}
+                                        placeholder="Enter Grace Period"
+                                        //  only numbers
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            if (/^\d*$/.test(value)) {
+                                                field.onChange(value);
+                                                setValue('gracePeriod', Number(value));
+                                            }
+                                        }}
+                                        suffix={'Months'}
+                                    />
                                 )}
                             />
                         </Form.Item>
@@ -783,6 +943,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                 )}
                             />
                         </Form.Item>
+
                         <Form.Item label={'Date of Payment'} validateStatus={errors.dateOfPaymenent ? "error" : ""} help={errors.dateOfPaymenent?.message} required hidden={productType !== '9' && productType !== 'E9'}>
                             <Controller
                                 name="dateOfPaymenent"
@@ -791,10 +952,10 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                     <Select {...field} placeholder="Enter Date of Payment" options={
                                         [
                                             {
-                                                value: 'END OF MONTH',
+                                                value: '31',
                                                 label: 'End of Month',
                                             }, {
-                                                value: 'END OF TERM',
+                                                value: '0',
                                                 label: 'End of Term',
                                             },
                                         ]
@@ -811,12 +972,12 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                 )}
                             />
                         </Form.Item>
-                        <Form.Item label={'Insurance VE'} validateStatus={errors.insuranceVE ? "error" : ""} help={errors.insuranceVE?.message} required hidden={productType !== '1'}>
+                        <Form.Item label={'Insurance V/E'} validateStatus={errors.insuranceVE ? "error" : ""} help={errors.insuranceVE?.message} required hidden={productType !== '1'}>
                             <Controller
                                 name="insuranceVE"
                                 control={control}
                                 render={({ field }) => (
-                                    <Select {...field} placeholder="Enter Insurance VE"
+                                    <Select {...field} placeholder="Enter Insurance V/E"
                                         options={[
                                             {
                                                 value: 'V',
@@ -1012,7 +1173,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                 <Empty description='No Special Charges' />
                             }
                             {
-                                (trailCalucationData === null || trailCalucationData?.pTrtx?.length === 0) && facilityType === 'RO' &&
+                                (trailCalulationDetailsByAppId === null || trailCalulationDetailsByAppId?.pTrtx?.length === 0) && facilityType === 'RO' &&
                                 <Empty description='No Special Charges' />
                             }
                             <div className='grid grid-cols-4 gap-3'>
@@ -1038,7 +1199,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
 
 
                                 {
-                                    facilityType === 'RO' && trailCalucationData !== null && trailCalucationData?.pTrtx?.map((item, index) => (
+                                    facilityType === 'RO' && trailCalulationDetailsByAppId !== null && trailCalulationDetailsByAppId?.pTrtx?.map((item, index) => (
                                         <Card key={index} size='small' title={`${specialChargesByCode(item?.trtxCalMethod ?? '')}`} extra={
                                             <Checkbox
                                                 checked={item?.prtbMndFlg === '1'}
@@ -1057,55 +1218,71 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                 }
                             </div>
                         </Card>
+                        {
+                            trailCalulationDetails?.object.tcNo !== undefined &&
+                            <Card size='small' title={'Latest Trial Calculation'}
+                                styles={{
+                                    header: {
+                                        backgroundColor: '#002140',
+                                        fontStyle: 'bold',
+                                    },
+                                    title: {
+                                        color: 'white',
+                                    },
+                                }}
+                                loading={trailCalulationDetailsLoading}
+                            >
+                                {
+                                    trailCalulationDetailsByAppId !== null && hideDetails &&
+                                    // TODO: add calculation details when call the calculate
+                                    <Descriptions column={2} className='mb-3' bordered>
+                                        <Descriptions.Item label="Product Facility">{facilityTypes.filter(item => item.code === trailCalulationDetailsByAppId?.pFacilityType)[0]?.description ?? '-'}</Descriptions.Item>
+                                        <Descriptions.Item label="Product Category">{productCategories.filter(item => item.code === trailCalulationDetailsByAppId?.prodCat)[0]?.description ?? '-'}</Descriptions.Item>
+                                        <Descriptions.Item label="Product Type">{productTypes.filter(item => item.prodCode === trailCalulationDetailsByAppId?.pTrhdLType)[0]?.prodName ?? '-'}</Descriptions.Item>
+                                        <Descriptions.Item label="Product Sub Type">{subProductTypes.filter(item => item.subTypeCode === trailCalulationDetailsByAppId?.pTrhdBus)[0]?.subTypeDesc ?? '-'}</Descriptions.Item>
+                                    </Descriptions>
+                                }
 
-                        <Card size='small' title={'Trial Calculation Charges'}
-                            styles={{
-                                header: {
-                                    backgroundColor: '#002140',
-                                    fontStyle: 'bold',
-                                },
-                                title: {
-                                    color: 'white',
-                                },
-                            }}
-                            hidden={trailCalulationDetails === null}
-                        >
-                            <div className='grid grid-cols-2 gap-3'>
-                                <Card size='small' title={'Installment Details'} className='mb-3' hidden={trailCalulationDetails?.object?.facilityDetails === undefined}>
-                                    {
-                                        trailCalulationDetails?.object?.facilityDetails.map((item, index) => (
-                                            <Descriptions column={3} key={index} className='mb-2'>
-                                                <Descriptions.Item label="Sequence">{item.seq}</Descriptions.Item>
-                                                <Descriptions.Item label={`Trems`}>{item.term}</Descriptions.Item>
-                                                <Descriptions.Item label={`Installment Amount`}>
-                                                    <Tag color='green'><b>{formatCurrency(Number(item.instalment ?? 0))}</b></Tag>
-                                                </Descriptions.Item>
-                                            </Descriptions>
-                                        ))
-                                    }
+                                {trailCalulationDetails?.object?.facilityDetails !== undefined &&
+                                    <div className='grid grid-cols-2 gap-3'>
+                                        <Card size='small' title={'Installment Details'} className='mb-3'>
+                                            {
+                                                trailCalulationDetails?.object?.facilityDetails.map((item, index) => (
+                                                    <Descriptions column={3} key={index} className='mb-2'>
+                                                        <Descriptions.Item label="Sequence" className='w-30'>{item.seq}</Descriptions.Item>
+                                                        <Descriptions.Item label={`Trems`} className='w-30'>{item.term}</Descriptions.Item>
+                                                        <Descriptions.Item label={`Installment Amount`}>
+                                                            <Tag color='green'><b>{formatCurrency(Number(item.instalment ?? 0))}</b></Tag>
+                                                        </Descriptions.Item>
+                                                    </Descriptions>
+                                                ))
+                                            }
+                                        </Card>
+
+                                        <Card size='small' title={'Applied Charges Details'} className='mb-3' hidden={trailCalulationDetails?.object?.trtx.length === 0}>
+                                            {
+                                                trailCalulationDetails?.object?.trtx.map((item, index) => (
+                                                    <Descriptions column={2} key={index}>
+                                                        <Descriptions.Item label="Method">{specialChargesByCode(item?.trtxTrx)}</Descriptions.Item>
+                                                        <Descriptions.Item label="Charge Amount"><Tag color='green'><b>{formatCurrency(Number(item?.trtxAmt ?? 0))}</b></Tag></Descriptions.Item>
+                                                    </Descriptions>
+                                                ))
+                                            }
+                                        </Card>
+                                    </div>
+                                }
+                                <Card size='small' title={'Loan Calculation Details'} className='mb-3'>
+                                    <Descriptions column={4}>
+                                        <Descriptions.Item label="TC Number">{trailCalulationDetails?.object.tcNo ?? '-'}</Descriptions.Item>
+                                        <Descriptions.Item label="Loan Amount"><Tag color='green'><b>{formatCurrency(Number(trailCalulationDetails?.object.loanAmount ?? 0))}</b></Tag></Descriptions.Item>
+                                        <Descriptions.Item label="Down Payment Amount"><Tag color='green'><b>{formatCurrency(Number(trailCalulationDetails?.object.downPayment ?? 0))}</b></Tag></Descriptions.Item>
+                                        <Descriptions.Item label="Total Receivable"><Tag color='green'><b>{formatCurrency(Number(trailCalulationDetails?.object.totalReceivable ?? 0))}</b></Tag></Descriptions.Item>
+                                    </Descriptions>
+
                                 </Card>
-
-                                <Card size='small' title={'Applied Charges Details'} className='mb-3' hidden={trailCalulationDetails?.object?.facilityDetails === undefined}>
-                                    {
-                                        trailCalulationDetails?.object?.trtx.map((item, index) => (
-                                            <Descriptions column={2} key={index}>
-                                                <Descriptions.Item label="Method">{specialChargesByCode(item?.trtxTrx)}</Descriptions.Item>
-                                                <Descriptions.Item label="Charge Amount"><Tag color='green'><b>{formatCurrency(Number(item?.trtxAmt ?? 0))}</b></Tag></Descriptions.Item>
-                                            </Descriptions>
-                                        ))
-                                    }
-                                </Card>
-                            </div>
-                            <Card size='small' title={'Loan Calculation Details'} className='mb-3'>
-                                <Descriptions column={4}>
-                                    <Descriptions.Item label="TC Number">{trailCalulationDetails?.object.tcNo ?? '-'}</Descriptions.Item>
-                                    <Descriptions.Item label="Loan Amount"><Tag color='green'><b>{formatCurrency(Number(trailCalulationDetails?.object.loanAmount ?? 0))}</b></Tag></Descriptions.Item>
-                                    <Descriptions.Item label="Down Payment Amount"><Tag color='green'><b>{formatCurrency(Number(trailCalulationDetails?.object.downPayment ?? 0))}</b></Tag></Descriptions.Item>
-                                    <Descriptions.Item label="Total Receivable"><Tag color='green'><b>{formatCurrency(Number(trailCalulationDetails?.object.totalReceivable ?? 0))}</b></Tag></Descriptions.Item>
-                                </Descriptions>
-
                             </Card>
-                        </Card>
+                        }
+
                     </div>
 
                     <div className='mb-5'>
@@ -1120,7 +1297,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                         <Button type="primary" htmlType="submit" className='mr-2' icon={<CalculatorOutlined />} loading={trailCalulationLoading || trailCalulationDetailsLoading} hidden={isSaveShow}>
                             Trial Calculate
                         </Button>
-                        <Button type="default" onClick={onRestHandle} className='mr-2' danger icon={<UndoOutlined />} loading={trailCalucationDataLoading}>
+                        <Button type="default" onClick={onRestHandle} className='mr-2' danger icon={<UndoOutlined />} loading={trailCalulationDetailsByAppIdLoading}>
                             Reset
                         </Button>
                     </div>

@@ -12,9 +12,18 @@ import { useParams } from 'react-router-dom';
 
 const schema = yup.object().shape({
     key: yup.string().required('Key is required'),
-    monthly: yup.string(),
-    semiAnnual: yup.string(),
-    annually: yup.string(),
+    monthly: yup.string().required('Monthly is required').test('is-positive', 'Monthly must be a positive number', (value) => {
+        const num = parseFloat(value ?? '0');
+        return !isNaN(num) && num > 0;
+    }),
+    semiAnnual: yup.string().required('Semi-Annual is required').test('is-positive', 'Semi-Annual must be a positive number', (value) => {
+        const num = parseFloat(value ?? '0');
+        return !isNaN(num) && num > 0;
+    }),
+    annually: yup.string().required('Annually is required').test('is-positive', 'Annually must be a positive number', (value) => {
+        const num = parseFloat(value ?? '0');
+        return !isNaN(num) && num > 0;
+    }),
 }).test(
     'at-least-one-value',
     'At least one of Monthly, Semi-Annual, or Annually must be provided',
@@ -37,7 +46,7 @@ const ApplicantRevenue: React.FC = () => {
     });
     const [activeField, setActiveField] = useState<'monthly' | 'semiAnnual' | 'annually' | null>(null);
     const { cashFlows, cashFlowsLoading, applicantRevenue, addApplicantRevenue, updateApplicantRevenue, fetchApplicantRevenue,
-        removeApplicantRevenue, calculateTotalHouseRevenue, calculateTotalRevenue, calulateGrossSalary, calculateNetMonthlyDisposable,
+        removeApplicantRevenue, calculateTotalHouseRevenue, calculateTotalRevenue, calculateApplicantRevenue, calulateGrossSalary, calculateNetMonthlyDisposable,
         calculateAnnualDisposable, calculateAnnualHousehold, calculateAnnualRevenue, calculateMaxDebtBurden, checkAlegibleFroLoan, calucalteMaxLoanValue,
         calculateTaxableAmount, fetchCashFlows } = useCreditStore()
 
@@ -47,9 +56,9 @@ const ApplicantRevenue: React.FC = () => {
         setIsModalOpen(true);
         if (details) {
             setValue('key', details.key);
-            setValue('monthly', details.monthly);
-            setValue('semiAnnual', details.semiAnnual);
-            setValue('annually', details.annually);
+            setValue('monthly', details.monthly ?? '0.00');
+            setValue('semiAnnual', details.semiAnnual ?? '0.00');
+            setValue('annually', details.annually ?? '0.00');
         } else {
             reset();
         }
@@ -74,6 +83,7 @@ const ApplicantRevenue: React.FC = () => {
     useEffect(() => {
         fetchApplicantRevenue()
         calculateTotalHouseRevenue()
+        calculateApplicantRevenue()
         calculateTotalRevenue()
         calulateGrossSalary()
         calculateNetMonthlyDisposable()
@@ -145,6 +155,31 @@ const ApplicantRevenue: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [annually]);
 
+    const usedRevenueTypes = React.useMemo(
+        () => applicantRevenue.map((detail) => detail.key),
+        [applicantRevenue]
+    );
+
+    const revenueOptions = [
+        { value: 'Agriculture', label: 'Agriculture' },
+        { value: 'Business 1', label: 'Business 1' },
+        { value: 'Business 2', label: 'Business 2' },
+        { value: 'Salary', label: 'Salary' },
+        { value: 'Pension', label: 'Pension' },
+        { value: 'Remittance', label: 'Remittance' },
+        { value: 'Rental', label: 'Rental' },
+        { value: 'Lev_Revenue', label: 'Lev Revenue' },
+        { value: 'Other', label: 'Other' },
+    ];
+
+    const diabledRevenueOptions = revenueOptions.map(option => {
+        return {
+            ...option,
+            disabled: usedRevenueTypes.includes(option.value)
+        }
+    })
+
+
     return (
         <>
             <Collapse
@@ -171,7 +206,6 @@ const ApplicantRevenue: React.FC = () => {
                                             {
                                                 applicantRevenue.map((detail, index) => (
                                                     <DetailsCard
-                                                        cashFlows={cashFlows}
                                                         loading={cashFlowsLoading}
                                                         key={index}
                                                         detail={detail}
@@ -209,17 +243,7 @@ const ApplicantRevenue: React.FC = () => {
                                     <Select
                                         {...field}
                                         placeholder="Select Key"
-                                        options={[
-                                            { value: 'Agriculture', label: 'Agriculture' },
-                                            { value: 'Business 1', label: 'Business 1' },
-                                            { value: 'Business 2', label: 'Business 2' },
-                                            { value: 'Salary', label: 'Salary' },
-                                            { value: 'Pension', label: 'Pension' },
-                                            { value: 'Remittance', label: 'Remittance' },
-                                            { value: 'Rental', label: 'Rental' },
-                                            { value: 'Lev_Revenue', label: 'Lev Revenue' },
-                                            { value: 'Other', label: 'Other' },
-                                        ]}
+                                        options={diabledRevenueOptions}
                                     />
                                 )}
                             />
@@ -332,9 +356,10 @@ const ApplicantRevenue: React.FC = () => {
     )
 }
 
-const DetailsCard: React.FC<{ detail: IFinancialEntry; onEdit: () => void; onRemove: () => void; loading: boolean; cashFlows: any }> = ({ detail, loading, cashFlows, onEdit, onRemove }) => (
+const DetailsCard: React.FC<{ detail: IFinancialEntry; onEdit: () => void; onRemove: () => void; loading: boolean; }> = ({ detail, loading, onEdit, onRemove }) => (
     <Card loading={loading}>
-        <div className="flex justify-end gap-1" hidden={cashFlows?.applicantRevenue !== null}>
+        {/* TODO:  */}
+        <div className="flex justify-end gap-1">
             <Button type="default" size="small" icon={<EditOutlined />} onClick={onEdit} />
             <Button type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
         </div>

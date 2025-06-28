@@ -7,7 +7,7 @@ import { useParams } from 'react-router-dom';
 
 const Summary: React.FC = () => {
     const { appId } = useParams()
-    const { cashFlows, cashFlowsLoading, taxableAmount, bnsOrAgriExpenses, houseHoldExpenses, houseHoldContribution, applicantRevenue, totExpense, totBusinessExpense, totHouseholdExpense, totRevenue, totHouseholdIncome, totBusinessIncome, isAlegibleFroLoan, grossSalaryIncome, annualRevenue, annualDisposable, annualHousehold, maxDebtBurden, netMonthlyDisposable, maxLoanValue, product, productDefinition, fetchProduct, fetchProductDefinition, addCashFlows, fetchCashFlows } = useCreditStore();
+    const { cashFlows, cashFlowsLoading, taxableAmount, bnsOrAgriExpenses, houseHoldExpenses, houseHoldContribution, applicantRevenue, totExpense, totBusinessExpense, totHouseholdExpense, totRevenue, totHouseholdIncome, totBusinessIncome, isAlegibleFroLoan, grossSalaryIncome, annualDisposable, annualHousehold, maxDebtBurden, netMonthlyDisposable, maxLoanValue, product, productDefinition, fetchProduct, fetchProductDefinition, addCashFlows, fetchCashFlows } = useCreditStore();
 
     useEffect(() => {
         fetchProduct(appId ?? '')
@@ -84,29 +84,31 @@ const Summary: React.FC = () => {
                                     <Descriptions.Item label="Max Loan Value">
                                         {formatCurrency(Number(maxLoanValue ?? 0))}
                                     </Descriptions.Item>
-                                    <Descriptions.Item label="Tax Rate (%)">
+                                    {/* <Descriptions.Item label="Tax Rate (%)">
                                         {productDefinition?.taxRate ?? 0}
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="Taxable Amount">
+                                    </Descriptions.Item> */}
+                                    {/* <Descriptions.Item label="Taxable Amount">
                                         {formatCurrency(Number(taxableAmount ?? 0))}
-                                    </Descriptions.Item>
+                                    </Descriptions.Item> */}
                                     <Descriptions.Item label="Annual Household">
                                         {formatCurrency(Number(annualHousehold ?? 0))}
                                     </Descriptions.Item>
                                     <Descriptions.Item label="Annual Disposable">
                                         {formatCurrency(Number(annualDisposable ?? 0))}
                                     </Descriptions.Item>
-                                    <Descriptions.Item label="Annual Revenue">
+                                    {/* <Descriptions.Item label="Annual Revenue">
                                         {formatCurrency(Number(annualRevenue ?? 0))}
-                                    </Descriptions.Item>
+                                    </Descriptions.Item> */}
                                     <Descriptions.Item label="Loan Eligibility Status">
                                         <Tag color={isAlegibleFroLoan ? 'green' : 'red'}><b>{isAlegibleFroLoan ? 'Suceess' : 'Reject'}</b></Tag>
                                     </Descriptions.Item>
                                 </Descriptions>
 
-                                <div className='mt-5' hidden={cashFlows?.annualHouseIncome !== null}>
+                                <div className='mt-5'>
                                     <Button type='primary' icon={<SaveOutlined />} onClick={onSubmitCashFlow} disabled={!isAlegibleFroLoan}>
-                                        Save Cash Flow
+                                        {
+                                            cashFlows?.annualHouseIncome !== null ? 'Update Cash Flow' : 'Save Cash Flow'
+                                        }
                                     </Button>
                                 </div>
                             </Card>

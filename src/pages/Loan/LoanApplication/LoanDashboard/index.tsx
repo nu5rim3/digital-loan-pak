@@ -1,5 +1,5 @@
 import { Button, Card, Collapse, CollapseProps, Empty } from 'antd'
-import React, { lazy, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { getLoanStatusByName, getOnlyStatusByName } from '../../../../utils/MSASActionFunctions';
 import useLoanStore from '../../../../store/loanStore';
@@ -13,15 +13,15 @@ import BusinessIntroducer from './BusinessIntroducer/BusinessIntroducer';
 import CreditScoringPage from './CreditScoring/CreditScoringPage';
 import CollateralDetails from './CollateralDetails';
 import CustomerRiskProfiling from './CustomerRiskProfiling';
-
-const CustomerDetailsView = lazy(() => import('./Customer/CustomerDetailsView'))
-const WitnessDetails = lazy(() => import('./Witness/WitnessDetails'))
-const GuarantorDetailsView = lazy(() => import('./Guarantor/GuarantorDetailsView'))
-const LiabilityAffidavit = lazy(() => import('./LiabilityAffidavit'))
-const GoldFacilityApplication = lazy(() => import('./GoldFacilityApplication/GoldFacilityApplication'))
-const CashFlow = lazy(() => import('./CashFlow'))
-const LoanApplication = lazy(() => import('./LoanApplication'))
-const ExceptionalApproval = lazy(() => import('./ExceptionalApproval'))
+import { SendOutlined } from '@ant-design/icons';
+import CustomerDetailsView from './Customer/CustomerDetailsView';
+import GuarantorDetailsView from './Guarantor/GuarantorDetailsView';
+import WitnessDetails from './Witness/WitnessDetails';
+import LiabilityAffidavit from './LiabilityAffidavit';
+import GoldFacilityApplication from './GoldFacilityApplication/GoldFacilityApplication';
+import CashFlow from './CashFlow';
+import ExceptionalApproval from './ExceptionalApproval';
+import LoanApplication from './LoanApplication';
 
 interface StatusProps {
     isCompleted: string;
@@ -91,7 +91,7 @@ const LoanDaashboard: React.FC = () => {
             case 'cash-flow':
                 return <CashFlow />;
             case 'credit-scoring':
-                return <CreditScoringPage appraisalId={appId ?? ''} productCode={'GOLD'} />;
+                return <CreditScoringPage appraisalId={appId ?? ''} />;
             case 'customer-risk-profiling':
                 return <CustomerRiskProfiling />;
             case 'exceptional-approval':
@@ -157,9 +157,9 @@ const LoanDaashboard: React.FC = () => {
             "creationDate": "2024-07-11T09:24:51.357+00:00",
             "lastModifiedBy": null,
             "lastModifiedDate": null,
-            "id": 4,
-            "section": "Liability-Affidavit",
-            "isMandatory": "1",
+            "id": 12,
+            "section": "business-introducer",
+            "isMandatory": "0",
             "completed": "1",
             "enabled": null,
             "status": "A"
@@ -176,18 +176,18 @@ const LoanDaashboard: React.FC = () => {
             "enabled": null,
             "status": "A"
         },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2024-07-11T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 6,
-            "section": "gold-facility-application",
-            "isMandatory": "0",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
+        // {
+        //     "createdBy": "SYSTEM",
+        //     "creationDate": "2024-07-11T09:24:51.357+00:00",
+        //     "lastModifiedBy": null,
+        //     "lastModifiedDate": null,
+        //     "id": 6,
+        //     "section": "gold-facility-application",
+        //     "isMandatory": "0",
+        //     "completed": "1",
+        //     "enabled": null,
+        //     "status": "A"
+        // },
         {
             "createdBy": "SYSTEM",
             "creationDate": "2022-08-09T09:24:51.357+00:00",
@@ -196,6 +196,78 @@ const LoanDaashboard: React.FC = () => {
             "id": 7,
             "section": "cash-flow",
             "isMandatory": "1",
+            "completed": "1",
+            "enabled": null,
+            "status": "A"
+        },
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2024-07-11T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 4,
+            "section": "Liability-Affidavit",
+            "isMandatory": "1",
+            "completed": "1",
+            "enabled": null,
+            "status": "A"
+        },
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2024-07-11T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 15,
+            "section": "collateral-details",
+            "isMandatory": "0",
+            "completed": "1",
+            "enabled": null,
+            "status": "A"
+        },
+        // {
+        //     "createdBy": "SYSTEM",
+        //     "creationDate": "2022-08-09T09:24:51.357+00:00",
+        //     "lastModifiedBy": null,
+        //     "lastModifiedDate": null,
+        //     "id": 11,
+        //     "section": "customer-risk-profiling",
+        //     "isMandatory": "0",
+        //     "completed": "1",
+        //     "enabled": null,
+        //     "status": "A"
+        // },
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2022-08-09T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 10,
+            "section": "credit-scoring",
+            "isMandatory": "0",
+            "completed": "1",
+            "enabled": null,
+            "status": "A"
+        },
+        // {
+        //     "createdBy": "SYSTEM",
+        //     "creationDate": "2024-07-11T09:24:51.357+00:00",
+        //     "lastModifiedBy": null,
+        //     "lastModifiedDate": null,
+        //     "id": 13,
+        //     "section": "term-deposit",
+        //     "isMandatory": "0",
+        //     "completed": "1",
+        //     "enabled": null,
+        //     "status": "A"
+        // },
+        {
+            "createdBy": "SYSTEM",
+            "creationDate": "2022-08-09T09:24:51.357+00:00",
+            "lastModifiedBy": null,
+            "lastModifiedDate": null,
+            "id": 12,
+            "section": "exceptional-approval",
+            "isMandatory": "0",
             "completed": "1",
             "enabled": null,
             "status": "A"
@@ -217,81 +289,9 @@ const LoanDaashboard: React.FC = () => {
             "creationDate": "2022-08-09T09:24:51.357+00:00",
             "lastModifiedBy": null,
             "lastModifiedDate": null,
-            "id": 10,
-            "section": "credit-scoring",
-            "isMandatory": "0",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 11,
-            "section": "customer-risk-profiling",
-            "isMandatory": "0",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 12,
-            "section": "exceptional-approval",
-            "isMandatory": "0",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
             "id": 13,
             "section": "customer-acknowledgement",
             "isMandatory": "1",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        // {
-        //     "createdBy": "SYSTEM",
-        //     "creationDate": "2024-07-11T09:24:51.357+00:00",
-        //     "lastModifiedBy": null,
-        //     "lastModifiedDate": null,
-        //     "id": 13,
-        //     "section": "term-deposit",
-        //     "isMandatory": "0",
-        //     "completed": "1",
-        //     "enabled": null,
-        //     "status": "A"
-        // },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2024-07-11T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 12,
-            "section": "business-introducer",
-            "isMandatory": "0",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2024-07-11T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 15,
-            "section": "collateral-details",
-            "isMandatory": "0",
             "completed": "1",
             "enabled": null,
             "status": "A"
@@ -321,6 +321,12 @@ const LoanDaashboard: React.FC = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [appId])
+
+    useEffect(() => {
+        fetchStackholderByAppId(appId ?? '')
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
 
 
     if (loading) {
@@ -366,7 +372,7 @@ const LoanDaashboard: React.FC = () => {
 
                 <div className="mt-5">
                     <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
-                    <Button type="primary" className="ml-3">Ready to Apply</Button>
+                    <Button type="primary" className="ml-3" icon={<SendOutlined />}>Submit to Approval</Button>
                 </div>
             </Card>
         </>

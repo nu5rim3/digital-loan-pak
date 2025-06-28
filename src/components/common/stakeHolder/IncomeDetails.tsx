@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Collapse, Descriptions, Empty, Form, Input, Select, Spin } from 'antd';
+import { Button, Card, Collapse, Descriptions, Empty, Form, Input, InputNumber, Select, Spin } from 'antd';
 import { PlusOutlined, EditOutlined, SaveOutlined, UndoOutlined } from '@ant-design/icons';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import CommonModal from '../modal/commonModal';
 import useStakeholderStore, { IIncomeDetails } from '../../../store/stakeholderStore';
+import useCommonStore from '../../../store/commonStore';
+import { formatCurrency } from '../../../utils/formatterFunctions';
 
 interface IIncomeDetail {
     stkId: string
@@ -22,16 +24,6 @@ const schema = yup.object().shape({
     totMonIncome: yup.string().required('Total Monthly Income is required'),
 });
 
-const sourceOfIncomeOptions = [
-    { label: 'Salary Income', value: 'SI' },
-    { label: 'Business Income', value: 'BI' },
-    { label: 'Agriculture Income', value: 'AI' },
-    { label: 'Rental Income', value: 'RI' },
-    { label: 'Live Stock', value: 'LS' },
-    { label: 'Pension', value: 'PN' }
-];
-
-
 const IncomeDetails: React.FC<IIncomeDetail> = ({ stkId, subTitle }) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -44,6 +36,8 @@ const IncomeDetails: React.FC<IIncomeDetail> = ({ stkId, subTitle }) => {
 
 
     const { incomesDetails, incomeDetailsLoading, fetchIncomeDetailsByStkId, addIncomeDetail, updateIncomeDetail } = useStakeholderStore();
+
+    const { incomeSources } = useCommonStore()
 
 
     const openModal = (mode: 'create' | 'edit', details: IIncomeDetails | null = null) => {
@@ -92,7 +86,7 @@ const IncomeDetails: React.FC<IIncomeDetail> = ({ stkId, subTitle }) => {
                         children: (
                             <>
                                 <div className='flex justify-end pb-3'>
-                                    <Button type="primary" onClick={() => openModal('create')} icon={<PlusOutlined />}>
+                                    <Button type="primary" onClick={() => openModal('create')} icon={<PlusOutlined />} disabled={subTitle !== '' && incomesDetails?.length >= 1}>
                                         Add Income/Assets Details
                                     </Button>
                                 </div>
@@ -106,7 +100,7 @@ const IncomeDetails: React.FC<IIncomeDetail> = ({ stkId, subTitle }) => {
                                         {incomesDetails?.length > 0 ?
                                             <div className='grid grid-cols-4 gap-4'>
                                                 {incomesDetails?.map((item, index) => (
-                                                    <DetailsCard key={index} detail={item} onEdit={() => openModal('edit', item)} />
+                                                    <DetailsCard key={index} detail={item} onEdit={() => openModal('edit', item)} incomeSources={incomeSources} />
                                                 ))}
                                             </div> :
                                             <div className='flex flex-1 justify-center' >
@@ -132,14 +126,29 @@ const IncomeDetails: React.FC<IIncomeDetail> = ({ stkId, subTitle }) => {
                             <Controller
                                 name="sourceOfIncome"
                                 control={control}
-                                render={({ field }) => <Select {...field} placeholder="Select Source of Income" options={sourceOfIncomeOptions} />}
+                                render={({ field }) => <Select {...field} placeholder="Select Source of Income" options={incomeSources} />}
                             />
                         </Form.Item>
                         <Form.Item label="Monthly Income" validateStatus={errors.monthlyIncome ? 'error' : ''} help={errors.monthlyIncome?.message} required>
                             <Controller
                                 name="monthlyIncome"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Monthly Income" />}
+                                render={({ field }) =>
+                                    <InputNumber
+                                        {...field}
+                                        placeholder="Monthly Income"
+                                        style={{ width: '100%' }}
+                                        formatter={(value) =>
+                                            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
+                                        }
+                                        parser={(value) =>
+                                            value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
+                                        }
+                                        step={0.01}
+                                        min={0}
+                                        stringMode // keeps precision in string format
+                                    />
+                                }
                             />
                         </Form.Item>
                         <Form.Item label="Assets Description" validateStatus={errors.assetsDesc ? 'error' : ''} help={errors.assetsDesc?.message} required>
@@ -153,14 +162,44 @@ const IncomeDetails: React.FC<IIncomeDetail> = ({ stkId, subTitle }) => {
                             <Controller
                                 name="totValAssets"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Total Value of Assets" />}
+                                render={({ field }) =>
+                                    <InputNumber
+                                        {...field}
+                                        placeholder="Total Value of Assets"
+                                        style={{ width: '100%' }}
+                                        formatter={(value) =>
+                                            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
+                                        }
+                                        parser={(value) =>
+                                            value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
+                                        }
+                                        step={0.01}
+                                        min={0}
+                                        stringMode // keeps precision in string format
+                                    />
+                                }
                             />
                         </Form.Item>
                         <Form.Item label="Total Monthly Income" validateStatus={errors.totMonIncome ? 'error' : ''} help={errors.totMonIncome?.message} required>
                             <Controller
                                 name="totMonIncome"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Total Monthly Income" />}
+                                render={({ field }) =>
+                                    <InputNumber
+                                        {...field}
+                                        placeholder="Total Monthly Income"
+                                        style={{ width: '100%' }}
+                                        formatter={(value) =>
+                                            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
+                                        }
+                                        parser={(value) =>
+                                            value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
+                                        }
+                                        step={0.01}
+                                        min={0}
+                                        stringMode // keeps precision in string format
+                                    />
+                                }
                             />
                         </Form.Item>
 
@@ -179,17 +218,18 @@ const IncomeDetails: React.FC<IIncomeDetail> = ({ stkId, subTitle }) => {
     )
 }
 
-const DetailsCard: React.FC<{ detail: IIncomeDetails; onEdit: () => void; }> = ({ detail, onEdit }) => (
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const DetailsCard: React.FC<{ detail: IIncomeDetails; onEdit: () => void; incomeSources: any[] }> = ({ detail, onEdit, incomeSources }) => (
     <Card>
         <div className="flex justify-end">
             <Button type="default" size="small" icon={<EditOutlined />} onClick={onEdit} />
         </div>
         <Descriptions column={1}>
-            <Descriptions.Item label="Source of Income">{detail.sourceOfIncome}</Descriptions.Item>
-            <Descriptions.Item label="Monthly Income">{detail.monthlyIncome}</Descriptions.Item>
+            <Descriptions.Item label="Source of Income">{incomeSources.find(option => option.value === detail.sourceOfIncome)?.label ?? detail.sourceOfIncome}</Descriptions.Item>
+            <Descriptions.Item label="Monthly Income">{formatCurrency(Number(detail.monthlyIncome))}</Descriptions.Item>
             <Descriptions.Item label="Assets Description">{detail.assetsDesc}</Descriptions.Item>
-            <Descriptions.Item label="Total Value of Assets">{detail.totValAssets}</Descriptions.Item>
-            <Descriptions.Item label="Total Monthly Income">{detail.totMonIncome}</Descriptions.Item>
+            <Descriptions.Item label="Total Value of Assets">{formatCurrency(Number(detail.totValAssets))}</Descriptions.Item>
+            <Descriptions.Item label="Total Monthly Income">{formatCurrency(Number(detail.totMonIncome))}</Descriptions.Item>
         </Descriptions>
     </Card>
 );

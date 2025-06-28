@@ -49,11 +49,11 @@ const SelectUser: React.FC = () => {
                         </div>
                     </div>
                     <div className='flex flex-1/2 bg-blue-100 justify-center'>
-                        <div className='flex flex-col justify-center p-4 h-full'>
+                        <div className='flex flex-col justify-center p-4 h-full w-full'>
                             <Title level={3} className="text-center pb-6">
                                 Select Your User Role
                             </Title>
-                            <div className="grid grid-cols-1 gap-4  max-h-[86vh] overflow-y-auto">
+                            <div className="grid grid-cols-1 gap-4  max-h-[86vh] overflow-y-auto justify-items-center py-10">
                                 {user?.roles.map((role) => (
                                     <Card
                                         style={{ width: 450 }}

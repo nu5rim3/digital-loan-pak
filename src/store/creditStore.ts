@@ -4,7 +4,7 @@ import { notification } from "antd";
 
 export interface IGoldLoanAppArticleDetails {
   articleDtls: string;
-  articleQuantity: string;
+  articleQuantity: number;
   articleStatus: string;
   masterArticleCode: string;
 }
@@ -17,6 +17,7 @@ export interface IGoldLoanAppDetails {
   goldLoanAppType: string | "GOD" | "DEN";
 
   goldsmithIdFx?: string;
+  goldsmithId?: string;
   goldCollateralValue?: string;
   goldGrossWeight?: string;
   goldLoanAppArticleDtlsDtoList?: IGoldLoanAppArticleDetails[] | null;
@@ -321,6 +322,7 @@ export interface ITrailCalulation {
   tcNo?: string;
   pMode: string;
   pUser: string;
+  prodCat: string;
   pFacilityType: string;
   pTrhdMe: string;
   pTrhdLType: string;
@@ -431,6 +433,7 @@ interface ICreditState {
   grossSalaryIncome: number | string | null;
   totBusinessIncome: number | string | null;
   totHouseholdIncome: number | string | null;
+  totApplicantRevenue: number | string | null;
   totRevenue: number | string | null;
 
   totHouseholdExpense: number | string | null;
@@ -492,9 +495,9 @@ interface ICreditState {
   trailCalulationDetailsLoading: boolean;
   trailCalulationDetailsError: string | null;
 
-  trailCalucationData: ITrailCalulation | null;
-  trailCalucationDataLoading: boolean;
-  trailCalucationDataError: string | null;
+  trailCalulationDetailsByAppId: ITrailCalulation | null;
+  trailCalulationDetailsByAppIdLoading: boolean;
+  trailCalulationDetailsByAppIdError: string | null;
 
   fetachGoldLoanAppDetails: (appId: string) => Promise<void>;
   addGoldLoanAppDetails: (data: IGoldLoanAppDetails) => Promise<void>;
@@ -548,6 +551,7 @@ interface ICreditState {
   calculateTotalHouseRevenue: () => void;
   getTotalBusinessRevenue: () => void;
   calculateTotalRevenue: () => void;
+  calculateApplicantRevenue: () => void;
 
   getMonthValueBasedOnKeyExpenses: (key: string) => number;
   calculateTotalHouseholdExpense: () => void;
@@ -628,7 +632,15 @@ interface ICreditState {
     data: ITrailCalulation
   ) => Promise<void>;
 
-  fetchTrailCalulationDetailsByAppId: (appId: string) => Promise<void>;
+  fetchTrailCalulationDetailsByAppId: (
+    appId: string
+  ) => Promise<ITrailCalulationDetailsResponse | undefined>;
+
+  resetTrailCalucationDetailsByAppId: () => void;
+
+  resetTrailCalulation: () => void;
+
+  resetAllTrailCalucationData: () => void;
 }
 
 const useCreditStore = create<ICreditState>((set) => ({
@@ -649,6 +661,7 @@ const useCreditStore = create<ICreditState>((set) => ({
   totBusinessIncome: null,
   totHouseholdIncome: null,
   totRevenue: null,
+  totApplicantRevenue: null,
 
   totHouseholdExpense: null,
   totBusinessExpense: null,
@@ -709,9 +722,9 @@ const useCreditStore = create<ICreditState>((set) => ({
   trailCalulationDetailsLoading: false,
   trailCalulationDetailsError: null,
 
-  trailCalucationData: null,
-  trailCalucationDataLoading: false,
-  trailCalucationDataError: null,
+  trailCalulationDetailsByAppId: null,
+  trailCalulationDetailsByAppIdLoading: false,
+  trailCalulationDetailsByAppIdError: null,
 
   fetachGoldLoanAppDetails: async (appId: string) => {
     set({ goldLoanAppDetailsLoading: true });
@@ -1003,13 +1016,18 @@ const useCreditStore = create<ICreditState>((set) => ({
     }));
   },
 
+  calculateApplicantRevenue: () => {
+    set((state) => ({
+      totApplicantRevenue: state.applicantRevenue.reduce((acc, item) => {
+        return acc + Number(item.monthly ?? 0);
+      }, 0),
+    }));
+  },
+
   calculateTotalRevenue: () => {
     set((state) => ({
-      totRevenue: state.applicantRevenue.reduce((acc, item) => {
-        return (
-          acc + Number(item.monthly ?? 0) + Number(state.totHouseholdIncome)
-        );
-      }, 0),
+      totRevenue:
+        Number(state.totApplicantRevenue) + Number(state.totHouseholdIncome),
     }));
   },
 
@@ -1676,22 +1694,49 @@ const useCreditStore = create<ICreditState>((set) => ({
   },
 
   // /mobixCamsCredit/v1/credit/tc/{appId}
-  fetchTrailCalulationDetailsByAppId: async (appId: string) => {
-    set({ trailCalucationDataLoading: true });
+  fetchTrailCalulationDetailsByAppId: async (
+    appId: string
+  ): Promise<ITrailCalulationDetailsResponse | undefined> => {
+    set({ trailCalulationDetailsByAppIdLoading: true });
     try {
       const response = await API.get(`/mobixCamsCredit/v1/credit/tc/${appId}`);
       set({
-        trailCalucationData: response.data,
-        trailCalucationDataLoading: false,
+        trailCalulationDetailsByAppId: response.data,
+        trailCalulationDetailsByAppIdLoading: false,
       });
+      return response.data;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       set({
-        trailCalucationDataError: error.message,
-        trailCalucationDataLoading: false,
+        trailCalulationDetailsByAppIdError: error.message,
+        trailCalulationDetailsByAppIdLoading: false,
       });
     }
   },
+
+  resetTrailCalucationDetailsByAppId: () =>
+    set(() => ({ trailCalulationDetailsByAppId: null })),
+
+  resetTrailCalulation: () =>
+    set(() => ({
+      trailCalulation: null,
+      trailCalulationLoading: false,
+      trailCalulationError: null,
+    })),
+
+  resetAllTrailCalucationData: () =>
+    set(() => ({
+      trailCalulationDetailsByAppId: null,
+      trailCalucationData: null,
+      trailCalucationDataLoading: false,
+      trailCalucationDataError: null,
+      trailCalulationDetails: null,
+      trailCalulationDetailsLoading: false,
+      trailCalulationDetailsError: null,
+      trailCalulation: null,
+      trailCalulationLoading: false,
+      trailCalulationError: null,
+    })),
 }));
 
 export default useCreditStore;

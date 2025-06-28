@@ -52,13 +52,6 @@ const CustomerOnboarding: React.FC = () => {
 
     }, [ruleStatus])
 
-    useEffect(() => {
-        if (loan?.idx === undefined) {
-            navigate(-1)
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [loan])
-
     return (
         <>
             <div className='flex flex-col gap-3'>
@@ -75,7 +68,7 @@ const CustomerOnboarding: React.FC = () => {
                 }
 
                 {
-                    customerCNIC && <BlacklistVerification idx={customerIdx ?? ''} cnic={customerCNIC ?? ''} />
+                    customerCNIC && <BlacklistVerification idx={customerIdx ?? ''} cnic={customerCNIC ?? ''} setApprovalStatus={setApprovalStatus} />
                 }
 
                 {
@@ -87,7 +80,7 @@ const CustomerOnboarding: React.FC = () => {
                 }
 
                 {
-                    approvalStatus === 'SPECIAL_APPROVAL' && <ExceptionalApproval setOtpModalOpen={approval} setNadraModalOpen={() => setNadraModalOpen(true)} otpVerification={otpVerification} />
+                    approvalStatus === 'SPECIAL_APPROVAL' && <ExceptionalApproval setOtpModalOpen={approval} setNadraModalOpen={() => setNadraModalOpen(true)} otpVerification={otpVerification} idx={customerIdx ?? ''} appId={loan?.idx ?? ''} />
                 }
 
                 {
@@ -95,11 +88,11 @@ const CustomerOnboarding: React.FC = () => {
                     <>
                         <div className='flex gap-3'>
                             <Button onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
-                            <Button type="primary" loading={false} onClick={approval} icon={<CheckCircleOutlined />} hidden={otpVerification === 'Y'}>Approval</Button>
+                            <Button type="primary" loading={false} onClick={approval} icon={<CheckCircleOutlined />} hidden={otpVerification === 'Y'}>Verify Contact</Button>
                             <Button type='primary' onClick={() => {
                                 navigate(`${mainURL}/loan/application/${loan?.idx ?? ''}`)
                             }} icon={<QrcodeOutlined />} hidden={otpVerification === 'P'}>Calculate TC</Button>
-                            <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} >Scan QR</Button>
+                            <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} >Customer QR</Button>
                         </div>
                     </>
                 }
@@ -107,7 +100,7 @@ const CustomerOnboarding: React.FC = () => {
                 {
                     approvalStatus === 'INVALID' &&
                     <>
-                        <Tag color='red' className='text-center'>Cannot proceed {customerIdx ?? ''} is not valid</Tag>
+                        <Tag color='red' className='text-center'><b>Cannot apply loan for {customerCNIC ?? ''} as it is not valid</b></Tag>
                         <div className='flex gap-3'>
                             <Button onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
                         </div>
@@ -117,7 +110,7 @@ const CustomerOnboarding: React.FC = () => {
                 {
                     approvalStatus === 'CLOSE' &&
                     <>
-                        <Tag color='red' className='text-center'>Cannot proceed {customerIdx ?? ''} is not valid</Tag>
+                        <Tag color='red' className='text-center'><b>Cannot apply loan for {customerCNIC ?? ''} as it is not valid</b></Tag>
                         <div className='flex gap-3'>
                             <Button onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
                         </div>
@@ -148,7 +141,7 @@ const CustomerOnboarding: React.FC = () => {
             {
                 customerIdx !== '' &&
                 <>
-                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={customerIdx ?? ''} onCompleted={triggerMSAS} />
+                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={customerIdx ?? ''} onCompleted={triggerMSAS} resetUser={() => { }} />
                     <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={customerIdx ?? ''} />
                 </>
             }

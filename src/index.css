@@ -22,3 +22,36 @@ body {
 .ant-tabs-card .ant-tabs-tab-active .ant-tabs-tab-btn {
   color: white !important;
 }
+
+.ant-descriptions-item-label {
+  font-weight: 600;
+  color: #747373 !important;
+}
+.ant-input:disabled {
+  color: #002140bc !important;
+  /* background-color: #0303149c !important; */
+  /* Add other styles as needed, such as text color, border, etc. */
+}
+
+.ant-select-disabled .ant-select-selector {
+  color: #002140bc !important;
+  /* background-color: #000080 !important; Navy Blue */
+  /* Add other styles as needed, e.g., border-color, text-color, etc. */
+}
+
+input,
+textarea {
+  text-transform: capitalize !important;
+}
+
+/* Override for placeholder: */
+input::placeholder,
+textarea::placeholder {
+  text-transform: none !important;
+}
+.search-fixed-select,
+.search-fixed-select .ant-select-selector {
+  width: 150px !important;
+  min-width: 150px !important;
+  max-width: 150px !important;
+}

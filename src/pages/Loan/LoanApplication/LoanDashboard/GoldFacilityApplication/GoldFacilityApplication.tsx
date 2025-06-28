@@ -10,7 +10,7 @@ import { PlusOutlined, EditOutlined, SaveOutlined, DeleteOutlined, UndoOutlined 
 import useUserStore from '../../../../../store/userStore';
 import { useParams } from 'react-router-dom';
 import CommonModal from '../../../../../components/common/modal/commonModal';
-import { convertStringToNumber, formatSentence } from '../../../../../utils/formatterFunctions';
+import { convertStringToNumber, formatCurrency, formatSentence, removeCurrencySymbol } from '../../../../../utils/formatterFunctions';
 
 const schema = yup.object().shape({
     tppNumber: yup.string().required('TPP Number is required').matches(/^[0-9]+$/, 'TPP Number must be a number'),
@@ -76,7 +76,7 @@ const schema = yup.object().shape({
 
 const schema2 = yup.object().shape({
     articleDtls: yup.string().required('Article Details is required'),
-    articleQuantity: yup.string().required('Article Quantity is required'),
+    articleQuantity: yup.number().min(1, 'Article Quantity must be at least 1').required('Article Quantity is required'),
     masterArticleCode: yup.string().required('Article Code is required'),
     articleStatus: yup.string().required('Article Status is required'),
 });
@@ -88,7 +88,7 @@ const GoldFacilityApplication: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [mode, setMode] = useState<'save' | 'update' | 'remove'>('save');
     const [selectedDetail, setSelectedDetail] = useState<IGoldLoanAppDetails | null>(null);
-    const [goldLoanAppArticleDtlsDtoList, setfGoldLoanAppArticleDtlsDtoList] = useState<IGoldLoanAppArticleDetails[]>([]);
+    const [goldLoanAppArticleDtlsDtoList, setGoldLoanAppArticleDtlsDtoList] = useState<IGoldLoanAppArticleDetails[]>([]);
 
     const { control, formState: { errors }, setValue, handleSubmit, reset, watch } = useForm({
         resolver: yupResolver(schema),
@@ -102,6 +102,12 @@ const GoldFacilityApplication: React.FC = () => {
         setValue: setArticleValue,
     } = useForm({
         resolver: yupResolver(schema2),
+        defaultValues: {
+            masterArticleCode: undefined,
+            articleQuantity: 1,
+            articleDtls: undefined,
+            articleStatus: 'A',
+        },
     });
 
 
@@ -135,6 +141,7 @@ const GoldFacilityApplication: React.FC = () => {
     };
 
     const closeModal = () => {
+        setGoldLoanAppArticleDtlsDtoList([]);
         reset();
         setIsModalOpen(false);
     };
@@ -144,31 +151,35 @@ const GoldFacilityApplication: React.FC = () => {
         if (mode === 'update') {
             updateGoldLoanAppDetails(selectedDetail?.appIdx ?? '', _data).finally(closeModal);
         } else if (mode === 'save') {
-            addGoldLoanAppDetails({ ..._data, appIdx: appId ?? '' }).finally(closeModal);
+            addGoldLoanAppDetails({ ..._data, appIdx: appId ?? '', goldMarketValue: removeCurrencySymbol(_data.goldMarketValue ?? '0'), denMarketValue: removeCurrencySymbol(_data.denMarketValue ?? '0') }).finally(closeModal);
         }
     };
 
     const onSubmitArticle = (data: IGoldLoanAppArticleDetails) => {
-        setfGoldLoanAppArticleDtlsDtoList((prev) => [...prev, { ...data, articleStatus: 'A' }]);
-        resetArticle()
+        setGoldLoanAppArticleDtlsDtoList((prev) => [...prev, { ...data, articleQuantity: Number(data.articleQuantity), articleStatus: 'A' }]);
+        setTimeout(() => {
+            resetArticle()
+        }, 2000);
     }
 
     const removeSelectedIndex = (index: number) => {
-        setfGoldLoanAppArticleDtlsDtoList((prev) => prev.filter((_, i) => i !== index));
+        setGoldLoanAppArticleDtlsDtoList((prev) => prev.filter((_, i) => i !== index));
     }
 
     const editSelectedIndex = (index: number) => {
         const selectedItem = goldLoanAppArticleDtlsDtoList[index];
         setArticleValue('masterArticleCode', selectedItem.masterArticleCode ?? '', { shouldValidate: true });
         setArticleValue('articleStatus', selectedItem.articleStatus ?? '', { shouldValidate: true });
-        setArticleValue('articleQuantity', selectedItem.articleQuantity ?? '', { shouldValidate: true });
+        setArticleValue('articleQuantity', Number(selectedItem.articleQuantity ?? 0), { shouldValidate: true });
         setArticleValue('articleDtls', selectedItem.articleDtls ?? '', { shouldValidate: true });
-        setfGoldLoanAppArticleDtlsDtoList((prev) => prev.filter((_, i) => i !== index));
+        setGoldLoanAppArticleDtlsDtoList((prev) => prev.filter((_, i) => i !== index));
     }
 
     useEffect(() => {
         if (!isModalOpen) {
-            fetachGoldLoanAppDetails(appId ?? '')
+            setTimeout(() => {
+                fetachGoldLoanAppDetails(appId ?? '')
+            }, 1000);
         } else {
             fetchGoldsmith(user?.branches[0].code ?? '')
             fetchArticleMaster()
@@ -214,8 +225,6 @@ const GoldFacilityApplication: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [denNetWeight, goldNetWeight, marketValue])
 
-
-
     return (
         <>
             <div className='flex flex-col gap-2'>
@@ -223,7 +232,9 @@ const GoldFacilityApplication: React.FC = () => {
                     <Button type='primary' icon={<PlusOutlined />} onClick={() => openModal('save')}>Add Article Details</Button>
                 </div>
                 {goldLoanAppDetailsLoading ? (
-                    <Empty description="Loading  Gold Facility Application ..." />
+                    <Spin spinning={goldLoanAppDetailsLoading}>
+                        <Empty description="Loading  Gold Facility Application ..." />
+                    </Spin>
                 ) : goldLoanAppDetails.length === 0 ? (
                     <Spin spinning={goldLoanAppDetailsLoading}>
                         <Empty description="No Gold Facility Application Available" />
@@ -257,6 +268,7 @@ const GoldFacilityApplication: React.FC = () => {
                                             allowClear
                                             placeholder="Select Article Details"
                                             onChange={(value) => {
+                                                field.onChange(value);
                                                 setArticleValue('masterArticleCode', value, { shouldValidate: true });
                                                 setArticleValue('articleStatus', 'A', { shouldValidate: true });
                                                 setArticleValue('articleDtls', articleMaster.find((item) => item.code === value)?.description ?? '', {
@@ -277,8 +289,12 @@ const GoldFacilityApplication: React.FC = () => {
                                         <Input
                                             {...field}
                                             placeholder="Article Quantity"
-                                            onChange={(value) =>
-                                                field.onChange(Number(value))
+                                            type='number'
+                                            onChange={(value) => {
+                                                const numericValue = value.target.value.replace(/[^0-9]/g, '');
+                                                setArticleValue('articleQuantity', Number(numericValue), { shouldValidate: true });
+                                                field.onChange(Number(value.target.value))
+                                            }
                                             }
                                         />
                                     )}
@@ -296,18 +312,20 @@ const GoldFacilityApplication: React.FC = () => {
                         goldLoanAppArticleDtlsDtoList.length > 0 ? (
                             <>
                                 <div className='grid grid-cols-2 gap-3 py-5'>
-                                    {goldLoanAppArticleDtlsDtoList.map((item, index) => (
-                                        <Card key={index} className='bg-gray-100'>
-                                            <div className="flex justify-end gap-1">
-                                                <Button type="default" size="small" icon={<EditOutlined />} onClick={() => { editSelectedIndex(index) }} />
-                                                <Button type="default" size="small" icon={<DeleteOutlined />} onClick={() => { removeSelectedIndex(index) }} danger />
-                                            </div>
-                                            <Descriptions column={1}>
-                                                <Descriptions.Item label="Article Details">{item.articleDtls}</Descriptions.Item>
-                                                <Descriptions.Item label="Article Quantity">{item.articleQuantity}</Descriptions.Item>
-                                            </Descriptions>
-                                        </Card>
-                                    ))}
+                                    {goldLoanAppArticleDtlsDtoList.map((item, index) => {
+                                        return (
+                                            <Card key={index} className='bg-gray-100'>
+                                                <div className="flex justify-end gap-1">
+                                                    <Button type="default" size="small" icon={<EditOutlined />} onClick={() => { editSelectedIndex(index) }} />
+                                                    <Button type="default" size="small" icon={<DeleteOutlined />} onClick={() => { removeSelectedIndex(index) }} danger />
+                                                </div>
+                                                <Descriptions column={1}>
+                                                    <Descriptions.Item label="Article Details">{item.articleDtls}</Descriptions.Item>
+                                                    <Descriptions.Item label="Article Quantity">{item.articleQuantity}</Descriptions.Item>
+                                                </Descriptions>
+                                            </Card>
+                                        )
+                                    })}
                                 </div>
                                 <div>
                                     <Form layout='vertical' onFinish={handleSubmit(onSubmit)}>
@@ -331,7 +349,15 @@ const GoldFacilityApplication: React.FC = () => {
                                                     name="tppNumber"
                                                     control={control}
                                                     render={({ field }) => (
-                                                        <Input {...field} placeholder="TPP Number" type='number' />
+                                                        <Input
+                                                            {...field}
+                                                            placeholder="TPP Number"
+                                                            type='text'
+                                                            onChange={(e) => {
+                                                                const value = e.target.value.replace(/[^0-9]/g, '');
+                                                                field.onChange(value);
+                                                            }}
+                                                        />
                                                     )}
                                                 />
                                             </Form.Item>
@@ -351,7 +377,7 @@ const GoldFacilityApplication: React.FC = () => {
                                                                         loading={goldsmithLoading}
                                                                         onChange={(value) => {
                                                                             setValue('goldsmithId', value, { shouldValidate: true });
-                                                                            setValue('goldsmithIdFx', goldsmiths.find((item) => item.id === value)?.branchIdFx ?? '', { shouldValidate: true });
+                                                                            setValue('goldsmithIdFx', value ?? '', { shouldValidate: true });
                                                                         }}
                                                                     />
                                                                 )}
@@ -361,9 +387,26 @@ const GoldFacilityApplication: React.FC = () => {
                                                             <Controller
                                                                 name="goldMarketValue"
                                                                 control={control}
-                                                                disabled
                                                                 render={({ field }) => (
-                                                                    <Input {...field} placeholder="Gold Market Value" />
+                                                                    // <Input {...field} placeholder="Gold Market Value"  />
+                                                                    <InputNumber
+                                                                        {...field}
+                                                                        placeholder="Gold Market Value"
+                                                                        style={{ width: '100%' }}
+                                                                        formatter={(value) =>
+                                                                            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
+                                                                        }
+                                                                        parser={(value) =>
+                                                                            value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
+                                                                        }
+                                                                        step={0.01}
+                                                                        stringMode // keeps precision in string format
+                                                                        onChange={(value) =>
+                                                                            field.onChange(Number(value))
+                                                                        }
+                                                                        prefix="Rs."
+                                                                        disabled
+                                                                    />
                                                                 )}
                                                             />
                                                         </Form.Item>
@@ -392,7 +435,6 @@ const GoldFacilityApplication: React.FC = () => {
                                                             <Controller
                                                                 name="goldCollateralValue"
                                                                 control={control}
-                                                                disabled
                                                                 render={({ field }) => (
                                                                     <InputNumber
                                                                         {...field}
@@ -409,6 +451,8 @@ const GoldFacilityApplication: React.FC = () => {
                                                                         onChange={(value) =>
                                                                             field.onChange(Number(value))
                                                                         }
+                                                                        disabled
+                                                                        prefix="Rs."
                                                                     />
                                                                 )}
                                                             />
@@ -424,9 +468,25 @@ const GoldFacilityApplication: React.FC = () => {
                                                             <Controller
                                                                 name="denMarketValue"
                                                                 control={control}
-                                                                disabled
                                                                 render={({ field }) => (
-                                                                    <Input {...field} placeholder="Den Market Value" />
+                                                                    <InputNumber
+                                                                        {...field}
+                                                                        placeholder="Den Market Value"
+                                                                        style={{ width: '100%' }}
+                                                                        formatter={(value) =>
+                                                                            `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + (value?.toString().indexOf('.') === -1 ? '.00' : '')
+                                                                        }
+                                                                        parser={(value) =>
+                                                                            value ? parseFloat(value.replace(/[^0-9.]/g, '')).toFixed(2) : ''
+                                                                        }
+                                                                        step={0.01}
+                                                                        stringMode // keeps precision in string format
+                                                                        onChange={(value) =>
+                                                                            field.onChange(Number(value))
+                                                                        }
+                                                                        disabled
+                                                                        prefix="Rs."
+                                                                    />
                                                                 )}
                                                             />
                                                         </Form.Item>
@@ -434,7 +494,6 @@ const GoldFacilityApplication: React.FC = () => {
                                                             <Controller
                                                                 name="denCollateralValue"
                                                                 control={control}
-                                                                disabled
                                                                 render={({ field }) => (
                                                                     <InputNumber
                                                                         {...field}
@@ -451,6 +510,8 @@ const GoldFacilityApplication: React.FC = () => {
                                                                         onChange={(value) =>
                                                                             field.onChange(Number(value))
                                                                         }
+                                                                        disabled
+                                                                        prefix="Rs."
                                                                     />
                                                                 )}
                                                             />
@@ -529,9 +590,9 @@ const DetailsCard: React.FC<{ detail: IGoldLoanAppDetails; onEdit: () => void; o
                         detail.goldLoanAppType === 'GOD' && (
                             <>
                                 <Descriptions.Item label="Goldsmith ID">{detail.goldsmithName ?? detail.goldsmithIdFx}</Descriptions.Item>
-                                <Descriptions.Item label="Gold Collateral Value">{detail.goldCollateralValue}</Descriptions.Item>
+                                <Descriptions.Item label="Gold Collateral Value">{formatCurrency(Number(detail.goldCollateralValue))}</Descriptions.Item>
                                 <Descriptions.Item label="Gold Gross Weight">{detail.goldGrossWeight}</Descriptions.Item>
-                                <Descriptions.Item label="Gold Market Value">{detail.goldMarketValue}</Descriptions.Item>
+                                <Descriptions.Item label="Gold Market Value">{formatCurrency(Number(detail.goldMarketValue))}</Descriptions.Item>
                                 <Descriptions.Item label="Gold Net Weight">{detail.goldNetWeight}</Descriptions.Item>
                             </>
                         )
@@ -539,9 +600,9 @@ const DetailsCard: React.FC<{ detail: IGoldLoanAppDetails; onEdit: () => void; o
                     {
                         detail.goldLoanAppType === 'DEN' && (
                             <>
-                                <Descriptions.Item label="Den Collateral Value">{detail.denCollateralValue}</Descriptions.Item>
+                                <Descriptions.Item label="Den Collateral Value">{formatCurrency(Number(detail.denCollateralValue))}</Descriptions.Item>
                                 <Descriptions.Item label="Den Gross Weight">{detail.denGrossWeight}</Descriptions.Item>
-                                <Descriptions.Item label="Den Market Value">{detail.denMarketValue}</Descriptions.Item>
+                                <Descriptions.Item label="Den Market Value">{formatCurrency(Number(detail.denMarketValue))}</Descriptions.Item>
                                 <Descriptions.Item label="Den Net Weight">{detail.denNetWeight}</Descriptions.Item>
                             </>
                         )
