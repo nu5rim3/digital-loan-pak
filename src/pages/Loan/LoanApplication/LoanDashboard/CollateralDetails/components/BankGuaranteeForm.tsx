@@ -13,7 +13,7 @@ interface BankGuaranteeFormProps {
 }
 
 const prepareBankGuaranteeData = (formData: FormValues, appraisalId: string) => {
-  const isLOFIN = formData.bankGuaranteeType === "LOFIN";
+  const isLOFIN = formData.bankGuaranteeType === "Issued by LOLC";
   const isOnDemand = formData.bankGuaranteeType === "On Demand";
 
   // Prepare the payload for the API
@@ -39,7 +39,7 @@ const prepareBankGuaranteeData = (formData: FormValues, appraisalId: string) => 
   // Add OnDemand specific fields
   if (isOnDemand) {
     payload.institutionName = formData.institutionName || null;
-    payload.dateOfExpiry = formData.dateOfExpiry || null;
+    payload.expiryDate = formData.expiryDate || null;
     payload.referenceNo = formData.referenceNoOndemand || null;
     payload.valueOfGuarantee = formData.valueOfGuarantee || null;
     payload.renewedBy = formData.renewedBy || null;
@@ -81,7 +81,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
 
   useEffect(() => {
     if (!dataFetched.current) {
-      fetchTypes("bank-guarantee");
+      fetchTypes("B");
       fetchOwnerships();
       fetchBondRenewals();
       fetchInsuranceCompanies();
@@ -94,16 +94,20 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
     name: "bankGuaranteeType",
   });
 
-  const isLOFIN = bankGuaranteeType === "LOFIN";
+  const isLOFIN = bankGuaranteeType === "Issued by LOLC";
   const isOnDemand = bankGuaranteeType === "On Demand";
   const isEditMode = !!bgId;
 
-  const getOptions = (arr: any[]) =>
+  const getOptions = (
+    arr: any[],
+    labelKey: string = "description",
+    valueKey: string = "description"
+  ) =>
     arr
-      .filter((item) => item.status === "A")
+      .filter((item) => item.status ? item.status === "A" : true)
       .map((item) => ({
-        label: item.description,
-        value: item.description,
+        label: item[labelKey],
+        value: item[valueKey],
       }));
 
 
@@ -111,7 +115,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-4">
-          {isEditMode ? `Edit Bank Guarantee (ID: ${bgId})` : "New Bank Guarantee"}
+          {isEditMode ? `Edit Bank Guarantee` : "New Bank Guarantee"}
         </h3>
         <Spin spinning={savingBankGuarantee}>
           <div className="grid grid-cols-3 gap-4">
@@ -138,6 +142,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                 render={({ field }) => (
                   <Select
                     {...field}
+                    showSearch
                     placeholder="Select Type"
                     loading={bankGuaranteeTypesLoading}
                     options={getOptions(bankGuaranteeTypes)}
@@ -160,6 +165,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                 render={({ field }) => (
                   <Select
                     {...field}
+                    showSearch
                     placeholder="Select Ownership"
                     loading={bankGuaranteeOwnershipsLoading}
                     options={getOptions(bankGuaranteeOwnerships)}
@@ -333,14 +339,14 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                 </Form.Item>
 
                 <Form.Item
-                  label="Date of Expiry"
-                  validateStatus={errors.dateOfExpiry ? "error" : ""}
-                  help={errors.dateOfExpiry?.message}
+                  label="Expiry Date"
+                  validateStatus={errors.expiryDate ? "error" : ""}
+                  help={errors.expiryDate?.message}
                   labelCol={{ span: 24 }}
                   wrapperCol={{ span: 24 }}
                 >
                   <Controller
-                    name="dateOfExpiry"
+                    name="expiryDate"
                     control={control}
                     render={({ field }) => (
                       <DatePicker
@@ -408,6 +414,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                     render={({ field }) => (
                       <Select
                         {...field}
+                        showSearch
                         placeholder="Select Renewed By"
                         loading={bondRenewalsLoading}
                         options={getOptions(bondRenewals)}
@@ -423,20 +430,11 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                     render={({ field }) => (
                       <Select
                         {...field}
+                        showSearch
                         placeholder="Select Insurance Company"
                         loading={insuranceCompaniesLoading}
                         options={getOptions(insuranceCompanies)}
                       />
-                    )}
-                  />
-                </Form.Item>
-
-                <Form.Item label="Reference No">
-                  <Controller
-                    name="bankReferenceNo"
-                    control={control}
-                    render={({ field }) => (
-                      <Input {...field} placeholder="Enter Reference No" />
                     )}
                   />
                 </Form.Item>

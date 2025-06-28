@@ -496,6 +496,8 @@ interface ICommonState {
     value: string;
   }[];
 
+  trialCalculationData: any | null;
+
   fetchOperators: () => Promise<void>;
   fetchECIBReport: (cnic: string) => Promise<void>;
   fetchOrganizationType: () => Promise<void>;
@@ -543,6 +545,8 @@ interface ICommonState {
   fetchModeOfSecurity: (productCode: string) => Promise<void>;
   fetchRelationaShipGaurantor: (productCode: string) => Promise<void>;
   setSelectedProductCode: (productCode: string) => void;
+  setTrialCalculationData: (data: any) => void;
+  resetTrialCalculationData: () => void;
 }
 
 type TPersist = (
@@ -767,6 +771,8 @@ const useCommonStore = create<ICommonState>(
         { label: "Live Stock", value: "LS" },
         { label: "Pension", value: "PN" },
       ],
+
+      trialCalculationData: null,
 
       fetchOperators: async () => {
         set({ operatorLoading: true, operatorError: null });
@@ -1450,6 +1456,14 @@ const useCommonStore = create<ICommonState>(
       setSelectedProductCode: (productCode: string) => {
         set({ selectedProductCode: productCode });
       },
+
+      setTrialCalculationData: (data: any) => {
+        set({ trialCalculationData: data });
+      },
+
+      resetTrialCalculationData: () => {
+        set({ trialCalculationData: null });
+      },
     }),
 
     {
@@ -1471,6 +1485,7 @@ const useCommonStore = create<ICommonState>(
         subSectors: state.subSectors,
         banks: state.banks,
         organizationType: state.organizationType,
+        trialCalculationData: state.trialCalculationData,
       }),
     }
   )

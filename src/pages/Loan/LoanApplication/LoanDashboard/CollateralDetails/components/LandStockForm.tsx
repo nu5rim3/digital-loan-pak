@@ -30,8 +30,8 @@ const prepareLandStockData = (formData: FormValues, appraisalId: string) => {
     landStockCategory: formData.landStockCategory || undefined,
     landStockSecDate: formData.landStockSecurityDate ?
       dayjs(formData.landStockSecurityDate).format("YYYY-MM-DD") : undefined,
-    landStockSecCategory: "Mortgage", // Default value
-    landStockSecType: formData.landStockSecurityType || undefined
+    landStockSecCategory: formData.landStockSecurityType || undefined,
+    landStockSecType: "Primary"
   };
 };
 
@@ -42,6 +42,8 @@ const LandStockForm: React.FC<LandStockFormProps> = ({
   const {
     types: landStockTypes,
     typesLoading: landStockTypesLoading,
+    subTypes: landStockSubTypes,
+    subTypesLoading: landStockSubTypesLoading,
     ownerships: landStockOwnerships,
     ownershipsLoading: landStockOwnershipsLoading,
     securityTypes: landStockSecurityTypes,
@@ -49,6 +51,7 @@ const LandStockForm: React.FC<LandStockFormProps> = ({
     securityCategories: landStockCategories,
     securityCategoriesLoading: landStockCategoriesLoading,
     fetchTypes,
+    fetchSubTypes,
     fetchOwnerships,
     fetchSecurityTypes,
     fetchSecurityCategories,
@@ -65,7 +68,8 @@ const LandStockForm: React.FC<LandStockFormProps> = ({
 
   useEffect(() => {
     if (!dataFetched.current) {
-      fetchTypes("land-stock");
+      fetchTypes("L");
+      fetchSubTypes("L");
       fetchOwnerships();
       fetchSecurityTypes();
       fetchSecurityCategories();
@@ -80,19 +84,16 @@ const LandStockForm: React.FC<LandStockFormProps> = ({
 
   const isEditMode = !!landStockId;
 
-  const getOptions = (arr: any[]) =>
+  const getOptions = (
+    arr: any[],
+    labelKey: string = "description",
+    valueKey: string = "code"
+  ) =>
     arr
-      .filter((item) => item.status === "A")
+      .filter((item) => item.status ? item.status === "A" : true)
       .map((item) => ({
-        label: item.description,
-        value: item.code,
-      }));
-
-  const getSecurityTypeOptions = (arr: any[]) =>
-    arr
-      .map((item) => ({
-        label: item.description,
-        value: item.code,
+        label: item[labelKey],
+        value: item[valueKey],
       }));
 
   return (
@@ -126,9 +127,10 @@ const LandStockForm: React.FC<LandStockFormProps> = ({
                 render={({ field }) => (
                   <Select
                     {...field}
+                    showSearch
                     placeholder="Select Type"
                     loading={landStockTypesLoading}
-                    options={getOptions(landStockTypes)}
+                    options={getOptions(landStockTypes, "description", "description")}
                   />
                 )}
               />
@@ -145,13 +147,13 @@ const LandStockForm: React.FC<LandStockFormProps> = ({
                 name="landStockSubType"
                 control={control}
                 render={({ field }) => (
-                  <Select {...field} placeholder="Select Sub Type">
-                    <Select.Option value="Paddy Field">Paddy Field</Select.Option>
-                    <Select.Option value="Rubber">Rubber</Select.Option>
-                    <Select.Option value="Tea">Tea</Select.Option>
-                    <Select.Option value="Coconut">Coconut</Select.Option>
-                    <Select.Option value="Mixed Crop">Mixed Crop</Select.Option>
-                  </Select>
+                  <Select
+                    {...field}
+                    showSearch
+                    placeholder="Select Type"
+                    loading={landStockSubTypesLoading}
+                    options={getOptions(landStockSubTypes, "description", "description")}
+                  />
                 )}
               />
             </Form.Item>
@@ -170,9 +172,10 @@ const LandStockForm: React.FC<LandStockFormProps> = ({
                 render={({ field }) => (
                   <Select
                     {...field}
+                    showSearch
                     placeholder="Select Ownership"
                     loading={landStockOwnershipsLoading}
-                    options={getOptions(landStockOwnerships)}
+                    options={getOptions(landStockOwnerships, "description", "description")}
                   />
                 )}
               />
@@ -306,9 +309,10 @@ const LandStockForm: React.FC<LandStockFormProps> = ({
                 render={({ field }) => (
                   <Select
                     {...field}
+                    showSearch
                     placeholder="Select Category"
                     loading={landStockCategoriesLoading}
-                    options={getOptions(landStockCategories)}
+                    options={getOptions(landStockCategories, "description", "description")}
                   />
                 )}
               />
@@ -351,9 +355,10 @@ const LandStockForm: React.FC<LandStockFormProps> = ({
                 render={({ field }) => (
                   <Select
                     {...field}
+                    showSearch
                     placeholder="Select Security Type"
                     loading={landStockSecurityTypesLoading}
-                    options={getSecurityTypeOptions(landStockSecurityTypes)}
+                    options={getOptions(landStockSecurityTypes, "description", "description")}
                   />
                 )}
               />

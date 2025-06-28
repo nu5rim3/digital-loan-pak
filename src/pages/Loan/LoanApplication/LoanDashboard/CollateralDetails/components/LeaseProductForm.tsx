@@ -4,14 +4,15 @@ import { Control, Controller, useWatch } from "react-hook-form";
 import { LeaseProductFormValues } from "../types";
 import dayjs from "dayjs";
 import useCollateralStore from "../../../../../../store/collateralStore";
+import useCommonStore from "../../../../../../store/commonStore";
 import { message } from "antd";
 
 interface LeaseProductFormProps {
   control: Control<LeaseProductFormValues>;
   errors: Record<string, any>;
+  setValue?: (name: keyof LeaseProductFormValues, value: any) => void;
 }
 
-// Function to submit lease data to the API
 export const submitLease = async (
   data: LeaseProductFormValues,
   appraisalId: string,
@@ -46,15 +47,15 @@ export const submitLease = async (
       province,
     } = data;
 
-    // Format dates to strings for API
+
     const formatDate = (date: Date | undefined) => {
       return date ? dayjs(date).format('YYYY-MM-DD') : undefined;
     };
 
-    // Prepare payload for API
+
     const payload = {
       appraisalId,
-      leaseEquipType: equipmentType || "E", // Default to "E" if not provided
+      leaseEquipType: equipmentType || "E",
       leaseCost: equipmentCost || "0",
       leaseSupplierCode: supplierCode || "",
       leaseEquipName: equipmentName || "",
@@ -69,7 +70,7 @@ export const submitLease = async (
       enginNo: engineNo,
       chasisNo: chassisNo,
       duplicateKey,
-      leaseModel: model, // Using the same value for model
+      leaseModel: model,
       leaseVehiNo: vehicleNo,
       leaseRegBookNo: registrationBookNo,
       leaseRegDate: formatDate(registrationDate),
@@ -81,8 +82,6 @@ export const submitLease = async (
       refNo: referenceNo,
     };
 
-    console.log(`${isEdit ? 'Updating' : 'Saving'} lease with payload:`, payload);
-
     let response;
     if (isEdit && id) {
       response = await useCollateralStore.getState().updateLease(id, payload);
@@ -91,11 +90,8 @@ export const submitLease = async (
       response = await useCollateralStore.getState().saveLease(payload);
       message.success("Lease saved successfully");
     }
-
-    console.log(`Lease ${isEdit ? 'update' : 'save'} response:`, response);
     return true;
   } catch (error) {
-    console.error(`Error ${isEdit ? 'updating' : 'saving'} lease:`, error);
     message.error(`Failed to ${isEdit ? 'update' : 'save'} lease`);
     return false;
   }
@@ -103,21 +99,78 @@ export const submitLease = async (
 
 export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
   control,
+  errors,
+  setValue,
 }) => {
   const {
+    suppliers,
+    suppliersLoading,
     insuranceCompanies,
     insuranceCompaniesLoading,
+    conditions,
+    conditionsLoading,
+    vehicleCategories,
+    vehicleCategoriesLoading,
+    depreciationRates,
+    fetchingDepreciationRates,
+    types: vehicleTypes,
+    typesLoading: vehicleTypesLoading,
+    makes: vehicleMakes,
+    makesLoading: vehicleMakesLoading,
+    models: vehicleModels,
+    modelsLoading: vehicleModelsLoading,
+    fetchSuppliers,
+    fetchConditions,
     fetchInsuranceCompanies,
+    fetchDepreciationRates,
+    fetchVehicleCategories,
+    fetchTypes,
+    fetchMakes,
+    fetchModels,
   } = useCollateralStore();
 
+  const { trialCalculationData } = useCommonStore();
+
+
   const dataFetched = useRef(false);
+  const selectedMake = useWatch({
+    control,
+    name: "manufacturer",
+  });
 
   useEffect(() => {
     if (!dataFetched.current) {
+      fetchSuppliers();
+      fetchConditions();
+      fetchVehicleCategories()
+      fetchDepreciationRates();
       fetchInsuranceCompanies();
+      fetchTypes("V");
+      fetchMakes();
       dataFetched.current = true;
     }
-  }, [fetchInsuranceCompanies]);
+  }, [fetchSuppliers, fetchConditions, fetchVehicleCategories, fetchDepreciationRates, fetchInsuranceCompanies, fetchMakes]);
+
+  // Set default values from trialCalculationData when component loads
+  useEffect(() => {
+    if (trialCalculationData && setValue) {
+
+      if (trialCalculationData.insuranceVE) {
+        const equipmentTypeLabel = trialCalculationData.insuranceVE === 'V' ? 'Vehicle' : 'Equipment';
+        setValue('equipmentType', equipmentTypeLabel);
+      }
+
+      if (trialCalculationData.cost) {
+        setValue('equipmentCost', trialCalculationData.cost.toString());
+      }
+    }
+  }, [trialCalculationData, setValue]);
+
+  useEffect(() => {
+    if (selectedMake) {
+      fetchModels(selectedMake);
+    }
+  }, [selectedMake, fetchModels]);
 
   const condition = useWatch({
     control,
@@ -126,12 +179,16 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
 
   const isSecondHand = condition === "used";
 
-  const getOptions = (arr: any[]) =>
+  const getOptions = (
+    arr: any[],
+    labelKey: string = "description",
+    valueKey: string = "code"
+  ) =>
     arr
-      .filter((item) => item.status === "A")
+      .filter((item) => item.status ? item.status === "A" : true)
       .map((item) => ({
-        label: item.description,
-        value: item.code,
+        label: item[labelKey],
+        value: item[valueKey],
       }));
 
   return (
@@ -140,9 +197,10 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
         <h3 className="text-lg font-semibold mb-4">Equipment Details</h3>
 
         <div className="grid grid-cols-4 gap-4">
-          <Form.Item label="Equipment Type">
+          <Form.Item label="Equipment Type" required validateStatus={errors.equipmentType ? "error" : ""} help={errors.equipmentType?.message}>
             <Controller
               name="equipmentType"
+              disabled
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Equipment Type" />
@@ -150,9 +208,10 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
             />
           </Form.Item>
 
-          <Form.Item label="Equipment Cost">
+          <Form.Item label="Equipment Cost" required validateStatus={errors.equipmentCost ? "error" : ""} help={errors.equipmentCost?.message}>
             <Controller
               name="equipmentCost"
+              disabled
               control={control}
               render={({ field }) => (
                 <Input {...field} type="number" placeholder="Enter Cost" />
@@ -162,20 +221,23 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
         </div>
 
         <div className="grid grid-cols-4 gap-4">
-          <Form.Item label="Supplier Code" required>
+          <Form.Item label="Supplier Code" required validateStatus={errors.supplierCode ? "error" : ""} help={errors.supplierCode?.message}>
             <Controller
               name="supplierCode"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Supplier Code">
-                  <Select.Option value="supplier1">Supplier 1</Select.Option>
-                  <Select.Option value="supplier2">Supplier 2</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  showSearch
+                  placeholder="Select Supplier"
+                  loading={suppliersLoading}
+                  options={getOptions(suppliers, "businessType", "code")}
+                />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Equipment Name" required>
+          <Form.Item label="Equipment Name" required validateStatus={errors.equipmentName ? "error" : ""} help={errors.equipmentName?.message}>
             <Controller
               name="equipmentName"
               control={control}
@@ -185,41 +247,50 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
             />
           </Form.Item>
 
-          <Form.Item label="Condition" required>
+          <Form.Item label="Condition" required validateStatus={errors.condition ? "error" : ""} help={errors.condition?.message}>
             <Controller
               name="condition"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Condition">
-                  <Select.Option value="new">New</Select.Option>
-                  <Select.Option value="used">Used</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  showSearch
+                  placeholder="Select Condition"
+                  loading={conditionsLoading}
+                  options={getOptions(conditions)}
+                />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Category" required>
+          <Form.Item label="Category" required validateStatus={errors.category ? "error" : ""} help={errors.category?.message}>
             <Controller
               name="category"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Category">
-                  <Select.Option value="category1">Category 1</Select.Option>
-                  <Select.Option value="category2">Category 2</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  showSearch
+                  placeholder="Select Category"
+                  loading={vehicleCategoriesLoading}
+                  options={getOptions(vehicleCategories)}
+                />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Depreciation Code" required>
+          <Form.Item label="Depreciation Code" required validateStatus={errors.depreciationCode ? "error" : ""} help={errors.depreciationCode?.message}>
             <Controller
               name="depreciationCode"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Depreciation Code">
-                  <Select.Option value="code1">Code 1</Select.Option>
-                  <Select.Option value="code2">Code 2</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  showSearch
+                  placeholder="Select Category"
+                  loading={fetchingDepreciationRates}
+                  options={getOptions(depreciationRates, "description", "description")}
+                />
               )}
             />
           </Form.Item>
@@ -227,47 +298,55 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
 
         <h3 className="text-lg font-semibold mb-4 mt-6">Vehicle Details</h3>
         <div className="grid grid-cols-4 gap-4">
-          <Form.Item label="Type" required>
+          <Form.Item label="Type" required validateStatus={errors.vehicleType ? "error" : ""} help={errors.vehicleType?.message}>
             <Controller
               name="vehicleType"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Vehicle Type">
-                  <Select.Option value="car">Car</Select.Option>
-                  <Select.Option value="truck">Truck</Select.Option>
-                  <Select.Option value="van">Van</Select.Option>
-                  <Select.Option value="bus">Bus</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  showSearch
+                  placeholder="Select Type"
+                  loading={vehicleTypesLoading}
+                  options={getOptions(vehicleTypes)}
+                />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Manufacturer" required>
+          <Form.Item label="Manufacturer" required validateStatus={errors.manufacturer ? "error" : ""} help={errors.manufacturer?.message}>
             <Controller
               name="manufacturer"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Manufacturer">
-                  <Select.Option value="toyota">Toyota</Select.Option>
-                  <Select.Option value="honda">Honda</Select.Option>
-                  <Select.Option value="suzuki">Suzuki</Select.Option>
-                  <Select.Option value="mitsubishi">Mitsubishi</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  showSearch
+                  placeholder="Select Make"
+                  loading={vehicleMakesLoading}
+                  options={getOptions(vehicleMakes, "description", "code")}
+                />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Model" required>
+          <Form.Item label="Model" required validateStatus={errors.model ? "error" : ""} help={errors.model?.message}>
             <Controller
               name="model"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter Model" />
+                <Select
+                  {...field}
+                  showSearch
+                  placeholder="Select Model"
+                  loading={vehicleModelsLoading}
+                  options={getOptions(vehicleModels)}
+                />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Engine Capacity CC" required>
+          <Form.Item label="Engine Capacity CC" required validateStatus={errors.engineCapacityCC ? "error" : ""} help={errors.engineCapacityCC?.message}>
             <Controller
               name="engineCapacityCC"
               control={control}
@@ -277,7 +356,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
             />
           </Form.Item>
 
-          <Form.Item label="Engine Capacity HP" required>
+          <Form.Item label="Engine Capacity HP" required validateStatus={errors.engineCapacityHP ? "error" : ""} help={errors.engineCapacityHP?.message}>
             <Controller
               name="engineCapacityHP"
               control={control}
@@ -382,13 +461,14 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
             />
           </Form.Item>
 
-          <Form.Item label="Insurance Company" required>
+          <Form.Item label="Insurance Company" required validateStatus={errors.insuranceCompany ? "error" : ""} help={errors.insuranceCompany?.message}>
             <Controller
               name="insuranceCompany"
               control={control}
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Insurance Company"
                   loading={insuranceCompaniesLoading}
                   options={getOptions(insuranceCompanies)}
@@ -397,7 +477,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
             />
           </Form.Item>
 
-          <Form.Item label="Reference No" required>
+          <Form.Item label="Reference No" required validateStatus={errors.referenceNo ? "error" : ""} help={errors.referenceNo?.message}>
             <Controller
               name="referenceNo"
               control={control}

@@ -186,7 +186,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         fetchFacilityTypes,
         fetchProductTypes,
         fetchSubProductTypes,
-        setSelectedProductCategory, setSelectedProductCode } = useCommonStore();
+        setSelectedProductCategory, setSelectedProductCode, trialCalculationData, setTrialCalculationData, resetTrialCalculationData } = useCommonStore();
 
     const { productDetails, productDetailsLoading, fetchProductDetails, resetProductDetails } = useLoanStore()
     const { user } = useUserStore()
@@ -334,6 +334,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         resetProductDetails()
         resetTrailCalculationDetails()
         resetCRIBDetails()
+        resetTrialCalculationData()
         setIsSaveShow(false)
     }
 
@@ -343,6 +344,13 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    // Restore saved trial calculation data when component mounts
+    useEffect(() => {
+        if (trialCalculationData) {
+            reset(trialCalculationData);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const productCategory = watch('productCategory');
     const productType = watch('productType');
@@ -370,6 +378,14 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [productCategory])
+
+    // Save all form values to trialCalculationData state
+    useEffect(() => {
+        const subscription = watch((value) => {
+            setTrialCalculationData(value);
+        });
+        return () => subscription.unsubscribe();
+    }, [watch, setTrialCalculationData]);
 
     useEffect(() => {
         if (productType !== undefined && productType !== '') {

@@ -102,7 +102,7 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
 
   useEffect(() => {
     if (!dataFetched.current) {
-      fetchTypes("machinery");
+      fetchTypes("M");
       fetchOwnerships();
       fetchSuppliers();
       fetchConditions();
@@ -119,12 +119,16 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
     fetchInsuranceCompanies,
   ]);
 
-  const getOptions = (arr: any[]) =>
+  const getOptions = (
+    arr: any[],
+    labelKey: string = "description",
+    valueKey: string = "code"
+  ) =>
     arr
-      .filter((item) => item.status === "A")
+      .filter((item) => item.status ? item.status === "A" : true)
       .map((item) => ({
-        label: item.description,
-        value: item.code,
+        label: item[labelKey],
+        value: item[valueKey],
       }));
 
   return (
@@ -146,9 +150,10 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Type"
                   loading={machineryTypesLoading}
-                  options={getOptions(machineryTypes)}
+                  options={getOptions(machineryTypes, "description", "description")}
                 />
               )}
             />
@@ -168,9 +173,10 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Ownership"
                   loading={machineryOwnershipsLoading}
-                  options={getOptions(machineryOwnerships)}
+                  options={getOptions(machineryOwnerships, "description", "description")}
                 />
               )}
             />
@@ -190,9 +196,10 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Supplier"
                   loading={machinerySuppliersLoading}
-                  options={getOptions(machinerySuppliers)}
+                  options={getOptions(machinerySuppliers, "supplierName", "supplierName")}
                 />
               )}
             />
@@ -212,26 +219,11 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Condition"
                   loading={machineryConditionsLoading}
-                  options={getOptions(machineryConditions)}
+                  options={getOptions(machineryConditions, "description", "description")}
                 />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Description"
-            validateStatus={errors.machineryDescription ? "error" : ""}
-            help={errors.machineryDescription?.message}
-            labelCol={{ span: 24 }}
-            wrapperCol={{ span: 24 }}
-          >
-            <Controller
-              name="machineryDescription"
-              control={control}
-              render={({ field }) => (
-                <Input.TextArea {...field} placeholder="Enter Description" />
               )}
             />
           </Form.Item>
@@ -398,9 +390,10 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Insurance Company"
                   loading={insuranceCompaniesLoading}
-                  options={getOptions(insuranceCompanies)}
+                  options={getOptions(insuranceCompanies, "description", "description")}
                 />
               )}
             />
@@ -412,6 +405,23 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Reference No" />
+              )}
+            />
+
+          </Form.Item>
+
+          <Form.Item
+            label="Description"
+            validateStatus={errors.machineryDescription ? "error" : ""}
+            help={errors.machineryDescription?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="machineryDescription"
+              control={control}
+              render={({ field }) => (
+                <Input.TextArea {...field} placeholder="Enter Description" />
               )}
             />
           </Form.Item>

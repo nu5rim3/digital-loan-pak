@@ -100,6 +100,8 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
   const {
     types: propertyTypes,
     typesLoading: propertyTypesLoading,
+    subTypes: propertySubTypes,
+    subTypesLoading: propertySubTypesLoading,
     ownerships: propertyOwnerships,
     ownershipsLoading: propertyOwnershipsLoading,
     bondTypes: propertyBondTypes,
@@ -111,6 +113,7 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
     insuranceCompanies,
     insuranceCompaniesLoading,
     fetchTypes,
+    fetchSubTypes,
     fetchOwnerships,
     fetchBondTypes,
     fetchPropertyTypes,
@@ -122,7 +125,8 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
 
   useEffect(() => {
     if (!dataFetched.current) {
-      fetchTypes('property-mortgage');
+      fetchTypes('R');
+      fetchSubTypes("R");
       fetchOwnerships();
       fetchBondTypes();
       fetchPropertyTypes();
@@ -139,12 +143,16 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
     fetchInsuranceCompanies,
   ]);
 
-  const getOptions = (arr: any[]) =>
+  const getOptions = (
+    arr: any[],
+    labelKey: string = "description",
+    valueKey: string = "code"
+  ) =>
     arr
-      .filter((item) => item.status === "A")
+      .filter((item) => item.status ? item.status === "A" : true)
       .map((item) => ({
-        label: item.description,
-        value: item.code,
+        label: item[labelKey],
+        value: item[valueKey],
       }));
 
   return (
@@ -166,9 +174,10 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Type"
                   loading={propertyTypesLoading}
-                  options={getOptions(propertyTypes)}
+                  options={getOptions(propertyTypes, "description", "description")}
                 />
               )}
             />
@@ -186,12 +195,13 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
               name="propertySubType"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Sub Type">
-                  <Select.Option value="apartment">Apartment</Select.Option>
-                  <Select.Option value="house">House</Select.Option>
-                  <Select.Option value="villa">Villa</Select.Option>
-                  <Select.Option value="plot">Plot</Select.Option>
-                </Select>
+                <Select
+                  {...field}
+                  showSearch
+                  placeholder="Select Type"
+                  loading={propertySubTypesLoading}
+                  options={getOptions(propertySubTypes, "description", "description")}
+                />
               )}
             />
           </Form.Item>
@@ -210,6 +220,7 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Ownership"
                   loading={propertyOwnershipsLoading}
                   options={getOptions(propertyOwnerships)}
@@ -232,6 +243,7 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Bond Type"
                   loading={propertyBondTypesLoading}
                   options={getOptions(propertyBondTypes)}
@@ -254,6 +266,7 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Property Type"
                   loading={propertyPropertyTypesLoading}
                   options={getOptions(propertyPropertyTypes)}
@@ -372,7 +385,7 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
               name="propertyPOA"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select POA">
+                <Select {...field} showSearch placeholder="Select POA">
                   <Select.Option value="yes">Yes</Select.Option>
                   <Select.Option value="no">No</Select.Option>
                 </Select>
@@ -411,6 +424,7 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Company"
                   loading={propertyCompaniesLoading}
                   options={getOptions(propertyCompanies)}
@@ -448,7 +462,7 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
               name="propertyTitleInsurance"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Title Insurance">
+                <Select {...field} showSearch placeholder="Select Title Insurance">
                   <Select.Option value="yes">Yes</Select.Option>
                   <Select.Option value="no">No</Select.Option>
                 </Select>
@@ -468,7 +482,7 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
               name="propertyInsuranceOfBuilding"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select Insurance of Building">
+                <Select {...field} showSearch placeholder="Select Insurance of Building">
                   <Select.Option value="yes">Yes</Select.Option>
                   <Select.Option value="no">No</Select.Option>
                 </Select>
@@ -569,9 +583,10 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Insurance Company"
                   loading={insuranceCompaniesLoading}
-                  options={getOptions(insuranceCompanies)}
+                  options={getOptions(insuranceCompanies, "description", "description")}
                 />
               )}
             />

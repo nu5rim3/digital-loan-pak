@@ -104,8 +104,8 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
     suppliersLoading: vehicleSuppliersLoading,
     conditions: vehicleConditions,
     conditionsLoading: vehicleConditionsLoading,
-    securityCategories: vehicleCategories,
-    securityCategoriesLoading: vehicleCategoriesLoading,
+    vehicleCategories,
+    vehicleCategoriesLoading,
     makes: vehicleMakes,
     makesLoading: vehicleMakesLoading,
     models: vehicleModels,
@@ -113,6 +113,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
     insuranceCompanies,
     insuranceCompaniesLoading,
     fetchTypes,
+    fetchVehicleCategories,
     fetchOwnerships,
     fetchSuppliers,
     fetchConditions,
@@ -130,7 +131,8 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
 
   useEffect(() => {
     if (!dataFetched.current) {
-      fetchTypes("vehicle");
+      fetchTypes("V");
+      fetchVehicleCategories();
       fetchOwnerships();
       fetchSuppliers();
       fetchConditions();
@@ -141,6 +143,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
     }
   }, [
     fetchTypes,
+    fetchVehicleCategories,
     fetchOwnerships,
     fetchSuppliers,
     fetchConditions,
@@ -155,13 +158,18 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
     }
   }, [selectedMake, fetchModels]);
 
-  const getOptions = (arr: any[]) =>
+  const getOptions = (
+    arr: any[],
+    labelKey: string = "description",
+    valueKey: string = "code"
+  ) =>
     arr
-      .filter((item) => item.status === "A")
+      .filter((item) => item.status ? item.status === "A" : true)
       .map((item) => ({
-        label: item.description,
-        value: item.code,
+        label: item[labelKey],
+        value: item[valueKey],
       }));
+
 
   return (
     <div className="space-y-6">
@@ -182,6 +190,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Type"
                   loading={vehicleTypesLoading}
                   options={getOptions(vehicleTypes)}
@@ -204,6 +213,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Ownership"
                   loading={vehicleOwnershipsLoading}
                   options={getOptions(vehicleOwnerships)}
@@ -226,9 +236,10 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Supplier"
                   loading={vehicleSuppliersLoading}
-                  options={getOptions(vehicleSuppliers)}
+                  options={getOptions(vehicleSuppliers, "businessType", "code")}
                 />
               )}
             />
@@ -248,6 +259,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Condition"
                   loading={vehicleConditionsLoading}
                   options={getOptions(vehicleConditions)}
@@ -270,6 +282,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Category"
                   loading={vehicleCategoriesLoading}
                   options={getOptions(vehicleCategories)}
@@ -292,9 +305,10 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Make"
                   loading={vehicleMakesLoading}
-                  options={getOptions(vehicleMakes)}
+                  options={getOptions(vehicleMakes, "description", "code")}
                 />
               )}
             />
@@ -314,6 +328,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Model"
                   loading={vehicleModelsLoading}
                   options={getOptions(vehicleModels)}
@@ -350,22 +365,6 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Chassis No" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Description"
-            validateStatus={errors.vehicleDescription ? "error" : ""}
-            help={errors.vehicleDescription?.message}
-            labelCol={{ span: 24 }}
-            wrapperCol={{ span: 24 }}
-          >
-            <Controller
-              name="vehicleDescription"
-              control={control}
-              render={({ field }) => (
-                <Input.TextArea {...field} placeholder="Enter Description" />
               )}
             />
           </Form.Item>
@@ -542,6 +541,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Insurance Company"
                   loading={insuranceCompaniesLoading}
                   options={getOptions(insuranceCompanies)}
@@ -556,6 +556,22 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Reference No" />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Description"
+            validateStatus={errors.vehicleDescription ? "error" : ""}
+            help={errors.vehicleDescription?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="vehicleDescription"
+              control={control}
+              render={({ field }) => (
+                <Input.TextArea {...field} placeholder="Enter Description" />
               )}
             />
           </Form.Item>
