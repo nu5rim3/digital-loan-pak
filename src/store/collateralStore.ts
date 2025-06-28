@@ -1,11 +1,11 @@
-import { create } from 'zustand';
-import { API } from '../services/api';
+import { create } from "zustand";
+import { API, APIAuth } from "../services/api";
 
 // Common interfaces
 interface IBaseItem {
   code: string;
   description: string;
-  status: string;
+  status?: string;
 }
 
 interface IType extends IBaseItem {
@@ -25,7 +25,6 @@ interface BankGuaranteePayload {
   guaranteeValue?: string;
   guaranteeTo?: string;
   institutionName?: string;
-  dateOfExpiry?: string;
   valueOfGuarantee?: string;
   renewedBy?: string;
   insuCompany?: string;
@@ -205,6 +204,8 @@ interface ICollateralState {
   makes: IBaseItem[];
   models: IBaseItem[];
   collaterals: Collateral[];
+  vehicleCategories: IBaseItem[];
+  depreciationRates: IBaseItem[];
 
   // Loading states
   typesLoading: boolean;
@@ -221,6 +222,7 @@ interface ICollateralState {
   conditionsLoading: boolean;
   makesLoading: boolean;
   modelsLoading: boolean;
+  vehicleCategoriesLoading: boolean;
   savingBankGuarantee: boolean;
   updatingBankGuarantee: boolean;
   fetchingBankGuarantee: boolean;
@@ -241,6 +243,7 @@ interface ICollateralState {
   savingVehicle: boolean;
   updatingVehicle: boolean;
   fetchingVehicle: boolean;
+  fetchingDepreciationRates: boolean;
   savingLease: boolean;
   updatingLease: boolean;
   fetchingLease: boolean;
@@ -266,13 +269,14 @@ interface ICollateralState {
   saveVehicleError: string | null;
   updateVehicleError: string | null;
   fetchVehicleError: string | null;
+  fetchDepreciationRatesError: string | null;
   saveLeaseError: string | null;
   updateLeaseError: string | null;
   fetchLeaseError: string | null;
 
   // Fetch functions
-  fetchTypes: (type: 'vehicle' | 'machinery' | 'bank-guarantee' | 'property-mortgage' | 'savings' | 'land-stock') => Promise<void>;
-  fetchSubTypes: (type: 'vehicle' | 'machinery' | 'bank-guarantee' | 'property-mortgage' | 'savings' | 'land-stock') => Promise<void>;
+  fetchTypes: (type: "V" | "M" | "B" | "R" | "F" | "L") => Promise<void>;
+  fetchSubTypes: (type: "V" | "M" | "B" | "R" | "F" | "L") => Promise<void>;
   fetchOwnerships: () => Promise<void>;
   fetchSecurityTypes: () => Promise<void>;
   fetchSecurityCategories: () => Promise<void>;
@@ -291,46 +295,58 @@ interface ICollateralState {
   updateBankGuarantee: (id: string, data: BankGuaranteePayload) => Promise<any>;
   getBankGuarantee: (id: string) => Promise<any>;
   deactivateBankGuarantee: (id: string, appraisalId?: string) => Promise<any>;
-  
+
   // Land Stock API functions
   saveLandStock: (data: LandStockPayload) => Promise<any>;
   updateLandStock: (id: string, data: LandStockPayload) => Promise<any>;
   getLandStock: (id: string) => Promise<any>;
   deactivateLandStock: (id: string, appraisalId?: string) => Promise<any>;
-  
+
   // Machinery Equipment API functions
   saveMachinery: (data: MachineryPayload) => Promise<any>;
   updateMachinery: (id: string, data: MachineryPayload) => Promise<any>;
   getMachinery: (id: string) => Promise<any>;
   deactivateMachinery: (id: string, appraisalId?: string) => Promise<any>;
-  
+
   // Property Mortgage API functions
   savePropertyMortgage: (data: PropertyMortgagePayload) => Promise<any>;
-  updatePropertyMortgage: (id: string, data: PropertyMortgagePayload) => Promise<any>;
+  updatePropertyMortgage: (
+    id: string,
+    data: PropertyMortgagePayload
+  ) => Promise<any>;
   getPropertyMortgage: (id: string) => Promise<any>;
-  deactivatePropertyMortgage: (id: string, appraisalId?: string) => Promise<any>;
-  
+  deactivatePropertyMortgage: (
+    id: string,
+    appraisalId?: string
+  ) => Promise<any>;
+
   // Savings API functions
   saveSavings: (data: SavingsPayload) => Promise<any>;
   updateSavings: (id: string, data: SavingsPayload) => Promise<any>;
   getSavings: (id: string) => Promise<any>;
   deactivateSavings: (id: string, appraisalId?: string) => Promise<any>;
-  
+
   // Vehicle API functions
   saveVehicle: (data: VehiclePayload) => Promise<any>;
   updateVehicle: (id: string, data: VehiclePayload) => Promise<any>;
   getVehicle: (id: string) => Promise<any>;
   deactivateVehicle: (id: string, appraisalId?: string) => Promise<any>;
-  
+  fetchVehicleCategories: () => Promise<void>;
+
   // Lease API functions
+  fetchDepreciationRates: () => Promise<void>;
   saveLease: (data: LeasePayload) => Promise<any>;
   updateLease: (id: string, data: LeasePayload) => Promise<any>;
   getLease: (id: string) => Promise<any>;
   deactivateLease: (id: string, appraisalId?: string) => Promise<any>;
-  
+
   // Collateral API functions
   fetchCollaterals: (appraisalId: string) => Promise<Collateral[]>;
-  deleteCollateral: (id: string, type: string, appraisalId?: string) => Promise<boolean>;
+  deleteCollateral: (
+    id: string,
+    type: string,
+    appraisalId?: string
+  ) => Promise<boolean>;
 }
 
 const useCollateralStore = create<ICollateralState>((set, get) => ({
@@ -350,6 +366,8 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   makes: [],
   models: [],
   collaterals: [],
+  vehicleCategories: [],
+  depreciationRates: [],
 
   // Initialize loading states
   typesLoading: false,
@@ -366,6 +384,7 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   conditionsLoading: false,
   makesLoading: false,
   modelsLoading: false,
+  vehicleCategoriesLoading: false,
   savingBankGuarantee: false,
   updatingBankGuarantee: false,
   fetchingBankGuarantee: false,
@@ -386,6 +405,7 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   savingVehicle: false,
   updatingVehicle: false,
   fetchingVehicle: false,
+  fetchingDepreciationRates: false,
   savingLease: false,
   updatingLease: false,
   fetchingLease: false,
@@ -411,32 +431,33 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   saveVehicleError: null,
   updateVehicleError: null,
   fetchVehicleError: null,
+  fetchDepreciationRatesError: null,
   saveLeaseError: null,
   updateLeaseError: null,
   fetchLeaseError: null,
 
   // Fetch functions
-  fetchTypes: async () => {
+  fetchTypes: async (securityType) => {
     set({ typesLoading: true });
     try {
-      const endpoint = `/mobixCamsCommon/v1/sub-security/types-1`;
+      const endpoint = `/mobixCamsCommon/v1/sub-security/types-1/${securityType}`;
       const response = await API.get(endpoint);
       set({ types: response.data });
     } catch (error) {
-      console.error('Error fetching types:', error);
+      console.error("Error fetching types:", error);
     } finally {
       set({ typesLoading: false });
     }
   },
 
-  fetchSubTypes: async () => {
+  fetchSubTypes: async (type) => {
     set({ subTypesLoading: true });
     try {
-      const endpoint = `/mobixCamsCommon/v1/sub-security/types-2`;
+      const endpoint = `/mobixCamsCommon/v1/sub-security/types-2/${type}`;
       const response = await API.get(endpoint);
       set({ subTypes: response.data });
     } catch (error) {
-      console.error('Error fetching sub types:', error);
+      console.error("Error fetching sub types:", error);
     } finally {
       set({ subTypesLoading: false });
     }
@@ -445,10 +466,10 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   fetchOwnerships: async () => {
     set({ ownershipsLoading: true });
     try {
-      const response = await API.get('/mobixCamsCommon/v1/ownerships');
+      const response = await API.get("/mobixCamsCommon/v1/ownerships");
       set({ ownerships: response.data });
     } catch (error) {
-      console.error('Error fetching ownerships:', error);
+      console.error("Error fetching ownerships:", error);
     } finally {
       set({ ownershipsLoading: false });
     }
@@ -457,10 +478,10 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   fetchSecurityTypes: async () => {
     set({ securityTypesLoading: true });
     try {
-      const response = await API.get('/mobixCamsCommon/v1/security/types');
+      const response = await API.get("/mobixCamsCommon/v1/security/types");
       set({ securityTypes: response.data });
     } catch (error) {
-      console.error('Error fetching security types:', error);
+      console.error("Error fetching security types:", error);
     } finally {
       set({ securityTypesLoading: false });
     }
@@ -469,10 +490,10 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   fetchSecurityCategories: async () => {
     set({ securityCategoriesLoading: true });
     try {
-      const response = await API.get('/mobixCamsCommon/v1/security/categories');
+      const response = await API.get("/mobixCamsCommon/v1/security/categories");
       set({ securityCategories: response.data });
     } catch (error) {
-      console.error('Error fetching security categories:', error);
+      console.error("Error fetching security categories:", error);
     } finally {
       set({ securityCategoriesLoading: false });
     }
@@ -481,10 +502,10 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   fetchCompanies: async () => {
     set({ companiesLoading: true });
     try {
-      const response = await API.get('/mobixCamsCommon/v1/fd-companies');
+      const response = await API.get("/mobixCamsCommon/v1/fd-companies");
       set({ companies: response.data });
     } catch (error) {
-      console.error('Error fetching companies:', error);
+      console.error("Error fetching companies:", error);
     } finally {
       set({ companiesLoading: false });
     }
@@ -493,10 +514,10 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   fetchBondTypes: async () => {
     set({ bondTypesLoading: true });
     try {
-      const response = await API.get('/mobixCamsCommon/v1/bond-types');
+      const response = await API.get("/mobixCamsCommon/v1/bond-types");
       set({ bondTypes: response.data });
     } catch (error) {
-      console.error('Error fetching bond types:', error);
+      console.error("Error fetching bond types:", error);
     } finally {
       set({ bondTypesLoading: false });
     }
@@ -505,10 +526,10 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   fetchPropertyTypes: async () => {
     set({ propertyTypesLoading: true });
     try {
-      const response = await API.get('/mobixCamsCommon/v1/property-types');
+      const response = await API.get("/mobixCamsCommon/v1/property-types");
       set({ propertyTypes: response.data });
     } catch (error) {
-      console.error('Error fetching property types:', error);
+      console.error("Error fetching property types:", error);
     } finally {
       set({ propertyTypesLoading: false });
     }
@@ -517,10 +538,10 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   fetchBondRenewals: async () => {
     set({ bondRenewalsLoading: true });
     try {
-      const response = await API.get('/mobixCamsCommon/v1/bond-renewals');
+      const response = await API.get("/mobixCamsCommon/v1/bond-renewals");
       set({ bondRenewals: response.data });
     } catch (error) {
-      console.error('Error fetching bond renewals:', error);
+      console.error("Error fetching bond renewals:", error);
     } finally {
       set({ bondRenewalsLoading: false });
     }
@@ -529,10 +550,10 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   fetchInsuranceCompanies: async () => {
     set({ insuranceCompaniesLoading: true });
     try {
-      const response = await API.get('/mobixCamsCommon/v1/insurance-companies');
+      const response = await API.get("/mobixCamsCommon/v1/insurance-companies");
       set({ insuranceCompanies: response.data });
     } catch (error) {
-      console.error('Error fetching insurance companies:', error);
+      console.error("Error fetching insurance companies:", error);
     } finally {
       set({ insuranceCompaniesLoading: false });
     }
@@ -541,10 +562,10 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   fetchSuppliers: async () => {
     set({ suppliersLoading: true });
     try {
-      const response = await API.get('/mobixCamsCommon/v1/suppliers');
+      const response = await API.get("/mobixCamsCommon/v1/suppliers");
       set({ suppliers: response.data });
     } catch (error) {
-      console.error('Error fetching suppliers:', error);
+      console.error("Error fetching suppliers:", error);
     } finally {
       set({ suppliersLoading: false });
     }
@@ -553,10 +574,10 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   fetchConditions: async () => {
     set({ conditionsLoading: true });
     try {
-      const response = await API.get('/mobixCamsCommon/v1/conditions');
+      const response = await API.get("/mobixCamsCommon/v1/conditions");
       set({ conditions: response.data });
     } catch (error) {
-      console.error('Error fetching conditions:', error);
+      console.error("Error fetching conditions:", error);
     } finally {
       set({ conditionsLoading: false });
     }
@@ -565,22 +586,40 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   fetchMakes: async () => {
     set({ makesLoading: true });
     try {
-      const response = await API.get('/mobixCamsCommon/v1/equipment-vehicle/manufactures');
+      const response = await API.get(
+        "/mobixCamsCommon/v1/equipment-vehicle/manufactures"
+      );
       set({ makes: response.data });
     } catch (error) {
-      console.error('Error fetching makes:', error);
+      console.error("Error fetching makes:", error);
     } finally {
       set({ makesLoading: false });
+    }
+  },
+
+  fetchVehicleCategories: async () => {
+    set({ vehicleCategoriesLoading: true });
+    try {
+      const response = await API.get(
+        "/mobixCamsCommon/v1/equipment-vehicle/types"
+      );
+      set({ vehicleCategories: response.data });
+    } catch (error) {
+      console.error("Error fetching Vehicle Categories:", error);
+    } finally {
+      set({ vehicleCategoriesLoading: false });
     }
   },
 
   fetchModels: async (makeCode) => {
     set({ modelsLoading: true });
     try {
-      const response = await API.get(`/mobixCamsCommon/v1/equipment-vehicle/manufactures/${makeCode}/models`);
-      set({ models: response.data });
+      const response = await API.get(
+        `/mobixCamsCommon/v1/equipment-vehicle/models/${makeCode}`
+      );
+      set({ models: [...response.data] });
     } catch (error) {
-      console.error('Error fetching models:', error);
+      console.error("Error fetching models:", error);
     } finally {
       set({ modelsLoading: false });
     }
@@ -590,18 +629,21 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   saveBankGuarantee: async (data: BankGuaranteePayload) => {
     set({ savingBankGuarantee: true, saveBankGuaranteeError: null });
     try {
-      const response = await API.post('/mobixCamsCollateral/v1/bank-guarantees', data);
+      const response = await APIAuth.post(
+        "/mobixCamsCollateral/v1/bank-guarantees",
+        data
+      );
       set({ savingBankGuarantee: false });
-      
+
       // After saving a new bank guarantee, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error saving bank guarantee:', error);
-      set({ saveBankGuaranteeError: 'Failed to save bank guarantee' });
+      console.error("Error saving bank guarantee:", error);
+      set({ saveBankGuaranteeError: "Failed to save bank guarantee" });
       throw error;
     } finally {
       set({ savingBankGuarantee: false });
@@ -611,18 +653,21 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   updateBankGuarantee: async (id: string, data: BankGuaranteePayload) => {
     set({ updatingBankGuarantee: true, updateBankGuaranteeError: null });
     try {
-      const response = await API.put(`/mobixCamsCollateral/v1/bank-guarantees/${id}`, data);
+      const response = await APIAuth.put(
+        `/mobixCamsCollateral/v1/bank-guarantees/${id}`,
+        data
+      );
       set({ updatingBankGuarantee: false });
-      
+
       // After updating a bank guarantee, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error updating bank guarantee:', error);
-      set({ updateBankGuaranteeError: 'Failed to update bank guarantee' });
+      console.error("Error updating bank guarantee:", error);
+      set({ updateBankGuaranteeError: "Failed to update bank guarantee" });
       throw error;
     } finally {
       set({ updatingBankGuarantee: false });
@@ -632,58 +677,65 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   getBankGuarantee: async (id: string) => {
     set({ fetchingBankGuarantee: true, fetchBankGuaranteeError: null });
     try {
-      const response = await API.get(`/mobixCamsCollateral/v1/bank-guarantees/${id}`);
+      const response = await API.get(
+        `/mobixCamsCollateral/v1/bank-guarantees/${id}`
+      );
       set({ fetchingBankGuarantee: false });
-      console.log('Bank guarantee API response:', response.data);
+      console.log("Bank guarantee API response:", response.data);
       // Return the data property if it exists, otherwise return the whole response data
       return response.data.data || response.data;
     } catch (error) {
-      console.error('Error fetching bank guarantee:', error);
-      set({ fetchBankGuaranteeError: 'Failed to fetch bank guarantee' });
+      console.error("Error fetching bank guarantee:", error);
+      set({ fetchBankGuaranteeError: "Failed to fetch bank guarantee" });
       throw error;
     } finally {
       set({ fetchingBankGuarantee: false });
     }
   },
-  
+
   // New function to set a bank guarantee as inactive
   deactivateBankGuarantee: async (id: string, appraisalId?: string) => {
     set({ updatingBankGuarantee: true, updateBankGuaranteeError: null });
     try {
-      const response = await API.put(`/mobixCamsCollateral/v1/bank-guarantees/${id}/inactive`);
+      const response = await APIAuth.put(
+        `/mobixCamsCollateral/v1/bank-guarantees/${id}/inactive`
+      );
       set({ updatingBankGuarantee: false });
-      
+
       // After deactivating a bank guarantee, refresh the collaterals list if there's an appraisalId
       if (appraisalId) {
         get().fetchCollaterals(appraisalId);
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error deactivating bank guarantee:', error);
-      set({ updateBankGuaranteeError: 'Failed to deactivate bank guarantee' });
+      console.error("Error deactivating bank guarantee:", error);
+      set({ updateBankGuaranteeError: "Failed to deactivate bank guarantee" });
       throw error;
     } finally {
       set({ updatingBankGuarantee: false });
     }
   },
-  
+
   // Land Stock API functions
   saveLandStock: async (data: LandStockPayload) => {
     set({ savingLandStock: true, saveLandStockError: null });
     try {
-      const response = await API.post('/mobixCamsCollateral/v1/land-stocks', data);
+      const response = await APIAuth.post(
+        "/mobixCamsCollateral/v1/land-stocks",
+        data
+      );
       set({ savingLandStock: false });
-      
+
       // After saving a new land stock, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error saving land stock:', error);
-      set({ saveLandStockError: 'Failed to save land stock' });
+      console.error("Error saving land stock:", error);
+      set({ saveLandStockError: "Failed to save land stock" });
       throw error;
     } finally {
       set({ savingLandStock: false });
@@ -693,18 +745,21 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   updateLandStock: async (id: string, data: LandStockPayload) => {
     set({ updatingLandStock: true, updateLandStockError: null });
     try {
-      const response = await API.put(`/mobixCamsCollateral/v1/land-stocks/${id}`, data);
+      const response = await APIAuth.put(
+        `/mobixCamsCollateral/v1/land-stocks/${id}`,
+        data
+      );
       set({ updatingLandStock: false });
-      
+
       // After updating a land stock, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error updating land stock:', error);
-      set({ updateLandStockError: 'Failed to update land stock' });
+      console.error("Error updating land stock:", error);
+      set({ updateLandStockError: "Failed to update land stock" });
       throw error;
     } finally {
       set({ updatingLandStock: false });
@@ -714,58 +769,65 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   getLandStock: async (id: string) => {
     set({ fetchingLandStock: true, fetchLandStockError: null });
     try {
-      const response = await API.get(`/mobixCamsCollateral/v1/land-stocks/${id}`);
+      const response = await API.get(
+        `/mobixCamsCollateral/v1/land-stocks/${id}`
+      );
       set({ fetchingLandStock: false });
-      console.log('Land stock API response:', response.data);
+      console.log("Land stock API response:", response.data);
       // Return the data property if it exists, otherwise return the whole response data
       return response.data.data || response.data;
     } catch (error) {
-      console.error('Error fetching land stock:', error);
-      set({ fetchLandStockError: 'Failed to fetch land stock' });
+      console.error("Error fetching land stock:", error);
+      set({ fetchLandStockError: "Failed to fetch land stock" });
       throw error;
     } finally {
       set({ fetchingLandStock: false });
     }
   },
-  
+
   // New function to set a land stock as inactive
   deactivateLandStock: async (id: string, appraisalId?: string) => {
     set({ updatingLandStock: true, updateLandStockError: null });
     try {
-      const response = await API.put(`/mobixCamsCollateral/v1/land-stocks/${id}/inactive`);
+      const response = await APIAuth.put(
+        `/mobixCamsCollateral/v1/land-stocks/${id}/inactive`
+      );
       set({ updatingLandStock: false });
-      
+
       // After deactivating a land stock, refresh the collaterals list if there's an appraisalId
       if (appraisalId) {
         get().fetchCollaterals(appraisalId);
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error deactivating land stock:', error);
-      set({ updateLandStockError: 'Failed to deactivate land stock' });
+      console.error("Error deactivating land stock:", error);
+      set({ updateLandStockError: "Failed to deactivate land stock" });
       throw error;
     } finally {
       set({ updatingLandStock: false });
     }
   },
-  
+
   // Machinery Equipment API functions
   saveMachinery: async (data: MachineryPayload) => {
     set({ savingMachinery: true, saveMachineryError: null });
     try {
-      const response = await API.post('/mobixCamsCollateral/v1/machinery-equipments', data);
+      const response = await APIAuth.post(
+        "/mobixCamsCollateral/v1/machinery-equipments",
+        data
+      );
       set({ savingMachinery: false });
-      
+
       // After saving a new machinery, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error saving machinery equipment:', error);
-      set({ saveMachineryError: 'Failed to save machinery equipment' });
+      console.error("Error saving machinery equipment:", error);
+      set({ saveMachineryError: "Failed to save machinery equipment" });
       throw error;
     } finally {
       set({ savingMachinery: false });
@@ -775,18 +837,21 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   updateMachinery: async (id: string, data: MachineryPayload) => {
     set({ updatingMachinery: true, updateMachineryError: null });
     try {
-      const response = await API.put(`/mobixCamsCollateral/v1/machinery-equipments/${id}`, data);
+      const response = await APIAuth.put(
+        `/mobixCamsCollateral/v1/machinery-equipments/${id}`,
+        data
+      );
       set({ updatingMachinery: false });
-      
+
       // After updating machinery, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error updating machinery equipment:', error);
-      set({ updateMachineryError: 'Failed to update machinery equipment' });
+      console.error("Error updating machinery equipment:", error);
+      set({ updateMachineryError: "Failed to update machinery equipment" });
       throw error;
     } finally {
       set({ updatingMachinery: false });
@@ -796,58 +861,65 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   getMachinery: async (id: string) => {
     set({ fetchingMachinery: true, fetchMachineryError: null });
     try {
-      const response = await API.get(`/mobixCamsCollateral/v1/machinery-equipments/${id}`);
+      const response = await API.get(
+        `/mobixCamsCollateral/v1/machinery-equipments/${id}`
+      );
       set({ fetchingMachinery: false });
-      console.log('Machinery equipment API response:', response.data);
+      console.log("Machinery equipment API response:", response.data);
       // Return the data property if it exists, otherwise return the whole response data
       return response.data.data || response.data;
     } catch (error) {
-      console.error('Error fetching machinery equipment:', error);
-      set({ fetchMachineryError: 'Failed to fetch machinery equipment' });
+      console.error("Error fetching machinery equipment:", error);
+      set({ fetchMachineryError: "Failed to fetch machinery equipment" });
       throw error;
     } finally {
       set({ fetchingMachinery: false });
     }
   },
-  
+
   // Function to set machinery as inactive
   deactivateMachinery: async (id: string, appraisalId?: string) => {
     set({ updatingMachinery: true, updateMachineryError: null });
     try {
-      const response = await API.put(`/mobixCamsCollateral/v1/machinery-equipments/${id}/inactive`);
+      const response = await APIAuth.put(
+        `/mobixCamsCollateral/v1/machinery-equipments/${id}/inactive`
+      );
       set({ updatingMachinery: false });
-      
+
       // After deactivating machinery, refresh the collaterals list if there's an appraisalId
       if (appraisalId) {
         get().fetchCollaterals(appraisalId);
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error deactivating machinery equipment:', error);
-      set({ updateMachineryError: 'Failed to deactivate machinery equipment' });
+      console.error("Error deactivating machinery equipment:", error);
+      set({ updateMachineryError: "Failed to deactivate machinery equipment" });
       throw error;
     } finally {
       set({ updatingMachinery: false });
     }
   },
-  
+
   // Property Mortgage API functions
   savePropertyMortgage: async (data: PropertyMortgagePayload) => {
     set({ savingPropertyMortgage: true, savePropertyMortgageError: null });
     try {
-      const response = await API.post('/mobixCamsCollateral/v1/mortgages', data);
+      const response = await APIAuth.post(
+        "/mobixCamsCollateral/v1/mortgages",
+        data
+      );
       set({ savingPropertyMortgage: false });
-      
+
       // After saving a new property mortgage, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error saving property mortgage:', error);
-      set({ savePropertyMortgageError: 'Failed to save property mortgage' });
+      console.error("Error saving property mortgage:", error);
+      set({ savePropertyMortgageError: "Failed to save property mortgage" });
       throw error;
     } finally {
       set({ savingPropertyMortgage: false });
@@ -857,18 +929,23 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   updatePropertyMortgage: async (id: string, data: PropertyMortgagePayload) => {
     set({ updatingPropertyMortgage: true, updatePropertyMortgageError: null });
     try {
-      const response = await API.put(`/mobixCamsCollateral/v1/mortgages/${id}`, data);
+      const response = await APIAuth.put(
+        `/mobixCamsCollateral/v1/mortgages/${id}`,
+        data
+      );
       set({ updatingPropertyMortgage: false });
-      
+
       // After updating property mortgage, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error updating property mortgage:', error);
-      set({ updatePropertyMortgageError: 'Failed to update property mortgage' });
+      console.error("Error updating property mortgage:", error);
+      set({
+        updatePropertyMortgageError: "Failed to update property mortgage",
+      });
       throw error;
     } finally {
       set({ updatingPropertyMortgage: false });
@@ -880,56 +957,60 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     try {
       const response = await API.get(`/mobixCamsCollateral/v1/mortgages/${id}`);
       set({ fetchingPropertyMortgage: false });
-      console.log('Property mortgage API response:', response.data);
+      console.log("Property mortgage API response:", response.data);
       // Return the data property if it exists, otherwise return the whole response data
       return response.data.data || response.data;
     } catch (error) {
-      console.error('Error fetching property mortgage:', error);
-      set({ fetchPropertyMortgageError: 'Failed to fetch property mortgage' });
+      console.error("Error fetching property mortgage:", error);
+      set({ fetchPropertyMortgageError: "Failed to fetch property mortgage" });
       throw error;
     } finally {
       set({ fetchingPropertyMortgage: false });
     }
   },
-  
+
   // Function to set property mortgage as inactive
   deactivatePropertyMortgage: async (id: string, appraisalId?: string) => {
     set({ updatingPropertyMortgage: true, updatePropertyMortgageError: null });
     try {
-      const response = await API.put(`/mobixCamsCollateral/v1/mortgages/${id}/inactive`);
+      const response = await APIAuth.put(
+        `/mobixCamsCollateral/v1/mortgages/${id}/inactive`
+      );
       set({ updatingPropertyMortgage: false });
-      
+
       // After deactivating property mortgage, refresh the collaterals list if there's an appraisalId
       if (appraisalId) {
         get().fetchCollaterals(appraisalId);
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error deactivating property mortgage:', error);
-      set({ updatePropertyMortgageError: 'Failed to deactivate property mortgage' });
+      console.error("Error deactivating property mortgage:", error);
+      set({
+        updatePropertyMortgageError: "Failed to deactivate property mortgage",
+      });
       throw error;
     } finally {
       set({ updatingPropertyMortgage: false });
     }
   },
-  
+
   // Savings API functions
   saveSavings: async (data: SavingsPayload) => {
     set({ savingSavings: true, saveSavingsError: null });
     try {
-      const response = await API.post('/mobixCamsCollateral/v1/savings', data);
+      const response = await APIAuth.post("/mobixCamsCollateral/v1/savings", data);
       set({ savingSavings: false });
-      
+
       // After saving a new savings, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error saving savings:', error);
-      set({ saveSavingsError: 'Failed to save savings' });
+      console.error("Error saving savings:", error);
+      set({ saveSavingsError: "Failed to save savings" });
       throw error;
     } finally {
       set({ savingSavings: false });
@@ -939,18 +1020,21 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   updateSavings: async (id: string, data: SavingsPayload) => {
     set({ updatingSavings: true, updateSavingsError: null });
     try {
-      const response = await API.put(`/mobixCamsCollateral/v1/savings/${id}`, data);
+      const response = await APIAuth.put(
+        `/mobixCamsCollateral/v1/savings/${id}`,
+        data
+      );
       set({ updatingSavings: false });
-      
+
       // After updating savings, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error updating savings:', error);
-      set({ updateSavingsError: 'Failed to update savings' });
+      console.error("Error updating savings:", error);
+      set({ updateSavingsError: "Failed to update savings" });
       throw error;
     } finally {
       set({ updatingSavings: false });
@@ -962,56 +1046,58 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     try {
       const response = await API.get(`/mobixCamsCollateral/v1/savings/${id}`);
       set({ fetchingSavings: false });
-      console.log('Savings API response:', response.data);
+      console.log("Savings API response:", response.data);
       // Return the data property if it exists, otherwise return the whole response data
       return response.data.data || response.data;
     } catch (error) {
-      console.error('Error fetching savings:', error);
-      set({ fetchSavingsError: 'Failed to fetch savings' });
+      console.error("Error fetching savings:", error);
+      set({ fetchSavingsError: "Failed to fetch savings" });
       throw error;
     } finally {
       set({ fetchingSavings: false });
     }
   },
-  
+
   // Function to set savings as inactive
   deactivateSavings: async (id: string, appraisalId?: string) => {
     set({ updatingSavings: true, updateSavingsError: null });
     try {
-      const response = await API.put(`/mobixCamsCollateral/v1/savings/${id}/inactive`);
+      const response = await APIAuth.put(
+        `/mobixCamsCollateral/v1/savings/${id}/inactive`
+      );
       set({ updatingSavings: false });
-      
+
       // After deactivating savings, refresh the collaterals list if there's an appraisalId
       if (appraisalId) {
         get().fetchCollaterals(appraisalId);
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error deactivating savings:', error);
-      set({ updateSavingsError: 'Failed to deactivate savings' });
+      console.error("Error deactivating savings:", error);
+      set({ updateSavingsError: "Failed to deactivate savings" });
       throw error;
     } finally {
       set({ updatingSavings: false });
     }
   },
-  
+
   // Vehicle API functions
   saveVehicle: async (data: VehiclePayload) => {
     set({ savingVehicle: true, saveVehicleError: null });
     try {
-      const response = await API.post('/mobixCamsCollateral/v1/vehicles', data);
+      const response = await APIAuth.post("/mobixCamsCollateral/v1/vehicles", data);
       set({ savingVehicle: false });
-      
+
       // After saving a new vehicle, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error saving vehicle:', error);
-      set({ saveVehicleError: 'Failed to save vehicle' });
+      console.error("Error saving vehicle:", error);
+      set({ saveVehicleError: "Failed to save vehicle" });
       throw error;
     } finally {
       set({ savingVehicle: false });
@@ -1021,18 +1107,21 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   updateVehicle: async (id: string, data: VehiclePayload) => {
     set({ updatingVehicle: true, updateVehicleError: null });
     try {
-      const response = await API.put(`/mobixCamsCollateral/v1/vehicles/${id}`, data);
+      const response = await APIAuth.put(
+        `/mobixCamsCollateral/v1/vehicles/${id}`,
+        data
+      );
       set({ updatingVehicle: false });
-      
+
       // After updating vehicle, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error updating vehicle:', error);
-      set({ updateVehicleError: 'Failed to update vehicle' });
+      console.error("Error updating vehicle:", error);
+      set({ updateVehicleError: "Failed to update vehicle" });
       throw error;
     } finally {
       set({ updatingVehicle: false });
@@ -1044,56 +1133,73 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     try {
       const response = await API.get(`/mobixCamsCollateral/v1/vehicles/${id}`);
       set({ fetchingVehicle: false });
-      console.log('Vehicle API response:', response.data);
+      console.log("Vehicle API response:", response.data);
       // Return the data property if it exists, otherwise return the whole response data
       return response.data.data || response.data;
     } catch (error) {
-      console.error('Error fetching vehicle:', error);
-      set({ fetchVehicleError: 'Failed to fetch vehicle' });
+      console.error("Error fetching vehicle:", error);
+      set({ fetchVehicleError: "Failed to fetch vehicle" });
       throw error;
     } finally {
       set({ fetchingVehicle: false });
     }
   },
-  
+
   // Function to set vehicle as inactive
   deactivateVehicle: async (id: string, appraisalId?: string) => {
     set({ updatingVehicle: true, updateVehicleError: null });
     try {
-      const response = await API.put(`/mobixCamsCollateral/v1/vehicles/${id}/inactive`);
+      const response = await APIAuth.put(
+        `/mobixCamsCollateral/v1/vehicles/${id}/inactive`
+      );
       set({ updatingVehicle: false });
-      
+
       // After deactivating vehicle, refresh the collaterals list if there's an appraisalId
       if (appraisalId) {
         get().fetchCollaterals(appraisalId);
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error deactivating vehicle:', error);
-      set({ updateVehicleError: 'Failed to deactivate vehicle' });
+      console.error("Error deactivating vehicle:", error);
+      set({ updateVehicleError: "Failed to deactivate vehicle" });
       throw error;
     } finally {
       set({ updatingVehicle: false });
     }
   },
-  
+
   // Lease API functions
+  fetchDepreciationRates: async () => {
+    set({ fetchingDepreciationRates: true, fetchDepreciationRatesError: null });
+    try {
+      const response = await API.get("/mobixCamsCommon/v1/depreciation-rates");
+      set({ depreciationRates: response.data });
+    } catch (error) {
+      console.error("Error fetching depreciation rates:", error);
+      set({
+        fetchDepreciationRatesError: "Failed to fetch depreciation rates",
+      });
+    } finally {
+      set({ fetchingDepreciationRates: false });
+    }
+  },
+
   saveLease: async (data: LeasePayload) => {
     set({ savingLease: true, saveLeaseError: null });
     try {
-      const response = await API.post('/mobixCamsCollateral/v1/leases', data);
+      const response = await APIAuth.post("/mobixCamsCollateral/v1/leases", data);
       set({ savingLease: false });
-      
+
       // After saving a new lease, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error saving lease:', error);
-      set({ saveLeaseError: 'Failed to save lease' });
+      console.error("Error saving lease:", error);
+      set({ saveLeaseError: "Failed to save lease" });
       throw error;
     } finally {
       set({ savingLease: false });
@@ -1103,18 +1209,21 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   updateLease: async (id: string, data: LeasePayload) => {
     set({ updatingLease: true, updateLeaseError: null });
     try {
-      const response = await API.put(`/mobixCamsCollateral/v1/leases/${id}`, data);
+      const response = await APIAuth.put(
+        `/mobixCamsCollateral/v1/leases/${id}`,
+        data
+      );
       set({ updatingLease: false });
-      
+
       // After updating a lease, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error updating lease:', error);
-      set({ updateLeaseError: 'Failed to update lease' });
+      console.error("Error updating lease:", error);
+      set({ updateLeaseError: "Failed to update lease" });
       throw error;
     } finally {
       set({ updatingLease: false });
@@ -1126,78 +1235,82 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     try {
       const response = await API.get(`/mobixCamsCollateral/v1/leases/${id}`);
       set({ fetchingLease: false });
-      console.log('Lease API response:', response.data);
+      console.log("Lease API response:", response.data);
       // Return the data property if it exists, otherwise return the whole response data
       return response.data.data || response.data;
     } catch (error) {
-      console.error('Error fetching lease:', error);
-      set({ fetchLeaseError: 'Failed to fetch lease' });
+      console.error("Error fetching lease:", error);
+      set({ fetchLeaseError: "Failed to fetch lease" });
       throw error;
     } finally {
       set({ fetchingLease: false });
     }
   },
-  
+
   // Function to set lease as inactive
   deactivateLease: async (id: string, appraisalId?: string) => {
     set({ updatingLease: true, updateLeaseError: null });
     try {
-      const response = await API.put(`/mobixCamsCollateral/v1/leases/${id}/inactive`);
+      const response = await APIAuth.put(
+        `/mobixCamsCollateral/v1/leases/${id}/inactive`
+      );
       set({ updatingLease: false });
-      
+
       // After deactivating a lease, refresh the collaterals list if there's an appraisalId
       if (appraisalId) {
         get().fetchCollaterals(appraisalId);
       }
-      
+
       return response.data;
     } catch (error) {
-      console.error('Error deactivating lease:', error);
-      set({ updateLeaseError: 'Failed to deactivate lease' });
+      console.error("Error deactivating lease:", error);
+      set({ updateLeaseError: "Failed to deactivate lease" });
       throw error;
     } finally {
       set({ updatingLease: false });
     }
   },
-  
+
   // Collateral API functions
   fetchCollaterals: async (appraisalId: string) => {
     if (!appraisalId) {
-      console.warn('No appraisalId provided to fetchCollaterals');
+      console.warn("No appraisalId provided to fetchCollaterals");
       return [];
     }
-    
+
     set({ fetchingCollaterals: true, fetchCollateralsError: null });
     try {
-      const response = await API.get(`/mobixCamsCollateral/v1/collaterals/appraisals/${appraisalId}`);
-      
+      const response = await API.get(
+        `/mobixCamsCollateral/v1/collaterals/appraisals/${appraisalId}`
+      );
+
       // Extract collaterals from the nested response structure
       const collateralsData = response.data?.data || {};
-      console.log('Fetched collaterals data:', collateralsData);
-      
+      console.log("Fetched collaterals data:", collateralsData);
+
       // Combine all collateral types into a single array and add type information
       const processedCollaterals: Collateral[] = [
         ...(collateralsData.bankGuarantees || []).map((item: any) => ({
           ...item,
           id: item.bankGuaranteeIdx,
-          type: 'bank-guarantee'
+          type: "bank-guarantee",
         })),
         ...(collateralsData.vehicles || []).map((item: any) => ({
           ...item,
           id: item.vehIdx,
-          type: 'vehicle',
+          type: "vehicle",
           engineNo: item.enginNo,
           chassisNo: item.chasisNo,
           registrationNo: item.regNo,
           description: item.desc,
           mv: item.marketValue,
           fsv: item.foreSaleValue,
-          yearManufacture: item.yearOfManufacture
+          yearManufacture: item.yearOfManufacture,
         })),
         ...(collateralsData.machineryAndEquipments || []).map((item: any) => ({
           ...item,
           id: item.machineryEquipIdx,
-          type: 'machinery',
+          type: "machinery",
           machineryType: item.type,
           machineryOwnership: item.ownership,
           machinerySupplier: item.supplier,
@@ -1212,12 +1325,12 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
           machineryFSV: item.fsv,
           machineryValuedBy: item.valuedBy,
           machineryInsuranceCompany: item.insuCompany,
-          machineryReferenceNo: item.refNo
+          machineryReferenceNo: item.refNo,
         })),
         ...(collateralsData.mortgages || []).map((item: any) => ({
           ...item,
           id: item.mortgageIdx,
-          type: 'property-mortgage',
+          type: "property-mortgage",
           propertyType: item.mortgageType,
           propertySubType: item.mortgageSubType,
           propertyOwnership: item.mortgageOwnership,
@@ -1239,17 +1352,17 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
           propertyFSV: item.mortgageFsv,
           propertyLotNo: item.mortgageLotNo,
           propertyInsuranceCompany: item.mortgageInsuranceCompany,
-          propertyReferenceNo: item.mortgageReferenceNo
+          propertyReferenceNo: item.mortgageReferenceNo,
         })),
         ...(collateralsData.landStocks || []).map((item: any) => ({
           ...item,
           id: item.landStockIdx,
-          type: 'land-stock'
+          type: "land-stock",
         })),
         ...(collateralsData.savings || []).map((item: any) => ({
           ...item,
           id: item.savingsIdx,
-          type: 'savings',
+          type: "savings",
           savingsType: item.type,
           savingsSubType: item.subType,
           savingsOwnership: item.ownership,
@@ -1259,12 +1372,12 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
           savingsCompany: item.company,
           savingsDescription: item.description,
           savingsNo: item.savingsNo,
-          savingsBuildUpValue: item.savingsBuildValue
+          savingsBuildUpValue: item.savingsBuildValue,
         })),
         ...(collateralsData.leases || []).map((item: any) => ({
           ...item,
           id: item.leaseIdx,
-          type: 'lease',
+          type: "lease",
           equipmentType: item.leaseEquipType,
           equipmentCost: item.leaseCost,
           supplierCode: item.leaseSupplierCode,
@@ -1288,61 +1401,66 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
           fsv: item.foreSaleValue,
           province: item.leaseProvince,
           insuranceCompany: item.insuCompany,
-          referenceNo: item.refNo
-        }))
+          referenceNo: item.refNo,
+        })),
       ];
-      
-      console.log('Processed collaterals:', processedCollaterals);
+
+      console.log("Processed collaterals:", processedCollaterals);
       set({ collaterals: processedCollaterals, fetchingCollaterals: false });
       return processedCollaterals;
     } catch (error) {
-      console.error('Error fetching collaterals:', error);
-      set({ fetchCollateralsError: 'Failed to fetch collaterals', fetchingCollaterals: false });
+      console.error("Error fetching collaterals:", error);
+      set({
+        fetchCollateralsError: "Failed to fetch collaterals",
+        fetchingCollaterals: false,
+      });
       return [];
     }
   },
-  
+
   deleteCollateral: async (id: string, type: string, appraisalId?: string) => {
     if (!id || !type) {
-      console.warn('Invalid id or type provided to deleteCollateral');
+      console.warn("Invalid id or type provided to deleteCollateral");
       return false;
     }
-    
+
     set({ deletingCollateral: true, deleteCollateralError: null });
-    
+
     try {
-      let endpoint = '';
-      
+      let endpoint = "";
+
       // Determine the endpoint based on the collateral type
       switch (type) {
-        case 'BANK_GUARANTEE':
+        case "BANK_GUARANTEE":
           endpoint = `/mobixCamsCollateral/v1/bank-guarantees/${id}`;
           break;
-        case 'VEHICLE':
+        case "VEHICLE":
           endpoint = `/mobixCamsCollateral/v1/vehicles/${id}`;
           break;
-        case 'MACHINERY':
+        case "MACHINERY":
           endpoint = `/mobixCamsCollateral/v1/machinery-equipments/${id}`;
           break;
-        case 'PROPERTY_MORTGAGE':
+        case "PROPERTY_MORTGAGE":
           endpoint = `/mobixCamsCollateral/v1/mortgages/${id}`;
           break;
-        case 'SAVINGS':
+        case "SAVINGS":
           endpoint = `/mobixCamsCollateral/v1/savings/${id}`;
           break;
-        case 'LAND_STOCK':
+        case "LAND_STOCK":
           endpoint = `/mobixCamsCollateral/v1/land-stocks/${id}`;
           break;
-        case 'LEASE':
+        case "LEASE":
           endpoint = `/mobixCamsCollateral/v1/leases/${id}`;
           break;
         default:
           throw new Error(`Unsupported collateral type: ${type}`);
       }
-      
-      console.log(`Deleting collateral with id: ${id}, type: ${type}, endpoint: ${endpoint}`);
+
+      console.log(
+        `Deleting collateral with id: ${id}, type: ${type}, endpoint: ${endpoint}`
+      );
       await API.delete(endpoint);
-      
+
       // After deleting, refresh the collaterals list if appraisalId is provided
       if (appraisalId) {
         // Wait a short time before refreshing to ensure server has processed the delete
@@ -1350,15 +1468,18 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
           await get().fetchCollaterals(appraisalId);
         }, 500);
       }
-      
+
       set({ deletingCollateral: false });
       return true;
     } catch (error) {
       console.error(`Error deleting ${type} collateral:`, error);
-      set({ deleteCollateralError: `Failed to delete ${type} collateral`, deletingCollateral: false });
+      set({
+        deleteCollateralError: `Failed to delete ${type} collateral`,
+        deletingCollateral: false,
+      });
       return false;
     }
-  }
+  },
 }));
 
-export default useCollateralStore; 
+export default useCollateralStore;

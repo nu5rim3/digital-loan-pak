@@ -1,10 +1,11 @@
 import * as yup from "yup";
 
-export interface CollateralDetailsProps {}
+export interface CollateralDetailsProps { }
 
 export interface FormValues {
   id?: string;
   securityType: string;
+  securityCategory?: string;
 
   // Vehicle fields
   vehicleType?: string;
@@ -56,7 +57,6 @@ export interface FormValues {
   guaranteeValue?: string;
   guaranteedTo?: string;
   institutionName?: string;
-  dateOfExpiry?: string;
   referenceNoOndemand?: string;
   valueOfGuarantee?: string;
   renewedBy?: string;
@@ -113,7 +113,7 @@ export interface FormValues {
   landStockCategory?: string;
   landStockSecurityDate?: Date;
   landStockSecurityType?: string;
-  
+
   // Lease fields
   leaseEquipType?: string;
   leaseCost?: string;
@@ -145,7 +145,7 @@ export interface LeaseProductFormValues {
   // Common fields
   id?: string;
   
-  // Equipment Details
+  // Equipment Details - Required fields
   equipmentCost: string;
   equipmentType: string;
   supplierCode: string;
@@ -154,12 +154,16 @@ export interface LeaseProductFormValues {
   category: string;
   depreciationCode: string;
 
-  // Vehicle Details
+  // Vehicle Details - Required fields
   vehicleType: string;
   manufacturer: string;
   model: string;
   engineCapacityCC: string;
   engineCapacityHP: string;
+  insuranceCompany: string;
+  referenceNo: string;
+  
+  // Optional fields
   engineNo?: string;
   chassisNo?: string;
   vehicleNo?: string;
@@ -169,8 +173,6 @@ export interface LeaseProductFormValues {
   registrationYear?: string;
   internalMV?: string;
   internalFSV?: string;
-  insuranceCompany: string;
-  referenceNo: string;
   province?: string;
 }
 
@@ -332,11 +334,6 @@ export const validationSchema = yup.object().shape({
   }),
   // Ondemand fields validation
   institutionName: yup.string().when(["securityType", "bankGuaranteeType"], {
-    is: (securityType: string, type: string) =>
-      securityType === "BANK_GUARANTEE" && type === "ONDEMAND",
-    then: (schema) => schema,
-  }),
-  dateOfExpiry: yup.string().when(["securityType", "bankGuaranteeType"], {
     is: (securityType: string, type: string) =>
       securityType === "BANK_GUARANTEE" && type === "ONDEMAND",
     then: (schema) => schema,
@@ -537,4 +534,36 @@ export const validationSchema = yup.object().shape({
     is: "LAND_STOCK",
     then: (schema) => schema.required("Security Type is required"),
   }),
+});
+
+export const leaseProductValidationSchema = yup.object().shape({
+  // Equipment Details - Required fields
+  equipmentCost: yup.string().required("Equipment Cost is required"),
+  equipmentType: yup.string().required("Equipment Type is required"),
+  supplierCode: yup.string().required("Supplier Code is required"),
+  equipmentName: yup.string().required("Equipment Name is required"),
+  condition: yup.string().required("Condition is required"),
+  category: yup.string().required("Category is required"),
+  depreciationCode: yup.string().required("Depreciation Code is required"),
+
+  // Vehicle Details - Required fields
+  vehicleType: yup.string().required("Vehicle Type is required"),
+  manufacturer: yup.string().required("Manufacturer is required"),
+  model: yup.string().required("Model is required"),
+  engineCapacityCC: yup.string().required("Engine Capacity CC is required"),
+  engineCapacityHP: yup.string().required("Engine Capacity HP is required"),
+  insuranceCompany: yup.string().required("Insurance Company is required"),
+  referenceNo: yup.string().required("Reference No is required"),
+  
+  // Optional fields
+  engineNo: yup.string().optional(),
+  chassisNo: yup.string().optional(),
+  vehicleNo: yup.string().optional(),
+  registrationDate: yup.date().optional(),
+  duplicateKey: yup.string().optional(),
+  registrationBookNo: yup.string().optional(),
+  registrationYear: yup.string().optional(),
+  internalMV: yup.string().optional(),
+  internalFSV: yup.string().optional(),
+  province: yup.string().optional(),
 });

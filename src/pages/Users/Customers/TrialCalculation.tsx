@@ -176,7 +176,9 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         fetchFacilityTypes,
         fetchProductTypes,
         fetchSubProductTypes,
-        setSelectedProductCategory } = useCommonStore();
+        setTrialCalculationData,
+        resetTrialCalculationData,
+        trialCalculationData } = useCommonStore();
 
     const { productDetails, productDetailsLoading, fetchProductDetails, resetProductDetails } = useLoanStore()
     const { user } = useUserStore()
@@ -322,6 +324,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         resetProductDetails()
         resetTrailCalculationDetails()
         resetCRIBDetails()
+        resetTrialCalculationData()
         setIsSaveShow(false)
     }
 
@@ -330,6 +333,13 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    // Restore saved trial calculation data when component mounts
+    useEffect(() => {
+        if (trialCalculationData) {
+            reset(trialCalculationData);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const productCategory = watch('productCategory');
     const productType = watch('productType');
@@ -346,15 +356,17 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
             setSelectedSubProductType(null)
             resetProductDetails()
             fetchProductTypes(productCategory ?? '')
-            
-            // Save the selected product category to the store
-            const selectedCategory = productCategories.find(cat => cat.code === productCategory);
-            if (selectedCategory) {
-                setSelectedProductCategory(selectedCategory);
-            }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [productCategory])
+
+    // Save all form values to trialCalculationData state
+    useEffect(() => {
+        const subscription = watch((value) => {
+            setTrialCalculationData(value);
+        });
+        return () => subscription.unsubscribe();
+    }, [watch, setTrialCalculationData]);
 
     useEffect(() => {
         if (productType !== undefined && productType !== '') {

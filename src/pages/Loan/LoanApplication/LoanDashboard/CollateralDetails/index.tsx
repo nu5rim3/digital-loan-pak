@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Button, App, Row, Col, message, Spin } from "antd";
+import { Button, App, Row, Col, message, Spin, Modal } from "antd";
 import { PlusOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { FormValues, validationSchema } from "./types";
 import DetailsCard from "./components/DetailsCard";
@@ -39,9 +39,6 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.guaranteeValue = collateral.guaranteeValue;
       formValues.guaranteedTo = collateral.guaranteeTo;
       formValues.institutionName = collateral.institutionName;
-      formValues.dateOfExpiry = collateral.dateOfExpiry
-        ? new Date(collateral.dateOfExpiry).toISOString().split("T")[0]
-        : undefined;
       formValues.referenceNoOndemand = collateral.referenceNo;
       formValues.valueOfGuarantee = collateral.valueOfGuarantee;
       formValues.renewedBy = collateral.renewedBy;
@@ -219,9 +216,8 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
 
 const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
   const { appId } = useParams();
-  const { modal } = App.useApp();
   const initialFetchDone = useRef(false);
-  const { selectedProductCategory } = useCommonStore();
+  const { trialCalculationData } = useCommonStore();
 
   const appraisalId = appId;
 
@@ -318,6 +314,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
+            securityCategory: "MAIN_SECURITY",
             // Map API response fields to form fields
             id: detailedData.vehIdx || data.id,
             vehicleType: detailedData.vehicleType,
@@ -354,15 +351,15 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         } else {
           message.error("Failed to fetch vehicle details");
           setEditingId(data.id || null);
-          setCurrentFormData(data);
-          formMethods.reset(data);
+          setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
+          formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
         }
       } catch (error) {
         console.error("Error fetching vehicle details:", error);
         message.error("Failed to fetch vehicle details");
         setEditingId(data.id || null);
-        setCurrentFormData(data);
-        formMethods.reset(data);
+        setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
+        formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
       } finally {
         setFetchingDetail(false);
       }
@@ -383,6 +380,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
+            securityCategory: "MAIN_SECURITY",
             // Map API response fields to form fields
             id: detailedData.bankGuaranteeIdx || data.id,
             bankGuaranteeType: detailedData.type,
@@ -399,9 +397,6 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             guaranteeValue: detailedData.guaranteeValue || undefined,
             guaranteedTo: detailedData.guaranteeTo || undefined,
             institutionName: detailedData.institutionName || undefined,
-            dateOfExpiry: detailedData.dateOfExpiry
-              ? new Date(detailedData.dateOfExpiry).toISOString().split("T")[0]
-              : undefined,
             referenceNoOndemand: detailedData.referenceNo || undefined,
             valueOfGuarantee: detailedData.valueOfGuarantee || undefined,
             renewedBy: detailedData.renewedBy || undefined,
@@ -415,15 +410,15 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         } else {
           message.error("Failed to fetch bank guarantee details");
           setEditingId(data.id || null);
-          setCurrentFormData(data);
-          formMethods.reset(data);
+          setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
+          formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
         }
       } catch (error) {
         console.error("Error fetching bank guarantee details:", error);
         message.error("Failed to fetch bank guarantee details");
         setEditingId(data.id || null);
-        setCurrentFormData(data);
-        formMethods.reset(data);
+        setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
+        formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
       } finally {
         setFetchingDetail(false);
       }
@@ -446,6 +441,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
+            securityCategory: "MAIN_SECURITY",
             // Map API response fields to form fields
             id: detailedData.landStockIdx || data.id,
             landStockType: detailedData.landStockType,
@@ -471,15 +467,15 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         } else {
           message.error("Failed to fetch land stock details");
           setEditingId(data.id || null);
-          setCurrentFormData(data);
-          formMethods.reset(data);
+          setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
+          formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
         }
       } catch (error) {
         console.error("Error fetching land stock details:", error);
         message.error("Failed to fetch land stock details");
         setEditingId(data.id || null);
-        setCurrentFormData(data);
-        formMethods.reset(data);
+        setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
+        formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
       } finally {
         setFetchingDetail(false);
       }
@@ -502,6 +498,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
+            securityCategory: "MAIN_SECURITY",
             // Map API response fields to form fields
             id: detailedData.machineryEquipIdx || data.id,
             machineryType: detailedData.type,
@@ -527,15 +524,15 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         } else {
           message.error("Failed to fetch machinery equipment details");
           setEditingId(data.id || null);
-          setCurrentFormData(data);
-          formMethods.reset(data);
+          setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
+          formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
         }
       } catch (error) {
         console.error("Error fetching machinery equipment details:", error);
         message.error("Failed to fetch machinery equipment details");
         setEditingId(data.id || null);
-        setCurrentFormData(data);
-        formMethods.reset(data);
+        setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
+        formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
       } finally {
         setFetchingDetail(false);
       }
@@ -558,6 +555,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
+            securityCategory: "MAIN_SECURITY",
             // Map API response fields to form fields
             id: detailedData.mortgageIdx || data.id,
             propertyType: detailedData.mortgageType,
@@ -595,15 +593,15 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         } else {
           message.error("Failed to fetch property mortgage details");
           setEditingId(data.id || null);
-          setCurrentFormData(data);
-          formMethods.reset(data);
+          setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
+          formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
         }
       } catch (error) {
         console.error("Error fetching property mortgage details:", error);
         message.error("Failed to fetch property mortgage details");
         setEditingId(data.id || null);
-        setCurrentFormData(data);
-        formMethods.reset(data);
+        setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
+        formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
       } finally {
         setFetchingDetail(false);
       }
@@ -626,6 +624,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
+            securityCategory: "MAIN_SECURITY",
             // Map API response fields to form fields
             id: detailedData.savingsIdx || data.id,
             savingsType: detailedData.type,
@@ -648,15 +647,15 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         } else {
           message.error("Failed to fetch savings details");
           setEditingId(data.id || null);
-          setCurrentFormData(data);
-          formMethods.reset(data);
+          setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
+          formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
         }
       } catch (error) {
         console.error("Error fetching savings details:", error);
         message.error("Failed to fetch savings details");
         setEditingId(data.id || null);
-        setCurrentFormData(data);
-        formMethods.reset(data);
+        setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
+        formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
       } finally {
         setFetchingDetail(false);
       }
@@ -679,6 +678,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
+            securityCategory: "MAIN_SECURITY",
             // Map API response fields to form fields
             id: detailedData.leaseIdx || data.id,
             leaseEquipType: detailedData.leaseEquipType,
@@ -715,23 +715,23 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         } else {
           message.error("Failed to fetch lease details");
           setEditingId(data.id || null);
-          setCurrentFormData(data);
-          formMethods.reset(data);
+          setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
+          formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
         }
       } catch (error) {
         console.error("Error fetching lease details:", error);
         message.error("Failed to fetch lease details");
         setEditingId(data.id || null);
-        setCurrentFormData(data);
-        formMethods.reset(data);
+        setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
+        formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
       } finally {
         setFetchingDetail(false);
       }
     } else if (data) {
       // For other types or new items
       setEditingId(data.id || null);
-      setCurrentFormData(data);
-      formMethods.reset(data);
+      setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
+      formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
     } else {
       setEditingId(null);
       setCurrentFormData(null);
@@ -790,7 +790,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
     }
 
     // Show confirmation dialog
-    modal.confirm({
+    Modal.confirm({
       title: "Delete Collateral",
       icon: <ExclamationCircleOutlined />,
       content:
@@ -1005,7 +1005,11 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           onSave={handleSubmit}
           isEdit={isEditing}
           initialData={currentFormData}
-          productCategory={selectedProductCategory?.description as "Loan" | "Lease" | null || "Loan"}
+          productCategory={
+            trialCalculationData?.productCategory === "A"
+              ? "Lease"
+              : trialCalculationData?.productCategory === "C" ? "Loan" : null
+          }
           appraisalId={appraisalId}
           isLoading={
             fetchingDetail ||
