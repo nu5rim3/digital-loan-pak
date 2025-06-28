@@ -143,7 +143,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
     }
   }, [
     fetchTypes,
-    fetchVehicleCategories(),
+    fetchVehicleCategories,
     fetchOwnerships,
     fetchSuppliers,
     fetchConditions,
