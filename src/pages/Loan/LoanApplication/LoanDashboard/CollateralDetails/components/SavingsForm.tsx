@@ -1,14 +1,21 @@
 import React, { useEffect, useRef } from "react";
 import { Form, Input, InputNumber, Select, DatePicker } from "antd";
-import { Controller, Control } from "react-hook-form";
+import { Controller, Control, useWatch } from "react-hook-form";
 import { FormValues } from "../types";
 import dayjs from "dayjs";
 import useCollateralStore from "../../../../../../store/collateralStore";
 import { message } from "antd";
 
+interface IBaseItem {
+  code: string;
+  description: string;
+  status?: string;
+}
+
 interface SavingsFormProps {
   control: Control<FormValues>;
   errors: Record<string, any>;
+  securityType?: IBaseItem;
 }
 
 // Function to submit savings data to the API
@@ -51,9 +58,8 @@ export const submitSavings = async (
       savingsSecType: "Fixed Deposits and Savings"
     };
 
-    console.log(`${isEdit ? 'Updating' : 'Saving'} savings with payload:`, payload);
-
     let response;
+
     if (isEdit && id) {
       response = await useCollateralStore.getState().updateSavings(id, payload);
       message.success("Savings updated successfully");
@@ -61,8 +67,6 @@ export const submitSavings = async (
       response = await useCollateralStore.getState().saveSavings(payload);
       message.success("Savings saved successfully");
     }
-
-    console.log(`Savings ${isEdit ? 'update' : 'save'} response:`, response);
     return true;
   } catch (error) {
     console.error(`Error ${isEdit ? 'updating' : 'saving'} savings:`, error);
@@ -71,7 +75,7 @@ export const submitSavings = async (
   }
 };
 
-const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
+const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors, securityType }) => {
   const {
     types: savingsTypes,
     typesLoading: savingsTypesLoading,
@@ -88,11 +92,16 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
   } = useCollateralStore();
 
   const dataFetched = useRef(false);
+  const savingsId = useWatch({
+    control,
+    name: "id",
+  });
+  const isEditMode = !!savingsId;
 
   useEffect(() => {
     if (!dataFetched.current) {
-      fetchTypes("F");
-      fetchSubTypes("F");
+      fetchTypes(securityType?.code || "");
+      fetchSubTypes(securityType?.code || "");
       fetchOwnerships();
       fetchCompanies();
       dataFetched.current = true;
@@ -114,7 +123,9 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Savings Details</h3>
+        <h3 className="text-lg font-semibold mb-4">
+          {isEditMode ? `Edit Fixed deposits and savings` : "New Fixed deposits and savings"}
+        </h3>
         <div className="grid grid-cols-3 gap-4">
           <Form.Item
             label="Type"
@@ -297,7 +308,7 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors }) => {
               name="savingsBuildUpValue"
               control={control}
               render={({ field }) => (
-               <Input {...field} placeholder="Enter Build Up Value" />
+                <Input {...field} placeholder="Enter Build Up Value" />
 
               )}
             />

@@ -1,16 +1,22 @@
 import React, { useEffect, useRef } from "react";
 import { Form, Input, InputNumber, Select } from "antd";
-import { Controller, Control } from "react-hook-form";
+import { Controller, Control, useWatch } from "react-hook-form";
 import { FormValues } from "../types";
 import useCollateralStore from "../../../../../../store/collateralStore";
 import { message } from "antd";
 
+interface IBaseItem {
+  code: string;
+  description: string;
+  status?: string;
+}
+
 interface MachineryFormProps {
   control: Control<FormValues>;
   errors: Record<string, any>;
+  securityType?: IBaseItem;
 }
 
-// Function to submit machinery data to the API
 export const submitMachinery = async (
   data: FormValues,
   appraisalId: string,
@@ -36,7 +42,6 @@ export const submitMachinery = async (
       machineryReferenceNo,
     } = data;
 
-    // Prepare payload for API
     const payload = {
       appraisalId,
       type: machineryType || "",
@@ -54,8 +59,8 @@ export const submitMachinery = async (
       valuedBy: machineryValuedBy,
       insuCompany: machineryInsuranceCompany,
       refNo: machineryReferenceNo,
-      machineryEquipSecCategory: "Main Security", // Default value
-      machineryEquipSecType: "MACHINERY AND EQUIPMENT" // Default value
+      machineryEquipSecCategory: "Main Security",
+      machineryEquipSecType: "MACHINERY AND EQUIPMENT"
     };
 
     console.log(`${isEdit ? 'Updating' : 'Saving'} machinery equipment with payload:`, payload);
@@ -78,7 +83,7 @@ export const submitMachinery = async (
   }
 };
 
-const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
+const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors, securityType }) => {
   const {
     types: machineryTypes,
     typesLoading: machineryTypesLoading,
@@ -99,10 +104,15 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
   } = useCollateralStore();
 
   const dataFetched = useRef(false);
+  const machineryId = useWatch({
+    control,
+    name: "id",
+  });
+  const isEditMode = !!machineryId;
 
   useEffect(() => {
     if (!dataFetched.current) {
-      fetchTypes("M");
+      fetchTypes(securityType?.code || "");
       fetchOwnerships();
       fetchSuppliers();
       fetchConditions();
@@ -134,7 +144,9 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Machinery Details</h3>
+        <h3 className="text-lg font-semibold mb-4">
+          {isEditMode ? `Edit Machinery and Equipment` : "New Machinery and Equipment"}
+        </h3>
         <div className="grid grid-cols-3 gap-4">
           <Form.Item
             label="Type"

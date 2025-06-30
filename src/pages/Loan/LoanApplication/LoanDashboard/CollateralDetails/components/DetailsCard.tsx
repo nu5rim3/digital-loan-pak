@@ -45,7 +45,7 @@ const DetailsCard: React.FC<DetailsCardProps> = ({
             </Descriptions.Item>
           </>
         );
-      case "MACHINERY":
+      case "MACHINERY AND EQUIPMENT":
         return (
           <>
             <Descriptions.Item label="Type">
@@ -71,7 +71,7 @@ const DetailsCard: React.FC<DetailsCardProps> = ({
             </Descriptions.Item>
           </>
         );
-      case "BANK_GUARANTEE":
+      case "BANK GUARANTEE":
         return (
           <>
             <Descriptions.Item label="Type">
@@ -98,7 +98,7 @@ const DetailsCard: React.FC<DetailsCardProps> = ({
             </Descriptions.Item>
           </>
         );
-      case "PROPERTY_MORTGAGE":
+      case "PROPERTY MORTGAGE":
         return (
           <>
             <Descriptions.Item label="Type">
@@ -124,7 +124,7 @@ const DetailsCard: React.FC<DetailsCardProps> = ({
             </Descriptions.Item>
           </>
         );
-      case "SAVINGS":
+      case "FIXED DEPOSITS AND SAVINGS":
         return (
           <>
             <Descriptions.Item label="Type">
@@ -152,7 +152,7 @@ const DetailsCard: React.FC<DetailsCardProps> = ({
             </Descriptions.Item>
           </>
         );
-      case "LAND_STOCK":
+      case "LAND STOCKS":
         return (
           <>
             <Descriptions.Item label="Type">

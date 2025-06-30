@@ -275,8 +275,8 @@ interface ICollateralState {
   fetchLeaseError: string | null;
 
   // Fetch functions
-  fetchTypes: (type: "V" | "M" | "B" | "R" | "F" | "L") => Promise<void>;
-  fetchSubTypes: (type: "V" | "M" | "B" | "R" | "F" | "L") => Promise<void>;
+  fetchTypes: (type: string) => Promise<void>;
+  fetchSubTypes: (type: string) => Promise<void>;
   fetchOwnerships: () => Promise<void>;
   fetchSecurityTypes: () => Promise<void>;
   fetchSecurityCategories: () => Promise<void>;

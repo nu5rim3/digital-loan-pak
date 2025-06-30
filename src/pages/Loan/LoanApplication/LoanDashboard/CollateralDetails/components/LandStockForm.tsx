@@ -6,14 +6,20 @@ import dayjs from "dayjs";
 import useCollateralStore from "../../../../../../store/collateralStore";
 import { message } from "antd";
 
+interface IBaseItem {
+  code: string;
+  description: string;
+  status?: string;
+}
+
 interface LandStockFormProps {
   control: Control<FormValues>;
   errors: Record<string, any>;
   appraisalId?: string;
   onSubmitSuccess?: () => void;
+  securityType?: IBaseItem;
 }
 
-// Helper function to prepare land stock data for API
 const prepareLandStockData = (formData: FormValues, appraisalId: string) => {
   return {
     appraisalId: appraisalId,
@@ -53,36 +59,30 @@ const LandStockForm: React.FC<LandStockFormProps> = ({
     fetchTypes,
     fetchSubTypes,
     fetchOwnerships,
-    fetchSecurityTypes,
     fetchSecurityCategories,
     savingLandStock,
   } = useCollateralStore();
 
-  // Get the id if this is an edit
+  const dataFetched = useRef(false);
   const landStockId = useWatch({
     control,
     name: "id",
   });
-
-  const dataFetched = useRef(false);
+  const isEditMode = !!landStockId;
 
   useEffect(() => {
     if (!dataFetched.current) {
-      fetchTypes("L");
-      fetchSubTypes("L");
+      fetchTypes("F");
+      fetchSubTypes("F");
       fetchOwnerships();
-      fetchSecurityTypes();
       fetchSecurityCategories();
       dataFetched.current = true;
     }
   }, [
     fetchTypes,
     fetchOwnerships,
-    fetchSecurityTypes,
     fetchSecurityCategories,
   ]);
-
-  const isEditMode = !!landStockId;
 
   const getOptions = (
     arr: any[],
@@ -100,11 +100,10 @@ const LandStockForm: React.FC<LandStockFormProps> = ({
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-4">
-          {isEditMode ? `Edit Land Stock (ID: ${landStockId})` : "New Land Stock"}
+          {isEditMode ? `Edit Land Stock` : "New Land Stock"}
         </h3>
         <Spin spinning={savingLandStock}>
           <div className="grid grid-cols-3 gap-4">
-            {/* Hidden field for ID */}
             <Controller
               name="id"
               control={control}
