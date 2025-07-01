@@ -162,6 +162,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
         if (selectedIdx !== '') {
             deleteStakeholder(selectedIdx)
         }
+        setSelectedIndex(0);
     }
 
     if (guarantors?.length === 0) {
