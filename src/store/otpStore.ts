@@ -46,7 +46,7 @@ const useOTPStore = create<IOTPState>()(
           set({ otpError: error.message, otpLoading: false });
         }
       },
-
+      // TODO: its get bad request when verfication fail we have to think a stategy to handle this
       verifyOTP: async (idx: string, code: string) => {
         set({ otpVerificationLoading: true, otpVerificationError: null });
         try {

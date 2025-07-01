@@ -191,7 +191,7 @@ const BnsOrAgriExpenses: React.FC = () => {
                         label: `Business or Agriculture Expenses`,
                         children: (
                             <>
-                                <div className='flex justify-end pb-3' hidden={cashFlows?.bnsOrAgriExpenses !== null}>
+                                <div className='flex justify-end pb-3'>
                                     <Button type="primary" onClick={() => openModal('save')} icon={<PlusOutlined />}>
                                         Add Business or Agriculture Expenses
                                     </Button>

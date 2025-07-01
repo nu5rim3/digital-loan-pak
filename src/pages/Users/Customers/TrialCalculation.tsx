@@ -1250,7 +1250,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                                 trailCalulationDetails?.object?.facilityDetails.map((item, index) => (
                                                     <Descriptions column={3} key={index} className='mb-2'>
                                                         <Descriptions.Item label="Sequence" className='w-30'>{item.seq}</Descriptions.Item>
-                                                        <Descriptions.Item label={`Trems`} className='w-30'>{item.term}</Descriptions.Item>
+                                                        <Descriptions.Item label={`Terms`} className='w-30'>{item.term}</Descriptions.Item>
                                                         <Descriptions.Item label={`Installment Amount`}>
                                                             <Tag color='green'><b>{formatCurrency(Number(item.instalment ?? 0))}</b></Tag>
                                                         </Descriptions.Item>

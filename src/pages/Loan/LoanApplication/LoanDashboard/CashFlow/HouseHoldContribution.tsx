@@ -182,7 +182,7 @@ const HouseHoldContribution: React.FC = () => {
                         label: `House Hold Contribution`,
                         children: (
                             <>
-                                <div className='flex justify-end pb-3' hidden={cashFlows?.houseHoldContribution !== null}>
+                                <div className='flex justify-end pb-3'>
                                     <Button type="primary" onClick={() => openModal('save')} icon={<PlusOutlined />}>
                                         Add House Hold Contribution
                                     </Button>
