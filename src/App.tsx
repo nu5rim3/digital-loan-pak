@@ -12,6 +12,8 @@ import Customers from './pages/Users/Customers';
 import Guarantors from './pages/Users/Guarantors';
 import Witnesses from './pages/Users/Witnesses';
 import themeConfig from './utils/themeConfig';
+import GeneralAppraisalList from './pages/ApprovalFlow/Components/TableSearch/TableSearch';
+import AppraisalPreviewPage from './pages/ApprovalFlow/FirstFlow/AppraisalPreviewPage';
 
 const LoginPage = lazy(() => import('./pages/Login'))
 const LandingPage = lazy(() => import('./pages/Landing'))
@@ -166,6 +168,18 @@ const App: React.FC = () => {
                     <Route path="witnesses" element={<Witnesses />} />
                     <Route path="witness" element={<UnderConstruction />} />
                     <Route path="witness/:id" element={<UnderConstruction />} />
+                  </Route>
+
+                  <Route
+                    path="approval/*"
+                    element={
+                      <PrivateRoute allowedRoles={
+                        ["ADMIN", "BHO", "CRO"]
+                      } />}>
+                    <Route path="firstFlow" element={<GeneralAppraisalList />} />
+                    <Route path="firstFlow/:appraisalId" element={<AppraisalPreviewPage />} />
+                    <Route path="secondFlow" element={<UnderConstruction />} />
+                    <Route path="secondFlow/:appraisalId" element={<UnderConstruction />} />
                   </Route>
 
                   <Route

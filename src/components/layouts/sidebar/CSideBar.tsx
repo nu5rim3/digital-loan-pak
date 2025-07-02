@@ -103,10 +103,16 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
             roles: ["ADMIN", "EDITOR", "VIEWER"],
             children: [
                 {
-                    label: 'Origination',
+                    label: 'Approvals For First Flow',
                     key: '3-1',
                     icon: <ProjectOutlined />,
-                    onClick: () => navigate(`/${mainNavigation}/gold/goldsmith`)
+                    onClick: () => navigate(`/${mainNavigation}/approval/firstFlow`)
+                },
+                {
+                    label: 'Approvals For Second Flow',
+                    key: '3-2',
+                    icon: <ProjectOutlined />,
+                    onClick: () => navigate(`/${mainNavigation}/approval/secondFlow`)
                 },
             ]
         },

@@ -55,3 +55,10 @@ textarea::placeholder {
   min-width: 150px !important;
   max-width: 150px !important;
 }
+
+/* collapse-custom.css */
+.custom-collapse .ant-collapse-header {
+  background-color: #e3ebf5 !important; /* Your desired light blue */
+  font-weight: 600;
+  color: #002b5c; /* Optional: adjust font color */
+}
