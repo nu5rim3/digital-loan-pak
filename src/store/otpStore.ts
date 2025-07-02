@@ -4,7 +4,6 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { APIAuth } from "../services/api";
 import { notification } from "antd";
-import { boolean } from "yup";
 
 interface IOTPState {
   otpResponse: any | null;

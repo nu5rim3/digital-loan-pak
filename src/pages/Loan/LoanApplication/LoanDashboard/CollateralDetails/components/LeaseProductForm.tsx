@@ -82,16 +82,17 @@ export const submitLease = async (
       refNo: referenceNo,
     };
 
-    let response;
     if (isEdit && id) {
-      response = await useCollateralStore.getState().updateLease(id, payload);
+      await useCollateralStore.getState().updateLease(id, payload);
       message.success("Lease updated successfully");
     } else {
-      response = await useCollateralStore.getState().saveLease(payload);
+      await useCollateralStore.getState().saveLease(payload);
       message.success("Lease saved successfully");
     }
     return true;
-  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    console.error("Error saving lease:", error);
     message.error(`Failed to ${isEdit ? 'update' : 'save'} lease`);
     return false;
   }
