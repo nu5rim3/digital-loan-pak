@@ -13,9 +13,7 @@ import useCommonStore from "../../../../../store/commonStore";
 
 interface CollateralDetailsComponentProps { }
 
-// Helper function to map API collateral data to form values
 const mapCollateralToFormValues = (collateral: any): FormValues => {
-  // Create a base form values object with ID and security type
   const formValues: FormValues = {
     id: collateral.id,
     securityType: "",
@@ -24,7 +22,7 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
   // Map the security type based on the collateral type
   switch (collateral.type) {
     case "bank-guarantee":
-      formValues.securityType = "BANK_GUARANTEE";
+      formValues.securityType = "BANK GUARANTEE";
       formValues.bankGuaranteeType = collateral.type;
       formValues.bankGuaranteeOwnership = collateral.ownership;
       formValues.fdNo = collateral.fdNo;
@@ -90,7 +88,7 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
         collateral.vehicleReferenceNo || collateral.refNo;
       break;
     case "machinery":
-      formValues.securityType = "MACHINERY";
+      formValues.securityType = "MACHINERY AND EQUIPMENT";
       // Map machinery specific fields
       formValues.machineryType = collateral.machineryType;
       formValues.machineryOwnership = collateral.machineryOwnership;
@@ -110,7 +108,7 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.machineryReferenceNo = collateral.machineryReferenceNo;
       break;
     case "property-mortgage":
-      formValues.securityType = "PROPERTY_MORTGAGE";
+      formValues.securityType = "PROPERTY MORTGAGE";
       // Map property mortgage specific fields
       formValues.propertyType = collateral.propertyType;
       formValues.propertySubType = collateral.propertySubType;
@@ -141,7 +139,7 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.propertyReferenceNo = collateral.propertyReferenceNo;
       break;
     case "land-stock":
-      formValues.securityType = "LAND_STOCK";
+      formValues.securityType = "LAND STOCKS";
       // Map land stock specific fields
       formValues.landStockType = collateral.landStockType;
       formValues.landStockSubType = collateral.landStockSubType;
@@ -161,7 +159,7 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.landStockSecurityType = collateral.landStockSecType;
       break;
     case "savings":
-      formValues.securityType = "SAVINGS";
+      formValues.securityType = "FIXED DEPOSITS AND SAVINGS";
       // Map savings specific fields
       formValues.savingsType = collateral.savingsType;
       formValues.savingsSubType = collateral.savingsSubType;
@@ -248,13 +246,11 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
     fetchingLease,
   } = useCollateralStore();
 
-  // Fetch collaterals when component mounts
   useEffect(() => {
     const loadCollaterals = async () => {
       if (appraisalId && !initialFetchDone.current) {
         initialFetchDone.current = true;
         try {
-          console.log("Fetching collaterals for appraisalId:", appraisalId);
           await fetchCollaterals(appraisalId);
         } catch (error) {
           console.error("Failed to fetch collaterals:", error);
@@ -266,17 +262,29 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
     loadCollaterals();
   }, [appraisalId, fetchCollaterals]);
 
-  // Update formData when collaterals change
   useEffect(() => {
     if (collaterals && collaterals.length > 0) {
-      // Map API data to form values
       const mappedData = collaterals.map(mapCollateralToFormValues);
-      setFormData(mappedData);
+      
+      // Filter based on product category
+      let filteredData = mappedData;
+      if (trialCalculationData?.productCategory === "A") {
+        // Show only lease collaterals for Lease product
+        filteredData = mappedData.filter(collateral => 
+          collateral.securityType === "LEASE"
+        );
+      } else if (trialCalculationData?.productCategory === "C") {
+        // Show all collateral types except lease for Loan product
+        filteredData = mappedData.filter(collateral => 
+          collateral.securityType !== "LEASE"
+        );
+      }
+      
+      setFormData(filteredData);
     } else {
-      // Reset form data if no collaterals
       setFormData([]);
     }
-  }, [collaterals]);
+  }, [collaterals, trialCalculationData?.productCategory]);
 
   const formMethods = useForm<FormValues>({
     resolver: yupResolver(validationSchema),
@@ -310,7 +318,6 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           .getVehicle(data.id);
 
         if (detailedData) {
-          console.log("Fetched vehicle details:", detailedData);
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
@@ -368,7 +375,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
     else if (
       mode === "update" &&
       data &&
-      data.securityType === "BANK_GUARANTEE" &&
+      data.securityType === "BANK GUARANTEE" &&
       data.id
     ) {
       try {
@@ -376,7 +383,6 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         const detailedData = await getBankGuarantee(data.id);
 
         if (detailedData) {
-          console.log("Fetched bank guarantee details:", detailedData);
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
@@ -427,7 +433,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
     else if (
       mode === "update" &&
       data &&
-      data.securityType === "LAND_STOCK" &&
+      data.securityType === "LAND STOCKS" &&
       data.id
     ) {
       try {
@@ -437,7 +443,6 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           .getLandStock(data.id);
 
         if (detailedData) {
-          console.log("Fetched land stock details:", detailedData);
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
@@ -484,7 +489,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
     else if (
       mode === "update" &&
       data &&
-      data.securityType === "MACHINERY" &&
+      data.securityType === "MACHINERY AND EQUIPMENT" &&
       data.id
     ) {
       try {
@@ -494,7 +499,6 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           .getMachinery(data.id);
 
         if (detailedData) {
-          console.log("Fetched machinery equipment details:", detailedData);
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
@@ -541,7 +545,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
     else if (
       mode === "update" &&
       data &&
-      data.securityType === "PROPERTY_MORTGAGE" &&
+      data.securityType === "PROPERTY MORTGAGE" &&
       data.id
     ) {
       try {
@@ -551,7 +555,6 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           .getPropertyMortgage(data.id);
 
         if (detailedData) {
-          console.log("Fetched property mortgage details:", detailedData);
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
@@ -610,7 +613,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
     else if (
       mode === "update" &&
       data &&
-      data.securityType === "SAVINGS" &&
+      data.securityType === "FIXED DEPOSITS AND SAVINGS" &&
       data.id
     ) {
       try {
@@ -620,7 +623,6 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           .getSavings(data.id);
 
         if (detailedData) {
-          console.log("Fetched savings details:", detailedData);
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
@@ -674,7 +676,6 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           .getLease(data.id);
 
         if (detailedData) {
-          console.log("Fetched lease details:", detailedData);
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
@@ -762,7 +763,6 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
       }
       closeModal();
 
-      // Refresh the collaterals data after a new item is added or updated
       if (appraisalId) {
         fetchCollaterals(appraisalId);
       }
@@ -819,7 +819,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           }
           // For bank guarantees, use the specialized deactivate function
           else if (
-            collateralToDelete.securityType === "BANK_GUARANTEE" &&
+            collateralToDelete.securityType === "BANK GUARANTEE" &&
             collateralToDelete.id
           ) {
             const result = await useCollateralStore
@@ -834,7 +834,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           }
           // For land stocks, use the specialized deactivate function
           else if (
-            collateralToDelete.securityType === "LAND_STOCK" &&
+            collateralToDelete.securityType === "LAND STOCKS" &&
             collateralToDelete.id
           ) {
             const result = await useCollateralStore
@@ -849,7 +849,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           }
           // For machinery equipment, use the specialized deactivate function
           else if (
-            collateralToDelete.securityType === "MACHINERY" &&
+            collateralToDelete.securityType === "MACHINERY AND EQUIPMENT" &&
             collateralToDelete.id
           ) {
             const result = await useCollateralStore
@@ -864,7 +864,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           }
           // For property mortgage, use the specialized deactivate function
           else if (
-            collateralToDelete.securityType === "PROPERTY_MORTGAGE" &&
+            collateralToDelete.securityType === "PROPERTY MORTGAGE" &&
             collateralToDelete.id
           ) {
             const result = await useCollateralStore
@@ -879,7 +879,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           }
           // For savings, use the specialized deactivate function
           else if (
-            collateralToDelete.securityType === "SAVINGS" &&
+            collateralToDelete.securityType === "FIXED DEPOSITS AND SAVINGS" &&
             collateralToDelete.id
           ) {
             const result = await useCollateralStore
@@ -936,7 +936,6 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
     });
   };
 
-  // For manual refresh of collaterals
   const refreshCollaterals = () => {
     if (appraisalId) {
       fetchCollaterals(appraisalId);
@@ -981,8 +980,23 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         {formData.length === 0 ? (
           <div className="text-center p-6 bg-gray-50 rounded-lg">
             <p className="text-gray-500">
-              No collateral details found. Click "Add Collateral" to add one.
+              {trialCalculationData?.productCategory === "A" 
+                ? "No lease collateral details found. Click 'Add Collateral' to add lease collateral."
+                : trialCalculationData?.productCategory === "C"
+                ? "No loan collateral details found. Click 'Add Collateral' to add loan collateral."
+                : "No collateral details found. Click 'Add Collateral' to add one."
+              }
             </p>
+            {collaterals && collaterals.length > 0 && (
+              <p className="text-blue-500 text-sm mt-2">
+                {trialCalculationData?.productCategory === "A" 
+                  ? "Note: Only lease collaterals are shown for Lease products."
+                  : trialCalculationData?.productCategory === "C"
+                  ? "Note: Only non-lease collaterals are shown for Loan products."
+                  : ""
+                }
+              </p>
+            )}
           </div>
         ) : (
           <Row gutter={[16, 16]}>
@@ -1008,7 +1022,9 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           productCategory={
             trialCalculationData?.productCategory === "A"
               ? "Lease"
-              : trialCalculationData?.productCategory === "C" ? "Loan" : null
+              : trialCalculationData?.productCategory === "C"
+                ? "Loan"
+                : null
           }
           appraisalId={appraisalId}
           isLoading={

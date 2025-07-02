@@ -1,17 +1,23 @@
 import React, { useEffect, useRef } from "react";
 import { Form, Input, InputNumber, Select, DatePicker } from "antd";
-import { Controller, Control } from "react-hook-form";
+import { Controller, Control, useWatch } from "react-hook-form";
 import { FormValues } from "../types";
 import dayjs from "dayjs";
 import useCollateralStore from "../../../../../../store/collateralStore";
 import { message } from "antd";
 
+interface IBaseItem {
+  code: string;
+  description: string;
+  status?: string;
+}
+
 interface PropertyMortgageFormProps {
   control: Control<FormValues>;
   errors: Record<string, any>;
+  securityType?: IBaseItem;
 }
 
-// Function to submit property mortgage data to the API
 export const submitPropertyMortgage = async (
   data: FormValues,
   appraisalId: string,
@@ -44,7 +50,6 @@ export const submitPropertyMortgage = async (
       propertyReferenceNo,
     } = data;
 
-    // Prepare payload for API
     const payload = {
       appraisalId,
       mortgageType: propertyType || "",
@@ -69,22 +74,17 @@ export const submitPropertyMortgage = async (
       mortgageLotNo: propertyLotNo || "",
       mortgageInsuranceCompany: propertyInsuranceCompany,
       mortgageReferenceNo: propertyReferenceNo,
-      mortgageSecCategory: "Mortgage", // Default value
-      mortgageSecType: "Primary" // Default value
+      mortgageSecCategory: "Mortgage",
+      mortgageSecType: "Primary"
     };
 
-    console.log(`${isEdit ? 'Updating' : 'Saving'} property mortgage with payload:`, payload);
-
-    let response;
     if (isEdit && id) {
-      response = await useCollateralStore.getState().updatePropertyMortgage(id, payload);
+      await useCollateralStore.getState().updatePropertyMortgage(id, payload);
       message.success("Property mortgage updated successfully");
     } else {
-      response = await useCollateralStore.getState().savePropertyMortgage(payload);
+      await useCollateralStore.getState().savePropertyMortgage(payload);
       message.success("Property mortgage saved successfully");
     }
-
-    console.log(`Property mortgage ${isEdit ? 'update' : 'save'} response:`, response);
     return true;
   } catch (error) {
     console.error(`Error ${isEdit ? 'updating' : 'saving'} property mortgage:`, error);
@@ -96,6 +96,7 @@ export const submitPropertyMortgage = async (
 const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
   control,
   errors,
+  securityType
 }) => {
   const {
     types: propertyTypes,
@@ -122,11 +123,16 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
   } = useCollateralStore();
 
   const dataFetched = useRef(false);
+  const propertyMortgageId = useWatch({
+    control,
+    name: "id",
+  });
+  const isEditMode = !!propertyMortgageId;
 
   useEffect(() => {
     if (!dataFetched.current) {
-      fetchTypes('R');
-      fetchSubTypes("R");
+      fetchTypes(securityType?.code || "");
+      fetchSubTypes(securityType?.code || "");
       fetchOwnerships();
       fetchBondTypes();
       fetchPropertyTypes();
@@ -158,7 +164,9 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Property Details</h3>
+        <h3 className="text-lg font-semibold mb-4">
+          {isEditMode ? `Edit Property Mortgage` : "New Property Mortgage"}
+        </h3>
         <div className="grid grid-cols-3 gap-4">
           <Form.Item
             label="Type"

@@ -6,12 +6,17 @@ import dayjs from "dayjs";
 import useCollateralStore from "../../../../../../store/collateralStore";
 import { message } from "antd";
 
+interface IBaseItem {
+  code: string;
+  description: string;
+  status?: string;
+}
+
 interface VehicleFormProps {
   control: Control<FormValues>;
   errors: Record<string, any>;
+  securityType?: IBaseItem;
 }
-
-// Function to submit vehicle data to the API
 export const submitVehicle = async (
   data: FormValues,
   appraisalId: string,
@@ -42,17 +47,15 @@ export const submitVehicle = async (
       vehicleReferenceNo,
     } = data;
 
-    // Format dates to strings for API
     const formatDate = (date: Date | undefined) => {
       return date ? dayjs(date).format('YYYY-MM-DD') : undefined;
     };
 
-    // Prepare payload for API
     const payload = {
       appraisalId,
       vehicleType: vehicleType || "",
-      vehicleSecCategory: "Main Security", // Default value
-      vehicleSecType: "VEHICLE", // Default value
+      vehicleSecCategory: "Main Security",
+      vehicleSecType: "VEHICLE",
       ownership: vehicleOwnership || "",
       supplier: vehicleSupplier || "",
       condition: vehicleCondition || "",
@@ -74,18 +77,13 @@ export const submitVehicle = async (
       refNo: vehicleReferenceNo,
     };
 
-    console.log(`${isEdit ? 'Updating' : 'Saving'} vehicle with payload:`, payload);
-
-    let response;
     if (isEdit && id) {
-      response = await useCollateralStore.getState().updateVehicle(id, payload);
+      await useCollateralStore.getState().updateVehicle(id, payload);
       message.success("Vehicle updated successfully");
     } else {
-      response = await useCollateralStore.getState().saveVehicle(payload);
+      await useCollateralStore.getState().saveVehicle(payload);
       message.success("Vehicle saved successfully");
     }
-
-    console.log(`Vehicle ${isEdit ? 'update' : 'save'} response:`, response);
     return true;
   } catch (error) {
     console.error(`Error ${isEdit ? 'updating' : 'saving'} vehicle:`, error);
@@ -94,7 +92,7 @@ export const submitVehicle = async (
   }
 };
 
-const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
+const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors, securityType }) => {
   const {
     types: vehicleTypes,
     typesLoading: vehicleTypesLoading,
@@ -129,9 +127,15 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
     name: "vehicleMake",
   });
 
+  const vehicleId = useWatch({
+    control,
+    name: "id",
+  });
+  const isEditMode = !!vehicleId;
+
   useEffect(() => {
     if (!dataFetched.current) {
-      fetchTypes("V");
+      fetchTypes(securityType?.code || "");
       fetchVehicleCategories();
       fetchOwnerships();
       fetchSuppliers();
@@ -174,7 +178,9 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Vehicle Details</h3>
+        <h3 className="text-lg font-semibold mb-4">
+          {isEditMode ? `Edit Vehicle` : "New Vehicle"}
+        </h3>
         <div className="grid grid-cols-3 gap-4">
           <Form.Item
             label="Type"
@@ -193,7 +199,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
                   showSearch
                   placeholder="Select Type"
                   loading={vehicleTypesLoading}
-                  options={getOptions(vehicleTypes)}
+                  options={getOptions(vehicleTypes, "description", "description")}
                 />
               )}
             />
@@ -216,7 +222,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
                   showSearch
                   placeholder="Select Ownership"
                   loading={vehicleOwnershipsLoading}
-                  options={getOptions(vehicleOwnerships)}
+                  options={getOptions(vehicleOwnerships, "description", "description")}
                 />
               )}
             />
@@ -262,7 +268,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
                   showSearch
                   placeholder="Select Condition"
                   loading={vehicleConditionsLoading}
-                  options={getOptions(vehicleConditions)}
+                  options={getOptions(vehicleConditions, "description", "description")}
                 />
               )}
             />
@@ -285,7 +291,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
                   showSearch
                   placeholder="Select Category"
                   loading={vehicleCategoriesLoading}
-                  options={getOptions(vehicleCategories)}
+                  options={getOptions(vehicleCategories, "description", "description")}
                 />
               )}
             />
@@ -308,7 +314,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
                   showSearch
                   placeholder="Select Make"
                   loading={vehicleMakesLoading}
-                  options={getOptions(vehicleMakes, "description", "code")}
+                  options={getOptions(vehicleMakes, "description", "description")}
                 />
               )}
             />
@@ -331,7 +337,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
                   showSearch
                   placeholder="Select Model"
                   loading={vehicleModelsLoading}
-                  options={getOptions(vehicleModels)}
+                  options={getOptions(vehicleModels, "description", "description")}
                 />
               )}
             />
@@ -544,7 +550,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
                   showSearch
                   placeholder="Select Insurance Company"
                   loading={insuranceCompaniesLoading}
-                  options={getOptions(insuranceCompanies)}
+                  options={getOptions(insuranceCompanies, "description", "description")}
                 />
               )}
             />

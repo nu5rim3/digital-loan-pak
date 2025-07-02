@@ -5,27 +5,33 @@ import { FormValues } from "../types";
 import dayjs from "dayjs";
 import useCollateralStore from "../../../../../../store/collateralStore";
 
+interface IBaseItem {
+  code: string;
+  description: string;
+  status?: string;
+}
+
 interface BankGuaranteeFormProps {
   control: Control<FormValues>;
   errors: Record<string, any>;
   appraisalId?: string;
   onSubmitSuccess?: () => void;
+  securityType?: IBaseItem;
 }
 
 const prepareBankGuaranteeData = (formData: FormValues, appraisalId: string) => {
   const isLOFIN = formData.bankGuaranteeType === "Issued by LOLC";
   const isOnDemand = formData.bankGuaranteeType === "On Demand";
 
-  // Prepare the payload for the API
+
   const payload = {
     appraisalId: appraisalId,
     type: formData.bankGuaranteeType,
     ownership: formData.bankGuaranteeOwnership,
-    bankGuaranteeSecCategory: "Main Security", // Default value
-    bankGuaranteeSecType: "BANK GUARANTEE", // Default value
+    bankGuaranteeSecCategory: "Main Security",
+    bankGuaranteeSecType: "BANK GUARANTEE",
   } as any;
 
-  // Add LOFIN specific fields
   if (isLOFIN) {
     payload.fdNo = formData.fdNo || null;
     payload.fdValue = formData.fdValue || null;
@@ -36,7 +42,6 @@ const prepareBankGuaranteeData = (formData: FormValues, appraisalId: string) => 
     payload.guaranteeTo = formData.guaranteedTo || null;
   }
 
-  // Add OnDemand specific fields
   if (isOnDemand) {
     payload.institutionName = formData.institutionName || null;
     payload.expiryDate = formData.expiryDate || null;
@@ -46,8 +51,6 @@ const prepareBankGuaranteeData = (formData: FormValues, appraisalId: string) => 
     payload.insuCompany = formData.bankInsuranceCompany || null;
     payload.insuRefNo = formData.bankReferenceNo || null;
   }
-
-  console.log("Prepared payload:", payload);
   return payload;
 };
 
@@ -71,13 +74,20 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
     savingBankGuarantee,
   } = useCollateralStore();
 
-  // Get the id if this is an edit
   const bgId = useWatch({
     control,
     name: "id",
   });
 
+  const bankGuaranteeType = useWatch({
+    control,
+    name: "bankGuaranteeType",
+  });
+
+  const isEditMode = !!bgId;
   const dataFetched = useRef(false);
+  const isLOFIN = bankGuaranteeType === "Issued by LOLC";
+  const isOnDemand = bankGuaranteeType === "On Demand";
 
   useEffect(() => {
     if (!dataFetched.current) {
@@ -88,15 +98,6 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
       dataFetched.current = true;
     }
   }, [fetchTypes, fetchOwnerships, fetchBondRenewals, fetchInsuranceCompanies]);
-
-  const bankGuaranteeType = useWatch({
-    control,
-    name: "bankGuaranteeType",
-  });
-
-  const isLOFIN = bankGuaranteeType === "Issued by LOLC";
-  const isOnDemand = bankGuaranteeType === "On Demand";
-  const isEditMode = !!bgId;
 
   const getOptions = (
     arr: any[],
@@ -119,7 +120,6 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
         </h3>
         <Spin spinning={savingBankGuarantee}>
           <div className="grid grid-cols-3 gap-4">
-            {/* Hidden field for ID */}
             <Controller
               name="id"
               control={control}
@@ -461,15 +461,11 @@ export const submitBankGuarantee = async (formData: FormValues, appraisalId: str
 
     let response;
     if (isEdit && formData.id) {
-      console.log("Updating Bank Guarantee with ID:", formData.id, "Payload:", payload);
       const bankGuaranteeId = formData.id;
       response = await store.updateBankGuarantee(bankGuaranteeId, payload);
-      console.log("Bank Guarantee update response:", response);
       message.success("Bank Guarantee updated successfully");
     } else {
-      console.log("Submitting new Bank Guarantee with payload:", payload);
       response = await store.saveBankGuarantee(payload);
-      console.log("Bank Guarantee submission response:", response);
       message.success("Bank Guarantee added successfully");
     }
 

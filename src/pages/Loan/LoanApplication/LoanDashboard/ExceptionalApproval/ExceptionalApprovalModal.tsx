@@ -1,6 +1,10 @@
 import { Button, Form, Select } from "antd";
 import { Controller, UseFormReturn } from "react-hook-form";
-import { ExceptionalApprovalFormData, ExceptionalApprovalPersonResponse, ExceptionalApprovalRole } from "./types";
+import {
+  ExceptionalApprovalFormData,
+  ExceptionalApprovalPersonResponse,
+  ExceptionalApprovalRole,
+} from "./types";
 import TextArea from "antd/es/input/TextArea";
 import { useEffect } from "react";
 import CommonModal from "../../../../../components/common/modal/commonModal";
@@ -14,7 +18,6 @@ interface ExceptionalApprovalModalProps {
   formMethods: UseFormReturn<ExceptionalApprovalFormData>;
   onSubmit: (data: ExceptionalApprovalFormData) => void;
 }
-
 
 const ExceptionalApprovalModal: React.FC<ExceptionalApprovalModalProps> = ({
   mode,
@@ -105,8 +108,9 @@ const ExceptionalApprovalModal: React.FC<ExceptionalApprovalModalProps> = ({
 
   return (
     <CommonModal
-      title={`${mode === "save" ? "Add" : mode === "update" ? "Update" : "Remove"
-        } Term Deposit`}
+      title={`${
+        mode === "save" ? "Add" : mode === "update" ? "Update" : "Remove"
+      } Exceptional Approval Category`}
       centered={true}
       footer={true}
       open={isModalOpen}
@@ -221,4 +225,4 @@ const ExceptionalApprovalModal: React.FC<ExceptionalApprovalModalProps> = ({
   );
 };
 
-export default ExceptionalApprovalModal; 
+export default ExceptionalApprovalModal;
