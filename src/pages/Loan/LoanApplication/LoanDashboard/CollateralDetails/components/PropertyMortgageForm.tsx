@@ -78,13 +78,11 @@ export const submitPropertyMortgage = async (
       mortgageSecType: "Primary"
     };
 
-    let response;
-
     if (isEdit && id) {
-      response = await useCollateralStore.getState().updatePropertyMortgage(id, payload);
+      await useCollateralStore.getState().updatePropertyMortgage(id, payload);
       message.success("Property mortgage updated successfully");
     } else {
-      response = await useCollateralStore.getState().savePropertyMortgage(payload);
+      await useCollateralStore.getState().savePropertyMortgage(payload);
       message.success("Property mortgage saved successfully");
     }
     return true;

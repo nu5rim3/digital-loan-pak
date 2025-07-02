@@ -77,13 +77,11 @@ export const submitVehicle = async (
       refNo: vehicleReferenceNo,
     };
 
-    let response;
-
     if (isEdit && id) {
-      response = await useCollateralStore.getState().updateVehicle(id, payload);
+      await useCollateralStore.getState().updateVehicle(id, payload);
       message.success("Vehicle updated successfully");
     } else {
-      response = await useCollateralStore.getState().saveVehicle(payload);
+      await useCollateralStore.getState().saveVehicle(payload);
       message.success("Vehicle saved successfully");
     }
     return true;

@@ -58,13 +58,11 @@ export const submitSavings = async (
       savingsSecType: "Fixed Deposits and Savings"
     };
 
-    let response;
-
     if (isEdit && id) {
-      response = await useCollateralStore.getState().updateSavings(id, payload);
+      await useCollateralStore.getState().updateSavings(id, payload);
       message.success("Savings updated successfully");
     } else {
-      response = await useCollateralStore.getState().saveSavings(payload);
+      await useCollateralStore.getState().saveSavings(payload);
       message.success("Savings saved successfully");
     }
     return true;

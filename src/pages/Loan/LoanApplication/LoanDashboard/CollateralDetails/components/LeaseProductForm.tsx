@@ -80,8 +80,6 @@ export const submitLease = async (
       refNo: referenceNo,
     };
 
-    let response;
-
     if (isEdit && id) {
       await useCollateralStore.getState().updateLease(id, payload);
       message.success("Lease updated successfully");

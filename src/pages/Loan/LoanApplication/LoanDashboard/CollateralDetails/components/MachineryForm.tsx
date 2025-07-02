@@ -63,12 +63,11 @@ export const submitMachinery = async (
       machineryEquipSecType: "MACHINERY AND EQUIPMENT"
     };
 
-    let response;
     if (isEdit && id) {
-      response = await useCollateralStore.getState().updateMachinery(id, payload);
+      await useCollateralStore.getState().updateMachinery(id, payload);
       message.success("Machinery equipment updated successfully");
     } else {
-      response = await useCollateralStore.getState().saveMachinery(payload);
+      await useCollateralStore.getState().saveMachinery(payload);
       message.success("Machinery equipment saved successfully");
     }
     return true;
