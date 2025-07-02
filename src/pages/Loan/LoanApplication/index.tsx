@@ -52,7 +52,7 @@ const LoanApplication: React.FC = () => {
                 } else if (category === 'A') {
                     return <Tag color='lime-inverse'><b>Lease</b></Tag>
                 } else {
-                    return <Tag color='red-inverse'><b>Not Applied</b></Tag>
+                    return <Tag color='yellow-inverse'><b>TC Pending</b></Tag>
                 }
 
             }

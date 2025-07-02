@@ -196,7 +196,7 @@ const HouseHoldExpenses: React.FC = () => {
                         label: `Household Expenses`,
                         children: (
                             <>
-                                <div className='flex justify-end pb-3' hidden={cashFlows?.houseHoldExpenses !== null}>
+                                <div className='flex justify-end pb-3'>
                                     <Button type="primary" onClick={() => openModal('save')} icon={<PlusOutlined />}>
                                         Add Household Expenses
                                     </Button>

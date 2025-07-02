@@ -190,7 +190,7 @@ const ApplicantRevenue: React.FC = () => {
                         label: `Applicant Revenue`,
                         children: (
                             <>
-                                <div className='flex justify-end pb-3' hidden={cashFlows?.applicantRevenue !== null}>
+                                <div className='flex justify-end pb-3'>
                                     <Button type="primary" onClick={() => openModal('save')} icon={<PlusOutlined />}>
                                         Add Revenue
                                     </Button>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Logo2 from '../../../assets/full_logo_black.png';
 
-const PageLoader = () => {
+const PageLoader: React.FC = () => {
     const [show, setShow] = useState(false);
 
     useEffect(() => {

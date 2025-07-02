@@ -83,10 +83,10 @@ export const submitLease = async (
     let response;
 
     if (isEdit && id) {
-      response = await useCollateralStore.getState().updateLease(id, payload);
+      await useCollateralStore.getState().updateLease(id, payload);
       message.success("Lease updated successfully");
     } else {
-      response = await useCollateralStore.getState().saveLease(payload);
+      await useCollateralStore.getState().saveLease(payload);
       message.success("Lease saved successfully");
     }
     return true;
