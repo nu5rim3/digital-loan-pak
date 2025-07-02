@@ -251,7 +251,6 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
       if (appraisalId && !initialFetchDone.current) {
         initialFetchDone.current = true;
         try {
-          console.log("Fetching collaterals for appraisalId:", appraisalId);
           await fetchCollaterals(appraisalId);
         } catch (error) {
           console.error("Failed to fetch collaterals:", error);
@@ -266,11 +265,26 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
   useEffect(() => {
     if (collaterals && collaterals.length > 0) {
       const mappedData = collaterals.map(mapCollateralToFormValues);
-      setFormData(mappedData);
+      
+      // Filter based on product category
+      let filteredData = mappedData;
+      if (trialCalculationData?.productCategory === "A") {
+        // Show only lease collaterals for Lease product
+        filteredData = mappedData.filter(collateral => 
+          collateral.securityType === "LEASE"
+        );
+      } else if (trialCalculationData?.productCategory === "C") {
+        // Show all collateral types except lease for Loan product
+        filteredData = mappedData.filter(collateral => 
+          collateral.securityType !== "LEASE"
+        );
+      }
+      
+      setFormData(filteredData);
     } else {
       setFormData([]);
     }
-  }, [collaterals]);
+  }, [collaterals, trialCalculationData?.productCategory]);
 
   const formMethods = useForm<FormValues>({
     resolver: yupResolver(validationSchema),
@@ -304,7 +318,6 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           .getVehicle(data.id);
 
         if (detailedData) {
-          console.log("Fetched vehicle details:", detailedData);
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
@@ -370,7 +383,6 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         const detailedData = await getBankGuarantee(data.id);
 
         if (detailedData) {
-          console.log("Fetched bank guarantee details:", detailedData);
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
@@ -431,7 +443,6 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           .getLandStock(data.id);
 
         if (detailedData) {
-          console.log("Fetched land stock details:", detailedData);
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
@@ -488,7 +499,6 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           .getMachinery(data.id);
 
         if (detailedData) {
-          console.log("Fetched machinery equipment details:", detailedData);
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
@@ -545,7 +555,6 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           .getPropertyMortgage(data.id);
 
         if (detailedData) {
-          console.log("Fetched property mortgage details:", detailedData);
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
@@ -614,7 +623,6 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           .getSavings(data.id);
 
         if (detailedData) {
-          console.log("Fetched savings details:", detailedData);
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
@@ -668,7 +676,6 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           .getLease(data.id);
 
         if (detailedData) {
-          console.log("Fetched lease details:", detailedData);
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
@@ -973,8 +980,23 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         {formData.length === 0 ? (
           <div className="text-center p-6 bg-gray-50 rounded-lg">
             <p className="text-gray-500">
-              No collateral details found. Click "Add Collateral" to add one.
+              {trialCalculationData?.productCategory === "A" 
+                ? "No lease collateral details found. Click 'Add Collateral' to add lease collateral."
+                : trialCalculationData?.productCategory === "C"
+                ? "No loan collateral details found. Click 'Add Collateral' to add loan collateral."
+                : "No collateral details found. Click 'Add Collateral' to add one."
+              }
             </p>
+            {collaterals && collaterals.length > 0 && (
+              <p className="text-blue-500 text-sm mt-2">
+                {trialCalculationData?.productCategory === "A" 
+                  ? "Note: Only lease collaterals are shown for Lease products."
+                  : trialCalculationData?.productCategory === "C"
+                  ? "Note: Only non-lease collaterals are shown for Loan products."
+                  : ""
+                }
+              </p>
+            )}
           </div>
         ) : (
           <Row gutter={[16, 16]}>

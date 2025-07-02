@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Form, Input, Select, DatePicker } from "antd";
+import { Form, Input, Select, DatePicker, InputNumber } from "antd";
 import { Control, Controller, useWatch } from "react-hook-form";
 import { LeaseProductFormValues } from "../types";
 import dayjs from "dayjs";
@@ -47,11 +47,9 @@ export const submitLease = async (
       province,
     } = data;
 
-
     const formatDate = (date: Date | undefined) => {
-      return date ? dayjs(date).format('YYYY-MM-DD') : undefined;
+      return date ? dayjs(date).format("YYYY-MM-DD") : undefined;
     };
-
 
     const payload = {
       appraisalId,
@@ -83,6 +81,7 @@ export const submitLease = async (
     };
 
     let response;
+
     if (isEdit && id) {
       response = await useCollateralStore.getState().updateLease(id, payload);
       message.success("Lease updated successfully");
@@ -92,7 +91,7 @@ export const submitLease = async (
     }
     return true;
   } catch (error) {
-    message.error(`Failed to ${isEdit ? 'update' : 'save'} lease`);
+    message.error(`Failed to ${isEdit ? "update" : "save"} lease`);
     return false;
   }
 };
@@ -131,7 +130,6 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
 
   const { trialCalculationData } = useCommonStore();
 
-
   const dataFetched = useRef(false);
   const selectedMake = useWatch({
     control,
@@ -142,29 +140,43 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
     if (!dataFetched.current) {
       fetchSuppliers();
       fetchConditions();
-      fetchVehicleCategories()
+      fetchVehicleCategories();
       fetchDepreciationRates();
       fetchInsuranceCompanies();
       fetchTypes("V");
       fetchMakes();
       dataFetched.current = true;
     }
-  }, [fetchSuppliers, fetchConditions, fetchVehicleCategories, fetchDepreciationRates, fetchInsuranceCompanies, fetchMakes]);
+  }, [
+    fetchSuppliers,
+    fetchConditions,
+    fetchVehicleCategories,
+    fetchDepreciationRates,
+    fetchInsuranceCompanies,
+    fetchMakes,
+  ]);
 
   // Set default values from trialCalculationData when component loads
   useEffect(() => {
     if (trialCalculationData && setValue) {
-
       if (trialCalculationData.insuranceVE) {
-        const equipmentTypeLabel = trialCalculationData.insuranceVE === 'V' ? 'Vehicle' : 'Equipment';
-        setValue('equipmentType', equipmentTypeLabel);
+        const equipmentTypeLabel =
+          trialCalculationData.insuranceVE === "V" ? "Vehicle" : "Equipment";
+        setValue("equipmentType", equipmentTypeLabel);
       }
 
       if (trialCalculationData.cost) {
-        setValue('equipmentCost', trialCalculationData.cost.toString());
+        setValue("equipmentCost", trialCalculationData.cost.toString());
       }
     }
   }, [trialCalculationData, setValue]);
+
+  // Check if we have default values to determine if fields should be disabled
+  const hasDefaultEquipmentType = trialCalculationData?.insuranceVE;
+  const hasDefaultEquipmentCost =
+    trialCalculationData?.cost &&
+    trialCalculationData.cost !== 0 &&
+    trialCalculationData.cost !== "0";
 
   useEffect(() => {
     if (selectedMake) {
@@ -185,7 +197,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
     valueKey: string = "code"
   ) =>
     arr
-      .filter((item) => item.status ? item.status === "A" : true)
+      .filter((item) => (item.status ? item.status === "A" : true))
       .map((item) => ({
         label: item[labelKey],
         value: item[valueKey],
@@ -194,13 +206,18 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Equipment Details</h3>
+        <h3 className="text-lg font-semibold mb-4">Lease Details</h3>
 
         <div className="grid grid-cols-4 gap-4">
-          <Form.Item label="Equipment Type" required validateStatus={errors.equipmentType ? "error" : ""} help={errors.equipmentType?.message}>
+          <Form.Item
+            label="Equipment Type"
+            required
+            validateStatus={errors.equipmentType ? "error" : ""}
+            help={errors.equipmentType?.message}
+          >
             <Controller
               name="equipmentType"
-              disabled
+              disabled={!!hasDefaultEquipmentType}
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Equipment Type" />
@@ -208,20 +225,38 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
             />
           </Form.Item>
 
-          <Form.Item label="Equipment Cost" required validateStatus={errors.equipmentCost ? "error" : ""} help={errors.equipmentCost?.message}>
+          <Form.Item
+            label="Equipment Cost"
+            required
+            validateStatus={errors.equipmentCost ? "error" : ""}
+            help={errors.equipmentCost?.message}
+          >
             <Controller
               name="equipmentCost"
-              disabled
+              disabled={!!hasDefaultEquipmentCost}
               control={control}
               render={({ field }) => (
-                <Input {...field} type="number" placeholder="Enter Cost" />
+                <InputNumber
+                  {...field}
+                  style={{ width: "100%" }}
+                  placeholder="Enter Cost"
+                  formatter={(value) =>
+                    `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
+                  parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                />
               )}
             />
           </Form.Item>
         </div>
 
         <div className="grid grid-cols-4 gap-4">
-          <Form.Item label="Supplier Code" required validateStatus={errors.supplierCode ? "error" : ""} help={errors.supplierCode?.message}>
+          <Form.Item
+            label="Supplier Code"
+            required
+            validateStatus={errors.supplierCode ? "error" : ""}
+            help={errors.supplierCode?.message}
+          >
             <Controller
               name="supplierCode"
               control={control}
@@ -237,7 +272,12 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
             />
           </Form.Item>
 
-          <Form.Item label="Equipment Name" required validateStatus={errors.equipmentName ? "error" : ""} help={errors.equipmentName?.message}>
+          <Form.Item
+            label="Equipment Name"
+            required
+            validateStatus={errors.equipmentName ? "error" : ""}
+            help={errors.equipmentName?.message}
+          >
             <Controller
               name="equipmentName"
               control={control}
@@ -247,7 +287,12 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
             />
           </Form.Item>
 
-          <Form.Item label="Condition" required validateStatus={errors.condition ? "error" : ""} help={errors.condition?.message}>
+          <Form.Item
+            label="Condition"
+            required
+            validateStatus={errors.condition ? "error" : ""}
+            help={errors.condition?.message}
+          >
             <Controller
               name="condition"
               control={control}
@@ -257,13 +302,18 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
                   showSearch
                   placeholder="Select Condition"
                   loading={conditionsLoading}
-                  options={getOptions(conditions)}
+                  options={getOptions(conditions, "description", "description")}
                 />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Category" required validateStatus={errors.category ? "error" : ""} help={errors.category?.message}>
+          <Form.Item
+            label="Category"
+            required
+            validateStatus={errors.category ? "error" : ""}
+            help={errors.category?.message}
+          >
             <Controller
               name="category"
               control={control}
@@ -273,13 +323,22 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
                   showSearch
                   placeholder="Select Category"
                   loading={vehicleCategoriesLoading}
-                  options={getOptions(vehicleCategories)}
+                  options={getOptions(
+                    vehicleCategories,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Depreciation Code" required validateStatus={errors.depreciationCode ? "error" : ""} help={errors.depreciationCode?.message}>
+          <Form.Item
+            label="Depreciation Code"
+            required
+            validateStatus={errors.depreciationCode ? "error" : ""}
+            help={errors.depreciationCode?.message}
+          >
             <Controller
               name="depreciationCode"
               control={control}
@@ -289,7 +348,11 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
                   showSearch
                   placeholder="Select Category"
                   loading={fetchingDepreciationRates}
-                  options={getOptions(depreciationRates, "description", "description")}
+                  options={getOptions(
+                    depreciationRates,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
@@ -298,7 +361,12 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
 
         <h3 className="text-lg font-semibold mb-4 mt-6">Vehicle Details</h3>
         <div className="grid grid-cols-4 gap-4">
-          <Form.Item label="Type" required validateStatus={errors.vehicleType ? "error" : ""} help={errors.vehicleType?.message}>
+          <Form.Item
+            label="Type"
+            required
+            validateStatus={errors.vehicleType ? "error" : ""}
+            help={errors.vehicleType?.message}
+          >
             <Controller
               name="vehicleType"
               control={control}
@@ -308,13 +376,22 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
                   showSearch
                   placeholder="Select Type"
                   loading={vehicleTypesLoading}
-                  options={getOptions(vehicleTypes)}
+                  options={getOptions(
+                    vehicleTypes,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Manufacturer" required validateStatus={errors.manufacturer ? "error" : ""} help={errors.manufacturer?.message}>
+          <Form.Item
+            label="Manufacturer"
+            required
+            validateStatus={errors.manufacturer ? "error" : ""}
+            help={errors.manufacturer?.message}
+          >
             <Controller
               name="manufacturer"
               control={control}
@@ -324,13 +401,22 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
                   showSearch
                   placeholder="Select Make"
                   loading={vehicleMakesLoading}
-                  options={getOptions(vehicleMakes, "description", "code")}
+                  options={getOptions(
+                    vehicleMakes,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Model" required validateStatus={errors.model ? "error" : ""} help={errors.model?.message}>
+          <Form.Item
+            label="Model"
+            required
+            validateStatus={errors.model ? "error" : ""}
+            help={errors.model?.message}
+          >
             <Controller
               name="model"
               control={control}
@@ -340,13 +426,22 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
                   showSearch
                   placeholder="Select Model"
                   loading={vehicleModelsLoading}
-                  options={getOptions(vehicleModels)}
+                  options={getOptions(
+                    vehicleModels,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Engine Capacity CC" required validateStatus={errors.engineCapacityCC ? "error" : ""} help={errors.engineCapacityCC?.message}>
+          <Form.Item
+            label="Engine Capacity CC"
+            required
+            validateStatus={errors.engineCapacityCC ? "error" : ""}
+            help={errors.engineCapacityCC?.message}
+          >
             <Controller
               name="engineCapacityCC"
               control={control}
@@ -356,7 +451,12 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
             />
           </Form.Item>
 
-          <Form.Item label="Engine Capacity HP" required validateStatus={errors.engineCapacityHP ? "error" : ""} help={errors.engineCapacityHP?.message}>
+          <Form.Item
+            label="Engine Capacity HP"
+            required
+            validateStatus={errors.engineCapacityHP ? "error" : ""}
+            help={errors.engineCapacityHP?.message}
+          >
             <Controller
               name="engineCapacityHP"
               control={control}
@@ -436,7 +536,16 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
               name="registrationYear"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter Registration Year" />
+                <DatePicker
+                  className="w-full"
+                  picker="year"
+                  format="YYYY"
+                  value={field.value ? dayjs(field.value, "YYYY") : null}
+                  onChange={(date) =>
+                    field.onChange(date ? date.format("YYYY") : "")
+                  }
+                  placeholder="Select Registration Year"
+                />
               )}
             />
           </Form.Item>
@@ -446,7 +555,15 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
               name="internalMV"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter Internal Values MV" />
+                <InputNumber
+                {...field}
+                style={{ width: "100%" }}
+                placeholder="Enter MV"
+                formatter={(value) =>
+                  `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }
+                parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+              />
               )}
             />
           </Form.Item>
@@ -456,12 +573,25 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
               name="internalFSV"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter Internal Values FSV" />
+                <InputNumber
+                  {...field}
+                  style={{ width: "100%" }}
+                  placeholder="Enter FSV"
+                  formatter={(value) =>
+                    `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
+                  parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Insurance Company" required validateStatus={errors.insuranceCompany ? "error" : ""} help={errors.insuranceCompany?.message}>
+          <Form.Item
+            label="Insurance Company"
+            required
+            validateStatus={errors.insuranceCompany ? "error" : ""}
+            help={errors.insuranceCompany?.message}
+          >
             <Controller
               name="insuranceCompany"
               control={control}
@@ -471,13 +601,22 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
                   showSearch
                   placeholder="Select Insurance Company"
                   loading={insuranceCompaniesLoading}
-                  options={getOptions(insuranceCompanies)}
+                  options={getOptions(
+                    insuranceCompanies,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Reference No" required validateStatus={errors.referenceNo ? "error" : ""} help={errors.referenceNo?.message}>
+          <Form.Item
+            label="Reference No"
+            required
+            validateStatus={errors.referenceNo ? "error" : ""}
+            help={errors.referenceNo?.message}
+          >
             <Controller
               name="referenceNo"
               control={control}

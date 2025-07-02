@@ -51,8 +51,6 @@ const prepareBankGuaranteeData = (formData: FormValues, appraisalId: string) => 
     payload.insuCompany = formData.bankInsuranceCompany || null;
     payload.insuRefNo = formData.bankReferenceNo || null;
   }
-
-  console.log("Prepared payload:", payload);
   return payload;
 };
 
@@ -463,15 +461,11 @@ export const submitBankGuarantee = async (formData: FormValues, appraisalId: str
 
     let response;
     if (isEdit && formData.id) {
-      console.log("Updating Bank Guarantee with ID:", formData.id, "Payload:", payload);
       const bankGuaranteeId = formData.id;
       response = await store.updateBankGuarantee(bankGuaranteeId, payload);
-      console.log("Bank Guarantee update response:", response);
       message.success("Bank Guarantee updated successfully");
     } else {
-      console.log("Submitting new Bank Guarantee with payload:", payload);
       response = await store.saveBankGuarantee(payload);
-      console.log("Bank Guarantee submission response:", response);
       message.success("Bank Guarantee added successfully");
     }
 

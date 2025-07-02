@@ -615,7 +615,7 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     set({ modelsLoading: true });
     try {
       const response = await API.get(
-        `/mobixCamsCommon/v1/equipment-vehicle/models/${makeCode}`
+        `/mobixCamsCommon/v1/equipment-vehicle/manufacture/${makeCode}`
       );
       set({ models: [...response.data] });
     } catch (error) {

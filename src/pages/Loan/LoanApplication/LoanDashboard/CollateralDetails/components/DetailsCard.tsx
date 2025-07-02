@@ -181,6 +181,35 @@ const DetailsCard: React.FC<DetailsCardProps> = ({
             </Descriptions.Item>
           </>
         );
+      case "LEASE":
+        return (
+          <>
+            <Descriptions.Item label="Equipment Type">
+              {data.leaseEquipType}
+            </Descriptions.Item>
+            <Descriptions.Item label="Equipment Name">
+              {data.leaseEquipName}
+            </Descriptions.Item>
+            <Descriptions.Item label="Category">
+              {data.leaseCategory}
+            </Descriptions.Item>
+            <Descriptions.Item label="Condition">
+              {data.leaseCondition}
+            </Descriptions.Item>
+            <Descriptions.Item label="Vehicle Type">
+              {data.leaseVehicleType}
+            </Descriptions.Item>
+            <Descriptions.Item label="Manufacturer">
+              {data.leaseManufacturer}
+            </Descriptions.Item>
+            <Descriptions.Item label="Model">
+              {data.leaseModel}
+            </Descriptions.Item>
+            <Descriptions.Item label="Reference No">
+              {data.leaseReferenceNo}
+            </Descriptions.Item>
+          </>
+        );
       default:
         return null;
     }

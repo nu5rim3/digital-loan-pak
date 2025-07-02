@@ -31,8 +31,11 @@ interface CollateralFormModalProps {
 }
 
 // Utility function to get security type codes dynamically
-const getSecurityTypeCode = (securityTypes: any[], description: string): string | undefined => {
-  return securityTypes.find(st => st.description === description)?.code;
+const getSecurityTypeCode = (
+  securityTypes: any[],
+  description: string
+): string | undefined => {
+  return securityTypes.find((st) => st.description === description)?.code;
 };
 
 const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
@@ -145,12 +148,45 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
           setFormInitialized(false);
           return;
         }
-        reset(initialData);
+
+        if (productCategory === "Lease" && initialData) {
+          // Map FormValues to LeaseProductFormValues format
+          const leaseFormData: LeaseProductFormValues = {
+            id: initialData.id,
+            equipmentType: initialData.leaseEquipType || "",
+            equipmentCost: initialData.leaseCost || "",
+            supplierCode: initialData.leaseSupplierCode || "",
+            equipmentName: initialData.leaseEquipName || "",
+            condition: initialData.leaseCondition || "",
+            category: initialData.leaseCategory || "",
+            depreciationCode: initialData.leaseDepreciationCode || "",
+            vehicleType: initialData.leaseVehicleType || "",
+            manufacturer: initialData.leaseManufacturer || "",
+            model: initialData.leaseModel || "",
+            engineCapacityCC: initialData.leaseEngineCapacityCC || "",
+            engineCapacityHP: initialData.leaseEngineCapacityHP || "",
+            engineNo: initialData.leaseEngineNo || "",
+            chassisNo: initialData.leaseChassisNo || "",
+            vehicleNo: initialData.leaseVehicleNo || "",
+            registrationDate: initialData.leaseRegistrationDate,
+            duplicateKey: initialData.leaseDuplicateKey || "",
+            registrationBookNo: initialData.leaseRegistrationBookNo || "",
+            registrationYear: initialData.leaseRegistrationYear || "",
+            internalMV: initialData.leaseMV || "",
+            internalFSV: initialData.leaseFSV || "",
+            province: initialData.leaseProvince || "",
+            insuranceCompany: initialData.leaseInsuranceCompany || "",
+            referenceNo: initialData.leaseReferenceNo || "",
+          };
+          resetLeaseForm(leaseFormData);
+        } else {
+          reset(initialData);
+        }
         setFormInitialized(true);
       } else {
         reset({ securityType: "" });
         setFormInitialized(true);
-        if (productCategory !== "Lease" || isEdit) {
+        if (productCategory === "Lease") {
           resetLeaseForm({
             equipmentCost: "",
             equipmentType: "",
@@ -188,9 +224,7 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
     (st) => st.code === securityType || st.description === securityType
   );
 
-  useEffect(() => {
-  }, [securityType]);
-
+  useEffect(() => { }, [securityType]);
 
   useEffect(() => {
     if (securityCategory === "OTHER_SECURITY" && formInitialized) {
@@ -213,7 +247,8 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
       setSubmitting(true);
 
       const selectedSecurityType = securityTypes.find(
-        (st) => st.code === data.securityType || st.description === data.securityType
+        (st) =>
+          st.code === data.securityType || st.description === data.securityType
       );
 
       // Dynamic form submission based on security type
@@ -226,7 +261,11 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
             response = await submitVehicle(data, validAppraisalId, isEdit);
             break;
           case getSecurityTypeCode(securityTypes, "BANK GUARANTEE"):
-            response = await submitBankGuarantee(data, validAppraisalId, isEdit);
+            response = await submitBankGuarantee(
+              data,
+              validAppraisalId,
+              isEdit
+            );
             break;
           case getSecurityTypeCode(securityTypes, "LAND STOCKS"):
             response = await submitLandStock(data, validAppraisalId, isEdit);
@@ -235,13 +274,19 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
             response = await submitMachinery(data, validAppraisalId, isEdit);
             break;
           case getSecurityTypeCode(securityTypes, "PROPERTY MORTGAGE"):
-            response = await submitPropertyMortgage(data, validAppraisalId, isEdit);
+            response = await submitPropertyMortgage(
+              data,
+              validAppraisalId,
+              isEdit
+            );
             break;
           case getSecurityTypeCode(securityTypes, "FIXED DEPOSITS AND SAVINGS"):
             response = await submitSavings(data, validAppraisalId, isEdit);
             break;
           default:
-            console.warn(`Unknown security type: ${selectedSecurityType.description}`);
+            console.warn(
+              `Unknown security type: ${selectedSecurityType.description}`
+            );
             onSave(data);
             return;
         }
@@ -271,10 +316,16 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
 
       setSubmitting(true);
 
-      const response = await submitLease(data, validAppraisalId, isEdit);
+      // Ensure the id is included when editing
+      const leaseData = {
+        ...data,
+        id: isEdit && initialData?.id ? initialData.id : data.id,
+      };
+
+      const response = await submitLease(leaseData, validAppraisalId, isEdit);
 
       if (response) {
-        onSave({ securityType: "LEASE", id: data.id });
+        onSave({ securityType: "LEASE", id: leaseData.id });
         onClose();
       }
     } catch (error) {
@@ -401,59 +452,64 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
                 </div>
               </div>
 
-              {securityCategory === "MAIN_SECURITY" && selectedSecurityType && (isEdit ? formInitialized : true) && (
-                <>
-                  {selectedSecurityType.description === "VEHICLE" && (
-                    <VehicleForm
-                      control={control}
-                      errors={errors}
-                      securityType={selectedSecurityType}
-                    />
-                  )}
+              {securityCategory === "MAIN_SECURITY" &&
+                selectedSecurityType &&
+                (isEdit ? formInitialized : true) && (
+                  <>
+                    {selectedSecurityType.description === "VEHICLE" && (
+                      <VehicleForm
+                        control={control}
+                        errors={errors}
+                        securityType={selectedSecurityType}
+                      />
+                    )}
 
-                  {selectedSecurityType.description === "BANK GUARANTEE" && (
-                    <BankGuaranteeForm
-                      control={control}
-                      errors={errors}
-                      appraisalId={validAppraisalId}
-                      onSubmitSuccess={() => onClose()}
-                      securityType={selectedSecurityType}
-                    />
-                  )}
+                    {selectedSecurityType.description === "BANK GUARANTEE" && (
+                      <BankGuaranteeForm
+                        control={control}
+                        errors={errors}
+                        appraisalId={validAppraisalId}
+                        onSubmitSuccess={() => onClose()}
+                        securityType={selectedSecurityType}
+                      />
+                    )}
 
-                  {selectedSecurityType.description === "MACHINERY AND EQUIPMENT" && (
-                    <MachineryForm
-                      control={control}
-                      errors={errors}
-                      securityType={selectedSecurityType}
-                    />
-                  )}
+                    {selectedSecurityType.description ===
+                      "MACHINERY AND EQUIPMENT" && (
+                        <MachineryForm
+                          control={control}
+                          errors={errors}
+                          securityType={selectedSecurityType}
+                        />
+                      )}
 
-                  {selectedSecurityType.description === "PROPERTY MORTGAGE" && (
-                    <PropertyMortgageForm
-                      control={control}
-                      errors={errors}
-                      securityType={selectedSecurityType}
-                    />
-                  )}
+                    {selectedSecurityType.description ===
+                      "PROPERTY MORTGAGE" && (
+                        <PropertyMortgageForm
+                          control={control}
+                          errors={errors}
+                          securityType={selectedSecurityType}
+                        />
+                      )}
 
-                  {selectedSecurityType.description === "FIXED DEPOSITS AND SAVINGS" && (
-                    <SavingsForm
-                      control={control}
-                      errors={errors}
-                      securityType={selectedSecurityType}
-                    />
-                  )}
+                    {selectedSecurityType.description ===
+                      "FIXED DEPOSITS AND SAVINGS" && (
+                        <SavingsForm
+                          control={control}
+                          errors={errors}
+                          securityType={selectedSecurityType}
+                        />
+                      )}
 
-                  {selectedSecurityType.description === "LAND STOCKS" && (
-                    <LandStockForm
-                      control={control}
-                      errors={errors}
-                      securityType={selectedSecurityType}
-                    />
-                  )}
-                </>
-              )}
+                    {selectedSecurityType.description === "LAND STOCKS" && (
+                      <LandStockForm
+                        control={control}
+                        errors={errors}
+                        securityType={selectedSecurityType}
+                      />
+                    )}
+                  </>
+                )}
             </>
           ) : (
             <div className="mt-5">

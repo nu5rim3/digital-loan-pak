@@ -399,15 +399,11 @@ export const submitLandStock = async (formData: FormValues, appraisalId: string 
 
     let response;
     if (isEdit && formData.id) {
-      console.log("Updating Land Stock with ID:", formData.id, "Payload:", payload);
       const landStockId = formData.id;
       response = await store.updateLandStock(landStockId, payload);
-      console.log("Land Stock update response:", response);
       message.success("Land Stock updated successfully");
     } else {
-      console.log("Submitting new Land Stock with payload:", payload);
       response = await store.saveLandStock(payload);
-      console.log("Land Stock submission response:", response);
       message.success("Land Stock added successfully");
     }
 

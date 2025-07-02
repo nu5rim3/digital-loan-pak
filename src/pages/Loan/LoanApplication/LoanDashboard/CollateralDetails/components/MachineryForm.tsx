@@ -63,8 +63,6 @@ export const submitMachinery = async (
       machineryEquipSecType: "MACHINERY AND EQUIPMENT"
     };
 
-    console.log(`${isEdit ? 'Updating' : 'Saving'} machinery equipment with payload:`, payload);
-
     let response;
     if (isEdit && id) {
       response = await useCollateralStore.getState().updateMachinery(id, payload);
@@ -73,8 +71,6 @@ export const submitMachinery = async (
       response = await useCollateralStore.getState().saveMachinery(payload);
       message.success("Machinery equipment saved successfully");
     }
-
-    console.log(`Machinery equipment ${isEdit ? 'update' : 'save'} response:`, response);
     return true;
   } catch (error) {
     console.error(`Error ${isEdit ? 'updating' : 'saving'} machinery equipment:`, error);

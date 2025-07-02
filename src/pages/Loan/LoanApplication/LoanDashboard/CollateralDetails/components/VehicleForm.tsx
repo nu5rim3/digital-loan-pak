@@ -201,7 +201,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors, securityType
                   showSearch
                   placeholder="Select Type"
                   loading={vehicleTypesLoading}
-                  options={getOptions(vehicleTypes)}
+                  options={getOptions(vehicleTypes, "description", "description")}
                 />
               )}
             />
@@ -224,7 +224,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors, securityType
                   showSearch
                   placeholder="Select Ownership"
                   loading={vehicleOwnershipsLoading}
-                  options={getOptions(vehicleOwnerships)}
+                  options={getOptions(vehicleOwnerships, "description", "description")}
                 />
               )}
             />
@@ -270,7 +270,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors, securityType
                   showSearch
                   placeholder="Select Condition"
                   loading={vehicleConditionsLoading}
-                  options={getOptions(vehicleConditions)}
+                  options={getOptions(vehicleConditions, "description", "description")}
                 />
               )}
             />
@@ -293,7 +293,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors, securityType
                   showSearch
                   placeholder="Select Category"
                   loading={vehicleCategoriesLoading}
-                  options={getOptions(vehicleCategories)}
+                  options={getOptions(vehicleCategories, "description", "description")}
                 />
               )}
             />
@@ -316,7 +316,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors, securityType
                   showSearch
                   placeholder="Select Make"
                   loading={vehicleMakesLoading}
-                  options={getOptions(vehicleMakes, "description", "code")}
+                  options={getOptions(vehicleMakes, "description", "description")}
                 />
               )}
             />
@@ -339,7 +339,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors, securityType
                   showSearch
                   placeholder="Select Model"
                   loading={vehicleModelsLoading}
-                  options={getOptions(vehicleModels)}
+                  options={getOptions(vehicleModels, "description", "description")}
                 />
               )}
             />
@@ -552,7 +552,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors, securityType
                   showSearch
                   placeholder="Select Insurance Company"
                   loading={insuranceCompaniesLoading}
-                  options={getOptions(insuranceCompanies)}
+                  options={getOptions(insuranceCompanies, "description", "description")}
                 />
               )}
             />
