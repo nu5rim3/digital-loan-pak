@@ -25,3 +25,4 @@ tsconfig.app.tsbuildinfo
 *.njsproj
 *.sln
 *.sw?
+tsconfig.app.tsbuildinfo
