@@ -1,23 +1,10 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Card, Collapse, Descriptions, Spin, Typography } from "antd";
+import { Card, Collapse, Descriptions, Spin } from "antd";
 import type { FC } from "react";
 import type { DescriptionsProps } from "antd";
 import { APIAuth } from "../../../../services/api";
 import { getValueByList } from "../../../../utils/Common";
-// import type { CustomerDetailsProps, CustomerData } from "types/customer";
-
-// import { getTcDetails } from "services/tc.service";
-// import {
-//   getMasterData,
-//   getOriginationClientele,
-//   getOriginationCommon,
-// } from "services/customer.service";
-// import {
-//   getCommonAreaValues,
-//   getValuePoliticallyExposed,
-// } from "services/common.service";
-// import { getValueByList, getValueAddressType } from "services/util.service";
 
 
 
@@ -51,7 +38,6 @@ export const getCommonAreaValues = (key:any) => {
 };
 
 const { Panel } = Collapse;
-const { Title } = Typography;
 
 const CustomerDetails: FC = () => {
   const { appraisalId } = useParams<{ appraisalId: string }>();

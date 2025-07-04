@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Tabs, Spin, Typography } from "antd";
-import { useParams } from "react-router-dom";
-
-
 import InitialDetails from "./InitialDetails";
 import CalculationDetails from "./CalculationDetails";
 import { APIAuth } from "../../../../services/api";
@@ -19,11 +16,11 @@ const OnBoardingDetails: React.FC<{ appraisalId: string }> = ({ appraisalId }) =
     const fetchClienteles = async () => {
       try {
         const response:any = await APIAuth.get(`/mobixCamsLoan/v1/appraisals/${appraisalId}/clienteles`);
-        console.log('response clienteles', response);
+        // console.log('response clienteles', response);
         const sorted = response?.data?.clienteles?.sort((a: any, b: any) =>
           a.type.toLowerCase().localeCompare(b.type.toLowerCase())
         );
-        console.log('sorted clienteles', sorted);
+        // console.log('sorted clienteles', sorted);
         setClienteles(sorted);
       } catch (error) {
         console.error("Failed to fetch clienteles", error);
@@ -52,7 +49,7 @@ const OnBoardingDetails: React.FC<{ appraisalId: string }> = ({ appraisalId }) =
             {clientele.type === "C" && (
               <div className="mt-5">
                 {/* <Title level={5} className="mt-4">Loan Installment Calculation</Title> */}
-                <CalculationDetails clientele={clientele} />
+                <CalculationDetails />
               </div>
             )}
           </TabPane>

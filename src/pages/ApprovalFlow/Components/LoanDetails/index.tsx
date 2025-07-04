@@ -8,20 +8,19 @@ import {
   Typography,
   Tabs,
   message,
+  Table,
 } from "antd";
 // import { getValueByList } from "services/util.service";
 // import AsyncImage from "../ImageDetails/async_images";
 import API from "../../../../services/APIServices";
 import { getValueByList, getValueNatureOfBorrowe, getValueOwnershipOfLand } from "../../../../utils/Common";
 import moment from "moment";
+import AsyncImage from "../ImageContainers/AsyncImage";
 
 const { Panel } = Collapse;
 const { Title } = Typography;
 const { TabPane } = Tabs;
 
-interface LoanDetailsProps {
-  active: string;
-}
 
 interface TabState {
   business: string;
@@ -48,7 +47,7 @@ interface LoanData {
   originationCommon: any;
 }
 
-const LoanDetails: React.FC<LoanDetailsProps> = ({ active }) => {
+const LoanDetails: React.FC = () => {
   const { appraisalId } = useParams<{ appraisalId: string }>();
 
   const [loading, setLoading] = useState<boolean>(true);
@@ -156,21 +155,44 @@ const LoanDetails: React.FC<LoanDetailsProps> = ({ active }) => {
   }
 }, [appraisalId]);
 
+const assetColumns = [
+  {
+    title: "Ownership",
+    dataIndex: "ownership",
+    key: "ownership",
+    render: (text: string) => text || "\u00A0",
+  },
+  {
+    title: "Quantity",
+    dataIndex: "qty",
+    key: "qty",
+    render: (text: string) => text || "\u00A0",
+  },
+  {
+    title: "Amount",
+    dataIndex: "amount",
+    key: "amount",
+    render: (text: string) => text || "\u00A0",
+  },
+];
+
   useEffect(() => {
       fetchData();
   }, []);
+
+  console.log('daxxxxx', data);
 
     const renderDesc = (label: string, value: any) => (
       <Descriptions.Item label={label}>{value || "\u00A0"}</Descriptions.Item>
     );
 
    const renderSalaryLoanDetails = () => {
-    if (!data?.salaryLoanDetails) return null;
+    if (!data?.salaryLoanDetails?.length) return null;
 
     return (
       <Collapse defaultActiveKey={["1"]}>
         <Panel header="SALARY/INDIVIDUAL LOAN" key="1">
-          <Descriptions layout="vertical" bordered column={2} size="small">
+          <Descriptions  bordered column={2} size="small">
         {renderDesc("Profession", data?.salaryLoanDetails.profession)}
         {renderDesc("Nature of Employment", getValueByList(data?.originationCommon?.employmentCategoryDtoList, data?.salaryLoanDetails.natureOfEmp))}
         {renderDesc("Source of Income", data?.salaryLoanDetails.sourceOfIncome)}
@@ -221,7 +243,7 @@ const LoanDetails: React.FC<LoanDetailsProps> = ({ active }) => {
 
     const renderLiveStockLoanDetails = () => {
     const { liveStockLoanDetails, originationCommon } = data;
-    if (!liveStockLoanDetails) return null;
+    if (!liveStockLoanDetails?.length) return null;
 
     return (
       <Collapse defaultActiveKey={["3"]} className="my-4">
@@ -259,8 +281,8 @@ const LoanDetails: React.FC<LoanDetailsProps> = ({ active }) => {
   };
 
    const renderCultivationLoanDetails = () => {
-    const { cultivationLoanDetails, originationCommon } = data;
-    if (!cultivationLoanDetails) return null;
+    const { cultivationLoanDetails, originationCommon, signature } = data;
+    if (!cultivationLoanDetails?.length) return null;
 
     return (
       <Collapse defaultActiveKey={["4"]} className="my-4">
@@ -276,12 +298,9 @@ const LoanDetails: React.FC<LoanDetailsProps> = ({ active }) => {
             {renderDesc("Acres Owned", cultivationLoanDetails.acresOwned)}
             {renderDesc("Acres Rented", cultivationLoanDetails.acresRented)}
             {renderDesc("Acres Total", cultivationLoanDetails.acresTotal)}
-            {renderDesc("Acres of Rabi", cultivationLoanDetails.acresOfRabi)}
-            {renderDesc("Rabi Harvesting Date", moment(cultivationLoanDetails.rabiHarvestingDate).format("YYYY-MM-DD"))}
-            {renderDesc("Rabi Cultivation Date", moment(cultivationLoanDetails.rabiCultivationDate).format("YYYY-MM-DD"))}
-            {renderDesc("Acres of Kharif", cultivationLoanDetails.acresOfKharif)}
-            {renderDesc("Kharif Harvesting Date", moment(cultivationLoanDetails.kharifHarvestingDate).format("YYYY-MM-DD"))}
-            {renderDesc("Kharif Cultivation Date", moment(cultivationLoanDetails.kharifCultivationDate).format("YYYY-MM-DD"))}
+
+           
+
             {renderDesc("District", cultivationLoanDetails.district)}
             {renderDesc("Loan Tenure in Days", cultivationLoanDetails.loanTenure)}
             {renderDesc("Insurance Company", cultivationLoanDetails.insCompany)}
@@ -297,16 +316,135 @@ const LoanDetails: React.FC<LoanDetailsProps> = ({ active }) => {
             {renderDesc("Other Info 2", cultivationLoanDetails.otherInfo2)}
             {renderDesc("Other Info 3", cultivationLoanDetails.otherInfo3)}
           </Descriptions>
+
+          <Descriptions layout="vertical" bordered column={2} size="small">
+            {renderDesc("Acres of Rabi", cultivationLoanDetails.acresOfRabi)}
+            {renderDesc("Rabi Harvesting Date", moment(cultivationLoanDetails.rabiHarvestingDate).format("YYYY-MM-DD"))}
+            {renderDesc("Rabi Cultivation Date", moment(cultivationLoanDetails.rabiCultivationDate).format("YYYY-MM-DD"))}
+            {renderDesc("Acres of Kharif", cultivationLoanDetails.acresOfKharif)}
+            {renderDesc("Kharif Harvesting Date", moment(cultivationLoanDetails.kharifHarvestingDate).format("YYYY-MM-DD"))}
+            {renderDesc("Kharif Cultivation Date", moment(cultivationLoanDetails.kharifCultivationDate).format("YYYY-MM-DD"))}
+          </Descriptions>
+
+          <Descriptions layout="vertical" bordered column={2} size="small">
+            {renderDesc("Location of Land", cultivationLoanDetails?.ownLandLoc)}
+            {renderDesc("", cultivationLoanDetails?.rentedLandLoc)}
+            {renderDesc("Deh/Tehsi/District", cultivationLoanDetails?.district)}
+            
+            {renderDesc("Crop to be Cultivated 1", cultivationLoanDetails?.cropsToBeCult?.[0])}
+            {renderDesc("Crop to be Cultivated 2", cultivationLoanDetails?.cropsToBeCult?.[1])}
+            {renderDesc("Crop to be Cultivated 3", cultivationLoanDetails?.cropsToBeCult?.[2])}
+            {renderDesc("Crop to be Cultivated 4", cultivationLoanDetails?.cropsToBeCult?.[3])}
+            {renderDesc("Crop to be Cultivated 5", cultivationLoanDetails?.cropsToBeCult?.[4])}
+            {renderDesc("Crop to be Cultivated 6", cultivationLoanDetails?.cropsToBeCult?.[5])}
+
+            {renderDesc("Crops Name", cultivationLoanDetails?.cropsName)}
+            {renderDesc("Land Details", cultivationLoanDetails?.landDetails)}
+            {renderDesc("Comment", cultivationLoanDetails?.comment)}
+            </Descriptions>
+
+            <Descriptions layout="vertical" bordered column={2} size="small">
+            {renderDesc("Loan Limit Rabi", cultivationLoanDetails?.loanLimitRabi)}
+            {renderDesc("Loan Limit Kharif", cultivationLoanDetails?.loanLimitKharif)}
+            {renderDesc("Loan Limit Total", cultivationLoanDetails?.loanLimitTotal)}
+            {renderDesc("Purpose of Loan", getValueByList(originationCommon?.loanPurposeDtoList, cultivationLoanDetails?.purposeOfLoan))}
+            {renderDesc("Floods Factor", getValueByList(originationCommon?.floodsFactorDtoList, cultivationLoanDetails?.floodsFactor))}
+            {renderDesc("Irrigation", getValueByList(originationCommon?.irrigationDtoList, cultivationLoanDetails?.irrigation))}
+            {renderDesc("Agriculture Machineries Method", getValueByList(originationCommon?.agriMethodDtoList, cultivationLoanDetails?.methods))}
+            {renderDesc("Proof of Cultivation", getValueByList(originationCommon?.proofOfCultivationDtoList, cultivationLoanDetails?.proofOfCult))}
+            {renderDesc("Experience in Cultivation", cultivationLoanDetails?.expInCult)}
+            {renderDesc("Market Check through Field Verification", getValueByList(originationCommon?.fieldVerificationDtoList, cultivationLoanDetails?.marketCheck))}
+            {renderDesc("Agri Secured", cultivationLoanDetails?.agriSecured)}
+            </Descriptions>
+
+{cultivationLoanDetails?.assets?.length > 0 && (
+  <div className="my-4">
+    <Title level={5}>Assets</Title>
+    <Table
+      size="small"
+      bordered
+      pagination={false}
+      columns={assetColumns}
+      dataSource={cultivationLoanDetails.assets.map((item:any, idx:any) => ({
+        ...item,
+        key: idx,
+      }))}
+    />
+  </div>
+)}
+
+<Descriptions
+  layout="horizontal"
+  bordered
+  size="small"
+  column={3}
+  className="my-4"
+>
+  <Descriptions.Item label=" ">&nbsp;</Descriptions.Item>
+  <Descriptions.Item label="Total Assets Value" span={1}>
+    {cultivationLoanDetails?.totAssetsValue || "\u00A0"}
+  </Descriptions.Item>
+  <Descriptions.Item label=" ">&nbsp;</Descriptions.Item>
+</Descriptions>
+
+<Descriptions layout="vertical" bordered column={2} size="small">
+  {renderDesc("Loan Tenure in Days", cultivationLoanDetails?.loanTenure)}
+  {renderDesc("Insurance Company", cultivationLoanDetails?.insCompany)}
+  {renderDesc(
+    "Date of Policy Issued",
+    cultivationLoanDetails?.policyIssuedDate
+      ? moment(cultivationLoanDetails.policyIssuedDate).format("YYYY-MM-DD")
+      : "-"
+  )}
+  {renderDesc("Premium Paid Receipt No", cultivationLoanDetails?.receiptNo)}
+  {renderDesc("Premium Rate", cultivationLoanDetails?.premiumRate)}
+  {renderDesc("Premium Rate for Sugarcane", cultivationLoanDetails?.premiumRateForSugar)}
+  {renderDesc("Evidence of Land Holding/Cultivation", cultivationLoanDetails?.evidance)}
+  {renderDesc("Number of Times Claim Lodged", cultivationLoanDetails?.claimLodged)}
+  {renderDesc("Other Information 1", cultivationLoanDetails?.otherInfo1)}
+  {renderDesc("Other Information 2", cultivationLoanDetails?.otherInfo2)}
+  {renderDesc("Other Information 3", cultivationLoanDetails?.otherInfo3)}
+</Descriptions>
+
+<Card title="Customer Signature" className="witness-signature-card" size="small">
+  {signature && signature.length > 0 ? (
+    signature
+      .filter((sign: any) => sign.status === "A")
+      .map((sign: any, index: number) => (
+        <AsyncImage src={sign.hashIdentifier} key={index} />
+      ))
+  ) : (
+    <p>-</p>
+  )}
+</Card>
+
         </Panel>
       </Collapse>
     );
   };
+
+   const renderBaraKarobarEmployeeLoanDetails = () => {
+    const { baraKarobarEmployeeLoanDetails} = data;
+    if (!baraKarobarEmployeeLoanDetails) return null;
+
+    return (
+        <Collapse defaultActiveKey={["4"]} className="my-4">
+        <Panel header="BARA KAROBAR LOAN DETAILS" key="4">
+
+        </Panel>
+        </Collapse>
+    )
+
+
+}
 
   return <Card>
       <Spin spinning={loading} tip="Loading...">
         {renderSalaryLoanDetails()}
         {renderBusinessLoanDetails()}
         {renderLiveStockLoanDetails()}
+        {renderCultivationLoanDetails()}
+        {renderBaraKarobarEmployeeLoanDetails()}
       </Spin>
     </Card>;
 };

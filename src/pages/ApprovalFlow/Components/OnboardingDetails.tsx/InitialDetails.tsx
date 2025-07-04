@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Typography, Row, Col, Card, Table, Button, Space, Tag } from "antd";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { APIAuth } from "../../../../services/api";
 
 const { Title } = Typography;
@@ -11,8 +11,6 @@ const InitialDetails: React.FC<{ clientele: any; appraisalId: string }> = ({ cli
   const [internalCrib, setInternalCrib] = useState<any>(null);
   const [approval, setApproval] = useState<any>(null);
   const [msas, setMsas] = useState<any>({});
-
-  console.log('xxxxxx', clientele, appraisalId);
 
 useEffect(() => {
   const fetchData = async () => {

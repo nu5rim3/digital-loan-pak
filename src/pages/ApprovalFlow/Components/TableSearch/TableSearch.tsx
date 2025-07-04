@@ -1,15 +1,13 @@
 // ✅ FILE: pages/GeneralAppraisalList.tsx
 
 import React, { useEffect, useState } from "react";
-import { Table, Input, Select, Button, DatePicker, Row, Col, Card } from "antd";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { Table, Input, Select, Button, DatePicker, Row, Col, Card, Tag, Typography } from "antd";
 import dayjs from "dayjs";
 import { APIAuth } from "../../../../services/api";
 import { mainURL } from "../../../../App";
+import { useNavigate } from "react-router-dom";
 
 const { RangePicker } = DatePicker;
-const { Option } = Select;
 
 const statusOptions = [
   { label: "Approval Pending", value: "APPROVAL_PENDING" },
@@ -36,6 +34,7 @@ const GeneralAppraisalList: React.FC = () => {
   const [dateRange, setDateRange] = useState<[any, any] | null>(null);
 
   const navigate = useNavigate();
+  const { Link } = Typography;
 
   const fetchData = async () => {
     setLoading(true);
@@ -78,7 +77,7 @@ const GeneralAppraisalList: React.FC = () => {
     {
       title: "Appraisal ID",
       dataIndex: "idx",
-      render: (text: string) => <strong style={{ color: "#faad14" }}>{text}</strong>,
+      render: (text: string) => <Tag color="#faad14">{text}</Tag>,
     },
     {
       title: "Contract ID",
@@ -117,16 +116,19 @@ const GeneralAppraisalList: React.FC = () => {
     {
       title: "Status",
       dataIndex: "appStepAction",
-      render: () => <Button type="default">Pending</Button>,
+      render: (appStepAction: string) =>
+        appStepAction === "P" ? (
+          <Tag color="yellow">PENDING</Tag>
+        ) : (
+          <Tag color="red">{appStepAction}</Tag>
+        ),
     },
     {
       title: "Action",
       render: (_: any, record: any) => (
-        <Button type="primary" onClick={() => 
+        <Link onClick={() => 
          navigate(`${mainURL}/approval/firstFlow/${record.idx}`)
-        }>
-          Preview
-        </Button>
+        }>Preview</Link>
       ),
     },
   ];

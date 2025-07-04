@@ -6,7 +6,7 @@ import { getFacilityTypeName, getProdName, intoCurrency } from "../../../../util
 
 const { Title } = Typography;
 
-const CalculationDetails: React.FC<{ clientele: any }> = ({ clientele }) => {
+const CalculationDetails: React.FC = () => {
   const { appraisalId } = useParams<{ appraisalId: string }>();
   const [loading, setLoading] = useState(true);
   const [tcDetails, setTcDetails] = useState<any>(null);

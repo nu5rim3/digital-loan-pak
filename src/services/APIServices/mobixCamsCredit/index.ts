@@ -13,6 +13,14 @@ export const mobixCamsCredit = {
     return APIAuth.post(`/mobixCamsCredit/v1/credit/tc/getTCDetails`, payload);
   },
 
+  getCustomerCreditScoreDetails: (appraisalId: string, productCode: string) =>
+    APIAuth.get(`/mobixCamsCredit/v1/credits-scores/products/${productCode}/appraisals/${appraisalId}`),
+
+  getIncomeExpenses: (appraisalId: string) =>
+    APIAuth.get(`/mobixCamsCredit/v1/credit/income-expense/${appraisalId}`),
+
+  getSummaryDetails : (appraisalId:string) => 
+    APIAuth.get(`/mobixCamsCredit/v1/credits/scores/appraisals/${appraisalId}`),
   
 getSalaryLoanDetails:(appraisalId:string) => 
     APIAuth.get(`/mobixCamsCredit/v1/credit/loan/app/sal/${appraisalId}`),

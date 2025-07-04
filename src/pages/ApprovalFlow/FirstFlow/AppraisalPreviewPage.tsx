@@ -10,6 +10,13 @@ import GoldLoanDetails from "../Components/GoldLoanDetails";
 import CustomerDetails from "../Components/CustomerDetails";
 import GuarantorDetails from "../Components/GuarantorDetails";
 import WitnessDetails from "../Components/WitnessDetails";
+import LoanDetails from "../Components/LoanDetails";
+import IncomeExpensesDetails from "../Components/IncomeExpensesDetails";
+import LiabilityDetails from "../Components/LiabilityDetails";
+import CreditScoringDetails from "../Components/CreditScoringDetails";
+import ImageDetails from "../Components/ImageDetails";
+import UndertakingDetails from "../Components/UndertakingDetails";
+import ReportDetails from "../Components/ReportDetails";
 // import CustomerDetails from "./components/CustomerDetails";
 // import GuarantorDetails from "./components/GuarantorDetails";
 // import WitnessDetails from "./components/WitnessDetails";
@@ -92,7 +99,7 @@ const AppraisalPreviewPage: React.FC = () => {
         </Panel>
 
         <Panel header="LOAN DETAILS" key="loan">
-          {/* <LoanDetails appraisalId={appraisalId} /> */}
+          <LoanDetails />
         </Panel>
 
          {isGoldProduct && (
@@ -102,21 +109,21 @@ const AppraisalPreviewPage: React.FC = () => {
         )}
 
         <Panel header="CASH FLOW DETAILS" key="cashflow">
-          {/* <IncomeExpensesDetails appraisalId={appraisalId} /> */}
+          <IncomeExpensesDetails />
         </Panel>
 
         <Panel header="LIABILITY DETAILS" key="liability">
-          {/* <LiabilityDetails appraisalId={appraisalId} /> */}
+          <LiabilityDetails />
         </Panel>
 
         {!isGoldProduct && (
           <Panel header="CREDIT SCORE DETAILS" key="creditscore">
-            {/* <CreditScoringDetails appraisalId={appraisalId} /> */}
+            <CreditScoringDetails />
           </Panel>
         )}
 
         <Panel header="IMAGE DETAILS" key="images">
-          {/* <ImageDetails appraisalId={appraisalId} /> */}
+          <ImageDetails/>
         </Panel>
 
         <Panel header="GEO DETAILS" key="geo">
@@ -124,11 +131,11 @@ const AppraisalPreviewPage: React.FC = () => {
         </Panel>
 
         <Panel header="CUSTOMER UNDERTAKING" key="undertaking">
-          {/* <UndertakingDetails appraisalId={appraisalId} /> */}
+          <UndertakingDetails/>
         </Panel>
 
         <Panel header="REPORT DETAILS" key="reports">
-          {/* <ReportDetails appraisalId={appraisalId} /> */}
+          <ReportDetails />
         </Panel>
 
         <Panel header="APPROVAL DETAILS" key="approval">

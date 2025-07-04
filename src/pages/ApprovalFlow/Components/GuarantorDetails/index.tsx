@@ -33,19 +33,9 @@ import AsyncImage from "../ImageContainers/AsyncImage";
 const { Panel } = Collapse;
 const { Title } = Typography;
 
-// const format = (value: number | string) => (
-//   <NumberFormat
-//     value={value}
-//     displayType={"text"}
-//     thousandSeparator={true}
-//     renderText={(value: any) => <span>{value}</span>}
-//   />
-// );
-
 const GuarantorDetails: React.FC = () => {
   const { appraisalId } = useParams();
   const [loading, setLoading] = useState(true);
-  const [tcDetails, setTcDetails] = useState<any>({});
   const [loanDetails, setLoanDetails] = useState<any>({});
   const [guarantors, setGuarantors] = useState<any[]>([]);
   const [guarantorDetails, setGuarantorDetails] = useState<any>({
@@ -66,7 +56,6 @@ const GuarantorDetails: React.FC = () => {
         const tc: any = await APIAuth.get(
           `/mobixCamsCredit/v1/credit/tc/${appraisalId}`
         );
-        setTcDetails(tc?.data);
         if (tc?.data?.tcNo) {
           // const amounts = await getAmountsOfTcDetails(tc.data.tcNo);
           const amounts: any = await APIAuth.post(

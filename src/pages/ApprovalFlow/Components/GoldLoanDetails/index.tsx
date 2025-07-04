@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Card, Descriptions, Typography, Table, Collapse, Spin, message } from "antd";
+import { Card, Descriptions, Typography, Table, Spin, message } from "antd";
 import { APIAuth } from "../../../../services/api";
 import { intoCurrency } from "../../../../utils/Common";
 
-const { Panel } = Collapse;
 const { Title } = Typography;
 
 const GoldLoanDetails: React.FC = () => {
