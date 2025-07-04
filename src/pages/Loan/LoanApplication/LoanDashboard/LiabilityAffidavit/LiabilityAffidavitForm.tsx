@@ -117,12 +117,12 @@ const LiabilityAffidavitForm: React.FC = () => {
                             />
                         </Form.Item>
 
-                        <Form.Item label="Loan Nature" validateStatus={errors.loanNature ? 'error' : ''} help={errors.loanNature?.message} required>
+                        <Form.Item label="Nature of Loan" validateStatus={errors.loanNature ? 'error' : ''} help={errors.loanNature?.message} required>
                             <Controller
                                 name="loanNature"
                                 control={control}
                                 render={({ field }) => (
-                                    <Input {...field} placeholder="Loan Nature" />
+                                    <Input {...field} placeholder="Nature of Loan" />
                                 )}
                             />
                         </Form.Item>
@@ -172,7 +172,7 @@ const DetailsCard: React.FC<{ detail: ILiability; onEdit: () => void; onRemove: 
         </div>
         <Descriptions column={1}>
             <Descriptions.Item label="Institution Name">{formatCamelCase(detail.institutionName)}</Descriptions.Item>
-            <Descriptions.Item label="Loan Nature">{detail.loanNature}</Descriptions.Item>
+            <Descriptions.Item label="Nature of Loan">{detail.loanNature}</Descriptions.Item>
             <Descriptions.Item label="Outstanding Amount">{formatCurrency(Number(detail.outstandingAmount))}</Descriptions.Item>
         </Descriptions>
     </Card>

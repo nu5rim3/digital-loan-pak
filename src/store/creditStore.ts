@@ -1089,10 +1089,9 @@ const useCreditStore = create<ICreditState>((set) => ({
     set((state) => ({
       netMonthlyDisposable:
         state.applicantRevenue.reduce((acc, item) => {
-          return (
-            acc + Number(item.monthly ?? 0) + Number(state.totHouseholdIncome)
-          );
-        }, 0) -
+          return acc + Number(item.monthly ?? 0);
+        }, 0) +
+        Number(state.totHouseholdIncome) -
         (state.houseHoldExpenses.reduce((acc, item) => {
           return acc + Number(item.monthly ?? 0);
         }, 0) +

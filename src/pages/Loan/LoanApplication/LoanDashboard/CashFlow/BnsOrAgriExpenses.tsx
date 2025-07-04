@@ -236,7 +236,7 @@ const BnsOrAgriExpenses: React.FC = () => {
                     onFinish={handleSubmit(onSubmit)}
                 >
                     <div className='grid grid-cols-4 gap-2'>
-                        <Form.Item label="Key" validateStatus={errors.key ? 'error' : ''} help={errors.key?.message} required>
+                        <Form.Item label="Expense" validateStatus={errors.key ? 'error' : ''} help={errors.key?.message} required>
                             <Controller
                                 name="key"
                                 control={control}
@@ -363,7 +363,7 @@ const DetailsCard: React.FC<{ detail: IFinancialEntry; onEdit: () => void; onRem
             <Button type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
         </div>
         <Descriptions column={1}>
-            <Descriptions.Item label="Key">{detail.key}</Descriptions.Item>
+            <Descriptions.Item label="Expense">{detail.key}</Descriptions.Item>
             <Descriptions.Item label="Monthly">{formatCurrency(Number(detail?.monthly ?? 0))}</Descriptions.Item>
             <Descriptions.Item label="Semi Annually">{formatCurrency(Number(detail?.semiAnnual ?? 0))}</Descriptions.Item>
             <Descriptions.Item label="Annually">{formatCurrency(Number(detail?.annually ?? 0))}</Descriptions.Item>

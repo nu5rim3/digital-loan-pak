@@ -184,6 +184,17 @@ export interface ITermDepositPlaced {
   profitOfFrequency: string;
   tdrAmount: string;
 }
+export interface ILiabilityValidationPayload {
+  appraisalIdx: string;
+  section: "Y" | "N";
+  isEnabled: string;
+}
+
+export interface ILiabilityValidationResponse {
+  appraisalIdx: string;
+  section: "Y" | "N";
+  isEnabled: string;
+}
 
 interface ILoanState {
   loans: ILoan[];
@@ -213,6 +224,10 @@ interface ILoanState {
   pageableLoans: PagableResponse<ILoanApplication> | null;
   pageableLoading: boolean;
   pageableError: string | null;
+
+  liabilityValidation: ILiabilityValidationResponse[];
+  liabilityValidationLoading: boolean;
+  liabilityValidationError: string | null;
 
   fetchLoans: (status: string, username: string) => Promise<void>;
   fetchLoanById: (id: number) => Promise<void>;
@@ -269,6 +284,11 @@ interface ILoanState {
     page?: number;
     size?: number;
   }) => Promise<void>;
+
+  fetchLiabilityValidation: (appId: string) => Promise<void>;
+  addLiabilityValidation: (
+    payload: ILiabilityValidationPayload
+  ) => Promise<void>;
 }
 
 const useLoanStore = create<ILoanState>((set) => ({
@@ -302,6 +322,10 @@ const useLoanStore = create<ILoanState>((set) => ({
   pageableLoans: null,
   pageableLoading: false,
   pageableError: null,
+
+  liabilityValidation: [],
+  liabilityValidationLoading: false,
+  liabilityValidationError: null,
 
   fetchLoans: async (status: string, username: string) => {
     set({ loading: true, error: null });
@@ -738,6 +762,48 @@ const useLoanStore = create<ILoanState>((set) => ({
       set({
         pageableError: error.message ?? "Failed to fetch loans",
         pageableLoading: false,
+      });
+    }
+  },
+
+  fetchLiabilityValidation: async (appId: string) => {
+    set({ liabilityValidationLoading: true, liabilityValidationError: null });
+    try {
+      const response = await API.get(
+        `/mobixCamsLoan/v1/liability-validations/appraisals/${appId}`
+      );
+      set({
+        liabilityValidation: response.data.data ?? [],
+        liabilityValidationLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      set({
+        liabilityValidationError: error.message,
+        liabilityValidationLoading: false,
+      });
+    }
+  },
+
+  addLiabilityValidation: async (payload: ILiabilityValidationPayload) => {
+    set({ liabilityValidationLoading: true, liabilityValidationError: null });
+    try {
+      await APIAuth.post(`/mobixCamsLoan/v1/liability-validations`, payload);
+      set({
+        // liabilityValidation: response.data,
+        liabilityValidationLoading: false,
+      });
+      notification.success({
+        type: "success",
+        message: "Liability Validation added successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      set({
+        liabilityValidationError: error.message,
+        liabilityValidationLoading: false,
       });
     }
   },
