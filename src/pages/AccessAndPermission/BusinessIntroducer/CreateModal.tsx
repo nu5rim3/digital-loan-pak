@@ -30,7 +30,7 @@ const CreateModal: React.FC<Props> = ({
       .then((values) => {
         onCreate(values);
       })
-      .catch(() => message.error("Please fix the errors above."));
+      .catch(() => console.error("Please fix the errors above."));
   };
 
   return (
@@ -52,7 +52,14 @@ const CreateModal: React.FC<Props> = ({
             <Form.Item
               label="Employee No"
               name="empNo"
-              rules={[{ required: true, message: "Required" }]}
+
+              rules={[
+                { required: true, message: "Required" },
+                {
+                  pattern: /^\d{1,5}$/,
+                  message: "Employee No must be numeric and up to 5 digits",
+                },
+              ]}
             >
               <Input placeholder="Enter Employee No" />
             </Form.Item>
