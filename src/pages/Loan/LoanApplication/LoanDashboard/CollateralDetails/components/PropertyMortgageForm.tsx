@@ -16,6 +16,7 @@ interface PropertyMortgageFormProps {
   control: Control<FormValues>;
   errors: Record<string, any>;
   securityType?: IBaseItem;
+  setValue?: (name: keyof FormValues, value: any) => void;
 }
 
 export const submitPropertyMortgage = async (
@@ -60,7 +61,9 @@ export const submitPropertyMortgage = async (
       mortgageBondNo: propertyBondNo || "",
       mortgageBondDate: propertyBondDate || "",
       mortgageDeedNo: propertyDeedNo || "",
-      mortgageBondValue: propertyBondValue ? parseFloat(propertyBondValue) : undefined,
+      mortgageBondValue: propertyBondValue
+        ? parseFloat(propertyBondValue)
+        : undefined,
       mortgageSurveyPlanNo: propertySurveyPlanNo || "",
       mortgagePoa: propertyPOA || "",
       mortgagePoaNo: propertyPOANumber || "",
@@ -68,14 +71,18 @@ export const submitPropertyMortgage = async (
       mortgageLawyerName: propertyLawyerName || "",
       mortgageTitleInsurance: propertyTitleInsurance || "",
       mortgageInsOfBuilding: propertyInsuranceOfBuilding || "",
-      mortgageInsuranceValue: propertyInsuranceValue ? parseFloat(propertyInsuranceValue) : undefined,
-      mortgageMarketValue: propertyMarketValue ? parseFloat(propertyMarketValue) : undefined,
+      mortgageInsuranceValue: propertyInsuranceValue
+        ? parseFloat(propertyInsuranceValue)
+        : undefined,
+      mortgageMarketValue: propertyMarketValue
+        ? parseFloat(propertyMarketValue)
+        : undefined,
       mortgageFsv: propertyFSV ? parseFloat(propertyFSV) : undefined,
       mortgageLotNo: propertyLotNo || "",
       mortgageInsuranceCompany: propertyInsuranceCompany,
       mortgageReferenceNo: propertyReferenceNo,
       mortgageSecCategory: "Mortgage",
-      mortgageSecType: "Primary"
+      mortgageSecType: "Primary",
     };
 
     if (isEdit && id) {
@@ -87,8 +94,11 @@ export const submitPropertyMortgage = async (
     }
     return true;
   } catch (error) {
-    console.error(`Error ${isEdit ? 'updating' : 'saving'} property mortgage:`, error);
-    message.error(`Failed to ${isEdit ? 'update' : 'save'} property mortgage`);
+    console.error(
+      `Error ${isEdit ? "updating" : "saving"} property mortgage:`,
+      error
+    );
+    message.error(`Failed to ${isEdit ? "update" : "save"} property mortgage`);
     return false;
   }
 };
@@ -96,7 +106,8 @@ export const submitPropertyMortgage = async (
 const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
   control,
   errors,
-  securityType
+  securityType,
+  setValue,
 }) => {
   const {
     types: propertyTypes,
@@ -129,6 +140,15 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
   });
   const isEditMode = !!propertyMortgageId;
 
+  const propertyPOA = useWatch({
+    control,
+    name: "propertyPOA",
+  });
+  const propertyInsuranceOfBuilding = useWatch({
+    control,
+    name: "propertyInsuranceOfBuilding",
+  });
+
   useEffect(() => {
     if (!dataFetched.current) {
       fetchTypes(securityType?.code || "");
@@ -149,13 +169,26 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
     fetchInsuranceCompanies,
   ]);
 
+  useEffect(() => {
+    if (propertyPOA !== "yes" && setValue) {
+      setValue("propertyPOANumber", "");
+      setValue("propertyCompany", "");
+    }
+  }, [propertyPOA, setValue]);
+
+  useEffect(() => {
+    if (propertyInsuranceOfBuilding !== "yes" && setValue) {
+      setValue("propertyInsuranceValue", "");
+    }
+  }, [propertyInsuranceOfBuilding, setValue]);
+
   const getOptions = (
     arr: any[],
     labelKey: string = "description",
     valueKey: string = "code"
   ) =>
     arr
-      .filter((item) => item.status ? item.status === "A" : true)
+      .filter((item) => (item.status ? item.status === "A" : true))
       .map((item) => ({
         label: item[labelKey],
         value: item[valueKey],
@@ -185,7 +218,11 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
                   showSearch
                   placeholder="Select Type"
                   loading={propertyTypesLoading}
-                  options={getOptions(propertyTypes, "description", "description")}
+                  options={getOptions(
+                    propertyTypes,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
@@ -208,7 +245,11 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
                   showSearch
                   placeholder="Select Type"
                   loading={propertySubTypesLoading}
-                  options={getOptions(propertySubTypes, "description", "description")}
+                  options={getOptions(
+                    propertySubTypes,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
@@ -357,8 +398,24 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
                   {...field}
                   style={{ width: "100%" }}
                   placeholder="Enter Bond Value"
-                  formatter={(value) => `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                  formatter={(value) =>
+                    `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                  onKeyDown={(e) => {
+                    if (
+                      !/[0-9]/.test(e.key) &&
+                      ![
+                        "Backspace",
+                        "Delete",
+                        "ArrowLeft",
+                        "ArrowRight",
+                        "Tab",
+                      ].includes(e.key)
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
               )}
             />
@@ -401,45 +458,49 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
             />
           </Form.Item>
 
-          <Form.Item
-            label="POA Number"
-            required
-            validateStatus={errors.propertyPOANumber ? "error" : ""}
-            help={errors.propertyPOANumber?.message}
-            labelCol={{ span: 24 }}
-            wrapperCol={{ span: 24 }}
-          >
-            <Controller
-              name="propertyPOANumber"
-              control={control}
-              render={({ field }) => (
-                <Input {...field} placeholder="Enter POA Number" />
-              )}
-            />
-          </Form.Item>
+          {propertyPOA === "yes" && (
+            <Form.Item
+              label="POA Number"
+              required
+              validateStatus={errors.propertyPOANumber ? "error" : ""}
+              help={errors.propertyPOANumber?.message}
+              labelCol={{ span: 24 }}
+              wrapperCol={{ span: 24 }}
+            >
+              <Controller
+                name="propertyPOANumber"
+                control={control}
+                render={({ field }) => (
+                  <Input {...field} placeholder="Enter POA Number" />
+                )}
+              />
+            </Form.Item>
+          )}
 
-          <Form.Item
-            label="Company"
-            required
-            validateStatus={errors.propertyCompany ? "error" : ""}
-            help={errors.propertyCompany?.message}
-            labelCol={{ span: 24 }}
-            wrapperCol={{ span: 24 }}
-          >
-            <Controller
-              name="propertyCompany"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  showSearch
-                  placeholder="Select Company"
-                  loading={propertyCompaniesLoading}
-                  options={getOptions(propertyCompanies)}
-                />
-              )}
-            />
-          </Form.Item>
+          {propertyPOA === "yes" && (
+            <Form.Item
+              label="Company"
+              required
+              validateStatus={errors.propertyCompany ? "error" : ""}
+              help={errors.propertyCompany?.message}
+              labelCol={{ span: 24 }}
+              wrapperCol={{ span: 24 }}
+            >
+              <Controller
+                name="propertyCompany"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    {...field}
+                    showSearch
+                    placeholder="Select Company"
+                    loading={propertyCompaniesLoading}
+                    options={getOptions(propertyCompanies)}
+                  />
+                )}
+              />
+            </Form.Item>
+          )}
 
           <Form.Item
             label="Lawyer Name"
@@ -470,7 +531,11 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
               name="propertyTitleInsurance"
               control={control}
               render={({ field }) => (
-                <Select {...field} showSearch placeholder="Select Title Insurance">
+                <Select
+                  {...field}
+                  showSearch
+                  placeholder="Select Title Insurance"
+                >
                   <Select.Option value="yes">Yes</Select.Option>
                   <Select.Option value="no">No</Select.Option>
                 </Select>
@@ -490,7 +555,11 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
               name="propertyInsuranceOfBuilding"
               control={control}
               render={({ field }) => (
-                <Select {...field} showSearch placeholder="Select Insurance of Building">
+                <Select
+                  {...field}
+                  showSearch
+                  placeholder="Select Insurance of Building"
+                >
                   <Select.Option value="yes">Yes</Select.Option>
                   <Select.Option value="no">No</Select.Option>
                 </Select>
@@ -498,28 +567,46 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
             />
           </Form.Item>
 
-          <Form.Item
-            label="Insurance Value"
-            required
-            validateStatus={errors.propertyInsuranceValue ? "error" : ""}
-            help={errors.propertyInsuranceValue?.message}
-            labelCol={{ span: 24 }}
-            wrapperCol={{ span: 24 }}
-          >
-            <Controller
-              name="propertyInsuranceValue"
-              control={control}
-              render={({ field }) => (
-                <InputNumber
-                  {...field}
-                  style={{ width: "100%" }}
-                  placeholder="Enter Insurance Value"
-                  formatter={(value) => `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                  parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
-                />
-              )}
-            />
-          </Form.Item>
+          {propertyInsuranceOfBuilding === "yes" && (
+            <Form.Item
+              label="Insurance Value"
+              required
+              validateStatus={errors.propertyInsuranceValue ? "error" : ""}
+              help={errors.propertyInsuranceValue?.message}
+              labelCol={{ span: 24 }}
+              wrapperCol={{ span: 24 }}
+            >
+              <Controller
+                name="propertyInsuranceValue"
+                control={control}
+                render={({ field }) => (
+                  <InputNumber
+                    {...field}
+                    style={{ width: "100%" }}
+                    placeholder="Enter Insurance Value"
+                    formatter={(value) =>
+                      `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    }
+                    parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                    onKeyDown={(e) => {
+                      if (
+                        !/[0-9]/.test(e.key) &&
+                        ![
+                          "Backspace",
+                          "Delete",
+                          "ArrowLeft",
+                          "ArrowRight",
+                          "Tab",
+                        ].includes(e.key)
+                      ) {
+                        e.preventDefault();
+                      }
+                    }}
+                  />
+                )}
+              />
+            </Form.Item>
+          )}
 
           <Form.Item
             label="Market Value"
@@ -537,8 +624,24 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
                   {...field}
                   style={{ width: "100%" }}
                   placeholder="Enter Market Value"
-                  formatter={(value) => `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                  formatter={(value) =>
+                    `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                  onKeyDown={(e) => {
+                    if (
+                      !/[0-9]/.test(e.key) &&
+                      ![
+                        "Backspace",
+                        "Delete",
+                        "ArrowLeft",
+                        "ArrowRight",
+                        "Tab",
+                      ].includes(e.key)
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
               )}
             />
@@ -560,8 +663,24 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
                   {...field}
                   style={{ width: "100%" }}
                   placeholder="Enter FSV"
-                  formatter={(value) => `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                  formatter={(value) =>
+                    `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                  }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                  onKeyDown={(e) => {
+                    if (
+                      !/[0-9]/.test(e.key) &&
+                      ![
+                        "Backspace",
+                        "Delete",
+                        "ArrowLeft",
+                        "ArrowRight",
+                        "Tab",
+                      ].includes(e.key)
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
               )}
             />
@@ -594,7 +713,11 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
                   showSearch
                   placeholder="Select Insurance Company"
                   loading={insuranceCompaniesLoading}
-                  options={getOptions(insuranceCompanies, "description", "description")}
+                  options={getOptions(
+                    insuranceCompanies,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />

@@ -211,6 +211,11 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                           `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                         }
                         parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                        onKeyDown={(e) => {
+                          if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                            e.preventDefault();
+                          }
+                        }}
                       />
                     )}
                   />
@@ -297,6 +302,11 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                           `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                         }
                         parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                        onKeyDown={(e) => {
+                          if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                            e.preventDefault();
+                          }
+                        }}
                       />
                     )}
                   />
@@ -396,6 +406,11 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                           `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                         }
                         parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                        onKeyDown={(e) => {
+                          if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                            e.preventDefault();
+                          }
+                        }}
                       />
                     )}
                   />

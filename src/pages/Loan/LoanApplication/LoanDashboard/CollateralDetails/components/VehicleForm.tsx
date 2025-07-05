@@ -48,7 +48,7 @@ export const submitVehicle = async (
     } = data;
 
     const formatDate = (date: Date | undefined) => {
-      return date ? dayjs(date).format('YYYY-MM-DD') : undefined;
+      return date ? dayjs(date).format("YYYY-MM-DD") : undefined;
     };
 
     const payload = {
@@ -86,13 +86,17 @@ export const submitVehicle = async (
     }
     return true;
   } catch (error) {
-    console.error(`Error ${isEdit ? 'updating' : 'saving'} vehicle:`, error);
-    message.error(`Failed to ${isEdit ? 'update' : 'save'} vehicle`);
+    console.error(`Error ${isEdit ? "updating" : "saving"} vehicle:`, error);
+    message.error(`Failed to ${isEdit ? "update" : "save"} vehicle`);
     return false;
   }
 };
 
-const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors, securityType }) => {
+const VehicleForm: React.FC<VehicleFormProps> = ({
+  control,
+  errors,
+  securityType,
+}) => {
   const {
     types: vehicleTypes,
     typesLoading: vehicleTypesLoading,
@@ -168,12 +172,11 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors, securityType
     valueKey: string = "code"
   ) =>
     arr
-      .filter((item) => item.status ? item.status === "A" : true)
+      .filter((item) => (item.status ? item.status === "A" : true))
       .map((item) => ({
         label: item[labelKey],
         value: item[valueKey],
       }));
-
 
   return (
     <div className="space-y-6">
@@ -199,7 +202,11 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors, securityType
                   showSearch
                   placeholder="Select Type"
                   loading={vehicleTypesLoading}
-                  options={getOptions(vehicleTypes, "description", "description")}
+                  options={getOptions(
+                    vehicleTypes,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
@@ -222,7 +229,11 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors, securityType
                   showSearch
                   placeholder="Select Ownership"
                   loading={vehicleOwnershipsLoading}
-                  options={getOptions(vehicleOwnerships, "description", "description")}
+                  options={getOptions(
+                    vehicleOwnerships,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
@@ -268,7 +279,11 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors, securityType
                   showSearch
                   placeholder="Select Condition"
                   loading={vehicleConditionsLoading}
-                  options={getOptions(vehicleConditions, "description", "description")}
+                  options={getOptions(
+                    vehicleConditions,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
@@ -291,7 +306,11 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors, securityType
                   showSearch
                   placeholder="Select Category"
                   loading={vehicleCategoriesLoading}
-                  options={getOptions(vehicleCategories, "description", "description")}
+                  options={getOptions(
+                    vehicleCategories,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
@@ -314,7 +333,11 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors, securityType
                   showSearch
                   placeholder="Select Make"
                   loading={vehicleMakesLoading}
-                  options={getOptions(vehicleMakes, "description", "description")}
+                  options={getOptions(
+                    vehicleMakes,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
@@ -337,7 +360,11 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors, securityType
                   showSearch
                   placeholder="Select Model"
                   loading={vehicleModelsLoading}
-                  options={getOptions(vehicleModels, "description", "description")}
+                  options={getOptions(
+                    vehicleModels,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
@@ -426,6 +453,20 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors, securityType
                     `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                   }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                  onKeyDown={(e) => {
+                    if (
+                      !/[0-9]/.test(e.key) &&
+                      ![
+                        "Backspace",
+                        "Delete",
+                        "ArrowLeft",
+                        "ArrowRight",
+                        "Tab",
+                      ].includes(e.key)
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
               )}
             />
@@ -450,6 +491,20 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors, securityType
                     `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                   }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                  onKeyDown={(e) => {
+                    if (
+                      !/[0-9]/.test(e.key) &&
+                      ![
+                        "Backspace",
+                        "Delete",
+                        "ArrowLeft",
+                        "ArrowRight",
+                        "Tab",
+                      ].includes(e.key)
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
               )}
             />
@@ -550,7 +605,11 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors, securityType
                   showSearch
                   placeholder="Select Insurance Company"
                   loading={insuranceCompaniesLoading}
-                  options={getOptions(insuranceCompanies, "description", "description")}
+                  options={getOptions(
+                    insuranceCompanies,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
@@ -561,7 +620,26 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors, securityType
               name="vehicleReferenceNo"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter Reference No" />
+                <InputNumber
+                  {...field}
+                  style={{ width: "100%" }}
+                  placeholder="Enter Reference No"
+                  controls={false}
+                  onKeyDown={(e) => {
+                    if (
+                      !/[0-9]/.test(e.key) &&
+                      ![
+                        "Backspace",
+                        "Delete",
+                        "ArrowLeft",
+                        "ArrowRight",
+                        "Tab",
+                      ].includes(e.key)
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
+                />
               )}
             />
           </Form.Item>
