@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect } from "react";
-import { Button, Col, Form, Input, Modal, Row, message } from "antd";
+import { Button, Col, Form, Input, Modal, Row } from "antd";
 
 type Props = {
   visible: boolean;
@@ -83,12 +84,12 @@ const CreateModal: React.FC<Props> = ({
               label="Employee Name"
               name="empName"
               rules={[
-      { required: true, message: "Required" },
-      {
-        pattern: /^[A-Za-z\s]+$/,
-        message: "Only letters and spaces are allowed",
-      },
-    ]}
+                { required: true, message: "Required" },
+                {
+                  pattern: /^[A-Za-z\s]+$/,
+                  message: "Only letters and spaces are allowed",
+                },
+              ]}
             >
               <Input placeholder="Enter Employee Name" />
             </Form.Item>
@@ -97,13 +98,13 @@ const CreateModal: React.FC<Props> = ({
             <Form.Item
               label="Display Name"
               name="empDisplayName"
-               rules={[
-      { required: true, message: "Required" },
-      {
-        pattern: /^[A-Za-z\s]+$/,
-        message: "Only letters and spaces are allowed",
-      },
-    ]}
+              rules={[
+                { required: true, message: "Required" },
+                {
+                  pattern: /^[A-Za-z\s]+$/,
+                  message: "Only letters and spaces are allowed",
+                },
+              ]}
             >
               <Input placeholder="Enter Display Name" />
             </Form.Item>
