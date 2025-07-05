@@ -100,6 +100,7 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
     watch,
     formState: { errors },
     reset,
+    setValue,
   } = useForm<FormValues>({
     resolver: yupResolver(memoizedValidationSchema),
     defaultValues: {
@@ -174,7 +175,6 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
             registrationYear: initialData.leaseRegistrationYear || "",
             internalMV: initialData.leaseMV || "",
             internalFSV: initialData.leaseFSV || "",
-            province: initialData.leaseProvince || "",
             insuranceCompany: initialData.leaseInsuranceCompany || "",
             referenceNo: initialData.leaseReferenceNo || "",
           };
@@ -489,6 +489,7 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
                           control={control}
                           errors={errors}
                           securityType={selectedSecurityType}
+                          setValue={setValue}
                         />
                       )}
 

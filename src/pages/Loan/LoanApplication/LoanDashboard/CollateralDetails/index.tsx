@@ -200,7 +200,6 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.leaseRegistrationYear = collateral.leaseRegYear;
       formValues.leaseMV = collateral.marketValue?.toString();
       formValues.leaseFSV = collateral.foreSaleValue?.toString();
-      formValues.leaseProvince = collateral.leaseProvince;
       formValues.leaseInsuranceCompany = collateral.insuCompany;
       formValues.leaseReferenceNo = collateral.refNo;
       break;
@@ -705,7 +704,6 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             leaseRegistrationYear: detailedData.leaseRegYear,
             leaseMV: detailedData.marketValue?.toString(),
             leaseFSV: detailedData.foreSaleValue?.toString(),
-            leaseProvince: detailedData.leaseProvince,
             leaseInsuranceCompany: detailedData.insuCompany,
             leaseReferenceNo: detailedData.refNo,
           };
@@ -794,7 +792,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
       title: "Delete Collateral",
       icon: <ExclamationCircleOutlined />,
       content:
-        "Are you sure you want to delete this collateral? This action cannot be undone.",
+        "Are you sure you want to delete this collateral?",
       okText: "Delete",
       okType: "danger",
       cancelText: "Cancel",
@@ -812,7 +810,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
               .deactivateVehicle(collateralToDelete.id, appraisalId);
             success = !!result;
             if (success) {
-              message.success("Vehicle deactivated successfully");
+              message.success("Vehicle deleted successfully");
             } else {
               message.error("Failed to deactivate vehicle");
             }
@@ -827,7 +825,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
               .deactivateBankGuarantee(collateralToDelete.id, appraisalId);
             success = !!result;
             if (success) {
-              message.success("Bank guarantee deactivated successfully");
+              message.success("Bank guarantee deleted successfully");
             } else {
               message.error("Failed to deactivate bank guarantee");
             }
@@ -842,7 +840,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
               .deactivateLandStock(collateralToDelete.id, appraisalId);
             success = !!result;
             if (success) {
-              message.success("Land stock deactivated successfully");
+              message.success("Land stock deleted successfully");
             } else {
               message.error("Failed to deactivate land stock");
             }
@@ -857,7 +855,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
               .deactivateMachinery(collateralToDelete.id, appraisalId);
             success = !!result;
             if (success) {
-              message.success("Machinery equipment deactivated successfully");
+              message.success("Machinery equipment deleted successfully");
             } else {
               message.error("Failed to deactivate machinery equipment");
             }
@@ -872,7 +870,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
               .deactivatePropertyMortgage(collateralToDelete.id, appraisalId);
             success = !!result;
             if (success) {
-              message.success("Property mortgage deactivated successfully");
+              message.success("Property mortgage deleted successfully");
             } else {
               message.error("Failed to deactivate property mortgage");
             }
@@ -887,7 +885,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
               .deactivateSavings(collateralToDelete.id, appraisalId);
             success = !!result;
             if (success) {
-              message.success("Savings deactivated successfully");
+              message.success("Savings deleted successfully");
             } else {
               message.error("Failed to deactivate savings");
             }
@@ -902,7 +900,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
               .deactivateLease(collateralToDelete.id, appraisalId);
             success = !!result;
             if (success) {
-              message.success("Lease deactivated successfully");
+              message.success("Lease deleted successfully");
             } else {
               message.error("Failed to deactivate lease");
             }

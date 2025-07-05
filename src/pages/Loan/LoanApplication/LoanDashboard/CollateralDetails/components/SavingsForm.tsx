@@ -228,6 +228,11 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors, securityType
                     `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                   }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                  onKeyDown={(e) => {
+                    if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
               )}
             />

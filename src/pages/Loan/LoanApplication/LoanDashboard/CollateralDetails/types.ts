@@ -136,7 +136,6 @@ export interface FormValues {
   leaseRegistrationYear?: string;
   leaseMV?: string;
   leaseFSV?: string;
-  leaseProvince?: string;
   leaseInsuranceCompany?: string;
   leaseReferenceNo?: string;
 }
@@ -173,7 +172,6 @@ export interface LeaseProductFormValues {
   registrationYear?: string;
   internalMV?: string;
   internalFSV?: string;
-  province?: string;
 }
 
 // Utility function to get security type codes dynamically
@@ -417,12 +415,14 @@ export const createValidationSchema = (securityTypes: any[] = []) => {
       is: PROPERTY_MORTGAGE_CODE,
       then: (schema) => schema.required("POA is required"),
     }),
-    propertyPOANumber: yup.string().when("securityType", {
-      is: PROPERTY_MORTGAGE_CODE,
+    propertyPOANumber: yup.string().when(["securityType", "propertyPOA"], {
+      is: (securityType: string, propertyPOA: string) =>
+        securityType === PROPERTY_MORTGAGE_CODE && propertyPOA === "yes",
       then: (schema) => schema.required("POA Number is required"),
     }),
-    propertyCompany: yup.string().when("securityType", {
-      is: PROPERTY_MORTGAGE_CODE,
+    propertyCompany: yup.string().when(["securityType", "propertyPOA"], {
+      is: (securityType: string, propertyPOA: string) =>
+        securityType === PROPERTY_MORTGAGE_CODE && propertyPOA === "yes",
       then: (schema) => schema.required("Company is required"),
     }),
     propertyLawyerName: yup.string().when("securityType", {
@@ -437,8 +437,9 @@ export const createValidationSchema = (securityTypes: any[] = []) => {
       is: PROPERTY_MORTGAGE_CODE,
       then: (schema) => schema.required("Insurance of Building is required"),
     }),
-    propertyInsuranceValue: yup.string().when("securityType", {
-      is: PROPERTY_MORTGAGE_CODE,
+    propertyInsuranceValue: yup.string().when(["securityType", "propertyInsuranceOfBuilding"], {
+      is: (securityType: string, propertyInsuranceOfBuilding: string) =>
+        securityType === PROPERTY_MORTGAGE_CODE && propertyInsuranceOfBuilding === "yes",
       then: (schema) => schema.required("Insurance Value is required"),
     }),
     propertyMarketValue: yup.string().when("securityType", {
@@ -942,5 +943,4 @@ export const leaseProductValidationSchema = yup.object().shape({
   registrationYear: yup.string().optional(),
   internalMV: yup.string().optional(),
   internalFSV: yup.string().optional(),
-  province: yup.string().optional(),
 });
