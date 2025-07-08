@@ -22,6 +22,7 @@ import GoldFacilityApplication from './GoldFacilityApplication/GoldFacilityAppli
 import CashFlow from './CashFlow';
 import ExceptionalApproval from './ExceptionalApproval';
 import LoanApplication from './LoanApplication';
+import UnderConstruction from '../../../UnderConstroction';
 
 interface StatusProps {
     isCompleted: string;
@@ -82,10 +83,8 @@ const LoanDaashboard: React.FC = () => {
                 return <GoldFacilityApplication />;
             case 'loan-application':
                 return <LoanApplication />;
-            case 'LOAN_APPLICATION_APPROVAL':
-                return <div>Loan Application Approval</div>;
             case 'image-upload':
-                return <div>Image Upload</div>;
+                return <UnderConstruction />;
             case 'cash-flow':
                 return <CashFlow />;
             case 'credit-scoring':
@@ -94,14 +93,14 @@ const LoanDaashboard: React.FC = () => {
                 return <CustomerRiskProfiling />;
             case 'exceptional-approval':
                 return <ExceptionalApproval />;
-            case 'customer-acknowledgement':
-                return <div>Customer Acknowledgement</div>;
-            case 'guarantor-acknowledgement':
-                return <div>Guarantor Acknowledgement</div>;
-            case 'witness-acknowledgement':
-                return <div>Witness Acknowledgement</div>;
-            case 'term-deposit':
-                return <div>Term Deposit</div>;
+            // case 'customer-acknowledgement':
+            //     return <div>Customer Acknowledgement</div>;
+            // case 'guarantor-acknowledgement':
+            //     return <div>Guarantor Acknowledgement</div>;
+            // case 'witness-acknowledgement':
+            //     return <div>Witness Acknowledgement</div>;
+            // case 'term-deposit':
+            //     return <div>Term Deposit</div>;
             case 'collateral-details':
                 return <CollateralDetails />;
             case 'business-introducer':
