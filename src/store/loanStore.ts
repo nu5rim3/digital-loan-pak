@@ -196,6 +196,20 @@ export interface ILiabilityValidationResponse {
   isEnabled: string;
 }
 
+export interface IApplicationValidations {
+  createdBy: string;
+  creationDate: string; // ISO string, e.g. "2025-07-07T09:21:36.871+00:00"
+  lastModifiedBy: string;
+  lastModifiedDate: string; // ISO string
+  id: number;
+  section: string;
+  isMandatory: "1" | "0"; // "1" or "0"
+  isVisible: "1" | "0"; // "1" or "0"
+  prodCode: string;
+  completed: "1" | "0"; // "1" or "0"
+  status: "A" | "I";
+}
+
 interface ILoanState {
   loans: ILoan[];
   loanStatus: ILoanStatus[];
@@ -228,6 +242,10 @@ interface ILoanState {
   liabilityValidation: ILiabilityValidationResponse[];
   liabilityValidationLoading: boolean;
   liabilityValidationError: string | null;
+
+  applicationValidates: IApplicationValidations[];
+  applicationValidationLoading: boolean;
+  applicationValidationError: string | null;
 
   fetchLoans: (status: string, username: string) => Promise<void>;
   fetchLoanById: (id: number) => Promise<void>;
@@ -289,6 +307,8 @@ interface ILoanState {
   addLiabilityValidation: (
     payload: ILiabilityValidationPayload
   ) => Promise<void>;
+
+  fetchApplicationValidationsByAppId: (appId: string) => Promise<void>;
 }
 
 const useLoanStore = create<ILoanState>((set) => ({
@@ -326,6 +346,10 @@ const useLoanStore = create<ILoanState>((set) => ({
   liabilityValidation: [],
   liabilityValidationLoading: false,
   liabilityValidationError: null,
+
+  applicationValidates: [],
+  applicationValidationLoading: false,
+  applicationValidationError: null,
 
   fetchLoans: async (status: string, username: string) => {
     set({ loading: true, error: null });
@@ -804,6 +828,29 @@ const useLoanStore = create<ILoanState>((set) => ({
       set({
         liabilityValidationError: error.message,
         liabilityValidationLoading: false,
+      });
+    }
+  },
+
+  fetchApplicationValidationsByAppId: async (appId: string) => {
+    set({
+      applicationValidationLoading: true,
+      applicationValidationError: null,
+    });
+
+    try {
+      const response = await APIAuth.get(
+        `/mobixCamsLoan/v1/ibu-web-validations/${appId}`
+      );
+      set({
+        applicationValidates: response.data ?? [],
+        applicationValidationLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        applicationValidationLoading: false,
+        applicationValidationError: error.message,
       });
     }
   },

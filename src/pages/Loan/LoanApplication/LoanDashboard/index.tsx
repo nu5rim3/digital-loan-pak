@@ -32,11 +32,9 @@ const LoanDaashboard: React.FC = () => {
 
     const navigate = useNavigate();
     const { appId } = useParams();
-    const { loading, loanStatus, fetchLoanStatusById } = useLoanStore();
+    const { applicationValidationLoading, applicationValidates, fetchApplicationValidationsByAppId } = useLoanStore();
     const { stakeholders, fetchStackholderByAppId, fetchContactDetailsByStkId, fetchAddressDetailsByStkId, resetStakeholder } = useStakeholderStore();
-    const { customers, fetchCustomerByAppId } = useCustomerStore()
-
-    // TODO: have to call the apprisal api to get the status of the loan application
+    const { customers, fetchCustomerByAppId } = useCustomerStore();
 
     const onChange = (key: string | string[]) => {
         const triggerKey = key[0]
@@ -76,11 +74,11 @@ const LoanDaashboard: React.FC = () => {
                 return <GuarantorDetailsView formDetails={getStakeholderByType('G', stakeholders ?? []) ?? []} />;
             case 'witness':
                 return <WitnessDetails formDetails={getStakeholderByType('W', stakeholders ?? []) ?? []} />;
-            case 'Liability-Affidavit':
+            case 'liability-affidavit':
                 return <LiabilityAffidavit />;
-            case 'LOAN_COLLATERAL':
+            case 'collateral-detail':
                 return <div>Collateral</div>;
-            case 'gold-facility-application':
+            case 'gold-facility':
                 return <GoldFacilityApplication />;
             case 'loan-application':
                 return <LoanApplication />;
@@ -113,203 +111,17 @@ const LoanDaashboard: React.FC = () => {
         }
     };
 
-
-
-    const dummyLoanStatus = [
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 1,
-            "section": "customer",
-            "isMandatory": "1",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 2,
-            "section": "guarantor",
-            "isMandatory": "1",
-            "completed": "0",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2024-07-11T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 3,
-            "section": "witness",
-            "isMandatory": "1",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2024-07-11T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 12,
-            "section": "business-introducer",
-            "isMandatory": "0",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 5,
-            "section": "loan-application",
-            "isMandatory": "1",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        // {
-        //     "createdBy": "SYSTEM",
-        //     "creationDate": "2024-07-11T09:24:51.357+00:00",
-        //     "lastModifiedBy": null,
-        //     "lastModifiedDate": null,
-        //     "id": 6,
-        //     "section": "gold-facility-application",
-        //     "isMandatory": "0",
-        //     "completed": "1",
-        //     "enabled": null,
-        //     "status": "A"
-        // },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 7,
-            "section": "cash-flow",
-            "isMandatory": "1",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2024-07-11T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 4,
-            "section": "Liability-Affidavit",
-            "isMandatory": "1",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2024-07-11T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 15,
-            "section": "collateral-details",
-            "isMandatory": "0",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        // {
-        //     "createdBy": "SYSTEM",
-        //     "creationDate": "2022-08-09T09:24:51.357+00:00",
-        //     "lastModifiedBy": null,
-        //     "lastModifiedDate": null,
-        //     "id": 11,
-        //     "section": "customer-risk-profiling",
-        //     "isMandatory": "0",
-        //     "completed": "1",
-        //     "enabled": null,
-        //     "status": "A"
-        // },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 10,
-            "section": "credit-scoring",
-            "isMandatory": "0",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        // {
-        //     "createdBy": "SYSTEM",
-        //     "creationDate": "2024-07-11T09:24:51.357+00:00",
-        //     "lastModifiedBy": null,
-        //     "lastModifiedDate": null,
-        //     "id": 13,
-        //     "section": "term-deposit",
-        //     "isMandatory": "0",
-        //     "completed": "1",
-        //     "enabled": null,
-        //     "status": "A"
-        // },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 12,
-            "section": "exceptional-approval",
-            "isMandatory": "0",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 8,
-            "section": "image-upload",
-            "isMandatory": "1",
-            "completed": "0",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 13,
-            "section": "customer-acknowledgement",
-            "isMandatory": "1",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-    ]
-
-    const items: CollapseProps['items'] = dummyLoanStatus && dummyLoanStatus.map((rule) => ({ //loanStatus
-        key: `${rule.section}`,
-        label: kebabToTitleCase(rule.section),
-        children: getComponentByName(rule.section),
-        extra: genExtra(getLoanStatusByName(rule.section, dummyLoanStatus)),
-        collapsible: getOnlyStatusByName(rule.section, dummyLoanStatus) !== 'A' ? 'disabled' : undefined,
-    }));
+    const items: CollapseProps['items'] = applicationValidates
+        ?.filter(rule => rule.isVisible === "1")
+        .map((rule) => ({
+            key: `${rule.section}`,
+            label: kebabToTitleCase(rule.section),
+            children: getComponentByName(rule.section),
+            extra: genExtra(getLoanStatusByName(rule.section, applicationValidates)),
+            collapsible: getOnlyStatusByName(rule.section, applicationValidates) !== 'A' ? 'disabled' : undefined,
+        }));
 
     useEffect(() => {
-        if (loanStatus.length === 0) {
-            fetchLoanStatusById(appId ?? '')
-        }
         if (customers.length === 0) {
             fetchCustomerByAppId(appId ?? '')
         }
@@ -324,12 +136,13 @@ const LoanDaashboard: React.FC = () => {
 
     useEffect(() => {
         fetchStackholderByAppId(appId ?? '')
+        fetchApplicationValidationsByAppId(appId ?? '')
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [appId])
 
 
 
-    if (loading) {
+    if (applicationValidationLoading) {
         return (
             <Card title={`Loan Application - ${appId}`}>
                 <Empty description={'Loading...'} />
@@ -337,7 +150,7 @@ const LoanDaashboard: React.FC = () => {
         )
     }
 
-    if (loanStatus.length === 0) {
+    if (applicationValidates.length === 0) {
         return (
             <Card title={`Loan Application - ${appId}`}>
                 <Empty
@@ -345,7 +158,7 @@ const LoanDaashboard: React.FC = () => {
                     children={
                         <>
                             <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
-                            <Button type="primary" className="ml-3" onClick={() => fetchLoanStatusById(appId ?? '')}>Refresh</Button>
+                            <Button type="primary" className="ml-3" onClick={() => fetchApplicationValidationsByAppId(appId ?? '')}>Refresh</Button>
                         </>
                     }
                 />
