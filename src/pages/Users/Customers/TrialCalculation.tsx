@@ -188,7 +188,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         fetchSubProductTypes,
         setSelectedProductCategory, setSelectedProductCode, trialCalculationData, setTrialCalculationData, resetTrialCalculationData } = useCommonStore();
 
-    const { productDetails, productDetailsLoading, fetchProductDetails, resetProductDetails } = useLoanStore()
+    const { productDetails, productDetailsLoading, fetchProductDetails, resetProductDetails, fetchApplicationValidationsByAppId } = useLoanStore()
     const { user } = useUserStore()
     const { cribDetails, cribLoading, fetchCRIBByCnic, resetCRIBDetails } = useVerificationStore()
     const { trailCalulation, trailCalulationDetails, trailCalulationDetailsLoading, trailCalulationDetailsByAppId, trailCalulationDetailsByAppIdLoading, trailCalulationLoading, sendTrailCalulation, fetchTrailCalulation, resetTrailCalculationDetails, saveTrailCalulation, fetchTrailCalulationDetailsByAppId } = useCreditStore()
@@ -518,6 +518,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         setSelectedProductCode(productCode)
         saveTrailCalulation(appId ?? '', cliIdx, { ...__calculationPayload, tcNo: trailCalulation?.object.tcNo ?? '' }).finally(() => {
             fetchTrailCalulationDetailsByAppId(appId ?? '')
+            fetchApplicationValidationsByAppId(appId ?? '')
         });
     }
 

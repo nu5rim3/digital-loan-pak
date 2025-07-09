@@ -110,6 +110,27 @@ const LoanDaashboard: React.FC = () => {
         }
     };
 
+    const onlyCustomer = [{
+        "createdBy": "SYSTEM",
+        "creationDate": "2022-08-09T09:24:51.357+00:00",
+        "lastModifiedBy": null,
+        "lastModifiedDate": null,
+        "id": 1,
+        "section": "customer",
+        "isMandatory": "1",
+        "completed": "0",
+        "enabled": null,
+        "status": "A"
+    },]
+
+    const _item: CollapseProps['items'] = onlyCustomer.map((rule) => ({
+        key: `${rule.section}`,
+        label: kebabToTitleCase(rule.section),
+        children: getComponentByName(rule.section),
+        extra: genExtra(getLoanStatusByName(rule.section, onlyCustomer)),
+        collapsible: rule.status !== 'A' ? 'disabled' : undefined,
+    }));
+
     const items: CollapseProps['items'] = applicationValidates
         ?.filter(rule => rule.isVisible === "1")
         .map((rule) => ({
@@ -149,7 +170,7 @@ const LoanDaashboard: React.FC = () => {
         )
     }
 
-    if (applicationValidates.length === 0) {
+    if (applicationValidates.length === 0 && _item.length === 0) {
         return (
             <Card title={`Loan Application - ${appId}`}>
                 <Empty
@@ -179,7 +200,7 @@ const LoanDaashboard: React.FC = () => {
                     defaultActiveKey={['customer']}
                     expandIconPosition={'start'}
                     onChange={onChange}
-                    items={items}
+                    items={items.length === 0 ? _item : items}
                 />
 
                 <div className="mt-5">
