@@ -77,8 +77,6 @@ const LoanDaashboard: React.FC = () => {
                 return <WitnessDetails formDetails={getStakeholderByType('W', stakeholders ?? []) ?? []} />;
             case 'liability-affidavit':
                 return <LiabilityAffidavit />;
-            case 'collateral-detail':
-                return <div>Collateral</div>;
             case 'gold-facility':
                 return <GoldFacilityApplication />;
             case 'loan-application':
@@ -93,15 +91,7 @@ const LoanDaashboard: React.FC = () => {
                 return <CustomerRiskProfiling />;
             case 'exceptional-approval':
                 return <ExceptionalApproval />;
-            // case 'customer-acknowledgement':
-            //     return <div>Customer Acknowledgement</div>;
-            // case 'guarantor-acknowledgement':
-            //     return <div>Guarantor Acknowledgement</div>;
-            // case 'witness-acknowledgement':
-            //     return <div>Witness Acknowledgement</div>;
-            // case 'term-deposit':
-            //     return <div>Term Deposit</div>;
-            case 'collateral-details':
+            case 'collateral-detail':
                 return <CollateralDetails />;
             case 'business-introducer':
                 return <BusinessIntroducer />;
