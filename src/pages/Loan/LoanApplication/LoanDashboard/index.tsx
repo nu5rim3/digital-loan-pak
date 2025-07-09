@@ -29,6 +29,14 @@ interface StatusProps {
     isMandatory: string;
 }
 
+// Add this function to check mandatory completion
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function hasAllMandatoryCompleted(validations: any[] = []) {
+    return !validations.some(
+        v => v.isMandatory === "1" && v.completed === "0"
+    );
+}
+
 const LoanDaashboard: React.FC = () => {
 
     const navigate = useNavigate();
@@ -131,12 +139,15 @@ const LoanDaashboard: React.FC = () => {
             collapsible: getOnlyStatusByName(rule.section, applicationValidates) !== 'A' ? 'disabled' : undefined,
         }));
 
+
     useEffect(() => {
-        if (customers.length === 0) {
-            fetchCustomerByAppId(appId ?? '')
-        }
+        // if (customers.length === 0) {
+        //     fetchCustomerByAppId(appId ?? '')
+        // }
         if (stakeholders.length === 0) {
             fetchStackholderByAppId(appId ?? '')
+        } else {
+            fetchCustomerByAppId(appId ?? '')
         }
         return () => {
             resetStakeholder()
@@ -151,6 +162,7 @@ const LoanDaashboard: React.FC = () => {
     }, [appId])
 
 
+    const isAllMandatoryCompleted = hasAllMandatoryCompleted(applicationValidates);
 
     if (applicationValidationLoading) {
         return (
@@ -195,7 +207,7 @@ const LoanDaashboard: React.FC = () => {
 
                 <div className="mt-5">
                     <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
-                    <Button type="primary" className="ml-3" icon={<SendOutlined />}>Submit to Approval</Button>
+                    <Button type="primary" className="ml-3" icon={<SendOutlined />} disabled={!isAllMandatoryCompleted}>Submit to Approval</Button>
                 </div>
             </Card>
         </>
