@@ -167,18 +167,31 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
   useEffect(() => {
     if (trialCalculationData && setValue) {
       // Set equipment type if it's empty or if trialCalculationData has changed
-      if (trialCalculationData.insuranceVE && (!currentEquipmentType || currentEquipmentType === "")) {
+      if (
+        trialCalculationData.insuranceVE &&
+        (!currentEquipmentType || currentEquipmentType === "")
+      ) {
         const equipmentTypeLabel =
           trialCalculationData.insuranceVE === "V" ? "Vehicle" : "Equipment";
         setValue("equipmentType", equipmentTypeLabel);
       }
 
       // Set equipment cost if it's empty or if trialCalculationData has changed
-      if (trialCalculationData.cost && (!currentEquipmentCost || currentEquipmentCost === "" || String(currentEquipmentCost) === "0")) {
+      if (
+        trialCalculationData.cost &&
+        (!currentEquipmentCost ||
+          currentEquipmentCost === "" ||
+          String(currentEquipmentCost) === "0")
+      ) {
         setValue("equipmentCost", trialCalculationData.cost.toString());
       }
     }
-  }, [trialCalculationData, setValue, currentEquipmentType, currentEquipmentCost]);
+  }, [
+    trialCalculationData,
+    setValue,
+    currentEquipmentType,
+    currentEquipmentCost,
+  ]);
 
   // Check if we have default values to determine if fields should be disabled
   const hasDefaultEquipmentType = trialCalculationData?.insuranceVE;
@@ -198,7 +211,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
     name: "condition",
   });
 
-  const isSecondHand = condition === "used";
+  const isNotNew = Boolean(condition && condition !== "NEW");
 
   const getOptions = (
     arr: any[],
@@ -254,7 +267,16 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
                   }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
                   onKeyDown={(e) => {
-                    if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                    if (
+                      !/[0-9]/.test(e.key) &&
+                      ![
+                        "Backspace",
+                        "Delete",
+                        "ArrowLeft",
+                        "ArrowRight",
+                        "Tab",
+                      ].includes(e.key)
+                    ) {
                       e.preventDefault();
                     }
                   }}
@@ -415,11 +437,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
                   showSearch
                   placeholder="Select Make"
                   loading={vehicleMakesLoading}
-                  options={getOptions(
-                    vehicleMakes,
-                    "description",
-                    "description"
-                  )}
+                  options={getOptions(vehicleMakes, "description", "code")}
                 />
               )}
             />
@@ -440,11 +458,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
                   showSearch
                   placeholder="Select Model"
                   loading={vehicleModelsLoading}
-                  options={getOptions(
-                    vehicleModels,
-                    "description",
-                    "description"
-                  )}
+                  options={getOptions(vehicleModels, "description", "code")}
                 />
               )}
             />
@@ -480,47 +494,42 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
             />
           </Form.Item>
 
-          <Form.Item label="Engine No" required={isSecondHand}>
+          <Form.Item
+            label="Engine No"
+            required={isNotNew}
+            validateStatus={errors.engineNo ? "error" : ""}
+            help={errors.engineNo?.message}
+          >
             <Controller
               name="engineNo"
               control={control}
               render={({ field }) => (
-                <InputNumber
-                  {...field}
-                  style={{ width: "100%" }}
-                  placeholder="Enter Engine No"
-                  controls={false}
-                  onKeyDown={(e) => {
-                    if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
-                      e.preventDefault();
-                    }
-                  }}
-                />
+                <Input {...field} placeholder="Enter Engine No" />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Chassis No" required={isSecondHand}>
+          <Form.Item
+            label="Chassis No"
+            required={isNotNew}
+            validateStatus={errors.chassisNo ? "error" : ""}
+            help={errors.chassisNo?.message}
+          >
             <Controller
               name="chassisNo"
               control={control}
               render={({ field }) => (
-                <InputNumber
-                  {...field}
-                  style={{ width: "100%" }}
-                  placeholder="Enter Chassis No"
-                  controls={false}
-                  onKeyDown={(e) => {
-                    if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
-                      e.preventDefault();
-                    }
-                  }}
-                />
+                <Input {...field} placeholder="Enter Chassis No" />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Vehicle No" required={isSecondHand}>
+          <Form.Item
+            label="Vehicle No"
+            required={isNotNew}
+            validateStatus={errors.vehicleNo ? "error" : ""}
+            help={errors.vehicleNo?.message}
+          >
             <Controller
               name="vehicleNo"
               control={control}
@@ -530,7 +539,12 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
             />
           </Form.Item>
 
-          <Form.Item label="Registration Date" required={isSecondHand}>
+          <Form.Item
+            label="Registration Date"
+            required={isNotNew}
+            validateStatus={errors.registrationDate ? "error" : ""}
+            help={errors.registrationDate?.message}
+          >
             <Controller
               name="registrationDate"
               control={control}
@@ -566,7 +580,16 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
                   placeholder="Enter Registration Book No"
                   controls={false}
                   onKeyDown={(e) => {
-                    if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                    if (
+                      !/[0-9]/.test(e.key) &&
+                      ![
+                        "Backspace",
+                        "Delete",
+                        "ArrowLeft",
+                        "ArrowRight",
+                        "Tab",
+                      ].includes(e.key)
+                    ) {
                       e.preventDefault();
                     }
                   }}
@@ -608,7 +631,16 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
                   }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
                   onKeyDown={(e) => {
-                    if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                    if (
+                      !/[0-9]/.test(e.key) &&
+                      ![
+                        "Backspace",
+                        "Delete",
+                        "ArrowLeft",
+                        "ArrowRight",
+                        "Tab",
+                      ].includes(e.key)
+                    ) {
                       e.preventDefault();
                     }
                   }}
@@ -631,7 +663,16 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
                   }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
                   onKeyDown={(e) => {
-                    if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                    if (
+                      !/[0-9]/.test(e.key) &&
+                      ![
+                        "Backspace",
+                        "Delete",
+                        "ArrowLeft",
+                        "ArrowRight",
+                        "Tab",
+                      ].includes(e.key)
+                    ) {
                       e.preventDefault();
                     }
                   }}
@@ -681,7 +722,16 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
                   placeholder="Enter Reference No"
                   controls={false}
                   onKeyDown={(e) => {
-                    if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                    if (
+                      !/[0-9]/.test(e.key) &&
+                      ![
+                        "Backspace",
+                        "Delete",
+                        "ArrowLeft",
+                        "ArrowRight",
+                        "Tab",
+                      ].includes(e.key)
+                    ) {
                       e.preventDefault();
                     }
                   }}
