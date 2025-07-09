@@ -1,4 +1,4 @@
-import { Button, Card, Collapse, CollapseProps, Empty } from 'antd'
+import { Button, Card, Collapse, CollapseProps, Empty, Spin } from 'antd'
 import React, { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { getLoanStatusByName, getOnlyStatusByName } from '../../../../utils/MSASActionFunctions';
@@ -166,9 +166,11 @@ const LoanDaashboard: React.FC = () => {
 
     if (applicationValidationLoading) {
         return (
-            <Card title={`Loan Application - ${appId}`}>
-                <Empty description={'Loading...'} />
-            </Card>
+            <Spin>
+                <Card title={`Loan Application - ${appId}`}>
+                    <Empty description={'Loading...'} />
+                </Card>
+            </Spin>
         )
     }
 
