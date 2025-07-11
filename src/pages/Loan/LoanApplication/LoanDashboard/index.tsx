@@ -41,9 +41,23 @@ const LoanDaashboard: React.FC = () => {
 
     const navigate = useNavigate();
     const { appId } = useParams();
-    const { applicationValidationLoading, applicationValidates, fetchApplicationValidationsByAppId } = useLoanStore();
+    const { loading, applicationValidationLoading, applicationValidates, fetchApplicationValidationsByAppId, completeLoanApplication } = useLoanStore();
     const { stakeholders, fetchStackholderByAppId, fetchContactDetailsByStkId, fetchAddressDetailsByStkId, resetStakeholder } = useStakeholderStore();
     const { customers, fetchCustomerByAppId } = useCustomerStore();
+
+    const onCompleteApplication = () => {
+        completeLoanApplication({
+            appraisalIdx: appId ?? '',
+            role: 'CRO',
+            status: 'C'
+        })
+            .then(() => {
+                navigate(-1)
+            })
+            .catch((error) => {
+                console.error('Error completing application:', error);
+            });
+    }
 
     const onChange = (key: string | string[]) => {
         const triggerKey = key[0]
@@ -209,7 +223,7 @@ const LoanDaashboard: React.FC = () => {
 
                 <div className="mt-5">
                     <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
-                    <Button type="primary" className="ml-3" icon={<SendOutlined />} disabled={!isAllMandatoryCompleted}>Submit to Approval</Button>
+                    <Button type="primary" className="ml-3" icon={<SendOutlined />} disabled={!isAllMandatoryCompleted} onClick={onCompleteApplication} loading={loading}>Submit to Approval</Button>
                 </div>
             </Card>
         </>

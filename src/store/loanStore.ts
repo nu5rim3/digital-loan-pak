@@ -210,6 +210,12 @@ export interface IApplicationValidations {
   status: "A" | "I";
 }
 
+export interface ICROCompletePayload {
+  appraisalIdx: string;
+  role: "CRO";
+  status: "C";
+}
+
 interface ILoanState {
   loans: ILoan[];
   loanStatus: ILoanStatus[];
@@ -309,6 +315,8 @@ interface ILoanState {
   ) => Promise<void>;
 
   fetchApplicationValidationsByAppId: (appId: string) => Promise<void>;
+
+  completeLoanApplication: (payload: ICROCompletePayload) => Promise<void>;
 }
 
 const useLoanStore = create<ILoanState>((set) => ({
@@ -852,6 +860,24 @@ const useLoanStore = create<ILoanState>((set) => ({
         applicationValidationLoading: false,
         applicationValidationError: error.message,
       });
+    }
+  },
+
+  completeLoanApplication: async (payload: ICROCompletePayload) => {
+    set({ loading: true, error: null });
+    try {
+      await APIAuth.post(
+        `/mobixCamsLoan/v1/appraisals/${payload.appraisalIdx}/roles/${payload.role}/statues/${payload.status}`
+      );
+      set({ loading: false });
+      notification.success({
+        type: "success",
+        message: "Loan application completed successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      set({ error: error.message, loading: false });
     }
   },
 }));
