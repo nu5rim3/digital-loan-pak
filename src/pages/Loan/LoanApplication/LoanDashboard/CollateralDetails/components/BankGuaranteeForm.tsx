@@ -1,5 +1,13 @@
 import React, { useEffect, useRef } from "react";
-import { Form, Input, InputNumber, Select, DatePicker, message, Spin } from "antd";
+import {
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  DatePicker,
+  message,
+  Spin,
+} from "antd";
 import { Controller, Control, useWatch } from "react-hook-form";
 import { FormValues } from "../types";
 import dayjs from "dayjs";
@@ -19,10 +27,12 @@ interface BankGuaranteeFormProps {
   securityType?: IBaseItem;
 }
 
-const prepareBankGuaranteeData = (formData: FormValues, appraisalId: string) => {
+const prepareBankGuaranteeData = (
+  formData: FormValues,
+  appraisalId: string
+) => {
   const isLOFIN = formData.bankGuaranteeType === "Issued by LOLC";
   const isOnDemand = formData.bankGuaranteeType === "On Demand";
-
 
   const payload = {
     appraisalId: appraisalId,
@@ -105,12 +115,11 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
     valueKey: string = "description"
   ) =>
     arr
-      .filter((item) => item.status ? item.status === "A" : true)
+      .filter((item) => (item.status ? item.status === "A" : true))
       .map((item) => ({
         label: item[labelKey],
         value: item[valueKey],
       }));
-
 
   return (
     <div className="space-y-6">
@@ -123,9 +132,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
             <Controller
               name="id"
               control={control}
-              render={({ field }) => (
-                <input type="hidden" {...field} />
-              )}
+              render={({ field }) => <input type="hidden" {...field} />}
             />
 
             <Form.Item
@@ -212,7 +219,16 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                         }
                         parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
                         onKeyDown={(e) => {
-                          if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                          if (
+                            !/[0-9]/.test(e.key) &&
+                            ![
+                              "Backspace",
+                              "Delete",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "Tab",
+                            ].includes(e.key)
+                          ) {
                             e.preventDefault();
                           }
                         }}
@@ -237,7 +253,9 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                         format="YYYY-MM-DD"
                         value={field.value ? dayjs(field.value) : null}
                         onChange={(date) => {
-                          field.onChange(date ? date.format("YYYY-MM-DD") : null);
+                          field.onChange(
+                            date ? date.format("YYYY-MM-DD") : null
+                          );
                         }}
                       />
                     )}
@@ -260,7 +278,12 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                         format="YYYY-MM-DD"
                         value={field.value ? dayjs(field.value) : null}
                         onChange={(date) => {
-                          field.onChange(date ? date.format("YYYY-MM-DD") : null);
+                          field.onChange(
+                            date ? date.format("YYYY-MM-DD") : null
+                          );
+                        }}
+                        disabledDate={(current) => {
+                          return current && current < dayjs().startOf("day");
                         }}
                       />
                     )}
@@ -293,6 +316,17 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                   <Controller
                     name="guaranteeValue"
                     control={control}
+                    rules={{
+                      validate: (value) => {
+                        if (isLOFIN) {
+                          const fdValue = Number(useWatch({ control, name: 'fdValue' }));
+                          if (value && fdValue && Number(value) > fdValue) {
+                            return 'Guarantee Value cannot exceed FD Value';
+                          }
+                        }
+                        return true;
+                      },
+                    }}
                     render={({ field }) => (
                       <InputNumber
                         {...field}
@@ -303,7 +337,16 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                         }
                         parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
                         onKeyDown={(e) => {
-                          if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                          if (
+                            !/[0-9]/.test(e.key) &&
+                            ![
+                              "Backspace",
+                              "Delete",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "Tab",
+                            ].includes(e.key)
+                          ) {
                             e.preventDefault();
                           }
                         }}
@@ -364,7 +407,13 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                         format="YYYY-MM-DD"
                         value={field.value ? dayjs(field.value) : null}
                         onChange={(date) => {
-                          field.onChange(date ? date.format("YYYY-MM-DD") : null);
+                          field.onChange(
+                            date ? date.format("YYYY-MM-DD") : null
+                          );
+                        }}
+                        disabledDate={(current) => {
+                          // Disable dates before today
+                          return current && current < dayjs().startOf("day");
                         }}
                       />
                     )}
@@ -407,7 +456,16 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                         }
                         parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
                         onKeyDown={(e) => {
-                          if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                          if (
+                            !/[0-9]/.test(e.key) &&
+                            ![
+                              "Backspace",
+                              "Delete",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "Tab",
+                            ].includes(e.key)
+                          ) {
                             e.preventDefault();
                           }
                         }}
@@ -462,8 +520,11 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
   );
 };
 
-
-export const submitBankGuarantee = async (formData: FormValues, appraisalId: string = "", isEdit: boolean = false) => {
+export const submitBankGuarantee = async (
+  formData: FormValues,
+  appraisalId: string = "",
+  isEdit: boolean = false
+) => {
   if (!appraisalId) {
     console.error("No appraisalId provided");
     message.error("Cannot submit Bank Guarantee without appraisal ID");
@@ -488,8 +549,14 @@ export const submitBankGuarantee = async (formData: FormValues, appraisalId: str
     return result;
   } catch (error) {
     console.error("Error submitting bank guarantee:", error);
-    const errorMsg = isEdit ? "Failed to update Bank Guarantee" : "Failed to add Bank Guarantee";
-    message.error(errorMsg + ": " + (error instanceof Error ? error.message : "Unknown error"));
+    const errorMsg = isEdit
+      ? "Failed to update Bank Guarantee"
+      : "Failed to add Bank Guarantee";
+    message.error(
+      errorMsg +
+        ": " +
+        (error instanceof Error ? error.message : "Unknown error")
+    );
     return null;
   }
 };

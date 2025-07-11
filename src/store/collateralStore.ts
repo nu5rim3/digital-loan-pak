@@ -436,7 +436,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   updateLeaseError: null,
   fetchLeaseError: null,
 
-  // Fetch functions
   fetchTypes: async (securityType) => {
     set({ typesLoading: true });
     try {
@@ -625,7 +624,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     }
   },
 
-  // Bank Guarantee API functions
   saveBankGuarantee: async (data: BankGuaranteePayload) => {
     set({ savingBankGuarantee: true, saveBankGuaranteeError: null });
     try {
@@ -635,7 +633,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       );
       set({ savingBankGuarantee: false });
 
-      // After saving a new bank guarantee, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
@@ -659,7 +656,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       );
       set({ updatingBankGuarantee: false });
 
-      // After updating a bank guarantee, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
@@ -681,8 +677,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
         `/mobixCamsCollateral/v1/bank-guarantees/${id}`
       );
       set({ fetchingBankGuarantee: false });
-      console.log("Bank guarantee API response:", response.data);
-      // Return the data property if it exists, otherwise return the whole response data
       return response.data.data || response.data;
     } catch (error) {
       console.error("Error fetching bank guarantee:", error);
@@ -693,7 +687,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     }
   },
 
-  // New function to set a bank guarantee as inactive
   deactivateBankGuarantee: async (id: string, appraisalId?: string) => {
     set({ updatingBankGuarantee: true, updateBankGuaranteeError: null });
     try {
@@ -702,7 +695,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       );
       set({ updatingBankGuarantee: false });
 
-      // After deactivating a bank guarantee, refresh the collaterals list if there's an appraisalId
       if (appraisalId) {
         get().fetchCollaterals(appraisalId);
       }
@@ -717,7 +709,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     }
   },
 
-  // Land Stock API functions
   saveLandStock: async (data: LandStockPayload) => {
     set({ savingLandStock: true, saveLandStockError: null });
     try {
@@ -727,7 +718,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       );
       set({ savingLandStock: false });
 
-      // After saving a new land stock, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
@@ -751,7 +741,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       );
       set({ updatingLandStock: false });
 
-      // After updating a land stock, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
@@ -773,8 +762,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
         `/mobixCamsCollateral/v1/land-stocks/${id}`
       );
       set({ fetchingLandStock: false });
-      console.log("Land stock API response:", response.data);
-      // Return the data property if it exists, otherwise return the whole response data
       return response.data.data || response.data;
     } catch (error) {
       console.error("Error fetching land stock:", error);
@@ -785,7 +772,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     }
   },
 
-  // New function to set a land stock as inactive
   deactivateLandStock: async (id: string, appraisalId?: string) => {
     set({ updatingLandStock: true, updateLandStockError: null });
     try {
@@ -794,7 +780,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       );
       set({ updatingLandStock: false });
 
-      // After deactivating a land stock, refresh the collaterals list if there's an appraisalId
       if (appraisalId) {
         get().fetchCollaterals(appraisalId);
       }
@@ -809,7 +794,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     }
   },
 
-  // Machinery Equipment API functions
   saveMachinery: async (data: MachineryPayload) => {
     set({ savingMachinery: true, saveMachineryError: null });
     try {
@@ -819,7 +803,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       );
       set({ savingMachinery: false });
 
-      // After saving a new machinery, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
@@ -843,7 +826,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       );
       set({ updatingMachinery: false });
 
-      // After updating machinery, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
@@ -865,8 +847,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
         `/mobixCamsCollateral/v1/machinery-equipments/${id}`
       );
       set({ fetchingMachinery: false });
-      console.log("Machinery equipment API response:", response.data);
-      // Return the data property if it exists, otherwise return the whole response data
       return response.data.data || response.data;
     } catch (error) {
       console.error("Error fetching machinery equipment:", error);
@@ -877,7 +857,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     }
   },
 
-  // Function to set machinery as inactive
   deactivateMachinery: async (id: string, appraisalId?: string) => {
     set({ updatingMachinery: true, updateMachineryError: null });
     try {
@@ -886,7 +865,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       );
       set({ updatingMachinery: false });
 
-      // After deactivating machinery, refresh the collaterals list if there's an appraisalId
       if (appraisalId) {
         get().fetchCollaterals(appraisalId);
       }
@@ -901,7 +879,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     }
   },
 
-  // Property Mortgage API functions
   savePropertyMortgage: async (data: PropertyMortgagePayload) => {
     set({ savingPropertyMortgage: true, savePropertyMortgageError: null });
     try {
@@ -911,7 +888,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       );
       set({ savingPropertyMortgage: false });
 
-      // After saving a new property mortgage, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
@@ -935,7 +911,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       );
       set({ updatingPropertyMortgage: false });
 
-      // After updating property mortgage, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
@@ -957,8 +932,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     try {
       const response = await API.get(`/mobixCamsCollateral/v1/mortgages/${id}`);
       set({ fetchingPropertyMortgage: false });
-      console.log("Property mortgage API response:", response.data);
-      // Return the data property if it exists, otherwise return the whole response data
       return response.data.data || response.data;
     } catch (error) {
       console.error("Error fetching property mortgage:", error);
@@ -969,7 +942,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     }
   },
 
-  // Function to set property mortgage as inactive
   deactivatePropertyMortgage: async (id: string, appraisalId?: string) => {
     set({ updatingPropertyMortgage: true, updatePropertyMortgageError: null });
     try {
@@ -978,7 +950,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       );
       set({ updatingPropertyMortgage: false });
 
-      // After deactivating property mortgage, refresh the collaterals list if there's an appraisalId
       if (appraisalId) {
         get().fetchCollaterals(appraisalId);
       }
@@ -995,14 +966,12 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     }
   },
 
-  // Savings API functions
   saveSavings: async (data: SavingsPayload) => {
     set({ savingSavings: true, saveSavingsError: null });
     try {
       const response = await APIAuth.post("/mobixCamsCollateral/v1/savings", data);
       set({ savingSavings: false });
 
-      // After saving a new savings, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
@@ -1026,7 +995,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       );
       set({ updatingSavings: false });
 
-      // After updating savings, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
@@ -1046,8 +1014,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     try {
       const response = await API.get(`/mobixCamsCollateral/v1/savings/${id}`);
       set({ fetchingSavings: false });
-      console.log("Savings API response:", response.data);
-      // Return the data property if it exists, otherwise return the whole response data
       return response.data.data || response.data;
     } catch (error) {
       console.error("Error fetching savings:", error);
@@ -1058,7 +1024,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     }
   },
 
-  // Function to set savings as inactive
   deactivateSavings: async (id: string, appraisalId?: string) => {
     set({ updatingSavings: true, updateSavingsError: null });
     try {
@@ -1067,7 +1032,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       );
       set({ updatingSavings: false });
 
-      // After deactivating savings, refresh the collaterals list if there's an appraisalId
       if (appraisalId) {
         get().fetchCollaterals(appraisalId);
       }
@@ -1082,14 +1046,12 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     }
   },
 
-  // Vehicle API functions
   saveVehicle: async (data: VehiclePayload) => {
     set({ savingVehicle: true, saveVehicleError: null });
     try {
       const response = await APIAuth.post("/mobixCamsCollateral/v1/vehicles", data);
       set({ savingVehicle: false });
 
-      // After saving a new vehicle, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
@@ -1113,7 +1075,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       );
       set({ updatingVehicle: false });
 
-      // After updating vehicle, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
@@ -1133,8 +1094,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     try {
       const response = await API.get(`/mobixCamsCollateral/v1/vehicles/${id}`);
       set({ fetchingVehicle: false });
-      console.log("Vehicle API response:", response.data);
-      // Return the data property if it exists, otherwise return the whole response data
       return response.data.data || response.data;
     } catch (error) {
       console.error("Error fetching vehicle:", error);
@@ -1145,7 +1104,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     }
   },
 
-  // Function to set vehicle as inactive
   deactivateVehicle: async (id: string, appraisalId?: string) => {
     set({ updatingVehicle: true, updateVehicleError: null });
     try {
@@ -1154,7 +1112,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       );
       set({ updatingVehicle: false });
 
-      // After deactivating vehicle, refresh the collaterals list if there's an appraisalId
       if (appraisalId) {
         get().fetchCollaterals(appraisalId);
       }
@@ -1169,7 +1126,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     }
   },
 
-  // Lease API functions
   fetchDepreciationRates: async () => {
     set({ fetchingDepreciationRates: true, fetchDepreciationRatesError: null });
     try {
@@ -1191,7 +1147,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       const response = await APIAuth.post("/mobixCamsCollateral/v1/leases", data);
       set({ savingLease: false });
 
-      // After saving a new lease, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
@@ -1215,7 +1170,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       );
       set({ updatingLease: false });
 
-      // After updating a lease, refresh the collaterals list if there's an appraisalId
       if (data.appraisalId) {
         get().fetchCollaterals(data.appraisalId);
       }
@@ -1235,8 +1189,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     try {
       const response = await API.get(`/mobixCamsCollateral/v1/leases/${id}`);
       set({ fetchingLease: false });
-      console.log("Lease API response:", response.data);
-      // Return the data property if it exists, otherwise return the whole response data
       return response.data.data || response.data;
     } catch (error) {
       console.error("Error fetching lease:", error);
@@ -1247,7 +1199,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     }
   },
 
-  // Function to set lease as inactive
   deactivateLease: async (id: string, appraisalId?: string) => {
     set({ updatingLease: true, updateLeaseError: null });
     try {
@@ -1256,7 +1207,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       );
       set({ updatingLease: false });
 
-      // After deactivating a lease, refresh the collaterals list if there's an appraisalId
       if (appraisalId) {
         get().fetchCollaterals(appraisalId);
       }
@@ -1271,7 +1221,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     }
   },
 
-  // Collateral API functions
   fetchCollaterals: async (appraisalId: string) => {
     if (!appraisalId) {
       console.warn("No appraisalId provided to fetchCollaterals");
@@ -1284,11 +1233,8 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
         `/mobixCamsCollateral/v1/collaterals/appraisals/${appraisalId}`
       );
 
-      // Extract collaterals from the nested response structure
       const collateralsData = response.data?.data || {};
-      console.log("Fetched collaterals data:", collateralsData);
 
-      // Combine all collateral types into a single array and add type information
       const processedCollaterals: Collateral[] = [
         ...(collateralsData.bankGuarantees || []).map((item: any) => ({
           ...item,
@@ -1405,7 +1351,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
         })),
       ];
 
-      console.log("Processed collaterals:", processedCollaterals);
       set({ collaterals: processedCollaterals, fetchingCollaterals: false });
       return processedCollaterals;
     } catch (error) {
@@ -1429,7 +1374,6 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     try {
       let endpoint = "";
 
-      // Determine the endpoint based on the collateral type
       switch (type) {
         case "BANK_GUARANTEE":
           endpoint = `/mobixCamsCollateral/v1/bank-guarantees/${id}`;
@@ -1456,14 +1400,9 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
           throw new Error(`Unsupported collateral type: ${type}`);
       }
 
-      console.log(
-        `Deleting collateral with id: ${id}, type: ${type}, endpoint: ${endpoint}`
-      );
       await API.delete(endpoint);
 
-      // After deleting, refresh the collaterals list if appraisalId is provided
       if (appraisalId) {
-        // Wait a short time before refreshing to ensure server has processed the delete
         setTimeout(async () => {
           await get().fetchCollaterals(appraisalId);
         }, 500);

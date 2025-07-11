@@ -30,12 +30,61 @@ interface CollateralFormModalProps {
   isLoading?: boolean;
 }
 
-// Utility function to get security type codes dynamically
 const getSecurityTypeCode = (
   securityTypes: any[],
   description: string
 ): string | undefined => {
   return securityTypes.find((st) => st.description === description)?.code;
+};
+
+const checkExistingActiveRecord = (
+  collaterals: any[],
+  securityTypeCode: string,
+  currentId?: string
+): boolean => {
+  return collaterals.some((collateral) => {
+    if (currentId && collateral.id === currentId) {
+      return false;
+    }
+
+    let collateralSecurityType = "";
+    switch (collateral.type) {
+      case "bank-guarantee":
+        collateralSecurityType = "BANK GUARANTEE";
+        break;
+      case "vehicle":
+        collateralSecurityType = "VEHICLE";
+        break;
+      case "machinery":
+        collateralSecurityType = "MACHINERY AND EQUIPMENT";
+        break;
+      case "property-mortgage":
+        collateralSecurityType = "PROPERTY MORTGAGE";
+        break;
+      case "land-stock":
+        collateralSecurityType = "LAND STOCKS";
+        break;
+      case "savings":
+        collateralSecurityType = "FIXED DEPOSITS AND SAVINGS";
+        break;
+      case "lease":
+        collateralSecurityType = "LEASE";
+        break;
+      default:
+        return false;
+    }
+
+    const isActive =
+      collateral.status === "A" ||
+      collateral.isActive === true ||
+      collateral.active === true ||
+      collateral.status === "ACTIVE" ||
+      collateral.status === undefined;
+
+    const matchesType = collateralSecurityType === securityTypeCode;
+
+    return matchesType && isActive;
+  });
 };
 
 const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
@@ -68,6 +117,8 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
     securityTypes,
     securityTypesLoading,
     fetchSecurityTypes,
+    collaterals,
+    fetchCollaterals,
   } = useCollateralStore();
 
   const [submitting, setSubmitting] = useState(false);
@@ -143,6 +194,14 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
   }, [open, productCategory, fetchSecurityTypes]);
 
   useEffect(() => {
+    if (open && appraisalId && productCategory === "Loan") {
+      if (!collaterals || collaterals.length === 0) {
+        fetchCollaterals(appraisalId);
+      }
+    }
+  }, [open, appraisalId, productCategory, collaterals, fetchCollaterals]);
+
+  useEffect(() => {
     if (open) {
       if (initialData) {
         if (productCategory === "Loan" && securityTypesLoading) {
@@ -151,7 +210,6 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
         }
 
         if (productCategory === "Lease" && initialData) {
-          // Map FormValues to LeaseProductFormValues format
           const leaseFormData: LeaseProductFormValues = {
             id: initialData.id,
             equipmentType: initialData.leaseEquipType || "",
@@ -224,7 +282,7 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
     (st) => st.code === securityType || st.description === securityType
   );
 
-  useEffect(() => { }, [securityType]);
+  useEffect(() => {}, [securityType]);
 
   useEffect(() => {
     if (securityCategory === "OTHER_SECURITY" && formInitialized) {
@@ -235,12 +293,54 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
     }
   }, [securityCategory, reset, formInitialized]);
 
+  const validateSecurityTypeSelection = (selectedType: string) => {
+    if (!selectedType || isEdit) {
+      return { isValid: true, message: "" };
+    }
+
+    if (!collaterals || collaterals.length === 0) {
+      return { isValid: true, message: "" };
+    }
+
+    const selectedSecurityType = securityTypes.find(
+      (st) => st.code === selectedType || st.description === selectedType
+    );
+
+    if (!selectedSecurityType) {
+      console.warn("Selected security type not found:", selectedType);
+      return { isValid: true, message: "" };
+    }
+
+    const securityTypeDescription = selectedSecurityType.description;
+
+    const hasExistingActive = checkExistingActiveRecord(
+      collaterals,
+      securityTypeDescription,
+      initialData?.id
+    );
+
+    if (hasExistingActive) {
+      return {
+        isValid: false,
+        message: `An active ${securityTypeDescription} record already exists. Only one active record per category is allowed.`,
+      };
+    }
+
+    return { isValid: true, message: "" };
+  };
+
   const onSubmit = async (data: FormValues) => {
     try {
       const validAppraisalId = appraisalId || "";
 
       if (!validAppraisalId) {
         message.error("Cannot save: No appraisal ID available");
+        return;
+      }
+
+      const validation = validateSecurityTypeSelection(data.securityType);
+      if (!validation.isValid) {
+        message.error(validation.message);
         return;
       }
 
@@ -251,11 +351,9 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
           st.code === data.securityType || st.description === data.securityType
       );
 
-      // Dynamic form submission based on security type
       if (selectedSecurityType) {
         let response = null;
 
-        // Use a more flexible approach that doesn't rely on hardcoded strings
         switch (selectedSecurityType.code) {
           case getSecurityTypeCode(securityTypes, "VEHICLE"):
             response = await submitVehicle(data, validAppraisalId, isEdit);
@@ -316,7 +414,6 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
 
       setSubmitting(true);
 
-      // Ensure the id is included when editing
       const leaseData = {
         ...data,
         id: isEdit && initialData?.id ? initialData.id : data.id,
@@ -343,6 +440,27 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
       handleLeaseSubmit(onLeaseSubmit)();
     } else {
     }
+  };
+
+  const handleSecurityTypeChange = (value: string) => {
+    if (!value) {
+      setValue("securityType", "");
+      return;
+    }
+
+    if (isEdit) {
+      setValue("securityType", value);
+      return;
+    }
+
+    const validation = validateSecurityTypeSelection(value);
+    if (!validation.isValid) {
+      message.error(validation.message);
+      setValue("securityType", "");
+      return;
+    }
+
+    setValue("securityType", value);
   };
 
   return (
@@ -378,8 +496,8 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
           isLoading
             ? "Loading details..."
             : securityTypesLoading
-              ? "Loading security types..."
-              : "Saving data..."
+            ? "Loading security types..."
+            : "Saving data..."
         }
       >
         <Form layout="vertical" className="space-y-6">
@@ -403,7 +521,7 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
                           {...field}
                           showSearch
                           placeholder="Select Category"
-                          disabled={false}
+                          disabled={isSaving || securityTypesLoading || isEdit}
                         >
                           <Select.Option value="MAIN_SECURITY">
                             Main Security
@@ -433,8 +551,9 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
                             {...field}
                             showSearch
                             placeholder="Select Security Type"
-                            disabled={isSaving || securityTypesLoading}
+                            disabled={isSaving || securityTypesLoading || isEdit}
                             loading={securityTypesLoading}
+                            onChange={handleSecurityTypeChange}
                           >
                             {securityTypes.map((securityType) => (
                               <Select.Option
@@ -476,31 +595,31 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
 
                     {selectedSecurityType.description ===
                       "MACHINERY AND EQUIPMENT" && (
-                        <MachineryForm
-                          control={control}
-                          errors={errors}
-                          securityType={selectedSecurityType}
-                        />
-                      )}
+                      <MachineryForm
+                        control={control}
+                        errors={errors}
+                        securityType={selectedSecurityType}
+                      />
+                    )}
 
                     {selectedSecurityType.description ===
                       "PROPERTY MORTGAGE" && (
-                        <PropertyMortgageForm
-                          control={control}
-                          errors={errors}
-                          securityType={selectedSecurityType}
-                          setValue={setValue}
-                        />
-                      )}
+                      <PropertyMortgageForm
+                        control={control}
+                        errors={errors}
+                        securityType={selectedSecurityType}
+                        setValue={setValue}
+                      />
+                    )}
 
                     {selectedSecurityType.description ===
                       "FIXED DEPOSITS AND SAVINGS" && (
-                        <SavingsForm
-                          control={control}
-                          errors={errors}
-                          securityType={selectedSecurityType}
-                        />
-                      )}
+                      <SavingsForm
+                        control={control}
+                        errors={errors}
+                        securityType={selectedSecurityType}
+                      />
+                    )}
 
                     {selectedSecurityType.description === "LAND STOCKS" && (
                       <LandStockForm

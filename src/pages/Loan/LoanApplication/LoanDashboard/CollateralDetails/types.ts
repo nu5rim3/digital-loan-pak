@@ -221,46 +221,6 @@ export const createValidationSchema = (securityTypes: any[] = []) => {
       is: VEHICLE_CODE,
       then: (schema) => schema.required("Model is required"),
     }),
-    vehicleEngineNo: yup.string().when("securityType", {
-      is: VEHICLE_CODE,
-      then: (schema) => schema.required("Engine No is required"),
-    }),
-    vehicleChassisNo: yup.string().when("securityType", {
-      is: VEHICLE_CODE,
-      then: (schema) => schema.required("Chassis No is required"),
-    }),
-    vehicleDescription: yup.string().when("securityType", {
-      is: VEHICLE_CODE,
-      then: (schema) => schema.required("Description is required"),
-    }),
-    vehicleMV: yup.string().when("securityType", {
-      is: VEHICLE_CODE,
-      then: (schema) => schema.required("MV is required"),
-    }),
-    vehicleFSV: yup.string().when("securityType", {
-      is: VEHICLE_CODE,
-      then: (schema) => schema.required("FSV is required"),
-    }),
-    vehicleYearManufacture: yup.string().when("securityType", {
-      is: VEHICLE_CODE,
-      then: (schema) => schema.required("Year of Manufacture is required"),
-    }),
-    vehicleDateOfFirstReg: yup.date().when("securityType", {
-      is: VEHICLE_CODE,
-      then: (schema) => schema.required("Date of First Registration is required"),
-    }),
-    vehicleRegBookNo: yup.string().when("securityType", {
-      is: VEHICLE_CODE,
-      then: (schema) => schema.required("Registration Book No is required"),
-    }),
-    vehicleBookReceivedDate: yup.date().when("securityType", {
-      is: VEHICLE_CODE,
-      then: (schema) => schema.required("Book Received Date is required"),
-    }),
-    vehicleCRReleasedDate: yup.date().when("securityType", {
-      is: VEHICLE_CODE,
-      then: (schema) => schema.required("CR Released Date is required"),
-    }),
 
     // Machinery fields
     machineryType: yup.string().when("securityType", {
@@ -933,11 +893,29 @@ export const leaseProductValidationSchema = yup.object().shape({
   insuranceCompany: yup.string().required("Insurance Company is required"),
   referenceNo: yup.string().required("Reference No is required"),
 
+  // Conditional fields based on condition
+  engineNo: yup.string().when("condition", {
+    is: (val: string) => val && val !== "NEW",
+    then: (schema) => schema.required("Engine No is required when condition is not NEW"),
+    otherwise: (schema) => schema.optional(),
+  }),
+  chassisNo: yup.string().when("condition", {
+    is: (val: string) => val && val !== "NEW",
+    then: (schema) => schema.required("Chassis No is required when condition is not NEW"),
+    otherwise: (schema) => schema.optional(),
+  }),
+  vehicleNo: yup.string().when("condition", {
+    is: (val: string) => val && val !== "NEW",
+    then: (schema) => schema.required("Vehicle No is required when condition is not NEW"),
+    otherwise: (schema) => schema.optional(),
+  }),
+  registrationDate: yup.date().when("condition", {
+    is: (val: string) => val && val !== "NEW",
+    then: (schema) => schema.required("Registration Date is required when condition is not NEW"),
+    otherwise: (schema) => schema.optional(),
+  }),
+
   // Optional fields
-  engineNo: yup.string().optional(),
-  chassisNo: yup.string().optional(),
-  vehicleNo: yup.string().optional(),
-  registrationDate: yup.date().optional(),
   duplicateKey: yup.string().optional(),
   registrationBookNo: yup.string().optional(),
   registrationYear: yup.string().optional(),

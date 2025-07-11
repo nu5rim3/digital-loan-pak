@@ -47,7 +47,9 @@ export const submitSavings = async (
       savingsNo: savingsNo,
       fdNo: savingsFDNo,
       amount: savingsAmount ? parseFloat(savingsAmount) : undefined,
-      maturityDate: savingsMaturityDate ? dayjs(savingsMaturityDate).format('YYYY-MM-DDTHH:mm:ss') : undefined,
+      maturityDate: savingsMaturityDate
+        ? dayjs(savingsMaturityDate).format("YYYY-MM-DDTHH:mm:ss")
+        : undefined,
       company: savingsCompany,
       description: savingsDescription,
       savingsBuildValue: savingsBuildUpValue,
@@ -55,7 +57,7 @@ export const submitSavings = async (
       insuCompany: "",
       refNo: "",
       savingsSecCategory: "Main Security",
-      savingsSecType: "Fixed Deposits and Savings"
+      savingsSecType: "Fixed Deposits and Savings",
     };
 
     if (isEdit && id) {
@@ -67,13 +69,17 @@ export const submitSavings = async (
     }
     return true;
   } catch (error) {
-    console.error(`Error ${isEdit ? 'updating' : 'saving'} savings:`, error);
-    message.error(`Failed to ${isEdit ? 'update' : 'save'} savings`);
+    console.error(`Error ${isEdit ? "updating" : "saving"} savings:`, error);
+    message.error(`Failed to ${isEdit ? "update" : "save"} savings`);
     return false;
   }
 };
 
-const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors, securityType }) => {
+const SavingsForm: React.FC<SavingsFormProps> = ({
+  control,
+  errors,
+  securityType,
+}) => {
   const {
     types: savingsTypes,
     typesLoading: savingsTypesLoading,
@@ -86,7 +92,7 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors, securityType
     fetchTypes,
     fetchSubTypes,
     fetchOwnerships,
-    fetchCompanies
+    fetchCompanies,
   } = useCollateralStore();
 
   const dataFetched = useRef(false);
@@ -112,7 +118,7 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors, securityType
     valueKey: string = "code"
   ) =>
     arr
-      .filter((item) => item.status ? item.status === "A" : true)
+      .filter((item) => (item.status ? item.status === "A" : true))
       .map((item) => ({
         label: item[labelKey],
         value: item[valueKey],
@@ -122,7 +128,9 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors, securityType
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-4">
-          {isEditMode ? `Edit Fixed deposits and savings` : "New Fixed deposits and savings"}
+          {isEditMode
+            ? `Edit Fixed Deposits and Savings Details`
+            : "New Fixed Deposits and Savings Details"}
         </h3>
         <div className="grid grid-cols-3 gap-4">
           <Form.Item
@@ -142,7 +150,11 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors, securityType
                   showSearch
                   placeholder="Select Type"
                   loading={savingsTypesLoading}
-                  options={getOptions(savingsTypes, "description", "description")}
+                  options={getOptions(
+                    savingsTypes,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
@@ -164,7 +176,11 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors, securityType
                   showSearch
                   placeholder="Select Type"
                   loading={savingsSubTypesLoading}
-                  options={getOptions(savingsSubTypes, "description", "description")}
+                  options={getOptions(
+                    savingsSubTypes,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
@@ -187,7 +203,11 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors, securityType
                   showSearch
                   placeholder="Select Ownership"
                   loading={savingsOwnershipsLoading}
-                  options={getOptions(savingsOwnerships, "description", "description")}
+                  options={getOptions(
+                    savingsOwnerships,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
@@ -229,7 +249,16 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors, securityType
                   }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
                   onKeyDown={(e) => {
-                    if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                    if (
+                      !/[0-9]/.test(e.key) &&
+                      ![
+                        "Backspace",
+                        "Delete",
+                        "ArrowLeft",
+                        "ArrowRight",
+                        "Tab",
+                      ].includes(e.key)
+                    ) {
                       e.preventDefault();
                     }
                   }}
@@ -278,7 +307,11 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors, securityType
                   showSearch
                   placeholder="Select Company"
                   loading={savingsCompaniesLoading}
-                  options={getOptions(savingsCompanies, "description", "description")}
+                  options={getOptions(
+                    savingsCompanies,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
@@ -301,7 +334,7 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors, securityType
           </Form.Item>
 
           <Form.Item
-            label="Build Up Value"
+            label="Saving Build Up Value"
             validateStatus={errors.savingsBuildUpValue ? "error" : ""}
             help={errors.savingsBuildUpValue?.message}
             labelCol={{ span: 24 }}
@@ -312,7 +345,6 @@ const SavingsForm: React.FC<SavingsFormProps> = ({ control, errors, securityType
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Build Up Value" />
-
               )}
             />
           </Form.Item>
