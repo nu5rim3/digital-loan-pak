@@ -272,7 +272,7 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
                   showSearch
                   placeholder="Select Ownership"
                   loading={propertyOwnershipsLoading}
-                  options={getOptions(propertyOwnerships)}
+                  options={getOptions(propertyOwnerships, "description", "description")}
                 />
               )}
             />

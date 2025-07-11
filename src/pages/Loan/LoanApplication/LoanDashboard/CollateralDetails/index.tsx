@@ -259,7 +259,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
     };
 
     loadCollaterals();
-  }, [appraisalId, fetchCollaterals]);
+  }, [appraisalId]); // Only depend on appraisalId
 
   useEffect(() => {
     if (collaterals && collaterals.length > 0) {
@@ -298,7 +298,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
       closeModal();
       setShouldCloseModal(false);
     }
-  }, [formData, shouldCloseModal]);
+  }, [shouldCloseModal]); // Removed formData from dependency array
 
   const openModal = async (mode: "save" | "update", data?: FormValues) => {
     setIsEditing(mode === "update");
