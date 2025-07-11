@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { Modal, Form, Select, Button, message, Spin } from "antd";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -98,6 +98,7 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
   isLoading = false,
 }) => {
   const validAppraisalId = appraisalId;
+  const hasFetchedCollaterals = useRef(false);
 
   const {
     savingBankGuarantee,
@@ -194,12 +195,20 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
   }, [open, productCategory, fetchSecurityTypes]);
 
   useEffect(() => {
-    if (open && appraisalId && productCategory === "Loan") {
+    if (open && appraisalId && productCategory === "Loan" && !hasFetchedCollaterals.current) {
       if (!collaterals || collaterals.length === 0) {
+        hasFetchedCollaterals.current = true;
         fetchCollaterals(appraisalId);
       }
     }
-  }, [open, appraisalId, productCategory, collaterals, fetchCollaterals]);
+  }, [open, appraisalId, productCategory, fetchCollaterals]);
+
+  // Reset the ref when modal closes
+  useEffect(() => {
+    if (!open) {
+      hasFetchedCollaterals.current = false;
+    }
+  }, [open]);
 
   useEffect(() => {
     if (open) {
