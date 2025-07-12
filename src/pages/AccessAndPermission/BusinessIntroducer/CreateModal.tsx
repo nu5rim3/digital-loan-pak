@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Button, Col, Form, Input, Modal, Row, message } from "antd";
+import { Button, Col, Form, Input, Modal, Row } from "antd";
 
 type Props = {
   visible: boolean;

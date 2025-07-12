@@ -39,7 +39,12 @@ export const getCommonAreaValues = (key:any) => {
 
 const { Panel } = Collapse;
 
-const CustomerDetails: FC = () => {
+interface CustomerDetailsProps {
+  tcDetails: any;
+  stakeholders: any[];
+}
+
+const CustomerDetails: FC<CustomerDetailsProps> = ({ tcDetails, stakeholders }) => {
   const { appraisalId } = useParams<{ appraisalId: string }>();
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -59,13 +64,13 @@ const CustomerDetails: FC = () => {
     //   if (active === "3") {
         try {
         //   const tcDetails = await getTcDetails(appraisalId);
-          const tcDetails = await APIAuth.get(`/mobixCamsCredit/v1/credit/tc/${appraisalId}`);
+          // const tcDetails = await APIAuth.get(`/mobixCamsCredit/v1/credit/tc/${appraisalId}`);
           //   const originationCommon = await getOriginationCommon(tcDetails.pTrhdLType);
-          const originationCommon = await APIAuth.get(`/mobixCamsCommon/v1/common-details/product/${tcDetails?.data?.pTrhdLType}`);
+          const originationCommon = await APIAuth.get(`/mobixCamsCommon/v1/common-details/product/${tcDetails.pTrhdLType}`);
           
         //   const masterResponse = await getMasterData(appraisalId);
-          const masterResponse = await APIAuth.get(`/mobixCamsClientele/v1/clienteles/stakeholder/${appraisalId}/appraisal`);
-          const master = masterResponse?.data?.find((item:any) => item.stkType === "C") || {};
+          // const masterResponse = await APIAuth.get(`/mobixCamsClientele/v1/clienteles/stakeholder/${appraisalId}/appraisal`);
+          const master = stakeholders?.find((item:any) => item.stkType === "C") || {};
           
           //   const clienteleRes = await getOriginationClientele(appraisalId, master.idx);
           const clienteleRes = await APIAuth.get(`/mobixCamsClientele/v1/stakeholder-details/${appraisalId}/stakeholderId/${master.idx}`);

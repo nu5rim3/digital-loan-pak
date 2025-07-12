@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Card, Spin, Button, Typography, message } from "antd";
+import { Card, Spin, Typography, message } from "antd";
 import API from "../../../../services/APIServices";
 import Category from "./Category";
 
@@ -39,21 +39,24 @@ const ImageDetails: React.FC = () => {
     fetchData();
   }, [ appraisalId]);
 
-  const handleExportPdf = async () => {
-    try {
-      const response = await API.mobixCamsLoan.exportAsPdf(appraisalId!);
-      const blob = new Blob([response.data], { type: 'application/pdf' });
-      const link = document.createElement('a');
-      link.href = window.URL.createObjectURL(blob);
-      link.download = `${appraisalId}.pdf`;
-      link.click();
-    } catch (error) {
-      message.error("Failed to export PDF");
-    }
-  };
+  // const handleExportPdf = async () => {
+  //   try {
+  //     const response = await API.mobixCamsLoan.exportAsPdf(appraisalId!);
+  //     const blob = new Blob([response.data], { type: 'application/pdf' });
+  //     const link = document.createElement('a');
+  //     link.href = window.URL.createObjectURL(blob);
+  //     link.download = `${appraisalId}.pdf`;
+  //     link.click();
+  //   } catch (error) {
+  //     message.error("Failed to export PDF");
+  //   }
+  // };
 
   return (
-    <Card title={<Title level={4}>Image Details</Title>} extra={<Button type="primary" onClick={handleExportPdf}>Export as PDF</Button>}>
+    <Card title={<Title level={4}>Image Details</Title>} 
+    // extra={<Button type="primary" onClick={handleExportPdf}
+    // >Export as PDF</Button>}
+    >
       <Spin spinning={loading} tip="Loading Images...">
         <Category groups={groups} />
       </Spin>

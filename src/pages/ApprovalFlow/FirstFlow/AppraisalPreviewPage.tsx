@@ -42,6 +42,9 @@ const AppraisalPreviewPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isReturned, setIsReturned] = useState(false);
   const [isGoldProduct, setIsGoldProduct] = useState(false);
+  const [tcDetails,setTcDetails] = useState<any>(null);
+  const [clienteles, setClienteles] = useState<any[]>([]);
+  const [stakeholders, setStakeholders] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchMetaData = async () => {
@@ -51,13 +54,26 @@ const AppraisalPreviewPage: React.FC = () => {
         const onboarding:any = await APIAuth.get(
         `/mobixCamsLoan/v1/appraisals/${appraisalId}/clienteles`,
       );
-        setIsReturned(onboarding?.isReturned === 'Y');
+        const sorted = onboarding?.data?.clienteles?.sort((a: any, b: any) =>
+          a.type.toLowerCase().localeCompare(b.type.toLowerCase())
+        );
+        // console.log('sorted clienteles', sorted);
+        setClienteles(sorted);
+      console.log('onboardingyyyyy', onboarding);
+        setIsReturned(onboarding?.data?.isReturned === 'Y');
 
-        const product:any = await API.get(
+        const tcDetails:any = await API.get(
           `/mobixCamsCredit/v1/credit/tc/${appraisalId}`);
 
+          console.log('tcDetailsxxxxxxxx', tcDetails);
+        setTcDetails(tcDetails?.data || {});
+
+        const stakeholderResponse = await APIAuth.get(`/mobixCamsClientele/v1/clienteles/stakeholder/${appraisalId}/appraisal`);
+setStakeholders(stakeholderResponse?.data || []);
+        console.log('stakeholders', stakeholderResponse?.data);
+
         const goldTypes = ['EG', 'GL', 'GN', 'MG'];
-        if (goldTypes.includes(product?.pTrhdLType)) {
+        if (goldTypes.includes(tcDetails?.data?.pTrhdLType)) {
           setIsGoldProduct(true);
         }
 
@@ -73,24 +89,26 @@ const AppraisalPreviewPage: React.FC = () => {
 
   if (loading) return <Spin fullscreen />;
 
-   console.log('rrrrrrrrrrrr');
 
   return (
     <Card>
       <Title className="mb-5" level={5}>Appraisal ID: {appraisalId} {isReturned ? '[Returned]' : ''}</Title>
 
-      <Collapse defaultActiveKey={["onboarding"]}  className="custom-collapse">
+      <Collapse 
+      defaultActiveKey={["onboarding"]}  
+      // defaultActiveKey={["onboarding","customer","loan","liability","creditscore","images"]}  
+      className="custom-collapse">
         <Panel header="ON BOARDING DETAILS" key="onboarding">
-          <OnBoardingDetails appraisalId={appraisalId || ''} />
+          <OnBoardingDetails appraisalId={appraisalId || ''} tcDetails={tcDetails} clienteles={clienteles} />
         </Panel>
 
         <Panel header="CUSTOMER DETAILS" key="customer">
-          <CustomerDetails />
+          <CustomerDetails tcDetails={tcDetails} stakeholders={stakeholders} />
         </Panel>
 
         {!isGoldProduct && (
           <Panel header="GUARANTOR DETAILS" key="guarantor">
-            <GuarantorDetails />
+            <GuarantorDetails tcDetails={tcDetails}/>
           </Panel>
         )}
 

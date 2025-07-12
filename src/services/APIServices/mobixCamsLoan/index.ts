@@ -21,6 +21,20 @@ export const mobixCamsLoan = {
   viewImageOrPDF : (hashIdentifier:string) => 
     APIFileInstance.get(`/mobixCamsLoan/v1/loans/static-assets/${hashIdentifier}`),
 
-  getThumb : (appraisalId:string, type:string) => APIAuth.get(`/mobixCamsLoan/v1/loans/image/details/${appraisalId}/master/${type}/sub/1`)
-  
-  }
+  getThumb : (appraisalId:string, type:string) => APIAuth.get(`/mobixCamsLoan/v1/loans/image/details/${appraisalId}/master/${type}/sub/1`),
+
+  getFirstFlowApprovals: async (filterData: any) =>
+    APIAuth.get(`/mobixCamsLoan/v1/ibu-wf1-appraisals/filters`, {
+      params: {
+        ...filterData
+      }
+    }),
+
+  getSecondFlowApprovals: async (filterData: any) =>
+    APIAuth.get(`/mobixCamsLoan/v1/ibu-wf2-appraisals/filters`, {
+      params: {
+        ...filterData
+      }
+    }),
+
+}

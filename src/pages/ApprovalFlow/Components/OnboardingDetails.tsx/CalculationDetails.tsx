@@ -1,25 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Typography, Card, Table, Descriptions } from "antd";
-import { useParams } from "react-router-dom";
 import { APIAuth } from "../../../../services/api";
 import { getFacilityTypeName, getProdName, intoCurrency } from "../../../../utils/Common";
 
 const { Title } = Typography;
 
-const CalculationDetails: React.FC = () => {
-  const { appraisalId } = useParams<{ appraisalId: string }>();
+const CalculationDetails: React.FC<{ tcDetails: any }> = ({ tcDetails }) => {
+  // const { appraisalId } = useParams<{ appraisalId: string }>();
   const [loading, setLoading] = useState(true);
-  const [tcDetails, setTcDetails] = useState<any>(null);
+  // const [tcDetails, setTcDetails] = useState<any>(null);
   const [amountsOfTcDetails, setAmountsOfTcDetails] = useState<any>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const tcResponse: any = await APIAuth.get(`/mobixCamsCredit/v1/credit/tc/${appraisalId}`);
-        setTcDetails(tcResponse?.data || {});
+        // const tcResponse: any = await APIAuth.get(`/mobixCamsCredit/v1/credit/tc/${appraisalId}`);
+        // setTcDetails(tcResponse?.data || {});
 
-        const tcNo = tcResponse?.data?.tcNo;
+        const tcNo = tcDetails?.tcNo;
         if (tcNo) {
           const amountsResponse: any = await APIAuth.post(`/mobixCamsCredit/v1/credit/tc/getTCDetails`, {
             tcNo,
@@ -35,7 +34,7 @@ const CalculationDetails: React.FC = () => {
     };
 
     fetchData();
-  }, [appraisalId]);
+  }, [tcDetails]);
 
   const rentalRows = amountsOfTcDetails?.object?.facilityDetails?.map((item: any, i: number) => ({
     key: i,
