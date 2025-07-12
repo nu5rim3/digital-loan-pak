@@ -33,7 +33,11 @@ import AsyncImage from "../ImageContainers/AsyncImage";
 const { Panel } = Collapse;
 const { Title } = Typography;
 
-const GuarantorDetails: React.FC = () => {
+interface GuarantorDetailsProps {
+  tcDetails: any;
+}
+
+const GuarantorDetails: React.FC<GuarantorDetailsProps> = ({ tcDetails }) => {
   const { appraisalId } = useParams();
   const [loading, setLoading] = useState(true);
   const [loanDetails, setLoanDetails] = useState<any>({});
@@ -53,14 +57,14 @@ const GuarantorDetails: React.FC = () => {
       //   if (active === "4") {
       try {
         //   const tc = await getTcDetails(appraisalId);
-        const tc: any = await APIAuth.get(
-          `/mobixCamsCredit/v1/credit/tc/${appraisalId}`
-        );
-        if (tc?.data?.tcNo) {
+        // const tc: any = await APIAuth.get(
+        //   `/mobixCamsCredit/v1/credit/tc/${appraisalId}`
+        // );
+        if (tcDetails?.tcNo) {
           // const amounts = await getAmountsOfTcDetails(tc.data.tcNo);
           const amounts: any = await APIAuth.post(
             `/mobixCamsCredit/v1/credit/tc/getTCDetails`,
-            { tcNo: tc.data.tcNo, mode: "T" }
+            { tcNo: tcDetails.tcNo, mode: "T" }
           );
           setLoanDetails(amounts?.data);
         }
@@ -73,7 +77,8 @@ const GuarantorDetails: React.FC = () => {
 
         // const common = await getOriginationCommon(tc?.pTrhdLType);
         const common:any = await APIAuth.get(
-          `/mobixCamsCommon/v1/common-details/product/${tc?.data?.pTrhdLType}`
+          `/mobixCamsCommon/v1/common-details/product/${tcDetails
+          ?.pTrhdLType}`
         );
         setOriginationCommon(common?.data);
       } catch (err) {

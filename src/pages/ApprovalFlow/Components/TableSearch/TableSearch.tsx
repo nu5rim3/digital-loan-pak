@@ -3,9 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { Table, Input, Select, Button, DatePicker, Row, Col, Card, Tag, Typography } from "antd";
 import dayjs from "dayjs";
-import { APIAuth } from "../../../../services/api";
 import { mainURL } from "../../../../App";
 import { useNavigate } from "react-router-dom";
+import useUserStore from "../../../../store/userStore";
+import API from "../../../../services/APIServices";
 
 const { RangePicker } = DatePicker;
 
@@ -33,6 +34,8 @@ const GeneralAppraisalList: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const [dateRange, setDateRange] = useState<[any, any] | null>(null);
 
+  const { currentRole } = useUserStore()
+
   const navigate = useNavigate();
   const { Link } = Typography;
 
@@ -42,8 +45,9 @@ const GeneralAppraisalList: React.FC = () => {
       const fromDate = dateRange?.[0]?.isValid() ? dateRange[0].format("YYYY-MM-DD") : "";
       const toDate = dateRange?.[1]?.isValid() ? dateRange[1].format("YYYY-MM-DD") : "";
 
-      const params: any = {
-        role: "ADMIN",
+
+        const params: any = {
+        role: currentRole?.code,
         status,
         page: page - 1,
         size: 7,
@@ -55,10 +59,14 @@ const GeneralAppraisalList: React.FC = () => {
         params[searchField] = searchText;
       }
 
-      const res = await APIAuth.get(
-        "mobixCamsLoan/v1/appraisals/filters",
-        { params }
-      );
+      // const res = await APIAuth.get(
+      //   "mobixCamsLoan/v1/appraisals/filters",
+      //   { params }
+      // );
+
+      const res = await API.mobixCamsLoan.getFirstFlowApprovals({
+        ...params,
+      });
 
       setData(res.data.content);
       setTotal(res.data.totalElements);
