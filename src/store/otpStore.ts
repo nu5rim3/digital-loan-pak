@@ -15,7 +15,7 @@ interface IOTPState {
   otpVerificationError: string | null;
 
   sendOTP: (idx: string) => Promise<void>;
-  verifyOTP: (idx: string, code: string) => Promise<void>;
+  verifyOTP: (idx: string, code: string) => Promise<boolean>;
   restOtpVerificationResponse: () => void;
 }
 
@@ -46,7 +46,6 @@ const useOTPStore = create<IOTPState>()(
           set({ otpError: error.message, otpLoading: false });
         }
       },
-
       verifyOTP: async (idx: string, code: string) => {
         set({ otpVerificationLoading: true, otpVerificationError: null });
         try {
@@ -62,12 +61,25 @@ const useOTPStore = create<IOTPState>()(
             message: "OTP Verification",
             description: "OTP verification successful.",
           });
+          return true; // Indicate success
         } catch (error: any) {
-          console.error(error);
+          let errorMessage = "Something went wrong. Please try again.";
+          if (error.response) {
+            if (error.response.status === 400) {
+              // Custom message for invalid OTP
+              errorMessage =
+                error.response.data?.message ||
+                "The OTP you entered is incorrect. Please try again.";
+            } else if (error.response.data?.message) {
+              errorMessage = error.response.data.message;
+            }
+          }
           set({
-            otpVerificationError: error.message,
+            otpVerificationError: errorMessage,
             otpVerificationLoading: false,
           });
+          console.error(error);
+          return false; // Indicate failure
         }
       },
       restOtpVerificationResponse: () => {

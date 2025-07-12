@@ -91,7 +91,7 @@ const GoldLoanFacilitiesObtained: React.FC<IGoldLoanFacilitiesObtained> = () => 
                                 ))}
                         </div>
                     ) : (
-                        <Empty description="No Gold Loan Facilities Obtained" />
+                        <Empty description="No Gold Loan Facilities" />
                     )}
                 </>
             )}
@@ -145,7 +145,13 @@ const GoldLoanFacilitiesObtained: React.FC<IGoldLoanFacilitiesObtained> = () => 
                                 name="renewalDate"
                                 control={control}
                                 render={({ field }) => (
-                                    <Input {...field} placeholder="Renewal Date" type='date' />
+                                    <Input
+                                        {...field}
+                                        placeholder="Renewal Date"
+                                        type='date'
+                                        // only allow current date or feauture dates
+                                        min={new Date().toISOString().split('T')[0]} // sets the minimum date to today
+                                    />
                                 )}
                             />
                         </Form.Item>

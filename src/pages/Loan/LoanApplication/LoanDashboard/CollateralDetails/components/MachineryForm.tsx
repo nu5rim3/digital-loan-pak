@@ -1,16 +1,22 @@
 import React, { useEffect, useRef } from "react";
 import { Form, Input, InputNumber, Select } from "antd";
-import { Controller, Control } from "react-hook-form";
+import { Controller, Control, useWatch } from "react-hook-form";
 import { FormValues } from "../types";
 import useCollateralStore from "../../../../../../store/collateralStore";
 import { message } from "antd";
 
+interface IBaseItem {
+  code: string;
+  description: string;
+  status?: string;
+}
+
 interface MachineryFormProps {
   control: Control<FormValues>;
   errors: Record<string, any>;
+  securityType?: IBaseItem;
 }
 
-// Function to submit machinery data to the API
 export const submitMachinery = async (
   data: FormValues,
   appraisalId: string,
@@ -36,7 +42,6 @@ export const submitMachinery = async (
       machineryReferenceNo,
     } = data;
 
-    // Prepare payload for API
     const payload = {
       appraisalId,
       type: machineryType || "",
@@ -54,22 +59,17 @@ export const submitMachinery = async (
       valuedBy: machineryValuedBy,
       insuCompany: machineryInsuranceCompany,
       refNo: machineryReferenceNo,
-      machineryEquipSecCategory: "Main Security", // Default value
-      machineryEquipSecType: "MACHINERY AND EQUIPMENT" // Default value
+      machineryEquipSecCategory: "Main Security",
+      machineryEquipSecType: "MACHINERY AND EQUIPMENT"
     };
 
-    console.log(`${isEdit ? 'Updating' : 'Saving'} machinery equipment with payload:`, payload);
-
-    let response;
     if (isEdit && id) {
-      response = await useCollateralStore.getState().updateMachinery(id, payload);
+      await useCollateralStore.getState().updateMachinery(id, payload);
       message.success("Machinery equipment updated successfully");
     } else {
-      response = await useCollateralStore.getState().saveMachinery(payload);
+      await useCollateralStore.getState().saveMachinery(payload);
       message.success("Machinery equipment saved successfully");
     }
-
-    console.log(`Machinery equipment ${isEdit ? 'update' : 'save'} response:`, response);
     return true;
   } catch (error) {
     console.error(`Error ${isEdit ? 'updating' : 'saving'} machinery equipment:`, error);
@@ -78,7 +78,7 @@ export const submitMachinery = async (
   }
 };
 
-const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
+const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors, securityType }) => {
   const {
     types: machineryTypes,
     typesLoading: machineryTypesLoading,
@@ -99,10 +99,15 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
   } = useCollateralStore();
 
   const dataFetched = useRef(false);
+  const machineryId = useWatch({
+    control,
+    name: "id",
+  });
+  const isEditMode = !!machineryId;
 
   useEffect(() => {
     if (!dataFetched.current) {
-      fetchTypes("machinery");
+      fetchTypes(securityType?.code || "");
       fetchOwnerships();
       fetchSuppliers();
       fetchConditions();
@@ -119,18 +124,24 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
     fetchInsuranceCompanies,
   ]);
 
-  const getOptions = (arr: any[]) =>
+  const getOptions = (
+    arr: any[],
+    labelKey: string = "description",
+    valueKey: string = "code"
+  ) =>
     arr
-      .filter((item) => item.status === "A")
+      .filter((item) => item.status ? item.status === "A" : true)
       .map((item) => ({
-        label: item.description,
-        value: item.code,
+        label: item[labelKey],
+        value: item[valueKey],
       }));
 
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Machinery Details</h3>
+        <h3 className="text-lg font-semibold mb-4">
+          {isEditMode ? `Edit Machinery and Equipment` : "New Machinery and Equipment"}
+        </h3>
         <div className="grid grid-cols-3 gap-4">
           <Form.Item
             label="Type"
@@ -146,9 +157,10 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Type"
                   loading={machineryTypesLoading}
-                  options={getOptions(machineryTypes)}
+                  options={getOptions(machineryTypes, "description", "description")}
                 />
               )}
             />
@@ -168,9 +180,10 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Ownership"
                   loading={machineryOwnershipsLoading}
-                  options={getOptions(machineryOwnerships)}
+                  options={getOptions(machineryOwnerships, "description", "description")}
                 />
               )}
             />
@@ -190,9 +203,10 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Supplier"
                   loading={machinerySuppliersLoading}
-                  options={getOptions(machinerySuppliers)}
+                  options={getOptions(machinerySuppliers, "supplierName", "supplierName")}
                 />
               )}
             />
@@ -212,26 +226,11 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Condition"
                   loading={machineryConditionsLoading}
-                  options={getOptions(machineryConditions)}
+                  options={getOptions(machineryConditions, "description", "description")}
                 />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Description"
-            validateStatus={errors.machineryDescription ? "error" : ""}
-            help={errors.machineryDescription?.message}
-            labelCol={{ span: 24 }}
-            wrapperCol={{ span: 24 }}
-          >
-            <Controller
-              name="machineryDescription"
-              control={control}
-              render={({ field }) => (
-                <Input.TextArea {...field} placeholder="Enter Description" />
               )}
             />
           </Form.Item>
@@ -256,6 +255,11 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
                     `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                   }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                  onKeyDown={(e) => {
+                    if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
               )}
             />
@@ -281,6 +285,11 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
                     `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                   }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                  onKeyDown={(e) => {
+                    if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
               )}
             />
@@ -370,6 +379,11 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
                     `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                   }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                  onKeyDown={(e) => {
+                    if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
               )}
             />
@@ -398,9 +412,10 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Insurance Company"
                   loading={insuranceCompaniesLoading}
-                  options={getOptions(insuranceCompanies)}
+                  options={getOptions(insuranceCompanies, "description", "description")}
                 />
               )}
             />
@@ -412,6 +427,23 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors }) => {
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Reference No" />
+              )}
+            />
+
+          </Form.Item>
+
+          <Form.Item
+            label="Description"
+            validateStatus={errors.machineryDescription ? "error" : ""}
+            help={errors.machineryDescription?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="machineryDescription"
+              control={control}
+              render={({ field }) => (
+                <Input.TextArea {...field} placeholder="Enter Description" />
               )}
             />
           </Form.Item>

@@ -56,7 +56,7 @@ const schema = yup.object().shape({
         then: (schema) => schema.required('Execution Date is required'),
         otherwise: (schema) => schema.notRequired(),
     }).default(() => moment().format('YYYY-MM-DD')),
-    capitalPaid: yup.string().when('productType', {
+    capitalPaid: yup.number().when('productType', {
         is: (val: string) => val === '9' || val === 'E9',
         then: (schema) => schema.required('Capital Paid is required'),
         otherwise: (schema) => schema.notRequired(),
@@ -186,9 +186,9 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         fetchFacilityTypes,
         fetchProductTypes,
         fetchSubProductTypes,
-        setSelectedProductCategory, setSelectedProductCode } = useCommonStore();
+        setSelectedProductCategory, setSelectedProductCode, trialCalculationData, setTrialCalculationData, resetTrialCalculationData } = useCommonStore();
 
-    const { productDetails, productDetailsLoading, fetchProductDetails, resetProductDetails } = useLoanStore()
+    const { productDetails, productDetailsLoading, fetchProductDetails, resetProductDetails, fetchApplicationValidationsByAppId } = useLoanStore()
     const { user } = useUserStore()
     const { cribDetails, cribLoading, fetchCRIBByCnic, resetCRIBDetails } = useVerificationStore()
     const { trailCalulation, trailCalulationDetails, trailCalulationDetailsLoading, trailCalulationDetailsByAppId, trailCalulationDetailsByAppIdLoading, trailCalulationLoading, sendTrailCalulation, fetchTrailCalulation, resetTrailCalculationDetails, saveTrailCalulation, fetchTrailCalulationDetailsByAppId } = useCreditStore()
@@ -334,6 +334,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         resetProductDetails()
         resetTrailCalculationDetails()
         resetCRIBDetails()
+        resetTrialCalculationData()
         setIsSaveShow(false)
     }
 
@@ -343,6 +344,13 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    // Restore saved trial calculation data when component mounts
+    useEffect(() => {
+        if (trialCalculationData) {
+            reset(trialCalculationData);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const productCategory = watch('productCategory');
     const productType = watch('productType');
@@ -371,6 +379,14 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [productCategory])
 
+    // Save all form values to trialCalculationData state
+    useEffect(() => {
+        const subscription = watch((value) => {
+            setTrialCalculationData(value);
+        });
+        return () => subscription.unsubscribe();
+    }, [watch, setTrialCalculationData]);
+
     useEffect(() => {
         if (productType !== undefined && productType !== '') {
             setSelectedSubProductType(null)
@@ -397,6 +413,8 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedSubProductType, selectedProductType])
+
+    const loanAmount = watch('loanAmount');
 
     // Update validation dynamically based on product details
     useEffect(() => {
@@ -443,10 +461,22 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                             }),
                         otherwise: (schema) => schema.notRequired(),
                     }),
+                    // can be the same as loan amount for product type 9 or E9
+                    capitalPaid: yup
+                        .number()
+                        .typeError('Capital Paid must be a number')
+                        .when('productType', {
+                            is: (val: string) => val === '9' || val === 'E9',
+                            then: (schema) => schema.required('Capital Paid is required')
+                                .min(Number(productDetails?.generalInfo.minLoanAmt), `Capital Paid must be at least ${formatCurrency(Number(productDetails?.generalInfo.minLoanAmt))}`)
+                                .max(Number(loanAmount), `Capital Paid must be at most ${formatCurrency(Number(loanAmount))}`)
+                                .default(Number(productDetails?.generalInfo.defaultLoanAmt)),
+                            otherwise: (schema) => schema.notRequired(),
+                        }),
 
                 }),
             );
-            setValue('loanAmount', Number(productDetails?.generalInfo.defaultLoanAmt))
+            // setValue('loanAmount', Number(productDetails?.generalInfo.defaultLoanAmt))
             if (productType !== '9' && productType !== 'E9') {
                 setValue('trems', Number(productDetails?.generalInfo.defaultTerm))
             } else {
@@ -460,7 +490,17 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
             setValue('markup', 0)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [productDetails, selectedSubProductType, selectedProductType, gracePeriod]);
+    }, [productDetails, selectedSubProductType, selectedProductType, gracePeriod, loanAmount]);
+
+    useEffect(() => {
+        if (selectedSubProductType !== null && selectedProductType !== null && productDetails?.generalInfo !== null && productDetails?.generalInfo.minLoanAmt && productDetails?.generalInfo.maxLoanAmt) {
+            setValue('loanAmount', Number(productDetails?.generalInfo.defaultLoanAmt))
+        } else {
+            setValue('loanAmount', 0)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [productDetails, selectedSubProductType, selectedProductType, gracePeriod])
+
 
     const saveCalculationHandle = () => {
 
@@ -478,6 +518,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         setSelectedProductCode(productCode)
         saveTrailCalulation(appId ?? '', cliIdx, { ...__calculationPayload, tcNo: trailCalulation?.object.tcNo ?? '' }).finally(() => {
             fetchTrailCalulationDetailsByAppId(appId ?? '')
+            fetchApplicationValidationsByAppId(appId ?? '')
         });
     }
 
@@ -513,11 +554,9 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [trailCalulationDetailsByAppId?.tcNo])
 
-    const loanAmount = watch('loanAmount');
-
     useEffect(() => {
         if (productType === '9' || productType === 'E9') {
-            setValue('capitalPaid', loanAmount.toString());
+            setValue('capitalPaid', loanAmount);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [productType, loanAmount])
@@ -875,7 +914,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                         min={0}
                                         stringMode
                                         prefix={'Rs.'}
-                                        disabled
+                                    // disabled
                                     />
                                 )}
                             />
@@ -1234,7 +1273,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                                                 trailCalulationDetails?.object?.facilityDetails.map((item, index) => (
                                                     <Descriptions column={3} key={index} className='mb-2'>
                                                         <Descriptions.Item label="Sequence" className='w-30'>{item.seq}</Descriptions.Item>
-                                                        <Descriptions.Item label={`Trems`} className='w-30'>{item.term}</Descriptions.Item>
+                                                        <Descriptions.Item label={`Terms`} className='w-30'>{item.term}</Descriptions.Item>
                                                         <Descriptions.Item label={`Installment Amount`}>
                                                             <Tag color='green'><b>{formatCurrency(Number(item.instalment ?? 0))}</b></Tag>
                                                         </Descriptions.Item>

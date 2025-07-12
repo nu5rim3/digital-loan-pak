@@ -190,7 +190,7 @@ const ApplicantRevenue: React.FC = () => {
                         label: `Applicant Revenue`,
                         children: (
                             <>
-                                <div className='flex justify-end pb-3' hidden={cashFlows?.applicantRevenue !== null}>
+                                <div className='flex justify-end pb-3'>
                                     <Button type="primary" onClick={() => openModal('save')} icon={<PlusOutlined />}>
                                         Add Revenue
                                     </Button>
@@ -206,7 +206,6 @@ const ApplicantRevenue: React.FC = () => {
                                             {
                                                 applicantRevenue.map((detail, index) => (
                                                     <DetailsCard
-                                                        cashFlows={cashFlows}
                                                         loading={cashFlowsLoading}
                                                         key={index}
                                                         detail={detail}
@@ -236,7 +235,7 @@ const ApplicantRevenue: React.FC = () => {
                     onFinish={handleSubmit(onSubmit)}
                 >
                     <div className='grid grid-cols-4 gap-2'>
-                        <Form.Item label="Key" validateStatus={errors.key ? 'error' : ''} help={errors.key?.message} required>
+                        <Form.Item label="Revenue" validateStatus={errors.key ? 'error' : ''} help={errors.key?.message} required>
                             <Controller
                                 name="key"
                                 control={control}
@@ -357,14 +356,15 @@ const ApplicantRevenue: React.FC = () => {
     )
 }
 
-const DetailsCard: React.FC<{ detail: IFinancialEntry; onEdit: () => void; onRemove: () => void; loading: boolean; cashFlows: any }> = ({ detail, loading, cashFlows, onEdit, onRemove }) => (
+const DetailsCard: React.FC<{ detail: IFinancialEntry; onEdit: () => void; onRemove: () => void; loading: boolean; }> = ({ detail, loading, onEdit, onRemove }) => (
     <Card loading={loading}>
-        <div className="flex justify-end gap-1" hidden={cashFlows?.applicantRevenue !== null}>
+        {/* TODO:  */}
+        <div className="flex justify-end gap-1">
             <Button type="default" size="small" icon={<EditOutlined />} onClick={onEdit} />
             <Button type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
         </div>
         <Descriptions column={1}>
-            <Descriptions.Item label="Key">{detail.key}</Descriptions.Item>
+            <Descriptions.Item label="Revenue">{detail.key}</Descriptions.Item>
             <Descriptions.Item label="Monthly">{formatCurrency(Number(detail?.monthly ?? 0))}</Descriptions.Item>
             <Descriptions.Item label="Semi Annually">{formatCurrency(Number(detail?.semiAnnual ?? 0))}</Descriptions.Item>
             <Descriptions.Item label="Annually">{formatCurrency(Number(detail?.annually ?? 0))}</Descriptions.Item>

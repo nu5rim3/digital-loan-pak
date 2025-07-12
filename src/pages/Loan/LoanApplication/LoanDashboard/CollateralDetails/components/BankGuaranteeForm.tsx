@@ -1,31 +1,47 @@
 import React, { useEffect, useRef } from "react";
-import { Form, Input, InputNumber, Select, DatePicker, message, Spin } from "antd";
+import {
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  DatePicker,
+  message,
+  Spin,
+} from "antd";
 import { Controller, Control, useWatch } from "react-hook-form";
 import { FormValues } from "../types";
 import dayjs from "dayjs";
 import useCollateralStore from "../../../../../../store/collateralStore";
+
+interface IBaseItem {
+  code: string;
+  description: string;
+  status?: string;
+}
 
 interface BankGuaranteeFormProps {
   control: Control<FormValues>;
   errors: Record<string, any>;
   appraisalId?: string;
   onSubmitSuccess?: () => void;
+  securityType?: IBaseItem;
 }
 
-const prepareBankGuaranteeData = (formData: FormValues, appraisalId: string) => {
-  const isLOFIN = formData.bankGuaranteeType === "LOFIN";
+const prepareBankGuaranteeData = (
+  formData: FormValues,
+  appraisalId: string
+) => {
+  const isLOFIN = formData.bankGuaranteeType === "Issued by LOLC";
   const isOnDemand = formData.bankGuaranteeType === "On Demand";
 
-  // Prepare the payload for the API
   const payload = {
     appraisalId: appraisalId,
     type: formData.bankGuaranteeType,
     ownership: formData.bankGuaranteeOwnership,
-    bankGuaranteeSecCategory: "Main Security", // Default value
-    bankGuaranteeSecType: "BANK GUARANTEE", // Default value
+    bankGuaranteeSecCategory: "Main Security",
+    bankGuaranteeSecType: "BANK GUARANTEE",
   } as any;
 
-  // Add LOFIN specific fields
   if (isLOFIN) {
     payload.fdNo = formData.fdNo || null;
     payload.fdValue = formData.fdValue || null;
@@ -36,18 +52,15 @@ const prepareBankGuaranteeData = (formData: FormValues, appraisalId: string) => 
     payload.guaranteeTo = formData.guaranteedTo || null;
   }
 
-  // Add OnDemand specific fields
   if (isOnDemand) {
     payload.institutionName = formData.institutionName || null;
-    payload.dateOfExpiry = formData.dateOfExpiry || null;
+    payload.expiryDate = formData.expiryDate || null;
     payload.referenceNo = formData.referenceNoOndemand || null;
     payload.valueOfGuarantee = formData.valueOfGuarantee || null;
     payload.renewedBy = formData.renewedBy || null;
     payload.insuCompany = formData.bankInsuranceCompany || null;
     payload.insuRefNo = formData.bankReferenceNo || null;
   }
-
-  console.log("Prepared payload:", payload);
   return payload;
 };
 
@@ -71,17 +84,24 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
     savingBankGuarantee,
   } = useCollateralStore();
 
-  // Get the id if this is an edit
   const bgId = useWatch({
     control,
     name: "id",
   });
 
+  const bankGuaranteeType = useWatch({
+    control,
+    name: "bankGuaranteeType",
+  });
+
+  const isEditMode = !!bgId;
   const dataFetched = useRef(false);
+  const isLOFIN = bankGuaranteeType === "Issued by LOLC";
+  const isOnDemand = bankGuaranteeType === "On Demand";
 
   useEffect(() => {
     if (!dataFetched.current) {
-      fetchTypes("bank-guarantee");
+      fetchTypes("B");
       fetchOwnerships();
       fetchBondRenewals();
       fetchInsuranceCompanies();
@@ -89,39 +109,30 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
     }
   }, [fetchTypes, fetchOwnerships, fetchBondRenewals, fetchInsuranceCompanies]);
 
-  const bankGuaranteeType = useWatch({
-    control,
-    name: "bankGuaranteeType",
-  });
-
-  const isLOFIN = bankGuaranteeType === "LOFIN";
-  const isOnDemand = bankGuaranteeType === "On Demand";
-  const isEditMode = !!bgId;
-
-  const getOptions = (arr: any[]) =>
+  const getOptions = (
+    arr: any[],
+    labelKey: string = "description",
+    valueKey: string = "description"
+  ) =>
     arr
-      .filter((item) => item.status === "A")
+      .filter((item) => (item.status ? item.status === "A" : true))
       .map((item) => ({
-        label: item.description,
-        value: item.description,
+        label: item[labelKey],
+        value: item[valueKey],
       }));
-
 
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-4">
-          {isEditMode ? `Edit Bank Guarantee (ID: ${bgId})` : "New Bank Guarantee"}
+          {isEditMode ? `Edit Bank Guarantee` : "New Bank Guarantee"}
         </h3>
         <Spin spinning={savingBankGuarantee}>
           <div className="grid grid-cols-3 gap-4">
-            {/* Hidden field for ID */}
             <Controller
               name="id"
               control={control}
-              render={({ field }) => (
-                <input type="hidden" {...field} />
-              )}
+              render={({ field }) => <input type="hidden" {...field} />}
             />
 
             <Form.Item
@@ -138,6 +149,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                 render={({ field }) => (
                   <Select
                     {...field}
+                    showSearch
                     placeholder="Select Type"
                     loading={bankGuaranteeTypesLoading}
                     options={getOptions(bankGuaranteeTypes)}
@@ -160,6 +172,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                 render={({ field }) => (
                   <Select
                     {...field}
+                    showSearch
                     placeholder="Select Ownership"
                     loading={bankGuaranteeOwnershipsLoading}
                     options={getOptions(bankGuaranteeOwnerships)}
@@ -205,6 +218,20 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                           `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                         }
                         parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                        onKeyDown={(e) => {
+                          if (
+                            !/[0-9]/.test(e.key) &&
+                            ![
+                              "Backspace",
+                              "Delete",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "Tab",
+                            ].includes(e.key)
+                          ) {
+                            e.preventDefault();
+                          }
+                        }}
                       />
                     )}
                   />
@@ -226,7 +253,9 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                         format="YYYY-MM-DD"
                         value={field.value ? dayjs(field.value) : null}
                         onChange={(date) => {
-                          field.onChange(date ? date.format("YYYY-MM-DD") : null);
+                          field.onChange(
+                            date ? date.format("YYYY-MM-DD") : null
+                          );
                         }}
                       />
                     )}
@@ -249,7 +278,12 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                         format="YYYY-MM-DD"
                         value={field.value ? dayjs(field.value) : null}
                         onChange={(date) => {
-                          field.onChange(date ? date.format("YYYY-MM-DD") : null);
+                          field.onChange(
+                            date ? date.format("YYYY-MM-DD") : null
+                          );
+                        }}
+                        disabledDate={(current) => {
+                          return current && current < dayjs().startOf("day");
                         }}
                       />
                     )}
@@ -282,6 +316,17 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                   <Controller
                     name="guaranteeValue"
                     control={control}
+                    rules={{
+                      validate: (value) => {
+                        if (isLOFIN) {
+                          const fdValue = Number(useWatch({ control, name: 'fdValue' }));
+                          if (value && fdValue && Number(value) > fdValue) {
+                            return 'Guarantee Value cannot exceed FD Value';
+                          }
+                        }
+                        return true;
+                      },
+                    }}
                     render={({ field }) => (
                       <InputNumber
                         {...field}
@@ -291,6 +336,20 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                           `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                         }
                         parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                        onKeyDown={(e) => {
+                          if (
+                            !/[0-9]/.test(e.key) &&
+                            ![
+                              "Backspace",
+                              "Delete",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "Tab",
+                            ].includes(e.key)
+                          ) {
+                            e.preventDefault();
+                          }
+                        }}
                       />
                     )}
                   />
@@ -333,14 +392,14 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                 </Form.Item>
 
                 <Form.Item
-                  label="Date of Expiry"
-                  validateStatus={errors.dateOfExpiry ? "error" : ""}
-                  help={errors.dateOfExpiry?.message}
+                  label="Expiry Date"
+                  validateStatus={errors.expiryDate ? "error" : ""}
+                  help={errors.expiryDate?.message}
                   labelCol={{ span: 24 }}
                   wrapperCol={{ span: 24 }}
                 >
                   <Controller
-                    name="dateOfExpiry"
+                    name="expiryDate"
                     control={control}
                     render={({ field }) => (
                       <DatePicker
@@ -348,7 +407,13 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                         format="YYYY-MM-DD"
                         value={field.value ? dayjs(field.value) : null}
                         onChange={(date) => {
-                          field.onChange(date ? date.format("YYYY-MM-DD") : null);
+                          field.onChange(
+                            date ? date.format("YYYY-MM-DD") : null
+                          );
+                        }}
+                        disabledDate={(current) => {
+                          // Disable dates before today
+                          return current && current < dayjs().startOf("day");
                         }}
                       />
                     )}
@@ -390,6 +455,20 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                           `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                         }
                         parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                        onKeyDown={(e) => {
+                          if (
+                            !/[0-9]/.test(e.key) &&
+                            ![
+                              "Backspace",
+                              "Delete",
+                              "ArrowLeft",
+                              "ArrowRight",
+                              "Tab",
+                            ].includes(e.key)
+                          ) {
+                            e.preventDefault();
+                          }
+                        }}
                       />
                     )}
                   />
@@ -408,6 +487,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                     render={({ field }) => (
                       <Select
                         {...field}
+                        showSearch
                         placeholder="Select Renewed By"
                         loading={bondRenewalsLoading}
                         options={getOptions(bondRenewals)}
@@ -423,20 +503,11 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                     render={({ field }) => (
                       <Select
                         {...field}
+                        showSearch
                         placeholder="Select Insurance Company"
                         loading={insuranceCompaniesLoading}
                         options={getOptions(insuranceCompanies)}
                       />
-                    )}
-                  />
-                </Form.Item>
-
-                <Form.Item label="Reference No">
-                  <Controller
-                    name="bankReferenceNo"
-                    control={control}
-                    render={({ field }) => (
-                      <Input {...field} placeholder="Enter Reference No" />
                     )}
                   />
                 </Form.Item>
@@ -449,8 +520,11 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
   );
 };
 
-
-export const submitBankGuarantee = async (formData: FormValues, appraisalId: string = "", isEdit: boolean = false) => {
+export const submitBankGuarantee = async (
+  formData: FormValues,
+  appraisalId: string = "",
+  isEdit: boolean = false
+) => {
   if (!appraisalId) {
     console.error("No appraisalId provided");
     message.error("Cannot submit Bank Guarantee without appraisal ID");
@@ -463,15 +537,11 @@ export const submitBankGuarantee = async (formData: FormValues, appraisalId: str
 
     let response;
     if (isEdit && formData.id) {
-      console.log("Updating Bank Guarantee with ID:", formData.id, "Payload:", payload);
       const bankGuaranteeId = formData.id;
       response = await store.updateBankGuarantee(bankGuaranteeId, payload);
-      console.log("Bank Guarantee update response:", response);
       message.success("Bank Guarantee updated successfully");
     } else {
-      console.log("Submitting new Bank Guarantee with payload:", payload);
       response = await store.saveBankGuarantee(payload);
-      console.log("Bank Guarantee submission response:", response);
       message.success("Bank Guarantee added successfully");
     }
 
@@ -479,8 +549,14 @@ export const submitBankGuarantee = async (formData: FormValues, appraisalId: str
     return result;
   } catch (error) {
     console.error("Error submitting bank guarantee:", error);
-    const errorMsg = isEdit ? "Failed to update Bank Guarantee" : "Failed to add Bank Guarantee";
-    message.error(errorMsg + ": " + (error instanceof Error ? error.message : "Unknown error"));
+    const errorMsg = isEdit
+      ? "Failed to update Bank Guarantee"
+      : "Failed to add Bank Guarantee";
+    message.error(
+      errorMsg +
+        ": " +
+        (error instanceof Error ? error.message : "Unknown error")
+    );
     return null;
   }
 };

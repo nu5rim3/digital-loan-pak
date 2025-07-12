@@ -1,5 +1,5 @@
-import { Button, Card, Collapse, CollapseProps, Empty } from 'antd'
-import React, { lazy, useEffect } from 'react'
+import { Button, Card, Collapse, CollapseProps, Empty, Spin } from 'antd'
+import React, { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { getLoanStatusByName, getOnlyStatusByName } from '../../../../utils/MSASActionFunctions';
 import useLoanStore from '../../../../store/loanStore';
@@ -14,30 +14,50 @@ import CreditScoringPage from './CreditScoring/CreditScoringPage';
 import CollateralDetails from './CollateralDetails';
 import CustomerRiskProfiling from './CustomerRiskProfiling';
 import { SendOutlined } from '@ant-design/icons';
-
-const CustomerDetailsView = lazy(() => import('./Customer/CustomerDetailsView'))
-const WitnessDetails = lazy(() => import('./Witness/WitnessDetails'))
-const GuarantorDetailsView = lazy(() => import('./Guarantor/GuarantorDetailsView'))
-const LiabilityAffidavit = lazy(() => import('./LiabilityAffidavit'))
-const GoldFacilityApplication = lazy(() => import('./GoldFacilityApplication/GoldFacilityApplication'))
-const CashFlow = lazy(() => import('./CashFlow'))
-const LoanApplication = lazy(() => import('./LoanApplication'))
-const ExceptionalApproval = lazy(() => import('./ExceptionalApproval'))
+import CustomerDetailsView from './Customer/CustomerDetailsView';
+import GuarantorDetailsView from './Guarantor/GuarantorDetailsView';
+import WitnessDetails from './Witness/WitnessDetails';
+import LiabilityAffidavit from './LiabilityAffidavit';
+import GoldFacilityApplication from './GoldFacilityApplication/GoldFacilityApplication';
+import CashFlow from './CashFlow';
+import ExceptionalApproval from './ExceptionalApproval';
+import LoanApplication from './LoanApplication';
+import UnderConstruction from '../../../UnderConstroction';
 
 interface StatusProps {
     isCompleted: string;
     isMandatory: string;
 }
 
+// Add this function to check mandatory completion
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function hasAllMandatoryCompleted(validations: any[] = []) {
+    return !validations.some(
+        v => v.isMandatory === "1" && v.completed === "0"
+    );
+}
+
 const LoanDaashboard: React.FC = () => {
 
     const navigate = useNavigate();
     const { appId } = useParams();
-    const { loading, loanStatus, fetchLoanStatusById } = useLoanStore();
+    const { loading, applicationValidationLoading, applicationValidates, fetchApplicationValidationsByAppId, completeLoanApplication } = useLoanStore();
     const { stakeholders, fetchStackholderByAppId, fetchContactDetailsByStkId, fetchAddressDetailsByStkId, resetStakeholder } = useStakeholderStore();
-    const { customers, fetchCustomerByAppId } = useCustomerStore()
+    const { customers, fetchCustomerByAppId } = useCustomerStore();
 
-    // TODO: have to call the apprisal api to get the status of the loan application
+    const onCompleteApplication = () => {
+        completeLoanApplication({
+            appraisalIdx: appId ?? '',
+            role: 'CRO',
+            status: 'C'
+        })
+            .then(() => {
+                navigate(-1)
+            })
+            .catch((error) => {
+                console.error('Error completing application:', error);
+            });
+    }
 
     const onChange = (key: string | string[]) => {
         const triggerKey = key[0]
@@ -77,18 +97,14 @@ const LoanDaashboard: React.FC = () => {
                 return <GuarantorDetailsView formDetails={getStakeholderByType('G', stakeholders ?? []) ?? []} />;
             case 'witness':
                 return <WitnessDetails formDetails={getStakeholderByType('W', stakeholders ?? []) ?? []} />;
-            case 'Liability-Affidavit':
+            case 'liability-affidavit':
                 return <LiabilityAffidavit />;
-            case 'LOAN_COLLATERAL':
-                return <div>Collateral</div>;
-            case 'gold-facility-application':
+            case 'gold-facility':
                 return <GoldFacilityApplication />;
             case 'loan-application':
                 return <LoanApplication />;
-            case 'LOAN_APPLICATION_APPROVAL':
-                return <div>Loan Application Approval</div>;
             case 'image-upload':
-                return <div>Image Upload</div>;
+                return <UnderConstruction />;
             case 'cash-flow':
                 return <CashFlow />;
             case 'credit-scoring':
@@ -97,15 +113,7 @@ const LoanDaashboard: React.FC = () => {
                 return <CustomerRiskProfiling />;
             case 'exceptional-approval':
                 return <ExceptionalApproval />;
-            case 'customer-acknowledgement':
-                return <div>Customer Acknowledgement</div>;
-            case 'guarantor-acknowledgement':
-                return <div>Guarantor Acknowledgement</div>;
-            case 'witness-acknowledgement':
-                return <div>Witness Acknowledgement</div>;
-            case 'term-deposit':
-                return <div>Term Deposit</div>;
-            case 'collateral-details':
+            case 'collateral-detail':
                 return <CollateralDetails />;
             case 'business-introducer':
                 return <BusinessIntroducer />;
@@ -114,208 +122,46 @@ const LoanDaashboard: React.FC = () => {
         }
     };
 
+    const onlyCustomer = [{
+        "createdBy": "SYSTEM",
+        "creationDate": "2022-08-09T09:24:51.357+00:00",
+        "lastModifiedBy": null,
+        "lastModifiedDate": null,
+        "id": 1,
+        "section": "customer",
+        "isMandatory": "1",
+        "completed": "0",
+        "enabled": null,
+        "status": "A"
+    },]
 
-
-    const dummyLoanStatus = [
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 1,
-            "section": "customer",
-            "isMandatory": "1",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 2,
-            "section": "guarantor",
-            "isMandatory": "1",
-            "completed": "0",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2024-07-11T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 3,
-            "section": "witness",
-            "isMandatory": "1",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2024-07-11T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 12,
-            "section": "business-introducer",
-            "isMandatory": "0",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 5,
-            "section": "loan-application",
-            "isMandatory": "1",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        // {
-        //     "createdBy": "SYSTEM",
-        //     "creationDate": "2024-07-11T09:24:51.357+00:00",
-        //     "lastModifiedBy": null,
-        //     "lastModifiedDate": null,
-        //     "id": 6,
-        //     "section": "gold-facility-application",
-        //     "isMandatory": "0",
-        //     "completed": "1",
-        //     "enabled": null,
-        //     "status": "A"
-        // },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 7,
-            "section": "cash-flow",
-            "isMandatory": "1",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2024-07-11T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 4,
-            "section": "Liability-Affidavit",
-            "isMandatory": "1",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2024-07-11T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 15,
-            "section": "collateral-details",
-            "isMandatory": "0",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        // {
-        //     "createdBy": "SYSTEM",
-        //     "creationDate": "2022-08-09T09:24:51.357+00:00",
-        //     "lastModifiedBy": null,
-        //     "lastModifiedDate": null,
-        //     "id": 11,
-        //     "section": "customer-risk-profiling",
-        //     "isMandatory": "0",
-        //     "completed": "1",
-        //     "enabled": null,
-        //     "status": "A"
-        // },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 10,
-            "section": "credit-scoring",
-            "isMandatory": "0",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        // {
-        //     "createdBy": "SYSTEM",
-        //     "creationDate": "2024-07-11T09:24:51.357+00:00",
-        //     "lastModifiedBy": null,
-        //     "lastModifiedDate": null,
-        //     "id": 13,
-        //     "section": "term-deposit",
-        //     "isMandatory": "0",
-        //     "completed": "1",
-        //     "enabled": null,
-        //     "status": "A"
-        // },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 12,
-            "section": "exceptional-approval",
-            "isMandatory": "0",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 8,
-            "section": "image-upload",
-            "isMandatory": "1",
-            "completed": "0",
-            "enabled": null,
-            "status": "A"
-        },
-        {
-            "createdBy": "SYSTEM",
-            "creationDate": "2022-08-09T09:24:51.357+00:00",
-            "lastModifiedBy": null,
-            "lastModifiedDate": null,
-            "id": 13,
-            "section": "customer-acknowledgement",
-            "isMandatory": "1",
-            "completed": "1",
-            "enabled": null,
-            "status": "A"
-        },
-    ]
-
-    const items: CollapseProps['items'] = dummyLoanStatus && dummyLoanStatus.map((rule) => ({ //loanStatus
+    const _item: CollapseProps['items'] = onlyCustomer.map((rule) => ({
         key: `${rule.section}`,
         label: kebabToTitleCase(rule.section),
         children: getComponentByName(rule.section),
-        extra: genExtra(getLoanStatusByName(rule.section, dummyLoanStatus)),
-        collapsible: getOnlyStatusByName(rule.section, dummyLoanStatus) !== 'A' ? 'disabled' : undefined,
+        extra: genExtra(getLoanStatusByName(rule.section, onlyCustomer)),
+        collapsible: rule.status !== 'A' ? 'disabled' : undefined,
     }));
 
+    const items: CollapseProps['items'] = applicationValidates
+        ?.filter(rule => rule.isVisible === "1")
+        .map((rule) => ({
+            key: `${rule.section}`,
+            label: kebabToTitleCase(rule.section),
+            children: getComponentByName(rule.section),
+            extra: genExtra(getLoanStatusByName(rule.section, applicationValidates)),
+            collapsible: getOnlyStatusByName(rule.section, applicationValidates) !== 'A' ? 'disabled' : undefined,
+        }));
+
+
     useEffect(() => {
-        if (loanStatus.length === 0) {
-            fetchLoanStatusById(appId ?? '')
-        }
-        if (customers.length === 0) {
-            fetchCustomerByAppId(appId ?? '')
-        }
+        // if (customers.length === 0) {
+        //     fetchCustomerByAppId(appId ?? '')
+        // }
         if (stakeholders.length === 0) {
             fetchStackholderByAppId(appId ?? '')
+        } else {
+            fetchCustomerByAppId(appId ?? '')
         }
         return () => {
             resetStakeholder()
@@ -325,20 +171,24 @@ const LoanDaashboard: React.FC = () => {
 
     useEffect(() => {
         fetchStackholderByAppId(appId ?? '')
+        fetchApplicationValidationsByAppId(appId ?? '')
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [appId])
 
 
+    const isAllMandatoryCompleted = hasAllMandatoryCompleted(applicationValidates);
 
-    if (loading) {
+    if (applicationValidationLoading) {
         return (
-            <Card title={`Loan Application - ${appId}`}>
-                <Empty description={'Loading...'} />
-            </Card>
+            <Spin>
+                <Card title={`Loan Application - ${appId}`}>
+                    <Empty description={'Loading...'} />
+                </Card>
+            </Spin>
         )
     }
 
-    if (loanStatus.length === 0) {
+    if (applicationValidates.length === 0 && _item.length === 0) {
         return (
             <Card title={`Loan Application - ${appId}`}>
                 <Empty
@@ -346,7 +196,7 @@ const LoanDaashboard: React.FC = () => {
                     children={
                         <>
                             <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
-                            <Button type="primary" className="ml-3" onClick={() => fetchLoanStatusById(appId ?? '')}>Refresh</Button>
+                            <Button type="primary" className="ml-3" onClick={() => fetchApplicationValidationsByAppId(appId ?? '')}>Refresh</Button>
                         </>
                     }
                 />
@@ -368,12 +218,12 @@ const LoanDaashboard: React.FC = () => {
                     defaultActiveKey={['customer']}
                     expandIconPosition={'start'}
                     onChange={onChange}
-                    items={items}
+                    items={items.length === 0 ? _item : items}
                 />
 
                 <div className="mt-5">
                     <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
-                    <Button type="primary" className="ml-3" icon={<SendOutlined />}>Submit to Approval</Button>
+                    <Button type="primary" className="ml-3" icon={<SendOutlined />} disabled={!isAllMandatoryCompleted} onClick={onCompleteApplication} loading={loading}>Submit to Approval</Button>
                 </div>
             </Card>
         </>

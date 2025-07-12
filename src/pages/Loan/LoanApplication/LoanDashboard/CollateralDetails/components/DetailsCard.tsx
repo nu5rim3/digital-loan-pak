@@ -2,7 +2,7 @@ import React from "react";
 import { Card, Descriptions, Button, Space } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { FormValues } from "../types";
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 
 interface DetailsCardProps {
   data: FormValues;
@@ -11,103 +11,159 @@ interface DetailsCardProps {
   onDelete: () => void;
 }
 
+const toTitleCase = (text: string): string => {
+  const minorWords = [
+    "and",
+    "or",
+    "the",
+    "a",
+    "an",
+    "in",
+    "on",
+    "at",
+    "to",
+    "for",
+    "of",
+    "with",
+    "by",
+  ];
+
+  const words = text.toLowerCase().split(" ");
+
+  return words
+    .map((word, index) => {
+      if (
+        index === 0 ||
+        index === words.length - 1 ||
+        !minorWords.includes(word)
+      ) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      }
+      return word;
+    })
+    .join(" ");
+};
+
+interface FieldConfig {
+  key: string;
+  label: string;
+  fallback?: string;
+  isDate?: boolean;
+}
+
+interface SecurityTypeConfig {
+  fields: FieldConfig[];
+}
+
+const SECURITY_TYPE_CONFIG: Record<string, SecurityTypeConfig> = {
+  VEHICLE: {
+    fields: [
+      { key: "vehicleType", label: "Type" },
+      { key: "vehicleCategory", label: "Category" },
+      { key: "vehicleOwnership", label: "Ownership" },
+      { key: "vehicleCondition", label: "Condition" },
+      { key: "vehicleReferenceNo", label: "Reference No" },
+    ],
+  },
+  "BANK GUARANTEE": {
+    fields: [
+      { key: "bankGuaranteeType", label: "Type" },
+      { key: "bankGuaranteeOwnership", label: "Ownership" },
+      { key: "institutionName", label: "Institution" },
+      { key: "valueOfGuarantee", label: "Value of Guarantee" },
+      {
+        key: "referenceNo",
+        label: "Reference No",
+        fallback: "referenceNoOndemand",
+      },
+    ],
+  },
+  "LAND STOCKS": {
+    fields: [
+      { key: "landStockType", label: "Type" },
+      { key: "landStockSubType", label: "Sub Type" },
+      { key: "landStockCategory", label: "Category" },
+      { key: "landStockOwnership", label: "Deed No" },
+      { key: "landStockAgreementNo", label: "Agreement No" },
+    ],
+  },
+  "MACHINERY AND EQUIPMENT": {
+    fields: [
+      { key: "machineryType", label: "Type" },
+      { key: "machineryOwnership", label: "Ownership" },
+      { key: "machinerySupplier", label: "Supplier" },
+      { key: "machineryCondition", label: "Condition" },
+      { key: "machineryReferenceNo", label: "Reference No" },
+    ],
+  },
+  "PROPERTY MORTGAGE": {
+    fields: [
+      { key: "propertyType", label: "Type" },
+      { key: "propertySubType", label: "Sub Type" },
+      { key: "propertyOwnership", label: "Ownership" },
+      { key: "propertyBondNo", label: "Bond No" },
+      { key: "propertyReferenceNo", label: "Reference No" },
+    ],
+  },
+  "FIXED DEPOSITS AND SAVINGS": {
+    fields: [
+      { key: "savingsType", label: "Type" },
+      { key: "savingsSubType", label: "Sub Type" },
+      { key: "savingsNo", label: "Account No" },
+      { key: "savingsFDNo", label: "FD No" },
+      { key: "savingsAmount", label: "Amount" },
+    ],
+  },
+  LEASE: {
+    fields: [
+      { key: "leaseEquipType", label: "Equipment Type" },
+      { key: "leaseCategory", label: "Category" },
+      { key: "leaseCondition", label: "Condition" },
+      { key: "leaseVehicleType", label: "Vehicle Type" },
+      { key: "leaseReferenceNo", label: "Reference No" },
+    ],
+  },
+} as const;
+
 const DetailsCard: React.FC<DetailsCardProps> = ({
   data,
   securityType,
   onUpdate,
   onDelete,
 }) => {
-  const renderDetails = () => {
-    switch (securityType) {
-      case "VEHICLE":
-        return (
-          <>
-            <Descriptions.Item label="Type">{data.vehicleType}</Descriptions.Item>
-            <Descriptions.Item label="Make">{data.vehicleMake}</Descriptions.Item>
-            <Descriptions.Item label="Model">{data.vehicleModel}</Descriptions.Item>
-            <Descriptions.Item label="Engine No">{data.vehicleEngineNo}</Descriptions.Item>
-            <Descriptions.Item label="Chassis No">{data.vehicleChassisNo}</Descriptions.Item>
-            <Descriptions.Item label="Market Value">{data.vehicleMV}</Descriptions.Item>
-            <Descriptions.Item label="Registration No">{data.vehicleRegistrationNo}</Descriptions.Item>
-          </>
-        );
-      case "MACHINERY":
-        return (
-          <>
-            <Descriptions.Item label="Type">{data.machineryType}</Descriptions.Item>
-            <Descriptions.Item label="Model">{data.machineryModel}</Descriptions.Item>
-            <Descriptions.Item label="Engine No">{data.machineryEngineNo}</Descriptions.Item>
-            <Descriptions.Item label="Serial No">{data.machinerySerialNo}</Descriptions.Item>
-            <Descriptions.Item label="Market Value">{data.machineryMV}</Descriptions.Item>
-            <Descriptions.Item label="Supplier">{data.machinerySupplier}</Descriptions.Item>
-            <Descriptions.Item label="Condition">{data.machineryCondition}</Descriptions.Item>
-          </>
-        );
-      case "BANK_GUARANTEE":
-        return (
-          <>
-            <Descriptions.Item label="Type">{data.bankGuaranteeType}</Descriptions.Item>
-            <Descriptions.Item label="Institution">{data.institutionName}</Descriptions.Item>
-            <Descriptions.Item label="Value">{data.guaranteeValue || data.valueOfGuarantee}</Descriptions.Item>
-            <Descriptions.Item label="Start Date">{data.startDate ? dayjs(data.startDate).format('YYYY-MM-DD') : '-'}</Descriptions.Item>
-            <Descriptions.Item label="Expiry Date">{data.expiryDate ? dayjs(data.expiryDate).format('YYYY-MM-DD') : data.dateOfExpiry ? dayjs(data.dateOfExpiry).format('YYYY-MM-DD') : '-'}</Descriptions.Item>
-            <Descriptions.Item label="Reference No">{data.referenceNo || data.referenceNoOndemand}</Descriptions.Item>
-          </>
-        );
-      case "PROPERTY_MORTGAGE":
-        return (
-          <>
-            <Descriptions.Item label="Type">{data.propertyType}</Descriptions.Item>
-            <Descriptions.Item label="Sub Type">{data.propertySubType}</Descriptions.Item>
-            <Descriptions.Item label="Market Value">{data.propertyMarketValue}</Descriptions.Item>
-            <Descriptions.Item label="FSV">{data.propertyFSV}</Descriptions.Item>
-            <Descriptions.Item label="Bond No">{data.propertyBondNo}</Descriptions.Item>
-            <Descriptions.Item label="Deed No">{data.propertyDeedNo}</Descriptions.Item>
-            <Descriptions.Item label="Lawyer">{data.propertyLawyerName}</Descriptions.Item>
-          </>
-        );
-      case "SAVINGS":
-        return (
-          <>
-            <Descriptions.Item label="Type">{data.savingsType}</Descriptions.Item>
-            <Descriptions.Item label="Sub Type">{data.savingsSubType}</Descriptions.Item>
-            <Descriptions.Item label="Account No">{data.savingsNo}</Descriptions.Item>
-            <Descriptions.Item label="Amount">{data.savingsAmount}</Descriptions.Item>
-            <Descriptions.Item label="Build Up Value">{data.savingsBuildUpValue}</Descriptions.Item>
-            <Descriptions.Item label="Company">{data.savingsCompany}</Descriptions.Item>
-            <Descriptions.Item label="Maturity Date">
-              {data.savingsMaturityDate ? dayjs(data.savingsMaturityDate).format('YYYY-MM-DD') : '-'}
-            </Descriptions.Item>
-          </>
-        );
-      case "LAND_STOCK":
-        return (
-          <>
-            <Descriptions.Item label="Type">{data.landStockType}</Descriptions.Item>
-            <Descriptions.Item label="Sub Type">{data.landStockSubType}</Descriptions.Item>
-            <Descriptions.Item label="Deed No">{data.landStockDeedTransferNo}</Descriptions.Item>
-            <Descriptions.Item label="Agreement No">{data.landStockAgreementNo}</Descriptions.Item>
-            <Descriptions.Item label="Market Value">{data.landStockMarketValue}</Descriptions.Item>
-            <Descriptions.Item label="FSV">{data.landStockFSV}</Descriptions.Item>
-            <Descriptions.Item label="Category">{data.landStockCategory}</Descriptions.Item>
-            <Descriptions.Item label="Security Type">{data.landStockSecurityType}</Descriptions.Item>
-          </>
-        );
-      default:
-        return null;
+  const renderFieldValue = (field: FieldConfig, data: FormValues): string => {
+    const value =
+      data[field.key as keyof FormValues] ||
+      data[field.fallback as keyof FormValues];
+
+    if (field.isDate && value) {
+      return dayjs(value).format("YYYY-MM-DD");
     }
+
+    return String(value || "-");
+  };
+
+  const renderDetails = () => {
+    const config =
+      SECURITY_TYPE_CONFIG[securityType as keyof typeof SECURITY_TYPE_CONFIG];
+
+    if (!config) {
+      return null;
+    }
+
+    return config.fields.map((field) => (
+      <Descriptions.Item key={field.key} label={field.label}>
+        {renderFieldValue(field, data)}
+      </Descriptions.Item>
+    ));
   };
 
   return (
     <Card
-      title={`${securityType.charAt(0) + securityType.slice(1).toLowerCase().replace('_', ' ')} Details`}
+      title={toTitleCase(securityType)}
       extra={
         <Space>
-          <Button
-            type="text"
-            icon={<EditOutlined />}
-            onClick={onUpdate}
-          />
+          <Button type="text" icon={<EditOutlined />} onClick={onUpdate} />
           <Button
             type="text"
             danger
@@ -117,11 +173,9 @@ const DetailsCard: React.FC<DetailsCardProps> = ({
         </Space>
       }
     >
-      <Descriptions column={1}>
-        {renderDetails()}
-      </Descriptions>
+      <Descriptions column={1}>{renderDetails()}</Descriptions>
     </Card>
   );
 };
 
-export default DetailsCard; 
+export default DetailsCard;

@@ -6,12 +6,17 @@ import dayjs from "dayjs";
 import useCollateralStore from "../../../../../../store/collateralStore";
 import { message } from "antd";
 
+interface IBaseItem {
+  code: string;
+  description: string;
+  status?: string;
+}
+
 interface VehicleFormProps {
   control: Control<FormValues>;
   errors: Record<string, any>;
+  securityType?: IBaseItem;
 }
-
-// Function to submit vehicle data to the API
 export const submitVehicle = async (
   data: FormValues,
   appraisalId: string,
@@ -42,17 +47,15 @@ export const submitVehicle = async (
       vehicleReferenceNo,
     } = data;
 
-    // Format dates to strings for API
     const formatDate = (date: Date | undefined) => {
-      return date ? dayjs(date).format('YYYY-MM-DD') : undefined;
+      return date ? dayjs(date).format("YYYY-MM-DD") : undefined;
     };
 
-    // Prepare payload for API
     const payload = {
       appraisalId,
       vehicleType: vehicleType || "",
-      vehicleSecCategory: "Main Security", // Default value
-      vehicleSecType: "VEHICLE", // Default value
+      vehicleSecCategory: "Main Security",
+      vehicleSecType: "VEHICLE",
       ownership: vehicleOwnership || "",
       supplier: vehicleSupplier || "",
       condition: vehicleCondition || "",
@@ -74,27 +77,26 @@ export const submitVehicle = async (
       refNo: vehicleReferenceNo,
     };
 
-    console.log(`${isEdit ? 'Updating' : 'Saving'} vehicle with payload:`, payload);
-
-    let response;
     if (isEdit && id) {
-      response = await useCollateralStore.getState().updateVehicle(id, payload);
+      await useCollateralStore.getState().updateVehicle(id, payload);
       message.success("Vehicle updated successfully");
     } else {
-      response = await useCollateralStore.getState().saveVehicle(payload);
+      await useCollateralStore.getState().saveVehicle(payload);
       message.success("Vehicle saved successfully");
     }
-
-    console.log(`Vehicle ${isEdit ? 'update' : 'save'} response:`, response);
     return true;
   } catch (error) {
-    console.error(`Error ${isEdit ? 'updating' : 'saving'} vehicle:`, error);
-    message.error(`Failed to ${isEdit ? 'update' : 'save'} vehicle`);
+    console.error(`Error ${isEdit ? "updating" : "saving"} vehicle:`, error);
+    message.error(`Failed to ${isEdit ? "update" : "save"} vehicle`);
     return false;
   }
 };
 
-const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
+const VehicleForm: React.FC<VehicleFormProps> = ({
+  control,
+  errors,
+  securityType,
+}) => {
   const {
     types: vehicleTypes,
     typesLoading: vehicleTypesLoading,
@@ -104,8 +106,8 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
     suppliersLoading: vehicleSuppliersLoading,
     conditions: vehicleConditions,
     conditionsLoading: vehicleConditionsLoading,
-    securityCategories: vehicleCategories,
-    securityCategoriesLoading: vehicleCategoriesLoading,
+    vehicleCategories,
+    vehicleCategoriesLoading,
     makes: vehicleMakes,
     makesLoading: vehicleMakesLoading,
     models: vehicleModels,
@@ -113,6 +115,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
     insuranceCompanies,
     insuranceCompaniesLoading,
     fetchTypes,
+    fetchVehicleCategories,
     fetchOwnerships,
     fetchSuppliers,
     fetchConditions,
@@ -128,9 +131,16 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
     name: "vehicleMake",
   });
 
+  const vehicleId = useWatch({
+    control,
+    name: "id",
+  });
+  const isEditMode = !!vehicleId;
+
   useEffect(() => {
     if (!dataFetched.current) {
-      fetchTypes("vehicle");
+      fetchTypes(securityType?.code || "");
+      fetchVehicleCategories();
       fetchOwnerships();
       fetchSuppliers();
       fetchConditions();
@@ -141,6 +151,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
     }
   }, [
     fetchTypes,
+    fetchVehicleCategories,
     fetchOwnerships,
     fetchSuppliers,
     fetchConditions,
@@ -155,18 +166,24 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
     }
   }, [selectedMake, fetchModels]);
 
-  const getOptions = (arr: any[]) =>
+  const getOptions = (
+    arr: any[],
+    labelKey: string = "description",
+    valueKey: string = "code"
+  ) =>
     arr
-      .filter((item) => item.status === "A")
+      .filter((item) => (item.status ? item.status === "A" : true))
       .map((item) => ({
-        label: item.description,
-        value: item.code,
+        label: item[labelKey],
+        value: item[valueKey],
       }));
 
   return (
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Vehicle Details</h3>
+        <h3 className="text-lg font-semibold mb-4">
+          {isEditMode ? `Edit Vehicle` : "New Vehicle"}
+        </h3>
         <div className="grid grid-cols-3 gap-4">
           <Form.Item
             label="Type"
@@ -182,9 +199,14 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Type"
                   loading={vehicleTypesLoading}
-                  options={getOptions(vehicleTypes)}
+                  options={getOptions(
+                    vehicleTypes,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
@@ -204,9 +226,14 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Ownership"
                   loading={vehicleOwnershipsLoading}
-                  options={getOptions(vehicleOwnerships)}
+                  options={getOptions(
+                    vehicleOwnerships,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
@@ -226,9 +253,10 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Supplier"
                   loading={vehicleSuppliersLoading}
-                  options={getOptions(vehicleSuppliers)}
+                  options={getOptions(vehicleSuppliers, "businessType", "code")}
                 />
               )}
             />
@@ -248,9 +276,14 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Condition"
                   loading={vehicleConditionsLoading}
-                  options={getOptions(vehicleConditions)}
+                  options={getOptions(
+                    vehicleConditions,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
@@ -270,9 +303,14 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Category"
                   loading={vehicleCategoriesLoading}
-                  options={getOptions(vehicleCategories)}
+                  options={getOptions(
+                    vehicleCategories,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
@@ -292,9 +330,14 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Make"
                   loading={vehicleMakesLoading}
-                  options={getOptions(vehicleMakes)}
+                  options={getOptions(
+                    vehicleMakes,
+                    "description",
+                    "code"
+                  )}
                 />
               )}
             />
@@ -314,9 +357,14 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Model"
                   loading={vehicleModelsLoading}
-                  options={getOptions(vehicleModels)}
+                  options={getOptions(
+                    vehicleModels,
+                    "description",
+                    "code"
+                  )}
                 />
               )}
             />
@@ -350,22 +398,6 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               control={control}
               render={({ field }) => (
                 <Input {...field} placeholder="Enter Chassis No" />
-              )}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="Description"
-            validateStatus={errors.vehicleDescription ? "error" : ""}
-            help={errors.vehicleDescription?.message}
-            labelCol={{ span: 24 }}
-            wrapperCol={{ span: 24 }}
-          >
-            <Controller
-              name="vehicleDescription"
-              control={control}
-              render={({ field }) => (
-                <Input.TextArea {...field} placeholder="Enter Description" />
               )}
             />
           </Form.Item>
@@ -421,6 +453,20 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
                     `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                   }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                  onKeyDown={(e) => {
+                    if (
+                      !/[0-9]/.test(e.key) &&
+                      ![
+                        "Backspace",
+                        "Delete",
+                        "ArrowLeft",
+                        "ArrowRight",
+                        "Tab",
+                      ].includes(e.key)
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
               )}
             />
@@ -445,6 +491,20 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
                     `Rs ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                   }
                   parser={(value) => value!.replace(/Rs\s?|(,*)/g, "")}
+                  onKeyDown={(e) => {
+                    if (
+                      !/[0-9]/.test(e.key) &&
+                      ![
+                        "Backspace",
+                        "Delete",
+                        "ArrowLeft",
+                        "ArrowRight",
+                        "Tab",
+                      ].includes(e.key)
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
                 />
               )}
             />
@@ -542,9 +602,14 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               render={({ field }) => (
                 <Select
                   {...field}
+                  showSearch
                   placeholder="Select Insurance Company"
                   loading={insuranceCompaniesLoading}
-                  options={getOptions(insuranceCompanies)}
+                  options={getOptions(
+                    insuranceCompanies,
+                    "description",
+                    "description"
+                  )}
                 />
               )}
             />
@@ -555,7 +620,42 @@ const VehicleForm: React.FC<VehicleFormProps> = ({ control, errors }) => {
               name="vehicleReferenceNo"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter Reference No" />
+                <InputNumber
+                  {...field}
+                  style={{ width: "100%" }}
+                  placeholder="Enter Reference No"
+                  controls={false}
+                  onKeyDown={(e) => {
+                    if (
+                      !/[0-9]/.test(e.key) &&
+                      ![
+                        "Backspace",
+                        "Delete",
+                        "ArrowLeft",
+                        "ArrowRight",
+                        "Tab",
+                      ].includes(e.key)
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
+                />
+              )}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Description"
+            validateStatus={errors.vehicleDescription ? "error" : ""}
+            help={errors.vehicleDescription?.message}
+            labelCol={{ span: 24 }}
+            wrapperCol={{ span: 24 }}
+          >
+            <Controller
+              name="vehicleDescription"
+              control={control}
+              render={({ field }) => (
+                <Input.TextArea {...field} placeholder="Enter Description" />
               )}
             />
           </Form.Item>

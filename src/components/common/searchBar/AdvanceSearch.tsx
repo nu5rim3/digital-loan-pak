@@ -1,5 +1,5 @@
 import { Button, Select, Space, Input, DatePicker } from 'antd'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { CloseCircleOutlined, SearchOutlined } from '@ant-design/icons';
 const { RangePicker } = DatePicker;
 
@@ -40,6 +40,11 @@ const AdvanceSearch: React.FC<AdvanceSearchProps> = ({ options, loading, setPara
             });
         }
     };
+
+    useEffect(() => {
+        setSearchValue('')
+    }, [selectedType])
+
 
 
 

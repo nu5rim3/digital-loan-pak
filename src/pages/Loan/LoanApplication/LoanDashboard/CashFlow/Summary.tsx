@@ -14,8 +14,6 @@ const Summary: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    console.log('product', product);
-
     useEffect(() => {
         if (product?.pTrhdLType) {
             fetchProductDefinition(product?.pTrhdLType ?? '')
@@ -106,9 +104,11 @@ const Summary: React.FC = () => {
                                     </Descriptions.Item>
                                 </Descriptions>
 
-                                <div className='mt-5' hidden={cashFlows?.annualHouseIncome !== null}>
+                                <div className='mt-5'>
                                     <Button type='primary' icon={<SaveOutlined />} onClick={onSubmitCashFlow} disabled={!isAlegibleFroLoan}>
-                                        Save Cash Flow
+                                        {
+                                            cashFlows?.annualHouseIncome !== null ? 'Update Cash Flow' : 'Save Cash Flow'
+                                        }
                                     </Button>
                                 </div>
                             </Card>

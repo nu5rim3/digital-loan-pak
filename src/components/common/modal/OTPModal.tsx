@@ -16,20 +16,31 @@ interface OTPModalProps {
 const OTPModal: React.FC<OTPModalProps> = ({ idx, visible, onCancel, onCompleted, resetUser }) => {
 
     const { control, handleSubmit, setValue, watch, reset } = useForm();
-    const { sendOTP, verifyOTP, otpLoading, otpVerificationLoading, otpVerificationResponse, restOtpVerificationResponse } = useOTPStore()
+    const { sendOTP, verifyOTP, otpLoading, otpVerificationLoading, otpVerificationResponse, otpVerificationError, restOtpVerificationResponse } = useOTPStore()
     const { resetAll } = useVerificationStore()
     const otpRefs = useRef<(HTMLInputElement | null)[]>(Array(6).fill(null));
     const [isResendDisabled, setIsResendDisabled] = useState(true);
     const [resetTrigger, setResetTrigger] = useState(0);
 
+    console.log('otpVerificationError:', otpVerificationError);
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
         const otpValue = Object.values(data).join("");
-        verifyOTP(idx, otpValue).finally(() => {
-            restOtpVerificationResponse();
-            resetAll();
-            resetUser()
-        })
+        verifyOTP(idx, otpValue)
+            .then((response: boolean) => {
+                if (!response) {
+                    console.log("OTP verification failed");
+                    setIsResendDisabled(false);
+                    return;
+                } else {
+                    console.log("OTP verification successful");
+                    restOtpVerificationResponse();
+                    resetAll();
+                    resetUser();
+                }
+            })
+
     };
 
     useEffect(() => {
@@ -63,6 +74,11 @@ const OTPModal: React.FC<OTPModalProps> = ({ idx, visible, onCancel, onCompleted
         setResetTrigger((prev) => prev + 1);
         setIsResendDisabled(true);
         reset();
+        otpRefs.current.forEach((ref) => {
+            if (ref) {
+                ref.value = '';
+            }
+        });
     }
 
     useEffect(() => {
@@ -72,6 +88,8 @@ const OTPModal: React.FC<OTPModalProps> = ({ idx, visible, onCancel, onCompleted
         setIsResendDisabled(true)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [visible])
+
+
 
 
     return (

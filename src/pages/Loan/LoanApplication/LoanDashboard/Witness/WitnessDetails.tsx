@@ -5,7 +5,7 @@ import useStakeholderStore, { IStakeholder } from '../../../../../store/stakehol
 import useWitnessStore from '../../../../../store/witnessStore';
 import CommonModal from '../../../../../components/common/modal/commonModal';
 import CreateWitness from '../../../../Users/Witnesses/CreateWitness';
-import { PlusOutlined, EditOutlined, QrcodeOutlined } from '@ant-design/icons'
+import { PlusOutlined, EditOutlined, QrcodeOutlined, DeleteOutlined } from '@ant-design/icons'
 import ContactDetailsCard from '../../../../../components/common/stakeHolder/ContactDetailsCard';
 import AddressDetailsCard from '../../../../../components/common/stakeHolder/AddressDetailsCard';
 import NADRAModal from '../../../../../components/common/modal/NADRAModal';
@@ -18,11 +18,12 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
     const [nadraModalOpen, setNadraModalOpen] = useState(false)
     const { appId } = useParams();
     const [openModal, setOpenModal] = useState(false)
-    const [selectedIndex, setSelectedIndex] = useState(0);
+    const [selectedIndex, setSelectedIndex] = useState<number | undefined>(undefined);
+    const [selectedIdx, setSelectedIdx] = useState('');
     const [mode, setMode] = useState('create')
 
     const { fetchWitnessByAppId } = useWitnessStore();
-    const { fetchStackholderByAppId } = useStakeholderStore()
+    const { deleteStakeholder, fetchStackholderByAppId } = useStakeholderStore()
 
     useEffect(() => {
         fetchWitnessByAppId(appId ?? '')
@@ -41,7 +42,15 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
     const onClickCreate = () => {
         setOpenModal(true)
         setMode('create')
-        setSelectedIndex(0)
+        setSelectedIndex(undefined)
+    }
+
+    const onDeleteWitness = () => {
+        deleteStakeholder(selectedIdx)
+        // TODO:  After deleting, we can refetch the witnesses to update the list
+        setTimeout(() => {
+            fetchStackholderByAppId(appId ?? '')
+        }, 3000);
     }
 
     if (formDetails?.length === 0) {
@@ -66,8 +75,15 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
                         </div>
                         <div className='grid grid-cols-4 gap-3'>
                             {
-                                formDetails.map((_, index) => (
-                                    <Button key={index} type='primary' onClick={() => { setSelectedIndex(index) }}>
+                                formDetails.map((item, index) => (
+                                    <Button
+                                        key={index}
+                                        type='primary'
+                                        onClick={() => {
+                                            setSelectedIndex(index)
+                                            console.log('item', item)
+                                            setSelectedIdx(item.idx ?? '')
+                                        }}>
                                         Witness {index + 1}
                                     </Button>
                                 ))
@@ -75,14 +91,15 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
                         </div>
 
                         {
-                            selectedIndex >= 0 && (
+                            selectedIndex !== undefined && selectedIndex >= 0 && (
                                 <div className='flex flex-col gap-3'>
                                     <Card title={`Witness ${selectedIndex + 1}`
                                     }
                                         extra={
-                                            <div className='grid grid-cols-2 gap-2'>
+                                            <div className='grid grid-cols-3 gap-2'>
                                                 <Button type="default" onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />}>Witness QR</Button>
                                                 <Button type="default" onClick={onClickUpdate} icon={<EditOutlined />}>Update Details</Button>
+                                                <Button type='default' danger icon={<DeleteOutlined />} onClick={onDeleteWitness}>Delete</Button>
                                             </div>
                                         }
                                     >
@@ -107,7 +124,9 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
             }
             <CommonModal open={openModal} onClose={() => setOpenModal(false)} title={'Add Witness'} size='large' footer={true}>
                 {
-                    mode === 'update' ? <CreateWitness appId={appId ?? ''} mode={mode} onClose={() => setOpenModal(false)} witnessDetails={formDetails && formDetails[selectedIndex]} /> : <CreateWitness appId={appId ?? ''} mode={mode} onClose={() => setOpenModal(false)} />
+                    selectedIndex !== undefined && mode === 'update' ? <CreateWitness appId={appId ?? ''} mode={mode} onClose={() => setOpenModal(false)} witnessDetails={
+                        formDetails && formDetails[selectedIndex]}
+                    /> : <CreateWitness appId={appId ?? ''} mode={mode} onClose={() => setOpenModal(false)} />
                 }
             </CommonModal>
         </div>

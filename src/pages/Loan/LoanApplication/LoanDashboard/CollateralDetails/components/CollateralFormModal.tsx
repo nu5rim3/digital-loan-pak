@@ -1,12 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { Modal, Form, Select, Input, Button, message, Spin } from "antd";
+import React, { useEffect, useState, useMemo, useRef } from "react";
+import { Modal, Form, Select, Button, message, Spin } from "antd";
 import { Controller, useForm } from "react-hook-form";
-import { FormValues, validationSchema, LeaseProductFormValues } from "../types";
+import {
+  FormValues,
+  createValidationSchema,
+  LeaseProductFormValues,
+  leaseProductValidationSchema,
+} from "../types";
 import { yupResolver } from "@hookform/resolvers/yup";
 import VehicleForm, { submitVehicle } from "./VehicleForm";
 import BankGuaranteeForm, { submitBankGuarantee } from "./BankGuaranteeForm";
 import MachineryForm, { submitMachinery } from "./MachineryForm";
-import PropertyMortgageForm, { submitPropertyMortgage } from "./PropertyMortgageForm";
+import PropertyMortgageForm, {
+  submitPropertyMortgage,
+} from "./PropertyMortgageForm";
 import SavingsForm, { submitSavings } from "./SavingsForm";
 import LandStockForm, { submitLandStock } from "./LandStockForm";
 import { LeaseProductForm, submitLease } from "./LeaseProductForm";
@@ -23,6 +30,63 @@ interface CollateralFormModalProps {
   isLoading?: boolean;
 }
 
+const getSecurityTypeCode = (
+  securityTypes: any[],
+  description: string
+): string | undefined => {
+  return securityTypes.find((st) => st.description === description)?.code;
+};
+
+const checkExistingActiveRecord = (
+  collaterals: any[],
+  securityTypeCode: string,
+  currentId?: string
+): boolean => {
+  return collaterals.some((collateral) => {
+    if (currentId && collateral.id === currentId) {
+      return false;
+    }
+
+    let collateralSecurityType = "";
+    switch (collateral.type) {
+      case "bank-guarantee":
+        collateralSecurityType = "BANK GUARANTEE";
+        break;
+      case "vehicle":
+        collateralSecurityType = "VEHICLE";
+        break;
+      case "machinery":
+        collateralSecurityType = "MACHINERY AND EQUIPMENT";
+        break;
+      case "property-mortgage":
+        collateralSecurityType = "PROPERTY MORTGAGE";
+        break;
+      case "land-stock":
+        collateralSecurityType = "LAND STOCKS";
+        break;
+      case "savings":
+        collateralSecurityType = "FIXED DEPOSITS AND SAVINGS";
+        break;
+      case "lease":
+        collateralSecurityType = "LEASE";
+        break;
+      default:
+        return false;
+    }
+
+    const isActive =
+      collateral.status === "A" ||
+      collateral.isActive === true ||
+      collateral.active === true ||
+      collateral.status === "ACTIVE" ||
+      collateral.status === undefined;
+
+    const matchesType = collateralSecurityType === securityTypeCode;
+
+    return matchesType && isActive;
+  });
+};
+
 const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
   open,
   onClose,
@@ -33,10 +97,9 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
   appraisalId,
   isLoading = false,
 }) => {
-  // Make sure we have a valid appraisalId
   const validAppraisalId = appraisalId;
+  const hasFetchedCollaterals = useRef(false);
 
-  // Get loading states from the store
   const {
     savingBankGuarantee,
     updatingBankGuarantee,
@@ -52,12 +115,16 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
     updatingVehicle,
     savingLease,
     updatingLease,
+    securityTypes,
+    securityTypesLoading,
+    fetchSecurityTypes,
+    collaterals,
+    fetchCollaterals,
   } = useCollateralStore();
 
-  // Add state to track form submission loading
   const [submitting, setSubmitting] = useState(false);
+  const [formInitialized, setFormInitialized] = useState(false);
 
-  // Determine if any API is currently saving or updating data
   const isSaving =
     savingBankGuarantee ||
     updatingBankGuarantee ||
@@ -75,14 +142,19 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
     updatingLease ||
     submitting;
 
+  const memoizedValidationSchema = useMemo(() => {
+    return createValidationSchema(securityTypes);
+  }, [securityTypes]);
+
   const {
     control,
     handleSubmit,
     watch,
     formState: { errors },
     reset,
+    setValue,
   } = useForm<FormValues>({
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver(memoizedValidationSchema),
     defaultValues: {
       securityType: "",
     },
@@ -94,6 +166,7 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
     handleSubmit: handleLeaseSubmit,
     formState: { errors: leaseErrors },
     reset: resetLeaseForm,
+    setValue: setLeaseValue,
   } = useForm<LeaseProductFormValues>({
     defaultValues: {
       equipmentCost: "",
@@ -111,41 +184,162 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
       insuranceCompany: "",
       referenceNo: "",
     },
+    resolver: yupResolver(leaseProductValidationSchema),
+    mode: "onSubmit",
   });
+
+  useEffect(() => {
+    if (open && productCategory === "Loan") {
+      fetchSecurityTypes();
+    }
+  }, [open, productCategory, fetchSecurityTypes]);
+
+  useEffect(() => {
+    if (open && appraisalId && productCategory === "Loan" && !hasFetchedCollaterals.current) {
+      if (!collaterals || collaterals.length === 0) {
+        hasFetchedCollaterals.current = true;
+        fetchCollaterals(appraisalId);
+      }
+    }
+  }, [open, appraisalId, productCategory, fetchCollaterals]);
+
+  // Reset the ref when modal closes
+  useEffect(() => {
+    if (!open) {
+      hasFetchedCollaterals.current = false;
+    }
+  }, [open]);
 
   useEffect(() => {
     if (open) {
       if (initialData) {
-        reset(initialData);
-        // If we're editing a lease product, we would need to reset the lease form too
-        // This would require mapping the lease data from initialData to LeaseProductFormValues format
+        if (productCategory === "Loan" && securityTypesLoading) {
+          setFormInitialized(false);
+          return;
+        }
+
+        if (productCategory === "Lease" && initialData) {
+          const leaseFormData: LeaseProductFormValues = {
+            id: initialData.id,
+            equipmentType: initialData.leaseEquipType || "",
+            equipmentCost: initialData.leaseCost || "",
+            supplierCode: initialData.leaseSupplierCode || "",
+            equipmentName: initialData.leaseEquipName || "",
+            condition: initialData.leaseCondition || "",
+            category: initialData.leaseCategory || "",
+            depreciationCode: initialData.leaseDepreciationCode || "",
+            vehicleType: initialData.leaseVehicleType || "",
+            manufacturer: initialData.leaseManufacturer || "",
+            model: initialData.leaseModel || "",
+            engineCapacityCC: initialData.leaseEngineCapacityCC || "",
+            engineCapacityHP: initialData.leaseEngineCapacityHP || "",
+            engineNo: initialData.leaseEngineNo || "",
+            chassisNo: initialData.leaseChassisNo || "",
+            vehicleNo: initialData.leaseVehicleNo || "",
+            registrationDate: initialData.leaseRegistrationDate,
+            duplicateKey: initialData.leaseDuplicateKey || "",
+            registrationBookNo: initialData.leaseRegistrationBookNo || "",
+            registrationYear: initialData.leaseRegistrationYear || "",
+            internalMV: initialData.leaseMV || "",
+            internalFSV: initialData.leaseFSV || "",
+            insuranceCompany: initialData.leaseInsuranceCompany || "",
+            referenceNo: initialData.leaseReferenceNo || "",
+          };
+          resetLeaseForm(leaseFormData);
+        } else {
+          reset(initialData);
+        }
+        setFormInitialized(true);
       } else {
         reset({ securityType: "" });
-        resetLeaseForm({
-          equipmentCost: "",
-          equipmentType: "",
-          supplierCode: "",
-          equipmentName: "",
-          condition: "",
-          category: "",
-          depreciationCode: "",
-          vehicleType: "",
-          manufacturer: "",
-          model: "",
-          engineCapacityCC: "",
-          engineCapacityHP: "",
-          insuranceCompany: "",
-          referenceNo: "",
-        });
+        setFormInitialized(true);
+        if (productCategory === "Lease") {
+          resetLeaseForm({
+            equipmentCost: "",
+            equipmentType: "",
+            supplierCode: "",
+            equipmentName: "",
+            condition: "",
+            category: "",
+            depreciationCode: "",
+            vehicleType: "",
+            manufacturer: "",
+            model: "",
+            engineCapacityCC: "",
+            engineCapacityHP: "",
+            insuranceCompany: "",
+            referenceNo: "",
+          });
+        }
       }
+    } else {
+      setFormInitialized(false);
     }
-  }, [open, initialData, reset, resetLeaseForm]);
+  }, [
+    open,
+    initialData,
+    reset,
+    resetLeaseForm,
+    productCategory,
+    isEdit,
+    securityTypesLoading,
+  ]);
 
   const securityType = watch("securityType");
+  const securityCategory = watch("securityCategory");
+  const selectedSecurityType = securityTypes.find(
+    (st) => st.code === securityType || st.description === securityType
+  );
+
+  useEffect(() => {}, [securityType]);
+
+  useEffect(() => {
+    if (securityCategory === "OTHER_SECURITY" && formInitialized) {
+      reset({
+        securityCategory: "OTHER_SECURITY",
+        securityType: "",
+      });
+    }
+  }, [securityCategory, reset, formInitialized]);
+
+  const validateSecurityTypeSelection = (selectedType: string) => {
+    if (!selectedType || isEdit) {
+      return { isValid: true, message: "" };
+    }
+
+    if (!collaterals || collaterals.length === 0) {
+      return { isValid: true, message: "" };
+    }
+
+    const selectedSecurityType = securityTypes.find(
+      (st) => st.code === selectedType || st.description === selectedType
+    );
+
+    if (!selectedSecurityType) {
+      console.warn("Selected security type not found:", selectedType);
+      return { isValid: true, message: "" };
+    }
+
+    const securityTypeDescription = selectedSecurityType.description;
+
+    const hasExistingActive = checkExistingActiveRecord(
+      collaterals,
+      securityTypeDescription,
+      initialData?.id
+    );
+
+    if (hasExistingActive) {
+      return {
+        isValid: false,
+        message: `An active ${securityTypeDescription} record already exists. Only one active record per category is allowed.`,
+      };
+    }
+
+    return { isValid: true, message: "" };
+  };
 
   const onSubmit = async (data: FormValues) => {
     try {
-      // Make sure we have a valid appraisalId
       const validAppraisalId = appraisalId || "";
 
       if (!validAppraisalId) {
@@ -153,82 +347,61 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
         return;
       }
 
+      const validation = validateSecurityTypeSelection(data.securityType);
+      if (!validation.isValid) {
+        message.error(validation.message);
+        return;
+      }
+
       setSubmitting(true);
 
-      // If the security type is VEHICLE, use the vehicle submit function
-      if (data.securityType === "VEHICLE") {
-        console.log("Submitting Vehicle with appraisalId:", validAppraisalId, data);
-        const response = await submitVehicle(data, validAppraisalId, isEdit);
-        if (response) {
-          // Don't need to show success message here as it's already shown in submitVehicle
-          // Still call onSave to update UI
-          onSave(data);
-        } else {
-          // Error message is already shown in submitVehicle
+      const selectedSecurityType = securityTypes.find(
+        (st) =>
+          st.code === data.securityType || st.description === data.securityType
+      );
+
+      if (selectedSecurityType) {
+        let response = null;
+
+        switch (selectedSecurityType.code) {
+          case getSecurityTypeCode(securityTypes, "VEHICLE"):
+            response = await submitVehicle(data, validAppraisalId, isEdit);
+            break;
+          case getSecurityTypeCode(securityTypes, "BANK GUARANTEE"):
+            response = await submitBankGuarantee(
+              data,
+              validAppraisalId,
+              isEdit
+            );
+            break;
+          case getSecurityTypeCode(securityTypes, "LAND STOCKS"):
+            response = await submitLandStock(data, validAppraisalId, isEdit);
+            break;
+          case getSecurityTypeCode(securityTypes, "MACHINERY AND EQUIPMENT"):
+            response = await submitMachinery(data, validAppraisalId, isEdit);
+            break;
+          case getSecurityTypeCode(securityTypes, "PROPERTY MORTGAGE"):
+            response = await submitPropertyMortgage(
+              data,
+              validAppraisalId,
+              isEdit
+            );
+            break;
+          case getSecurityTypeCode(securityTypes, "FIXED DEPOSITS AND SAVINGS"):
+            response = await submitSavings(data, validAppraisalId, isEdit);
+            break;
+          default:
+            console.warn(
+              `Unknown security type: ${selectedSecurityType.description}`
+            );
+            onSave(data);
+            return;
         }
-      }
-      // If the security type is BANK_GUARANTEE, use the special submit function
-      else if (data.securityType === "BANK_GUARANTEE") {
-        console.log("Submitting Bank Guarantee with appraisalId:", validAppraisalId, data);
-        const response = await submitBankGuarantee(data, validAppraisalId, isEdit);
+
         if (response) {
-          // Don't need to show success message here as it's already shown in submitBankGuarantee
-          // Still call onSave to update UI
           onSave(data);
-        } else {
-          // Error message is already shown in submitBankGuarantee
         }
-      }
-      // If the security type is LAND_STOCK, use the land stock submit function
-      else if (data.securityType === "LAND_STOCK") {
-        console.log("Submitting Land Stock with appraisalId:", validAppraisalId, data);
-        const response = await submitLandStock(data, validAppraisalId, isEdit);
-        if (response) {
-          // Don't need to show success message here as it's already shown in submitLandStock
-          // Still call onSave to update UI
-          onSave(data);
-        } else {
-          // Error message is already shown in submitLandStock
-        }
-      }
-      // If the security type is MACHINERY, use the machinery submit function
-      else if (data.securityType === "MACHINERY") {
-        console.log("Submitting Machinery Equipment with appraisalId:", validAppraisalId, data);
-        const response = await submitMachinery(data, validAppraisalId, isEdit);
-        if (response) {
-          // Don't need to show success message here as it's already shown in submitMachinery
-          // Still call onSave to update UI
-          onSave(data);
-        } else {
-          // Error message is already shown in submitMachinery
-        }
-      }
-      // If the security type is PROPERTY_MORTGAGE, use the property mortgage submit function
-      else if (data.securityType === "PROPERTY_MORTGAGE") {
-        console.log("Submitting Property Mortgage with appraisalId:", validAppraisalId, data);
-        const response = await submitPropertyMortgage(data, validAppraisalId, isEdit);
-        if (response) {
-          // Don't need to show success message here as it's already shown in submitPropertyMortgage
-          // Still call onSave to update UI
-          onSave(data);
-        } else {
-          // Error message is already shown in submitPropertyMortgage
-        }
-      }
-      // If the security type is SAVINGS, use the savings submit function
-      else if (data.securityType === "SAVINGS") {
-        console.log("Submitting Savings with appraisalId:", validAppraisalId, data);
-        const response = await submitSavings(data, validAppraisalId, isEdit);
-        if (response) {
-          // Don't need to show success message here as it's already shown in submitSavings
-          // Still call onSave to update UI
-          onSave(data);
-        } else {
-          // Error message is already shown in submitSavings
-        }
-      }
-      else {
-        // For other security types, just use the regular onSave function
+      } else {
         onSave(data);
       }
     } catch (error) {
@@ -239,10 +412,8 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
     }
   };
 
-  // New function to handle lease product form submission
   const onLeaseSubmit = async (data: LeaseProductFormValues) => {
     try {
-      // Make sure we have a valid appraisalId
       const validAppraisalId = appraisalId || "";
 
       if (!validAppraisalId) {
@@ -252,11 +423,16 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
 
       setSubmitting(true);
 
-      console.log("Submitting Lease Product with appraisalId:", validAppraisalId, data);
-      const response = await submitLease(data, validAppraisalId, isEdit);
+      const leaseData = {
+        ...data,
+        id: isEdit && initialData?.id ? initialData.id : data.id,
+      };
+
+      const response = await submitLease(leaseData, validAppraisalId, isEdit);
+
       if (response) {
-        // Call onSave to update UI
-        onSave({ securityType: "LEASE", id: data.id });
+        onSave({ securityType: "LEASE", id: leaseData.id });
+        onClose();
       }
     } catch (error) {
       console.error("Failed to save lease product details:", error);
@@ -271,7 +447,29 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
       handleSubmit(onSubmit)();
     } else if (productCategory === "Lease") {
       handleLeaseSubmit(onLeaseSubmit)();
+    } else {
     }
+  };
+
+  const handleSecurityTypeChange = (value: string) => {
+    if (!value) {
+      setValue("securityType", "");
+      return;
+    }
+
+    if (isEdit) {
+      setValue("securityType", value);
+      return;
+    }
+
+    const validation = validateSecurityTypeSelection(value);
+    if (!validation.isValid) {
+      message.error(validation.message);
+      setValue("securityType", "");
+      return;
+    }
+
+    setValue("securityType", value);
   };
 
   return (
@@ -287,7 +485,9 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
         <Button
           key="submit"
           type="primary"
-          onClick={handleFormSubmit}
+          onClick={() => {
+            handleFormSubmit();
+          }}
           loading={isSaving}
           disabled={isSaving}
         >
@@ -295,87 +495,158 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
         </Button>,
       ]}
     >
-      <Spin spinning={isLoading || isSaving} tip={isLoading ? "Loading details..." : "Saving data..."}>
+      <Spin
+        spinning={
+          isLoading ||
+          isSaving ||
+          (productCategory === "Loan" && securityTypesLoading)
+        }
+        tip={
+          isLoading
+            ? "Loading details..."
+            : securityTypesLoading
+            ? "Loading security types..."
+            : "Saving data..."
+        }
+      >
         <Form layout="vertical" className="space-y-6">
           {productCategory === "Loan" ? (
             <>
               <div className="bg-white p-6 rounded-lg shadow">
-                <h3 className="text-lg font-semibold mb-4">Basic Information</h3>
+                <h3 className="text-lg font-semibold mb-4">
+                  Basic Information
+                </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <Form.Item
                     label="Category"
                     labelCol={{ span: 24 }}
                     wrapperCol={{ span: 24 }}
                   >
-                    <Input value="Individual" disabled className="bg-gray-50" />
-                  </Form.Item>
-
-                  <Form.Item
-                    label="Security Type"
-                    required
-                    validateStatus={errors.securityType ? "error" : ""}
-                    help={errors.securityType?.message}
-                    labelCol={{ span: 24 }}
-                    wrapperCol={{ span: 24 }}
-                  >
                     <Controller
-                      name="securityType"
+                      name="securityCategory"
                       control={control}
                       render={({ field }) => (
-                        <Select {...field} placeholder="Select Security Type" disabled={isSaving}>
-                          <Select.Option value="VEHICLE">Vehicle</Select.Option>
-                          <Select.Option value="MACHINERY">
-                            Machinery
+                        <Select
+                          {...field}
+                          showSearch
+                          placeholder="Select Category"
+                          disabled={isSaving || securityTypesLoading || isEdit}
+                        >
+                          <Select.Option value="MAIN_SECURITY">
+                            Main Security
                           </Select.Option>
-                          <Select.Option value="BANK_GUARANTEE">
-                            Bank Guarantee
-                          </Select.Option>
-                          <Select.Option value="PROPERTY_MORTGAGE">
-                            Property Mortgage
-                          </Select.Option>
-                          <Select.Option value="SAVINGS">Savings</Select.Option>
-                          <Select.Option value="LAND_STOCK">
-                            Land Stock
+                          <Select.Option value="OTHER_SECURITY">
+                            Other Security
                           </Select.Option>
                         </Select>
                       )}
                     />
                   </Form.Item>
+
+                  {securityCategory === "MAIN_SECURITY" && (
+                    <Form.Item
+                      label="Security Type"
+                      required
+                      validateStatus={errors.securityType ? "error" : ""}
+                      help={errors.securityType?.message}
+                      labelCol={{ span: 24 }}
+                      wrapperCol={{ span: 24 }}
+                    >
+                      <Controller
+                        name="securityType"
+                        control={control}
+                        render={({ field }) => (
+                          <Select
+                            {...field}
+                            showSearch
+                            placeholder="Select Security Type"
+                            disabled={isSaving || securityTypesLoading || isEdit}
+                            loading={securityTypesLoading}
+                            onChange={handleSecurityTypeChange}
+                          >
+                            {securityTypes.map((securityType) => (
+                              <Select.Option
+                                key={securityType.code}
+                                value={securityType.code}
+                              >
+                                {securityType.description}
+                              </Select.Option>
+                            ))}
+                          </Select>
+                        )}
+                      />
+                    </Form.Item>
+                  )}
                 </div>
               </div>
 
-              {securityType === "VEHICLE" && (
-                <VehicleForm control={control} errors={errors} />
-              )}
+              {securityCategory === "MAIN_SECURITY" &&
+                selectedSecurityType &&
+                (isEdit ? formInitialized : true) && (
+                  <>
+                    {selectedSecurityType.description === "VEHICLE" && (
+                      <VehicleForm
+                        control={control}
+                        errors={errors}
+                        securityType={selectedSecurityType}
+                      />
+                    )}
 
-              {securityType === "BANK_GUARANTEE" && (
-                <BankGuaranteeForm
-                  control={control}
-                  errors={errors}
-                  appraisalId={validAppraisalId}
-                  onSubmitSuccess={() => onClose()}
-                />
-              )}
+                    {selectedSecurityType.description === "BANK GUARANTEE" && (
+                      <BankGuaranteeForm
+                        control={control}
+                        errors={errors}
+                        appraisalId={validAppraisalId}
+                        onSubmitSuccess={() => onClose()}
+                        securityType={selectedSecurityType}
+                      />
+                    )}
 
-              {securityType === "MACHINERY" && (
-                <MachineryForm control={control} errors={errors} />
-              )}
+                    {selectedSecurityType.description ===
+                      "MACHINERY AND EQUIPMENT" && (
+                      <MachineryForm
+                        control={control}
+                        errors={errors}
+                        securityType={selectedSecurityType}
+                      />
+                    )}
 
-              {securityType === "PROPERTY_MORTGAGE" && (
-                <PropertyMortgageForm control={control} errors={errors} />
-              )}
+                    {selectedSecurityType.description ===
+                      "PROPERTY MORTGAGE" && (
+                      <PropertyMortgageForm
+                        control={control}
+                        errors={errors}
+                        securityType={selectedSecurityType}
+                        setValue={setValue}
+                      />
+                    )}
 
-              {securityType === "SAVINGS" && (
-                <SavingsForm control={control} errors={errors} />
-              )}
+                    {selectedSecurityType.description ===
+                      "FIXED DEPOSITS AND SAVINGS" && (
+                      <SavingsForm
+                        control={control}
+                        errors={errors}
+                        securityType={selectedSecurityType}
+                      />
+                    )}
 
-              {securityType === "LAND_STOCK" && (
-                <LandStockForm control={control} errors={errors} />
-              )}
+                    {selectedSecurityType.description === "LAND STOCKS" && (
+                      <LandStockForm
+                        control={control}
+                        errors={errors}
+                        securityType={selectedSecurityType}
+                      />
+                    )}
+                  </>
+                )}
             </>
           ) : (
             <div className="mt-5">
-              <LeaseProductForm control={leaseControl} errors={leaseErrors} />
+              <LeaseProductForm
+                control={leaseControl}
+                errors={leaseErrors}
+                setValue={setLeaseValue}
+              />
             </div>
           )}
         </Form>

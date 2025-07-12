@@ -184,6 +184,37 @@ export interface ITermDepositPlaced {
   profitOfFrequency: string;
   tdrAmount: string;
 }
+export interface ILiabilityValidationPayload {
+  appraisalIdx: string;
+  section: "Y" | "N";
+  isEnabled: string;
+}
+
+export interface ILiabilityValidationResponse {
+  appraisalIdx: string;
+  section: "Y" | "N";
+  isEnabled: string;
+}
+
+export interface IApplicationValidations {
+  createdBy: string;
+  creationDate: string; // ISO string, e.g. "2025-07-07T09:21:36.871+00:00"
+  lastModifiedBy: string;
+  lastModifiedDate: string; // ISO string
+  id: number;
+  section: string;
+  isMandatory: "1" | "0"; // "1" or "0"
+  isVisible: "1" | "0"; // "1" or "0"
+  prodCode: string;
+  completed: "1" | "0"; // "1" or "0"
+  status: "A" | "I";
+}
+
+export interface ICROCompletePayload {
+  appraisalIdx: string;
+  role: "CRO";
+  status: "C";
+}
 
 interface ILoanState {
   loans: ILoan[];
@@ -213,6 +244,14 @@ interface ILoanState {
   pageableLoans: PagableResponse<ILoanApplication> | null;
   pageableLoading: boolean;
   pageableError: string | null;
+
+  liabilityValidation: ILiabilityValidationResponse[];
+  liabilityValidationLoading: boolean;
+  liabilityValidationError: string | null;
+
+  applicationValidates: IApplicationValidations[];
+  applicationValidationLoading: boolean;
+  applicationValidationError: string | null;
 
   fetchLoans: (status: string, username: string) => Promise<void>;
   fetchLoanById: (id: number) => Promise<void>;
@@ -269,6 +308,15 @@ interface ILoanState {
     page?: number;
     size?: number;
   }) => Promise<void>;
+
+  fetchLiabilityValidation: (appId: string) => Promise<void>;
+  addLiabilityValidation: (
+    payload: ILiabilityValidationPayload
+  ) => Promise<void>;
+
+  fetchApplicationValidationsByAppId: (appId: string) => Promise<void>;
+
+  completeLoanApplication: (payload: ICROCompletePayload) => Promise<void>;
 }
 
 const useLoanStore = create<ILoanState>((set) => ({
@@ -302,6 +350,14 @@ const useLoanStore = create<ILoanState>((set) => ({
   pageableLoans: null,
   pageableLoading: false,
   pageableError: null,
+
+  liabilityValidation: [],
+  liabilityValidationLoading: false,
+  liabilityValidationError: null,
+
+  applicationValidates: [],
+  applicationValidationLoading: false,
+  applicationValidationError: null,
 
   fetchLoans: async (status: string, username: string) => {
     set({ loading: true, error: null });
@@ -739,6 +795,89 @@ const useLoanStore = create<ILoanState>((set) => ({
         pageableError: error.message ?? "Failed to fetch loans",
         pageableLoading: false,
       });
+    }
+  },
+
+  fetchLiabilityValidation: async (appId: string) => {
+    set({ liabilityValidationLoading: true, liabilityValidationError: null });
+    try {
+      const response = await API.get(
+        `/mobixCamsLoan/v1/liability-validations/appraisals/${appId}`
+      );
+      set({
+        liabilityValidation: response.data.data ?? [],
+        liabilityValidationLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      set({
+        liabilityValidationError: error.message,
+        liabilityValidationLoading: false,
+      });
+    }
+  },
+
+  addLiabilityValidation: async (payload: ILiabilityValidationPayload) => {
+    set({ liabilityValidationLoading: true, liabilityValidationError: null });
+    try {
+      await APIAuth.post(`/mobixCamsLoan/v1/liability-validations`, payload);
+      set({
+        // liabilityValidation: response.data,
+        liabilityValidationLoading: false,
+      });
+      notification.success({
+        type: "success",
+        message: "Liability Validation added successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      set({
+        liabilityValidationError: error.message,
+        liabilityValidationLoading: false,
+      });
+    }
+  },
+
+  fetchApplicationValidationsByAppId: async (appId: string) => {
+    set({
+      applicationValidationLoading: true,
+      applicationValidationError: null,
+    });
+
+    try {
+      const response = await APIAuth.get(
+        `/mobixCamsLoan/v1/ibu-web-validations/${appId}`
+      );
+      set({
+        applicationValidates: response.data ?? [],
+        applicationValidationLoading: false,
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      set({
+        applicationValidationLoading: false,
+        applicationValidationError: error.message,
+      });
+    }
+  },
+
+  completeLoanApplication: async (payload: ICROCompletePayload) => {
+    set({ loading: true, error: null });
+    try {
+      await APIAuth.post(
+        `/mobixCamsLoan/v1/appraisals/${payload.appraisalIdx}/roles/${payload.role}/statues/${payload.status}`
+      );
+      set({ loading: false });
+      notification.success({
+        type: "success",
+        message: "Loan application completed successfully",
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      set({ error: error.message, loading: false });
     }
   },
 }));
