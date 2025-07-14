@@ -125,24 +125,25 @@ export default function Approval({  tcDetails, tcAmount }: IApprovalProps) {
       title: "Comment",
       dataIndex: "comment",
       key: "comment",
-      render: ( record) => {
-        if (record.reason != null) {
-          return (
-            <Space
-              direction="vertical"
-              size="middle"
-              style={{ display: "flex" }}
-            >
-              <p> {record.reasonDesc ? record.reasonDesc : ""} </p>
-              <p> {record.comment} </p>
-            </Space>
-          );
-        } else if (record.comment === null) {
-          return ``;
-        } else {
-          return `${record.comment} `;
-        }
-      },
+    //   render: ( text,  record) => {
+    //     console.log(text);
+    //     if (record?.reason != null) {
+    //       return (
+    //         <Space
+    //           direction="vertical"
+    //           size="middle"
+    //           style={{ display: "flex" }}
+    //         >
+    //           <p> {record?.reasonDesc ? record?.reasonDesc : ""} </p>
+    //           <p> {record?.comment} </p>
+    //         </Space>
+    //       );
+    //     } else if (record?.comment === null) {
+    //       return ``;
+    //     } else {
+    //       return `${record?.comment} `;
+    //     }
+    //   },
     },
     {
       title: "created By",
@@ -178,7 +179,7 @@ export default function Approval({  tcDetails, tcAmount }: IApprovalProps) {
     // } else {
     //   setIsRequired(false);
     // }
-    form.validateFields(["comment", "reason"]).then(async () => {
+    form.validateFields(["comment"]).then(async () => {
       try {
         // setAddingData(type);
         let data;
@@ -415,11 +416,24 @@ export default function Approval({  tcDetails, tcAmount }: IApprovalProps) {
                 //     : false
                 // }
                 size="large"
-                onClick={() => handleSubmit("RETURNED")}
+                onClick={() => handleSubmit("REJECTED")}
                 className="mr-1 "
                 shape="round"
               >
                 Reject
+              </Button>
+              <Button
+                type="primary"
+                // disabled={
+                //   addingData ? true
+                //     : false
+                // }
+                size="large"
+                onClick={() => handleSubmit("RETURNED")}
+                className="mr-1 "
+                shape="round"
+              >
+                Return
               </Button>
               <Button
                 type="primary"

@@ -56,10 +56,10 @@ const CreateModal: React.FC<Props> = ({
 
               rules={[
                 { required: true, message: "Required" },
-                {
-                  pattern: /^\d{1,5}$/,
-                  message: "Employee No must be numeric and up to 5 digits",
-                },
+                 {
+      pattern: /^\d{5}$/,
+      message: "Employee No must be exactly 5 digits",
+    },
               ]}
             >
               <Input placeholder="Enter Employee No" />
