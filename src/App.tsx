@@ -155,7 +155,7 @@ const App: React.FC = () => {
                     path="users/*"
                     element={
                       <PrivateRoute allowedRoles={
-                        ["ADMIN"]
+                        ["ADMIN", "BHO", "CRO"]
                       } />}>
                     <Route path="customer" element={<CustomerOnboarding />} />
                     <Route path="customers" element={<Customers />} />
