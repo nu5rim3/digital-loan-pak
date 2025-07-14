@@ -7,7 +7,12 @@ import { getValueOfClientele } from "../../../../utils/Common";
 const { TabPane } = Tabs;
 const { Title } = Typography;
 
-const OnBoardingDetails: React.FC<{ appraisalId: string , tcDetails: any, clienteles: any[] }> = ({ appraisalId, tcDetails, clienteles }) => {
+const OnBoardingDetails: React.FC<{
+  appraisalId: string;
+  tcDetails: any;
+  clienteles: any[];
+  amountsOfTcDetails: any;
+}> = ({ appraisalId, tcDetails, clienteles, amountsOfTcDetails }) => {
   // const [loading, setLoading] = useState(true);
 
   // useEffect(() => {
@@ -36,18 +41,25 @@ const OnBoardingDetails: React.FC<{ appraisalId: string , tcDetails: any, client
 
   return (
     <>
-      <Title level={5} className="mb-3">Client Onboarding</Title>
+      <Title level={5} className="mb-3">
+        Client Onboarding
+      </Title>
       <Tabs tabPosition="top">
         {clienteles?.map((clientele, index) => (
           <TabPane
-            tab={`${getValueOfClientele(clientele?.type)} - ${clientele?.fullName}`}
+            tab={`${getValueOfClientele(clientele?.type)} - ${
+              clientele?.fullName
+            }`}
             key={index}
           >
             <InitialDetails clientele={clientele} appraisalId={appraisalId} />
             {clientele.type === "C" && (
               <div className="mt-5">
                 {/* <Title level={5} className="mt-4">Loan Installment Calculation</Title> */}
-                <CalculationDetails tcDetails={tcDetails} />
+                <CalculationDetails
+                  tcDetails={tcDetails}
+                  amountsOfTcDetails={amountsOfTcDetails}
+                />
               </div>
             )}
           </TabPane>

@@ -1,32 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Card, Table, Spin } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import API from "../../../../services/APIServices";
 
 interface Props {
-  product: string;
-  appraisalId: string;
+  customerDetails: any;
 }
 
-const CreditScoreBusinessFacts: React.FC<Props> = ({ product, appraisalId }) => {
-  const [loading, setLoading] = useState(false);
-  const [customerDetails, setCustomerDetails] = useState<any>(null);
+const CreditScoreBusinessFacts: React.FC<Props> = ({ customerDetails }) => {
+  // const [loading, setLoading] = useState(false);
+  // const [customerDetails, setCustomerDetails] = useState<any>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (product && appraisalId) {
-        setLoading(true);
-        const [customerResponse] = await Promise.all([
-         API.mobixCamsCredit.getCustomerCreditScoreDetails(product, appraisalId),
-        //   API.mobixCamsCredit.getSummaryDetails(appraisalId),
-        ]);
-        setCustomerDetails(customerResponse);
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (product && appraisalId) {
+  //       setLoading(true);
+  //       const [customerResponse] = await Promise.all([
+  //        API.mobixCamsCredit.getCustomerCreditScoreDetails(product, appraisalId),
+  //       //   API.mobixCamsCredit.getSummaryDetails(appraisalId),
+  //       ]);
+  //       setCustomerDetails(customerResponse);
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchData();
-  }, [product, appraisalId]);
+  //   fetchData();
+  // }, [product, appraisalId]);
 
   const data = [
     [
@@ -100,7 +98,7 @@ const CreditScoreBusinessFacts: React.FC<Props> = ({ product, appraisalId }) => 
 
   return (
     <Card>
-      <Spin spinning={loading} tip="Loading...">
+      <Spin spinning={!customerDetails} tip="Loading...">
         <Table
           bordered
           columns={columns}

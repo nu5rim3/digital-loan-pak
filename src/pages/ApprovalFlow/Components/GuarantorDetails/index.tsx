@@ -34,10 +34,12 @@ const { Panel } = Collapse;
 const { Title } = Typography;
 
 interface GuarantorDetailsProps {
-  tcDetails: any;
+  productDetails: any;
+  stakeholders: any;
+  tcAmount: any;
 }
 
-const GuarantorDetails: React.FC<GuarantorDetailsProps> = ({ tcDetails }) => {
+const GuarantorDetails: React.FC<GuarantorDetailsProps> = ({ stakeholders, tcAmount, productDetails }) => {
   const { appraisalId } = useParams();
   const [loading, setLoading] = useState(true);
   const [loanDetails, setLoanDetails] = useState<any>({});
@@ -60,27 +62,27 @@ const GuarantorDetails: React.FC<GuarantorDetailsProps> = ({ tcDetails }) => {
         // const tc: any = await APIAuth.get(
         //   `/mobixCamsCredit/v1/credit/tc/${appraisalId}`
         // );
-        if (tcDetails?.tcNo) {
-          // const amounts = await getAmountsOfTcDetails(tc.data.tcNo);
-          const amounts: any = await APIAuth.post(
-            `/mobixCamsCredit/v1/credit/tc/getTCDetails`,
-            { tcNo: tcDetails.tcNo, mode: "T" }
-          );
-          setLoanDetails(amounts?.data);
-        }
+        // if (tcDetails?.tcNo) {
+        //   // const amounts = await getAmountsOfTcDetails(tc.data.tcNo);
+        //   const amounts: any = await APIAuth.post(
+        //     `/mobixCamsCredit/v1/credit/tc/getTCDetails`,
+        //     { tcNo: tcDetails.tcNo, mode: "T" }
+        //   );
+          setLoanDetails(tcAmount);
+        // }
 
         // const master = await getMasterData(appraisalId);
-        const master:any = await APIAuth.get(
-          `/mobixCamsClientele/v1/clienteles/stakeholder/${appraisalId}/appraisal`
-        );
-        setGuarantors(master?.data?.filter((item: any) => item.stkType === "G"));
+        // const master:any = await APIAuth.get(
+        //   `/mobixCamsClientele/v1/clienteles/stakeholder/${appraisalId}/appraisal`
+        // );
+        setGuarantors(stakeholders?.filter((item: any) => item.stkType === "G"));
 
         // const common = await getOriginationCommon(tc?.pTrhdLType);
-        const common:any = await APIAuth.get(
-          `/mobixCamsCommon/v1/common-details/product/${tcDetails
-          ?.pTrhdLType}`
-        );
-        setOriginationCommon(common?.data);
+        // const common:any = await APIAuth.get(
+        //   `/mobixCamsCommon/v1/common-details/product/${tcDetails
+        //   ?.pTrhdLType}`
+        // );
+        setOriginationCommon(productDetails || {});
       } catch (err) {
         console.error("Guarantor details loading failed", err);
       } finally {

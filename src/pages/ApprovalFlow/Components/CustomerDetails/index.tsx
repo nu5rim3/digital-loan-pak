@@ -42,9 +42,10 @@ const { Panel } = Collapse;
 interface CustomerDetailsProps {
   tcDetails: any;
   stakeholders: any[];
+  productDetails: any;
 }
 
-const CustomerDetails: FC<CustomerDetailsProps> = ({ tcDetails, stakeholders }) => {
+const CustomerDetails: FC<CustomerDetailsProps> = ({ tcDetails, stakeholders, productDetails }) => {
   const { appraisalId } = useParams<{ appraisalId: string }>();
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -66,7 +67,7 @@ const CustomerDetails: FC<CustomerDetailsProps> = ({ tcDetails, stakeholders }) 
         //   const tcDetails = await getTcDetails(appraisalId);
           // const tcDetails = await APIAuth.get(`/mobixCamsCredit/v1/credit/tc/${appraisalId}`);
           //   const originationCommon = await getOriginationCommon(tcDetails.pTrhdLType);
-          const originationCommon = await APIAuth.get(`/mobixCamsCommon/v1/common-details/product/${tcDetails.pTrhdLType}`);
+          // const originationCommon = await APIAuth.get(`/mobixCamsCommon/v1/common-details/product/${tcDetails.pTrhdLType}`);
           
         //   const masterResponse = await getMasterData(appraisalId);
           // const masterResponse = await APIAuth.get(`/mobixCamsClientele/v1/clienteles/stakeholder/${appraisalId}/appraisal`);
@@ -83,7 +84,7 @@ const CustomerDetails: FC<CustomerDetailsProps> = ({ tcDetails, stakeholders }) 
             recipient: clienteleRes?.data?.recipientDetailsDtoList?.[0] || {},
             other: clienteleRes?.data?.otherInfoDetailsDtoList?.[0] || {},
             cheque: clienteleRes?.data?.postDatedChequeDtoList || [],
-            originationCommon: originationCommon?.data,
+            originationCommon:productDetails || {},
           });
         } catch (err) {
           console.error("Customer details loading failed", err);

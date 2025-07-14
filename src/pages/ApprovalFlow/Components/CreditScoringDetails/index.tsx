@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Card, Collapse, Spin, message } from "antd";
+import { Card, Collapse, Spin } from "antd";
 // import { getTcDetails } from "services/tc.service";
 // import CreditScoreCusDetails from "./CreditScoreCustomerDetails";
 // import CreditScoreBusinessFacts from "./CreditScoreBusiness";
@@ -13,21 +13,22 @@ import CreditScoreBusinessFacts from "./CreditScoreBusinessFacts";
 
 const { Panel } = Collapse;
 
-const CreditScoringDetails: React.FC = () => {
+const CreditScoringDetails: React.FC<{ tcDetails: any }> = ({ tcDetails }) => {
   const { appraisalId } = useParams<{ appraisalId: string }>();
 
   const [loading, setLoading] = useState(true);
-  const [tcDetails, setTcDetails] = useState<any>({});
+   const [customerDetails, setCustomerDetails] = useState<any>(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      if ( appraisalId) {
+      if (appraisalId && tcDetails) {
+        const product = tcDetails?.pTrhdLType || "";
         setLoading(true);
         try {
-          const data = await API.mobixCamsCredit.getTcDetails(appraisalId);
-          setTcDetails(data.data || {});
-        } catch (e) {
-          message.error("Failed to fetch TC details");
+          const response = await API.mobixCamsCredit.getCustomerCreditScoreDetails(appraisalId, product);
+          setCustomerDetails(response?.data);
+        } catch (error) {
+          console.error("Failed to load credit score details:", error);
         } finally {
           setLoading(false);
         }
@@ -35,25 +36,24 @@ const CreditScoringDetails: React.FC = () => {
     };
 
     fetchData();
-  }, [ appraisalId]);
+  }, [ appraisalId, tcDetails]);
 
-  const product = tcDetails?.pTrhdLType || "";
 
   return (
     <Card>
       <Spin spinning={loading} tip="Loading...">
         <Collapse accordion>
           <Panel header="FINAL CREDIT SCORING SUMMARY" key="summary">
-            <SummaryBar product={product} appraisalId={appraisalId!} />
+            <SummaryBar customerDetails={customerDetails} />
           </Panel>
           <Panel header="INITIAL DETAILS OF CUSTOMER" key="initial">
-            <CustomerDetails product={product} appraisalId={appraisalId!} />
+            <CustomerDetails customerDetails={customerDetails} />
           </Panel>
           <Panel header="CREDIT SCORES FOR CUSTOMER DETAILS" key="customer">
-            <CreditScoreCusDetails product={product} appraisalId={appraisalId!} />
+            <CreditScoreCusDetails customerDetails={customerDetails} />
           </Panel>
           <Panel header="CREDIT SCORES FOR BUSINESS RELATED FACTS" key="business">
-            <CreditScoreBusinessFacts product={product} appraisalId={appraisalId!} />
+            <CreditScoreBusinessFacts customerDetails={customerDetails} />
           </Panel>
         </Collapse>
       </Spin>

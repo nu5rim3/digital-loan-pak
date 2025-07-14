@@ -27,7 +27,11 @@ const renderDesc = (label: string, value: any) => (
   <Descriptions.Item label={label}>{value || "\u00A0"}</Descriptions.Item>
 );
 
-const WitnessDetails: React.FC= () => {
+interface GuarantorDetailsProps {
+  stakeholders: any;
+}
+
+const WitnessDetails: React.FC<GuarantorDetailsProps> = ({ stakeholders }) => {
   const { appraisalId } = useParams();
   const [loading, setLoading] = useState(true);
   const [witnesses, setWitnesses] = useState<any[]>([]);
@@ -43,8 +47,8 @@ const WitnessDetails: React.FC= () => {
         try {
         //   const master = await getMasterData(appraisalId);
         //   setWitnesses(master.filter((item: any) => item.stkType === "W"));
-          const master:any = await APIAuth.get(`/mobixCamsClientele/v1/clienteles/stakeholder/${appraisalId}/appraisal`);
-          setWitnesses(master?.data?.filter((item: any) => item.stkType === "W"));
+          // const master:any = await APIAuth.get(`/mobixCamsClientele/v1/clienteles/stakeholder/${appraisalId}/appraisal`);
+          setWitnesses(stakeholders?.filter((item: any) => item.stkType === "W"));
         } catch (err) {
           message.error("Failed to fetch witness list");
         } finally {

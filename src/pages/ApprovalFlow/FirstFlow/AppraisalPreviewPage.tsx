@@ -17,6 +17,7 @@ import CreditScoringDetails from "../Components/CreditScoringDetails";
 import ImageDetails from "../Components/ImageDetails";
 import UndertakingDetails from "../Components/UndertakingDetails";
 import ReportDetails from "../Components/ReportDetails";
+import ApprovalDetails from "../Components/ApprovalDetails";
 // import CustomerDetails from "./components/CustomerDetails";
 // import GuarantorDetails from "./components/GuarantorDetails";
 // import WitnessDetails from "./components/WitnessDetails";
@@ -45,32 +46,42 @@ const AppraisalPreviewPage: React.FC = () => {
   const [tcDetails,setTcDetails] = useState<any>(null);
   const [clienteles, setClienteles] = useState<any[]>([]);
   const [stakeholders, setStakeholders] = useState<any[]>([]);
+  const [tcAmount, setTcAmount] = useState<any[]>([]);
+  const [productDetails, setProductDetails] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchMetaData = async () => {
         console.log('ttttttt');
       try {
-        // const onboarding = await getOnBoardClienteles(appraisalId);
         const onboarding:any = await APIAuth.get(
         `/mobixCamsLoan/v1/appraisals/${appraisalId}/clienteles`,
       );
         const sorted = onboarding?.data?.clienteles?.sort((a: any, b: any) =>
           a.type.toLowerCase().localeCompare(b.type.toLowerCase())
         );
-        // console.log('sorted clienteles', sorted);
         setClienteles(sorted);
-      console.log('onboardingyyyyy', onboarding);
         setIsReturned(onboarding?.data?.isReturned === 'Y');
 
-        const tcDetails:any = await API.get(
+        const tcDetailsRes:any = await API.get(
           `/mobixCamsCredit/v1/credit/tc/${appraisalId}`);
 
-          console.log('tcDetailsxxxxxxxx', tcDetails);
-        setTcDetails(tcDetails?.data || {});
+          console.log('tcDetailsxxxxxxxx', tcDetailsRes);
+        setTcDetails(tcDetailsRes?.data || {});
 
         const stakeholderResponse = await APIAuth.get(`/mobixCamsClientele/v1/clienteles/stakeholder/${appraisalId}/appraisal`);
 setStakeholders(stakeholderResponse?.data || []);
         console.log('stakeholders', stakeholderResponse?.data);
+
+        const tcAmountsRes: any = await APIAuth.post(
+                    `/mobixCamsCredit/v1/credit/tc/getTCDetails`,
+                    { tcNo: tcDetailsRes?.data?.tcNo, mode: "T" }
+                  );
+        
+        setTcAmount(tcAmountsRes?.data || []);
+        console.log('tcAmount', tcAmountsRes?.data);
+
+        const originationCommon = await APIAuth.get(`/mobixCamsCommon/v1/common-details/product/${tcDetailsRes?.data?.pTrhdLType}`);
+        setProductDetails(originationCommon?.data || []);
 
         const goldTypes = ['EG', 'GL', 'GN', 'MG'];
         if (goldTypes.includes(tcDetails?.data?.pTrhdLType)) {
@@ -99,21 +110,21 @@ setStakeholders(stakeholderResponse?.data || []);
       // defaultActiveKey={["onboarding","customer","loan","liability","creditscore","images"]}  
       className="custom-collapse">
         <Panel header="ON BOARDING DETAILS" key="onboarding">
-          <OnBoardingDetails appraisalId={appraisalId || ''} tcDetails={tcDetails} clienteles={clienteles} />
+          <OnBoardingDetails appraisalId={appraisalId || ''} tcDetails={tcDetails} clienteles={clienteles} amountsOfTcDetails={tcAmount}/>
         </Panel>
 
         <Panel header="CUSTOMER DETAILS" key="customer">
-          <CustomerDetails tcDetails={tcDetails} stakeholders={stakeholders} />
+          <CustomerDetails tcDetails={tcDetails} stakeholders={stakeholders} productDetails={productDetails}/>
         </Panel>
 
         {!isGoldProduct && (
           <Panel header="GUARANTOR DETAILS" key="guarantor">
-            <GuarantorDetails tcDetails={tcDetails}/>
+            <GuarantorDetails stakeholders={stakeholders} tcAmount={tcAmount} productDetails={productDetails}/>
           </Panel>
         )}
 
         <Panel header="WITNESS DETAILS" key="witness">
-          <WitnessDetails />
+          <WitnessDetails stakeholders={stakeholders} />
         </Panel>
 
         <Panel header="LOAN DETAILS" key="loan">
@@ -136,7 +147,7 @@ setStakeholders(stakeholderResponse?.data || []);
 
         {!isGoldProduct && (
           <Panel header="CREDIT SCORE DETAILS" key="creditscore">
-            <CreditScoringDetails />
+            <CreditScoringDetails tcDetails={tcDetails}/>
           </Panel>
         )}
 
@@ -144,9 +155,9 @@ setStakeholders(stakeholderResponse?.data || []);
           <ImageDetails/>
         </Panel>
 
-        <Panel header="GEO DETAILS" key="geo">
-          {/* <GeoDetails appraisalId={appraisalId} /> */}
-        </Panel>
+        {/* <Panel header="GEO DETAILS" key="geo">
+          <GeoDetails appraisalId={appraisalId} />
+        </Panel> */}
 
         <Panel header="CUSTOMER UNDERTAKING" key="undertaking">
           <UndertakingDetails/>
@@ -157,7 +168,7 @@ setStakeholders(stakeholderResponse?.data || []);
         </Panel>
 
         <Panel header="APPROVAL DETAILS" key="approval">
-          {/* <ApprovalDetails appraisalId={appraisalId} /> */}
+          <ApprovalDetails tcDetails={tcDetails} tcAmount={tcAmount}/>
         </Panel>
       </Collapse>
     </Card>

@@ -1,35 +1,33 @@
-import React, { useEffect, useState } from "react";
-import { Card, Spin, Table, Typography, message } from "antd";
-import API from "../../../../services/APIServices";
+import React from "react";
+import { Card, Spin, Table, Typography } from "antd";
 
 const { Title } = Typography;
 
 interface Props {
-  product: string;
-  appraisalId: string;
+  customerDetails: any;
 }
 
-const CreditScoreCusDetails: React.FC<Props> = ({ product, appraisalId }) => {
-  const [loading, setLoading] = useState(true);
-  const [customerDetails, setCustomerDetails] = useState<any>(null);
+const CreditScoreCusDetails: React.FC<Props> = ({ customerDetails }) => {
+  // const [loading, setLoading] = useState(true);
+  // const [customerDetails, setCustomerDetails] = useState<any>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!product || !appraisalId) return;
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (!product || !appraisalId) return;
 
-      setLoading(true);
-      try {
-        const customerResponse = await API.mobixCamsCredit.getCustomerCreditScoreDetails(product, appraisalId)
-        setCustomerDetails(customerResponse);
-      } catch (e) {
-        message.error("Failed to load customer score details");
-      } finally {
-        setLoading(false);
-      }
-    };
+  //     setLoading(true);
+  //     try {
+  //       const customerResponse = await API.mobixCamsCredit.getCustomerCreditScoreDetails(product, appraisalId)
+  //       setCustomerDetails(customerResponse);
+  //     } catch (e) {
+  //       message.error("Failed to load customer score details");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchData();
-  }, [product, appraisalId]);
+  //   fetchData();
+  // }, [product, appraisalId]);
 
   const data: { key: string; particular1: string; score1: string; particular2?: string; score2?: string }[] = [
     {
@@ -100,7 +98,7 @@ const CreditScoreCusDetails: React.FC<Props> = ({ product, appraisalId }) => {
   ];
 
   return (
-    <Spin spinning={loading} tip="Loading...">
+    <Spin spinning={!customerDetails} tip="Loading...">
       <Card>
         <Title level={5}>Customer Credit Scoring Details</Title>
         <Table

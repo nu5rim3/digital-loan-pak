@@ -1,33 +1,31 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Card, Col, Row, Progress, Spin, Tag } from "antd";
-import API from "../../../../services/APIServices";
 
 interface SummaryBarProps {
-  product: string;
-  appraisalId: string;
+  customerDetails: any;
 }
 
-const SummaryBar: React.FC<SummaryBarProps> = ({ product, appraisalId }) => {
-  const [loading, setLoading] = useState(true);
-  const [customerDetails, setCustomerDetails] = useState<any>(null);
+const SummaryBar: React.FC<SummaryBarProps> = ({ customerDetails }) => {
+  // const [loading, setLoading] = useState(true);
+  // const [customerDetails, setCustomerDetails] = useState<any>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (product && appraisalId) {
-        setLoading(true);
-        try {
-          const response = await API.mobixCamsCredit.getCustomerCreditScoreDetails(appraisalId, product);
-          setCustomerDetails(response?.data);
-        } catch (error) {
-          console.error("Failed to load credit score details:", error);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (product && appraisalId) {
+  //       setLoading(true);
+  //       try {
+  //         const response = await API.mobixCamsCredit.getCustomerCreditScoreDetails(appraisalId, product);
+  //         setCustomerDetails(response?.data);
+  //       } catch (error) {
+  //         console.error("Failed to load credit score details:", error);
+  //       } finally {
+  //         setLoading(false);
+  //       }
+  //     }
+  //   };
 
-    fetchData();
-  }, [product, appraisalId]);
+  //   fetchData();
+  // }, [product, appraisalId]);
 
   const score = customerDetails?.totalCreditScore ?? 0;
   const getColor = (score: number) => {
@@ -38,7 +36,7 @@ const SummaryBar: React.FC<SummaryBarProps> = ({ product, appraisalId }) => {
   };
 
   return (
-    <Spin spinning={loading}>
+    <Spin spinning={!customerDetails} tip="Loading...">
       <Card>
         <Row gutter={[16, 16]}>
           <Col span={24}>
