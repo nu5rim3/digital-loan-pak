@@ -106,13 +106,13 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
                     label: 'Approvals For First Flow',
                     key: '3-1',
                     icon: <ProjectOutlined />,
-                    onClick: () => navigate(`/${mainNavigation}/approval/firstFlow`)
+                    onClick: () => navigate(`/${mainNavigation}/approval/list/firstFlow`)
                 },
                 {
                     label: 'Approvals For Second Flow',
                     key: '3-2',
                     icon: <ProjectOutlined />,
-                    onClick: () => navigate(`/${mainNavigation}/approval/secondFlow`)
+                    onClick: () => navigate(`/${mainNavigation}/approval/list/secondFlow`)
                 },
             ]
         },

@@ -17,14 +17,14 @@ const ImageDetails: React.FC = () => {
         try {
           setLoading(true);
           const images:any = await API.mobixCamsLoan.getAllImages(appraisalId);
-          const result = [...images?.data?.reduce((r:any, { imgMasterCategory, imgSubCategory, hashIdentifier }:any) => {
+          const result = [...images?.data?.reduce((r:any, { imgMasterCategory, imgSubCategory, hashIdentifier, latitude, longitude }:any) => {
             if (!r.has(imgMasterCategory)) {
               r.set(imgMasterCategory, {
                 imgMasterCategory,
                 images: []
               });
             }
-            r.get(imgMasterCategory).images?.push({ imgSubCategory, hashIdentifier });
+            r.get(imgMasterCategory).images?.push({ imgSubCategory, hashIdentifier, latitude, longitude });
             return r;
           }, new Map).values()];
 

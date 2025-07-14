@@ -176,10 +176,8 @@ const App: React.FC = () => {
                       <PrivateRoute allowedRoles={
                         ["ADMIN", "BHO", "CRO"]
                       } />}>
-                    <Route path="firstFlow" element={<GeneralAppraisalList />} />
-                    <Route path="firstFlow/:appraisalId" element={<AppraisalPreviewPage />} />
-                    <Route path="secondFlow" element={<UnderConstruction />} />
-                    <Route path="secondFlow/:appraisalId" element={<UnderConstruction />} />
+                    <Route path="list/:flow" element={<GeneralAppraisalList />} />
+                    <Route path="preview/:flow/:appraisalId" element={<AppraisalPreviewPage />} />
                   </Route>
 
                   <Route

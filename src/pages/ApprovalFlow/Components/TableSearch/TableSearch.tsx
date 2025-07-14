@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Table, Input, Select, Button, DatePicker, Row, Col, Card, Tag, Typography } from "antd";
 import dayjs from "dayjs";
 import { mainURL } from "../../../../App";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useUserStore from "../../../../store/userStore";
 import API from "../../../../services/APIServices";
 
@@ -35,6 +35,7 @@ const GeneralAppraisalList: React.FC = () => {
   const [dateRange, setDateRange] = useState<[any, any] | null>(null);
 
   const { currentRole } = useUserStore()
+  const {flow} = useParams<{ flow: string }>();
 
   const navigate = useNavigate();
   const { Link } = Typography;
@@ -64,9 +65,18 @@ const GeneralAppraisalList: React.FC = () => {
       //   { params }
       // );
 
-      const res = await API.mobixCamsLoan.getFirstFlowApprovals({
+      let res
+
+      if(flow === "firstFlow") {
+ res = await API.mobixCamsLoan.getFirstFlowApprovals({
         ...params,
       });
+      }else{
+ res = await API.mobixCamsLoan.getSecondFlowApprovals({
+        ...params,
+      });
+      }
+      
 
       setData(res.data.content);
       setTotal(res.data.totalElements);
@@ -79,7 +89,7 @@ const GeneralAppraisalList: React.FC = () => {
 
   useEffect(() => {
     fetchData();
-  }, [page, status]);
+  }, [page, status, flow]);
 
   const columns = [
     {
@@ -135,14 +145,14 @@ const GeneralAppraisalList: React.FC = () => {
       title: "Action",
       render: (_: any, record: any) => (
         <Link onClick={() => 
-         navigate(`${mainURL}/approval/firstFlow/${record.idx}`)
+         navigate(flow == "firstFlow" ?   `${mainURL}/approval/preview/firstFlow/${record.idx}` : `${mainURL}/approval/preview/secondFlow/${record.idx}`)
         }>Preview</Link>
       ),
     },
   ];
 
   return (
-    <Card title="General Appraisal Origination" style={{ marginTop: 16 }}>
+    <Card title={flow == "firstFlow" ? "First Flow Appraisal Origination" : "Second Flow Appraisal Origination"} style={{ marginTop: 16 }}>
       <Row gutter={[16, 16]}>
         <Col><Select value={status} onChange={setStatus} style={{ width: 180 }} options={statusOptions} /></Col>
         <Col><Select value={searchField} onChange={setSearchField} style={{ width: 160 }} options={filterOptions} /></Col>
