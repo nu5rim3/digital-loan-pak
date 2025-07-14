@@ -174,7 +174,7 @@ const App: React.FC = () => {
                     path="approval/*"
                     element={
                       <PrivateRoute allowedRoles={
-                        ["ADMIN", "CO", "BM", "CC", "IBU", "IMD", "CR", "CA", "CAD", "AM", "RBU", "COO", "CEO"]
+                        ["ADMIN", "CO", "BHO", "CC", "IBU", "IMD", "CR", "CA", "CAD", "AM", "RBH", "COO", "CEO"]
                       } />}>
                     <Route path="list/:flow" element={<GeneralAppraisalList />} />
                     <Route path="preview/:flow/:appraisalId" element={<AppraisalPreviewPage />} />
