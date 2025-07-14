@@ -39,14 +39,14 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
             key: '1',
             icon: <ProductOutlined />,
             onClick: () => navigate(`/${mainNavigation}/dashboard`),
-            roles: ["ADMIN", "EDITOR", "VIEWER"],
+            roles: ["ADMIN"],
         },
         {
             type: 'submenu',
             icon: <RubyOutlined />,
             label: 'Access and Permission',
             key: '2',
-            roles: ["ADMIN", "EDITOR"],
+            roles: ["ADMIN"],
             children: [
                 {
                     label: 'Roles',
@@ -73,7 +73,7 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
             icon: <NodeIndexOutlined />,
             label: 'Approval and Ratification',
             key: '4',
-            roles: ["ADMIN", "EDITOR", "VIEWER"],
+            roles: ["ADMIN"],
             children: [
                 {
                     label: 'Group',
@@ -100,7 +100,7 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
             icon: <BlockOutlined />,
             label: 'Approval Flow',
             key: '3',
-            roles: ["ADMIN", "EDITOR", "VIEWER"],
+            roles: ["ADMIN", "CO", "BM", "CC", "IBU", "IMD", "CR", "CA", "CAD", "AM", "RBU", "COO", "CEO"],
             children: [
                 {
                     label: 'Approvals For First Flow',
@@ -121,7 +121,7 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
             icon: <TeamOutlined />,
             label: 'Application Users',
             key: '5',
-            roles: ["ADMIN", "BHO"],
+            roles: ["ADMIN"],
             children: [
                 {
                     label: 'Customers',
@@ -148,7 +148,7 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
             icon: <RocketOutlined />,
             label: 'Loan Application',
             key: '6',
-            roles: ["ADMIN", 'BHO', 'CRO'],
+            roles: ["ADMIN", 'CRO'],
             children: [
                 {
                     label: 'Loan Request',
