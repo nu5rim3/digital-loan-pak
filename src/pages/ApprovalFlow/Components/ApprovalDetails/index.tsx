@@ -8,11 +8,13 @@ import Approval from "./Approval";
 export interface IApprovalEndProps {
   tcDetails: any;
   tcAmount: any;
+  isGoldProduct: boolean;
 }
 
 export default function ApprovalEnd({
   tcDetails,
   tcAmount,
+  isGoldProduct
 }: IApprovalEndProps) {
   // const [fileList, setFileList] = useState<UploadFile[]>([])
   // const {
@@ -48,6 +50,7 @@ export default function ApprovalEnd({
         fileList={[]}
         tcDetails={tcDetails}
         tcAmount={tcAmount}
+        isGoldProduct={isGoldProduct}
       />
     </div>
   );
