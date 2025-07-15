@@ -170,7 +170,7 @@ setStakeholders(stakeholderResponse?.data || []);
         </Panel>
 
         <Panel header="APPROVAL DETAILS" key="approval">
-          <ApprovalDetails tcDetails={tcDetails} tcAmount={tcAmount}/>
+          <ApprovalDetails tcDetails={tcDetails} tcAmount={tcAmount} isGoldProduct={isGoldProduct}/>
         </Panel>
       </Collapse>
     </Card>

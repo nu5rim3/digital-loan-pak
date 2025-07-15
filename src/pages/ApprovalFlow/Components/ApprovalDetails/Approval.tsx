@@ -25,10 +25,11 @@ import { mainURL } from "../../../../App";
 export interface IApprovalProps {
   fileList: any;  
   tcDetails:any
-    tcAmount:any
+    tcAmount:any;
+    isGoldProduct:boolean
 }
 
-export default function Approval({  tcDetails, tcAmount }: IApprovalProps) {
+export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IApprovalProps) {
   // approvalSteps
 
   // const {
@@ -198,7 +199,7 @@ export default function Approval({  tcDetails, tcAmount }: IApprovalProps) {
             loanAmount: tcAmount?.object?.loanAmount,
             loanTerm: tcDetails?.pTrhdTerm,
             roleCode: currentRole?.code,
-            loanType: tcDetails.pFacilityType,
+            loanType: isGoldProduct? "GOLD" : "NORMAL",
             flowNo: flow === "firstFlow"? 1 : 2,
             // loanRate: financialDetails?.data?.pTrhdTr,
             comment: form.getFieldValue("comment"),
