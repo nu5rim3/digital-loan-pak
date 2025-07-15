@@ -59,6 +59,8 @@ const AppraisalPreviewPage: React.FC = () => {
         const sorted = onboarding?.data?.clienteles?.sort((a: any, b: any) =>
           a.type.toLowerCase().localeCompare(b.type.toLowerCase())
         );
+        console.log('onbo 1', onboarding.data);
+        console.log('onbo 2', sorted);
         setClienteles(sorted);
         setIsReturned(onboarding?.data?.isReturned === 'Y');
 

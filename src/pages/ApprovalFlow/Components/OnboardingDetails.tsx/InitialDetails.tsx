@@ -16,6 +16,8 @@ useEffect(() => {
   const fetchData = async () => {
     setLoading(true);
 
+    console.log('clientele', clientele);
+
     try {
       const [rulesRes, cribRes, approvalRes] = await Promise.allSettled([
         APIAuth.get(`/mobixCamsClientele/v1/clienteles/verifications/get-by-clientele/${clientele.idx}`),
