@@ -13,6 +13,8 @@ const OnBoardingDetails: React.FC<{
   clienteles: any[];
   amountsOfTcDetails: any;
 }> = ({ appraisalId, tcDetails, clienteles, amountsOfTcDetails }) => {
+
+  console.log('innnn', clienteles);
   // const [loading, setLoading] = useState(true);
 
   // useEffect(() => {

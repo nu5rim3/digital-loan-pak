@@ -7,6 +7,7 @@ import { mainURL } from "../../../../App";
 import { useNavigate, useParams } from "react-router-dom";
 import useUserStore from "../../../../store/userStore";
 import API from "../../../../services/APIServices";
+import { EyeOutlined } from "@ant-design/icons";
 
 const { RangePicker } = DatePicker;
 
@@ -142,13 +143,22 @@ const GeneralAppraisalList: React.FC = () => {
         ),
     },
     {
-      title: "Action",
-      render: (_: any, record: any) => (
-        <Link onClick={() => 
-         navigate(flow == "firstFlow" ?   `${mainURL}/approval/preview/firstFlow/${record.idx}` : `${mainURL}/approval/preview/secondFlow/${record.idx}`)
-        }>Preview</Link>
-      ),
-    },
+  title: "Action",
+  render: (_: any, record: any) => (
+    <Link
+      onClick={() =>
+        navigate(
+          flow === "firstFlow"
+            ? `${mainURL}/approval/preview/firstFlow/${record.idx}`
+            : `${mainURL}/approval/preview/secondFlow/${record.idx}`
+        )
+      }
+    >
+      <EyeOutlined style={{ marginRight: 4 }} />
+      Preview
+    </Link>
+  ),
+},
   ];
 
   return (
