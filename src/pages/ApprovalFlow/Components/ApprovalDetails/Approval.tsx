@@ -62,6 +62,7 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
   }>();
   const { currentRole } = useUserStore();
 
+
   const { Title } = Typography;
   // useEffect(() => {
   //   if (selectedRole) {
@@ -198,9 +199,9 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
             loanProduct: tcDetails?.pTrhdLType,
             loanAmount: tcAmount?.object?.loanAmount,
             loanTerm: tcDetails?.pTrhdTerm,
-            roleCode: currentRole?.code,
+            roleCode: currentRole?.code, //CD
             loanType: isGoldProduct? "GOLD" : "NORMAL",
-            flowNo: flow === "firstFlow"? 1 : 2,
+            flowNo: (currentRole?.code === "CD") ? 2 :  (flow === "firstFlow" ? 1 : 2),
             // loanRate: financialDetails?.data?.pTrhdTr,
             comment: form.getFieldValue("comment"),
             // reason: form.getFieldValue('reason') ? form.getFieldValue('reason').value : "",
