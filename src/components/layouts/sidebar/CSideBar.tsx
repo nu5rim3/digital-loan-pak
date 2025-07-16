@@ -100,7 +100,7 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
             icon: <BlockOutlined />,
             label: 'Approval Flow',
             key: '3',
-            roles: ["ADMIN", "CO", "BHO", "CC", "IBU", "IMD", "CR", "CA", "CAD", "AM", "RBH", "COO", "CEO"],
+            roles: ["ADMIN", "CO", "BHO", "CC", "IBU", "IMD", "CR", "CA", "CAD", "AM", "RBH", "COO", "CEO", "CD"],
             children: [
                 {
                     label: 'Approvals For First Flow',
