@@ -35,13 +35,14 @@ const GeneralAppraisalList: React.FC = () => {
   const [searchText, setSearchText] = useState("");
   const [dateRange, setDateRange] = useState<[any, any] | null>(null);
 
-  const { currentRole } = useUserStore()
+  const { currentRole, user } = useUserStore()
   const {flow} = useParams<{ flow: string }>();
 
   const navigate = useNavigate();
   const { Link } = Typography;
 
   const fetchData = async () => {
+    console.log('branch', user);
     setLoading(true);
     try {
       const fromDate = dateRange?.[0]?.isValid() ? dateRange[0].format("YYYY-MM-DD") : "";
@@ -55,6 +56,7 @@ const GeneralAppraisalList: React.FC = () => {
         size: 7,
         fromDate,
         toDate,
+        branch: user?.branches[0].code
       };
 
       if (searchText && searchField) {
@@ -134,12 +136,19 @@ const GeneralAppraisalList: React.FC = () => {
     },
     {
       title: "Status",
-      dataIndex: "appStepAction",
-      render: (appStepAction: string) =>
-        appStepAction === "P" ? (
-          <Tag color="yellow">PENDING</Tag>
-        ) : (
-          <Tag color="red">{appStepAction}</Tag>
+      dataIndex: "status",
+      align: 'center' as const,
+      render: (status: string) =>
+        status === "C" ? (
+          <Tag color="yellow">APPROVAL PENDING</Tag>
+        ) : 
+        status === "R" ? (
+          <Tag color="yellow">RETURN</Tag>
+        ) :
+        status === "J" ? (
+          <Tag color="yellow">REJECTED</Tag>
+        ) :(
+          <Tag color="red">{status}</Tag>
         ),
     },
     {
@@ -155,7 +164,6 @@ const GeneralAppraisalList: React.FC = () => {
       }
     >
       <EyeOutlined style={{ marginRight: 4 }} />
-      Preview
     </Link>
   ),
 },
