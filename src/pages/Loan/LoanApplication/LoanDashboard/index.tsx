@@ -1,19 +1,18 @@
-import { Button, Card, Collapse, CollapseProps, Empty, Spin } from 'antd'
-import React, { useEffect } from 'react'
+import { Button, Card, Empty, Spin, Tabs } from 'antd'
+import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
-import { getLoanStatusByName, getOnlyStatusByName } from '../../../../utils/MSASActionFunctions';
+import { getOnlyStatusByName } from '../../../../utils/MSASActionFunctions';
 import useLoanStore from '../../../../store/loanStore';
 import { kebabToTitleCase } from '../../../../utils/formatterFunctions';
 import LoanStatusTag from '../../../../components/common/tags/LoanStatusTag';
 import useStakeholderStore from '../../../../store/stakeholderStore';
 import { getStakeholderByType } from '../../../../utils/stakholderFunction';
-import { CaretLeftOutlined } from '@ant-design/icons';
+import { CaretLeftOutlined, SendOutlined } from '@ant-design/icons';
 import useCustomerStore from '../../../../store/customerStore';
 import BusinessIntroducer from './BusinessIntroducer/BusinessIntroducer';
 import CreditScoringPage from './CreditScoring/CreditScoringPage';
 import CollateralDetails from './CollateralDetails';
 import CustomerRiskProfiling from './CustomerRiskProfiling';
-import { SendOutlined } from '@ant-design/icons';
 import CustomerDetailsView from './Customer/CustomerDetailsView';
 import GuarantorDetailsView from './Guarantor/GuarantorDetailsView';
 import WitnessDetails from './Witness/WitnessDetails';
@@ -23,11 +22,6 @@ import CashFlow from './CashFlow';
 import ExceptionalApproval from './ExceptionalApproval';
 import LoanApplication from './LoanApplication';
 import UnderConstruction from '../../../UnderConstroction';
-
-interface StatusProps {
-    isCompleted: string;
-    isMandatory: string;
-}
 
 // Add this function to check mandatory completion
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -44,6 +38,7 @@ const LoanDaashboard: React.FC = () => {
     const { loading, applicationValidationLoading, applicationValidates, fetchApplicationValidationsByAppId, completeLoanApplication } = useLoanStore();
     const { stakeholders, fetchStackholderByAppId, fetchContactDetailsByStkId, fetchAddressDetailsByStkId, resetStakeholder } = useStakeholderStore();
     const { customers, fetchCustomerByAppId } = useCustomerStore();
+    const [activeTab, setActiveTab] = useState('customer');
 
     const onCompleteApplication = () => {
         completeLoanApplication({
@@ -59,10 +54,10 @@ const LoanDaashboard: React.FC = () => {
             });
     }
 
-    const onChange = (key: string | string[]) => {
-        const triggerKey = key[0]
-        let type = ''
-        switch (triggerKey) {
+    // For tab changed, fetch contact/address if needed
+    const onTabChange = (activeKey: string) => {
+        let type = '';
+        switch (activeKey) {
             case 'customer':
                 type = 'C'
                 break;
@@ -80,15 +75,10 @@ const LoanDaashboard: React.FC = () => {
             fetchContactDetailsByStkId(selectedIdx ?? '')
             fetchAddressDetailsByStkId(selectedIdx ?? '')
         }
+        setActiveTab(activeKey);
     };
 
-    const genExtra = ({ isCompleted, isMandatory }: StatusProps) => (
-        <>
-            <LoanStatusTag type={'C'} status={isCompleted} />
-            <LoanStatusTag type={'M'} status={isMandatory} />
-        </>
-    );
-
+    // Get the right component for a section
     const getComponentByName = (name: string) => {
         switch (name) {
             case 'customer':
@@ -118,7 +108,7 @@ const LoanDaashboard: React.FC = () => {
             case 'business-introducer':
                 return <BusinessIntroducer />;
             default:
-                return null;
+                return <UnderConstruction />;
         }
     };
 
@@ -135,29 +125,40 @@ const LoanDaashboard: React.FC = () => {
         "status": "A"
     },]
 
-    const _item: CollapseProps['items'] = onlyCustomer.map((rule) => ({
+    // For when there are no applicationValidates
+    const _tabItems = onlyCustomer.map((rule) => ({
         key: `${rule.section}`,
-        label: kebabToTitleCase(rule.section),
+        label: (
+            <div className="flex flex-col items-start gap-1">
+                <span className='text-base font-semibold'>{kebabToTitleCase(rule.section)}</span>
+                <div className="flex gap-1">
+                    <LoanStatusTag type={'M'} status={rule.isMandatory} />
+                    <LoanStatusTag type={'C'} status={rule.completed} />
+                </div>
+            </div>
+        ),
         children: getComponentByName(rule.section),
-        extra: genExtra(getLoanStatusByName(rule.section, onlyCustomer)),
-        collapsible: rule.status !== 'A' ? 'disabled' : undefined,
+        disabled: rule.status !== 'A',
     }));
 
-    const items: CollapseProps['items'] = applicationValidates
+    const tabItems = applicationValidates
         ?.filter(rule => rule.isVisible === "1")
         .map((rule) => ({
             key: `${rule.section}`,
-            label: kebabToTitleCase(rule.section),
+            label: (
+                <div className="flex flex-col items-start gap-1">
+                    <span className='text-base font-semibold'>{kebabToTitleCase(rule.section)}</span>
+                    <div className="flex gap-1">
+                        <LoanStatusTag type={'M'} status={rule.isMandatory} />
+                        <LoanStatusTag type={'C'} status={rule.completed} />
+                    </div>
+                </div>
+            ),
             children: getComponentByName(rule.section),
-            extra: genExtra(getLoanStatusByName(rule.section, applicationValidates)),
-            collapsible: getOnlyStatusByName(rule.section, applicationValidates) !== 'A' ? 'disabled' : undefined,
+            disabled: getOnlyStatusByName(rule.section, applicationValidates) !== 'A'
         }));
 
-
     useEffect(() => {
-        // if (customers.length === 0) {
-        //     fetchCustomerByAppId(appId ?? '')
-        // }
         if (stakeholders.length === 0) {
             fetchStackholderByAppId(appId ?? '')
         } else {
@@ -175,7 +176,6 @@ const LoanDaashboard: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [appId])
 
-
     const isAllMandatoryCompleted = hasAllMandatoryCompleted(applicationValidates);
 
     if (applicationValidationLoading) {
@@ -188,7 +188,7 @@ const LoanDaashboard: React.FC = () => {
         )
     }
 
-    if (applicationValidates.length === 0 && _item.length === 0) {
+    if (applicationValidates.length === 0 && _tabItems.length === 0) {
         return (
             <Card title={`Loan Application - ${appId}`}>
                 <Empty
@@ -211,14 +211,14 @@ const LoanDaashboard: React.FC = () => {
                     <div>Loan Application: {appId}</div>
                     <div>Customer Name: {customers[0]?.fullName}</div>
                 </div>
-            }>
-                <Collapse
-                    accordion
-                    size="large"
-                    defaultActiveKey={['customer']}
-                    expandIconPosition={'start'}
-                    onChange={onChange}
-                    items={items.length === 0 ? _item : items}
+            }
+                className='loan-card'
+            >
+                <Tabs
+                    tabPosition='left'
+                    defaultActiveKey={activeTab}
+                    onChange={onTabChange}
+                    items={tabItems.length === 0 ? _tabItems : tabItems}
                 />
 
                 <div className="mt-5">

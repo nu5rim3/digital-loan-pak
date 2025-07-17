@@ -19,6 +19,25 @@ body {
   border-color: #002140 !important;
 }
 
+.ant-tabs .ant-tabs-tab {
+  margin: 0px !important;
+}
+
+.ant-tabs .ant-tabs-tab.ant-tabs-tab-active {
+  background-color: #002140 !important;
+  border-color: #002140 !important;
+}
+
+.ant-tabs .ant-tabs-tab:hover {
+  background-color: #d2d2d2 !important;
+  border-color: #d2d2d2 !important;
+  color: white !important;
+}
+
+.ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: white !important;
+}
+
 .ant-tabs-card .ant-tabs-tab-active .ant-tabs-tab-btn {
   color: white !important;
 }
