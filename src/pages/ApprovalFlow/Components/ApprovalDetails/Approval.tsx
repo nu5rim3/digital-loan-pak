@@ -189,8 +189,8 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
             appraisalIdx: appraisalId,
             // secondMeetingStepAction: genarateStepStatus(type, selectedRole),
             // secondMeetingStepStatus: genarateStepAction(type, selectedRole, isSecondMeeting),
-            stepAction: type,
-            stepStatus: type,
+            stepAction: ((currentRole?.code === "CD") && (type == "PROCEED")) ? 'APPROVED' :  type,
+            stepStatus: ((currentRole?.code === "CD") && (type == "PROCEED")) ? 'APPROVED' :  type,
             reSubmit: "N",
             // appraisalType:
             //   approvalSteps?.data?.approvalStepDtoList?.[
@@ -201,7 +201,7 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
             loanTerm: tcDetails?.pTrhdTerm,
             roleCode: currentRole?.code, //CD
             loanType: isGoldProduct? "GOLD" : "NORMAL",
-            flowNo: (currentRole?.code === "CD") ? 2 :  (flow === "firstFlow" ? 1 : 2),
+            flowNo: (flow === "firstFlow" ? 1 : 2),
             // loanRate: financialDetails?.data?.pTrhdTr,
             comment: form.getFieldValue("comment"),
             // reason: form.getFieldValue('reason') ? form.getFieldValue('reason').value : "",
