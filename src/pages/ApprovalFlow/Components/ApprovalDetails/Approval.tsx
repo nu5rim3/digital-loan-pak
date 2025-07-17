@@ -206,6 +206,7 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
             comment: form.getFieldValue("comment"),
             // reason: form.getFieldValue('reason') ? form.getFieldValue('reason').value : "",
             // reasonDesc: form.getFieldValue('reason') ? form.getFieldValue('reason').label : "",
+            documents: []
           };
 
         // const processedFiles = [];
