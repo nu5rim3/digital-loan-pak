@@ -197,6 +197,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
     const onSubmit = (data: any) => {
 
         const __data = {
+            "client": 'WEB', // client type hard coded
             "pFacilityType": data.productFacility ?? '', // facility type code
             "pMode": "T", // const T
             "pUser": user?.idx ?? '', // log user ID heshan.pe
@@ -267,7 +268,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
                         "treqEv": data.insuranceVE ?? '', // insuranceVE
                         "treqEqpCost": data.cost ?? '0', // cost
                     }
-                ] : []
+                ] : [],
         }
 
         if (facilityType === 'RO') {

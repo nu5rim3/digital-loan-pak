@@ -374,6 +374,7 @@ export interface ITrailCalulation {
     struPrds: string;
     struRent: string;
   }[];
+  client?: string;
 }
 
 export interface ITrailCalulationResponse {
