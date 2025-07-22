@@ -58,6 +58,18 @@ body {
   /* Add other styles as needed, e.g., border-color, text-color, etc. */
 }
 
+:where(.css-dev-only-do-not-override-1uy9k67).ant-tabs-left
+  > .ant-tabs-content-holder
+  > .ant-tabs-content
+  > .ant-tabs-tabpane,
+:where(.css-dev-only-do-not-override-1uy9k67).ant-tabs-left
+  > div
+  > .ant-tabs-content-holder
+  > .ant-tabs-content
+  > .ant-tabs-tabpane {
+  padding: 10px !important;
+}
+
 input:not([type="date"]),
 textarea {
   text-transform: capitalize !important;

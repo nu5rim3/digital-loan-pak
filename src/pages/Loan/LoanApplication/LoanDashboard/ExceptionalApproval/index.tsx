@@ -1,4 +1,4 @@
-import { Button, Empty, Spin } from "antd";
+import { Button, Card, Empty, Spin } from "antd";
 import React, { useEffect, useState } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import { useForm } from "react-hook-form";
@@ -107,7 +107,7 @@ const ExceptionalApproval: React.FC<ExceptionalApprovalProps> = () => {
   };
 
   return (
-    <div>
+    <Card>
       <div className="flex justify-end">
         <Button
           type="primary"
@@ -145,7 +145,7 @@ const ExceptionalApproval: React.FC<ExceptionalApprovalProps> = () => {
           onSubmit={handleFormSubmit}
         />
       </Spin>
-    </div>
+    </Card>
   );
 };
 

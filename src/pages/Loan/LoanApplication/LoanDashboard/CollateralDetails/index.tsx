@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Button, App, Row, Col, message, Spin, Modal } from "antd";
+import { Button, App, Row, Col, message, Spin, Modal, Card } from "antd";
 import { PlusOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { FormValues, validationSchema } from "./types";
 import DetailsCard from "./components/DetailsCard";
@@ -264,21 +264,21 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
   useEffect(() => {
     if (collaterals && collaterals.length > 0) {
       const mappedData = collaterals.map(mapCollateralToFormValues);
-      
+
       // Filter based on product category
       let filteredData = mappedData;
       if (trialCalculationData?.productCategory === "A") {
         // Show only lease collaterals for Lease product
-        filteredData = mappedData.filter(collateral => 
+        filteredData = mappedData.filter(collateral =>
           collateral.securityType === "LEASE"
         );
       } else if (trialCalculationData?.productCategory === "C") {
         // Show all collateral types except lease for Loan product
-        filteredData = mappedData.filter(collateral => 
+        filteredData = mappedData.filter(collateral =>
           collateral.securityType !== "LEASE"
         );
       }
-      
+
       setFormData(filteredData);
     } else {
       setFormData([]);
@@ -943,7 +943,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
   if (fetchingCollaterals && !formData.length) {
     return (
       <div className="flex justify-center items-center h-64">
-        <Spin size="large" tip="Loading collateral details..." />
+        <Spin size="small" tip="Loading..." spinning />
       </div>
     );
   }
@@ -962,7 +962,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
   }
 
   return (
-    <App>
+    <Card>
       <div>
         <div className="flex justify-end mb-6">
           <Button
@@ -978,20 +978,20 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         {formData.length === 0 ? (
           <div className="text-center p-6 bg-gray-50 rounded-lg">
             <p className="text-gray-500">
-              {trialCalculationData?.productCategory === "A" 
+              {trialCalculationData?.productCategory === "A"
                 ? "No lease collateral details found. Click 'Add Collateral' to add lease collateral."
                 : trialCalculationData?.productCategory === "C"
-                ? "No loan collateral details found. Click 'Add Collateral' to add loan collateral."
-                : "No collateral details found. Click 'Add Collateral' to add one."
+                  ? "No loan collateral details found. Click 'Add Collateral' to add loan collateral."
+                  : "No collateral details found. Click 'Add Collateral' to add one."
               }
             </p>
             {collaterals && collaterals.length > 0 && (
               <p className="text-blue-500 text-sm mt-2">
-                {trialCalculationData?.productCategory === "A" 
+                {trialCalculationData?.productCategory === "A"
                   ? "Note: Only lease collaterals are shown for Lease products."
                   : trialCalculationData?.productCategory === "C"
-                  ? "Note: Only non-lease collaterals are shown for Loan products."
-                  : ""
+                    ? "Note: Only non-lease collaterals are shown for Loan products."
+                    : ""
                 }
               </p>
             )}
@@ -1037,7 +1037,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           }
         />
       </div>
-    </App>
+    </Card>
   );
 };
 

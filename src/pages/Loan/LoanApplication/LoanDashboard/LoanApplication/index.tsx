@@ -65,7 +65,7 @@ const LoanApplication: React.FC = () => {
 
 
     return (
-        <>
+        <Card>
             <div className='flex justify-between'>
                 <Form className='w-1/4' layout='vertical'>
                     <Form.Item label="Source of Income">
@@ -192,7 +192,7 @@ const LoanApplication: React.FC = () => {
                 </div>
             )
             }
-        </>
+        </Card>
     )
 }
 

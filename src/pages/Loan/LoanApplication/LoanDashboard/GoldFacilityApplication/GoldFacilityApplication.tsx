@@ -226,7 +226,7 @@ const GoldFacilityApplication: React.FC = () => {
     }, [denNetWeight, goldNetWeight, marketValue])
 
     return (
-        <>
+        <Card>
             <div className='flex flex-col gap-2'>
                 <div className='flex justify-end'>
                     <Button type='primary' icon={<PlusOutlined />} onClick={() => openModal('save')}>Add Article Details</Button>
@@ -556,7 +556,7 @@ const GoldFacilityApplication: React.FC = () => {
                 </Card>
 
             </CommonModal>
-        </>
+        </Card>
     )
 }
 

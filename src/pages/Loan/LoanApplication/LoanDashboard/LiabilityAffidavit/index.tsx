@@ -1,4 +1,4 @@
-import { Collapse, Switch } from 'antd'
+import { Card, Collapse, Switch } from 'antd'
 import React, { useEffect, useState } from 'react'
 import LiabilityAffidavitForm from './LiabilityAffidavitForm'
 import GoldLoanFacilitiesObtained from './GoldLoanFacilitiesObtained'
@@ -65,73 +65,75 @@ const LiabilityAffidavit: React.FC<ILiabilityAffidavit> = () => {
 
 
     return (
-        <div className='flex flex-col gap-3'>
-            <Collapse
-                defaultActiveKey={['1']}
-                items={[
-                    {
-                        key: '1',
-                        label: `Liability Affidavit`,
-                        children: <div className='w-full h-full'>
-                            <LiabilityAffidavitForm />
-                        </div>
-                    }
-                ]}
-            />
+        <Card>
+            <div className='flex flex-col gap-3'>
+                <Collapse
+                    defaultActiveKey={['1']}
+                    items={[
+                        {
+                            key: '1',
+                            label: `Liability Affidavit`,
+                            children: <div className='w-full h-full'>
+                                <LiabilityAffidavitForm />
+                            </div>
+                        }
+                    ]}
+                />
 
-            <Collapse
-                activeKey={activeGlKey}
-                items={[
-                    {
-                        key: '1',
-                        label: `Gold Loan Facilities`,
-                        children: <div className='w-full h-full'>
-                            <GoldLoanFacilitiesObtained />
-                        </div>,
-                        extra:
-                            <Switch
-                                checkedChildren="Available"
-                                unCheckedChildren="Not Available"
-                                defaultChecked
-                                checked={glSwitch}
-                                loading={liabilityLoading}
-                                onClick={(checked, event) => {
-                                    // If you don't want click extra trigger collapse, you can prevent this:
-                                    event.stopPropagation(); // Correctly access the event object
-                                    onLiabilityEnabledHandle(checked ? 'Y' : 'N', 'gold-loan');
-                                }} />,
+                <Collapse
+                    activeKey={activeGlKey}
+                    items={[
+                        {
+                            key: '1',
+                            label: `Gold Loan Facilities`,
+                            children: <div className='w-full h-full'>
+                                <GoldLoanFacilitiesObtained />
+                            </div>,
+                            extra:
+                                <Switch
+                                    checkedChildren="Available"
+                                    unCheckedChildren="Not Available"
+                                    defaultChecked
+                                    checked={glSwitch}
+                                    loading={liabilityLoading}
+                                    onClick={(checked, event) => {
+                                        // If you don't want click extra trigger collapse, you can prevent this:
+                                        event.stopPropagation(); // Correctly access the event object
+                                        onLiabilityEnabledHandle(checked ? 'Y' : 'N', 'gold-loan');
+                                    }} />,
 
-                    }
-                ]}
-            />
+                        }
+                    ]}
+                />
 
 
-            <Collapse
-                activeKey={activeTdpKey}
-                items={[
-                    {
-                        key: '1',
-                        label: `Term Deposit Placed`,
-                        children: <div className='w-full h-full'>
-                            <TermDepositPlaced />
-                        </div>,
-                        extra:
-                            <Switch
-                                checkedChildren="Available"
-                                unCheckedChildren="Not Available"
-                                defaultChecked
-                                checked={tdpSwitch}
-                                loading={liabilityLoading}
-                                onClick={(checked, event) => {
-                                    // If you don't want click extra trigger collapse, you can prevent this:
-                                    event.stopPropagation(); // Correctly access the event object
-                                    onLiabilityEnabledHandle(checked ? 'Y' : 'N', 'tdp');
-                                }} />,
-                    }
-                ]}
-            />
+                <Collapse
+                    activeKey={activeTdpKey}
+                    items={[
+                        {
+                            key: '1',
+                            label: `Term Deposit Placed`,
+                            children: <div className='w-full h-full'>
+                                <TermDepositPlaced />
+                            </div>,
+                            extra:
+                                <Switch
+                                    checkedChildren="Available"
+                                    unCheckedChildren="Not Available"
+                                    defaultChecked
+                                    checked={tdpSwitch}
+                                    loading={liabilityLoading}
+                                    onClick={(checked, event) => {
+                                        // If you don't want click extra trigger collapse, you can prevent this:
+                                        event.stopPropagation(); // Correctly access the event object
+                                        onLiabilityEnabledHandle(checked ? 'Y' : 'N', 'tdp');
+                                    }} />,
+                        }
+                    ]}
+                />
 
-        </div>
+            </div>
+        </Card>
     )
 }
 

@@ -85,33 +85,50 @@ const LoanDaashboard: React.FC = () => {
     const getComponentByName = (name: string) => {
         switch (name) {
             case 'customer':
-                return <CustomerDetailsView formDetails={getStakeholderByType('C', stakeholders ?? [])[0] ?? null} />;
+                return (
+                    <div style={{ height: '100vh', overflowY: 'auto' }}>
+                        <CustomerDetailsView formDetails={getStakeholderByType('C', stakeholders ?? [])[0] ?? null} />
+                    </div>);
             case 'guarantor':
-                return <GuarantorDetailsView formDetails={getStakeholderByType('G', stakeholders ?? []) ?? []} />;
+                return (
+                    <div style={{ height: '100vh', overflowY: 'auto' }}>
+                        <GuarantorDetailsView formDetails={getStakeholderByType('G', stakeholders ?? []) ?? []} />
+                    </div >);
             case 'witness':
-                return <WitnessDetails formDetails={getStakeholderByType('W', stakeholders ?? []) ?? []} />;
+                return (
+                    <div style={{ height: '100vh', overflowY: 'auto' }}>
+                        <WitnessDetails formDetails={getStakeholderByType('W', stakeholders ?? []) ?? []} />
+                    </div>);
             case 'liability-affidavit':
-                return <LiabilityAffidavit />;
+                return (
+                    <div style={{ height: '100vh', overflowY: 'auto' }}>
+                        <LiabilityAffidavit />
+                    </div>);
             case 'gold-facility':
-                return <GoldFacilityApplication />;
+                return (
+                    <div style={{ height: '100vh', overflowY: 'auto' }}>
+                        <GoldFacilityApplication />
+                    </div>);
             case 'loan-application':
-                return <LoanApplication />;
+                return (<div style={{ height: '100vh', overflowY: 'auto' }}>
+                    <LoanApplication />
+                </div>);
             case 'image-upload':
-                return <UnderConstruction />;
+                return (<div style={{ height: '100vh', overflowY: 'auto' }}><UnderConstruction /></div>);
             case 'cash-flow':
-                return <CashFlow />;
+                return (<div style={{ height: '100vh', overflowY: 'auto' }}><CashFlow /></div>);
             case 'credit-scoring':
-                return <CreditScoringPage appraisalId={appId ?? ''} />;
+                return (<div style={{ height: '100vh', overflowY: 'auto' }}><CreditScoringPage appraisalId={appId ?? ''} /></div>);
             case 'customer-risk-profiling':
-                return <CustomerRiskProfiling />;
+                return (<div style={{ height: '100vh', overflowY: 'auto' }}><CustomerRiskProfiling /></div>);
             case 'exceptional-approval':
-                return <ExceptionalApproval />;
+                return (<div style={{ height: '100vh', overflowY: 'auto' }}><ExceptionalApproval /></div>);
             case 'collateral-detail':
-                return <CollateralDetails />;
+                return (<div style={{ height: '100vh', overflowY: 'auto' }}><CollateralDetails /></div>);
             case 'business-introducer':
-                return <BusinessIntroducer />;
+                return (<div style={{ height: '100vh', overflowY: 'auto' }}><BusinessIntroducer /></div>);
             default:
-                return <UnderConstruction />;
+                return (<div style={{ height: '100vh', overflowY: 'auto' }}><UnderConstruction /></div>);
         }
     };
 
@@ -209,22 +226,26 @@ const LoanDaashboard: React.FC = () => {
 
     return (
         <>
-            <Card title={
-                <div className='flex justify-between'>
-                    <div>Loan Application: {appId}</div>
-                    <div>Customer Name: {customers[0]?.fullName}</div>
-                </div>
-            }
-                className='loan-card'
+            <Card
+                className='loan-card mb-3'
             >
+                <div className='flex justify-between'>
+                    <div className='text-lg'>Loan Application: {appId}</div>
+                    <div className='text-lg'>Customer Name: {customers[0]?.fullName}</div>
+                </div>
+            </Card>
+            <div style={{ height: '70vh', overflowY: 'auto' }}>
                 <Tabs
                     tabPosition='left'
                     defaultActiveKey={activeTab}
                     onChange={onTabChange}
                     items={tabItems.length === 0 ? _tabItems : tabItems}
                 />
+            </div>
+            <Card className='mt-3'>
 
-                <div className="mt-5">
+
+                <div className="flex justify-end">
                     <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
                     <Button type="primary" className="ml-3" icon={<SendOutlined />} disabled={!isAllMandatoryCompleted} onClick={onCompleteApplication} loading={loading}>Submit to Approval</Button>
                 </div>
