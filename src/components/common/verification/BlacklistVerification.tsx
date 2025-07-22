@@ -30,6 +30,16 @@ const BlacklistVerification: React.FC<IBlacklistVerification> = ({ cnic, setAppr
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [blacklistDetails?.blacklistStatus])
+    // https://lolcfusion.atlassian.net/browse/MDV-12219
+    if (blacklistDetails === null) {
+        return (
+            <Card title={'Blacklist Verification'} loading={blLoading} extra={
+                <Button type="text" icon={<ReloadOutlined />} onClick={onRefresh} />
+            }>
+                <Empty description={<span><b>No data found</b></span>} />
+            </Card>
+        )
+    }
 
 
     if (blacklistDetails?.detail === null) {
