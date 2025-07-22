@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import React, { useState, useEffect, useRef } from "react";
-import { Button, App, Row, Col, message, Spin, Modal, Card } from "antd";
+import { Button, Row, Col, message, Spin, Modal, Card } from "antd";
 import { PlusOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { FormValues, validationSchema } from "./types";
 import DetailsCard from "./components/DetailsCard";
@@ -928,6 +930,8 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           console.error("Error deleting collateral:", error);
           message.error("Failed to delete collateral");
         } finally {
+          // Refresh collaterals after deletion
+          refreshCollaterals();
         }
       },
       onCancel: () => { },
