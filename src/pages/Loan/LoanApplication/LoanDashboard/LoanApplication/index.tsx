@@ -63,9 +63,6 @@ const LoanApplication: React.FC = () => {
         }
     }
 
-    console.log(sourceOfIncome)
-    console.log(agricultureIncome)
-
 
     return (
         <>
