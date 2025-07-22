@@ -26,6 +26,9 @@ import UnderConstruction from '../../../UnderConstroction';
 // Add this function to check mandatory completion
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function hasAllMandatoryCompleted(validations: any[] = []) {
+    if (!validations || validations.length === 0) {
+        return false;
+    }
     return !validations.some(
         v => v.isMandatory === "1" && v.completed === "0"
     );
