@@ -63,6 +63,9 @@ const LoanApplication: React.FC = () => {
         }
     }
 
+    console.log(sourceOfIncome)
+    console.log(agricultureIncome)
+
 
     return (
         <>
@@ -110,7 +113,7 @@ const LoanApplication: React.FC = () => {
             }
 
             {
-                agricultureIncome.length === 0 && sourceOfIncome === 'Agricultural Income' && (
+                agricultureIncome.length === 0 && sourceOfIncome === 'Agriculture Income ' && (
                     <Spin spinning={agricultureIncomeLoading} size='small'>
                         <Empty description="No Agricultural Income Found" />
                     </Spin>
