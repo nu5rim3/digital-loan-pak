@@ -151,7 +151,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
 
     if (formDetails === null) {
         return (
-            <>
+            <Card>
                 <div className='pb-5'>
                     <TrialCalculation cliIdx={customers[0]?.idx ?? ''} cnic={customers[0]?.identificationNumber} />
                 </div>
@@ -185,7 +185,7 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
 
                 {/* <CustomerScreen mode={mode} setMode={setMode} /> */}
                 <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={customers[0]?.idx ?? ''} />
-            </>
+            </Card>
         )
     }
 
