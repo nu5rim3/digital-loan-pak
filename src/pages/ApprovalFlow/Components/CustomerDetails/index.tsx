@@ -4,38 +4,12 @@ import { Card, Collapse, Descriptions, Spin } from "antd";
 import type { FC } from "react";
 import type { DescriptionsProps } from "antd";
 import { APIAuth } from "../../../../services/api";
-import { getValueByList } from "../../../../utils/Common";
+import { getCommonAreaValues, getValueAddressType, getValueByList, getValueContactType, getValuePoliticallyExposed } from "../../../../utils/Common";
+import useCommonStore from "../../../../store/commonStore";
 
 
 
-export const getValuePoliticallyExposed = (key:any) => {
-    switch (key) {
-        case "N": return "No";
-        case "L": return "Legislative";
-        case "AF": return "Armed Forces";
-        case "JE": return "Judiciary Executive";
-        case "A": return "Administrative";
-        case "BR": return "By way of Association/Relationship with PEP";
-        default: return "Value Not Found";
-    }
-};
 
-export const getValueAddressType = (key:any) => {
-    switch (key) {
-        case "TEMPORARY": return "Residential Address";
-        case "PERMANANT": return "Permanent Address";
-        case "BUSINESS": return "Business Address";
-        default: return "Value Not Found";
-    }
-};
-
-export const getCommonAreaValues = (key:any) => {
-    switch (key) {
-        case "001": return "COMMON";
-        case "KHI": return "KARACHI";
-        default: return "Value Not Found";
-    }
-};
 
 const { Panel } = Collapse;
 
@@ -48,6 +22,7 @@ interface CustomerDetailsProps {
 const CustomerDetails: FC<CustomerDetailsProps> = ({ tcDetails, stakeholders, productDetails }) => {
   const { appraisalId } = useParams<{ appraisalId: string }>();
   const [loading, setLoading] = useState<boolean>(true);
+  const { contactTypes } = useCommonStore()
 
   const [data, setData] = useState<any>({
     tcDetails: {},
@@ -169,7 +144,7 @@ const CustomerDetails: FC<CustomerDetailsProps> = ({ tcDetails, stakeholders, pr
           <Panel header="Contact & Address Information" key="contact">
             {data.contact.map((c:any, i:any) => (
               <Descriptions key={`c-${i}`} size="small" column={2} bordered   className="my-4 shadow-md rounded-md bg-white" items={[
-                renderDesc("Phone No Type", c.phoneNoType),
+                renderDesc("Phone No Type", getValueContactType(c.phoneNoType)),
                 renderDesc("Phone No", c.phoneNo),
               ]} />
             ))}

@@ -123,8 +123,8 @@ const IncomeExpensesDetails: React.FC = () => {
     const { incomeExpenses } = data;
     const finalData = [
       { label: "Net Monthly Disposable Income", value: incomeExpenses?.netMonthlyDisposable },
-      { label: "Taxable Amount", value: incomeExpenses?.taxableAmount },
-      { label: "BE/BI", value: incomeExpenses?.beBiRate },
+      // { label: "Taxable Amount", value: incomeExpenses?.taxableAmount },
+      // { label: "BE/BI", value: incomeExpenses?.beBiRate },
       { label: "Debt-Service Ratio", value: incomeExpenses?.dscr },
       { label: "Max Debt Burden", value: incomeExpenses?.maxDebtBurden },
       { label: "Tenure", value: incomeExpenses?.tenure },

@@ -189,8 +189,8 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
             appraisalIdx: appraisalId,
             // secondMeetingStepAction: genarateStepStatus(type, selectedRole),
             // secondMeetingStepStatus: genarateStepAction(type, selectedRole, isSecondMeeting),
-            stepAction: ((currentRole?.code === "CD") && (type == "PROCEED")) ? 'APPROVED' :  type,
-            stepStatus: ((currentRole?.code === "CD") && (type == "PROCEED")) ? 'APPROVED' :  type,
+            stepAction: (((currentRole?.code === "CD") || (currentRole?.code === "CAD")) && (type == "PROCEED")) ? 'APPROVED' :  type,
+            stepStatus: ((currentRole?.code === "CD"|| (currentRole?.code === "CAD")) && (type == "PROCEED")) ? 'APPROVED' :  type,
             reSubmit: "N",
             // appraisalType:
             //   approvalSteps?.data?.approvalStepDtoList?.[

@@ -80,5 +80,47 @@ export const getValueOwnershipOfLand = (key:any) => {
     }
 };
 
+export const getValuePoliticallyExposed = (key:any) => {
+    switch (key) {
+        case "N": return "No";
+        case "L": return "Legislative";
+        case "AF": return "Armed Forces";
+        case "JE": return "Judiciary Executive";
+        case "A": return "Administrative";
+        case "BR": return "By way of Association/Relationship with PEP";
+        default: return "Value Not Found";
+    }
+};
+
+export const getCommonAreaValues = (key:any) => {
+    switch (key) {
+        case "001": return "COMMON";
+        case "KHI": return "KARACHI";
+        default: return "Value Not Found";
+    }
+};
+
+export const getValueContactType = (key: any) => {
+    switch (key) {
+        case "MN": return "Mobile";
+        case "ON": return "Office";
+        case "FN": return "Fixed Line";
+        case "APN": return "Additional Phone Number";
+        default: return "Value Not Found";
+    }
+};
+
+export const getValueIncomeSource = (key: any) => {
+    switch (key) {
+        case "SI": return "Salary Income";
+        case "BI": return "Business Income";
+        case "AI": return "Agriculture Income";
+        case "RI": return "Rental Income";
+        case "LS": return "Live Stock";
+        case "PN": return "Pension";
+        default: return "Value Not Found";
+    }
+};
+
  
 
