@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-empty-object-type */
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Button, Row, Col, message, Spin, Modal, Card } from "antd";
 import { PlusOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { FormValues, validationSchema } from "./types";
@@ -220,6 +220,16 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
 
   const appraisalId = appId;
 
+  // Memoize the product category to prevent unnecessary re-renders
+  const productCategory = useMemo(() => {
+    if (trialCalculationData?.productCategory === "A") {
+      return "Lease";
+    } else if (trialCalculationData?.productCategory === "C") {
+      return "Loan";
+    }
+    return null;
+  }, [trialCalculationData?.productCategory]);
+
   const [isEditing, setIsEditing] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState<FormValues[]>([]);
@@ -269,12 +279,12 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
 
       // Filter based on product category
       let filteredData = mappedData;
-      if (trialCalculationData?.productCategory === "A") {
+      if (productCategory === "Lease") {
         // Show only lease collaterals for Lease product
         filteredData = mappedData.filter(collateral =>
           collateral.securityType === "LEASE"
         );
-      } else if (trialCalculationData?.productCategory === "C") {
+      } else if (productCategory === "Loan") {
         // Show all collateral types except lease for Loan product
         filteredData = mappedData.filter(collateral =>
           collateral.securityType !== "LEASE"
@@ -285,7 +295,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
     } else {
       setFormData([]);
     }
-  }, [collaterals, trialCalculationData?.productCategory]);
+  }, [collaterals, productCategory]);
 
   const formMethods = useForm<FormValues>({
     resolver: yupResolver(validationSchema),
@@ -982,18 +992,18 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         {formData.length === 0 ? (
           <div className="text-center p-6 bg-gray-50 rounded-lg">
             <p className="text-gray-500">
-              {trialCalculationData?.productCategory === "A"
+              {productCategory === "Lease"
                 ? "No lease collateral details found. Click 'Add Collateral' to add lease collateral."
-                : trialCalculationData?.productCategory === "C"
+                : productCategory === "Loan"
                   ? "No loan collateral details found. Click 'Add Collateral' to add loan collateral."
                   : "No collateral details found. Click 'Add Collateral' to add one."
               }
             </p>
             {collaterals && collaterals.length > 0 && (
               <p className="text-blue-500 text-sm mt-2">
-                {trialCalculationData?.productCategory === "A"
+                {productCategory === "Lease"
                   ? "Note: Only lease collaterals are shown for Lease products."
-                  : trialCalculationData?.productCategory === "C"
+                  : productCategory === "Loan"
                     ? "Note: Only non-lease collaterals are shown for Loan products."
                     : ""
                 }
@@ -1021,13 +1031,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           onSave={handleSubmit}
           isEdit={isEditing}
           initialData={currentFormData}
-          productCategory={
-            trialCalculationData?.productCategory === "A"
-              ? "Lease"
-              : trialCalculationData?.productCategory === "C"
-                ? "Loan"
-                : null
-          }
+          productCategory={productCategory}
           appraisalId={appraisalId}
           isLoading={
             fetchingDetail ||

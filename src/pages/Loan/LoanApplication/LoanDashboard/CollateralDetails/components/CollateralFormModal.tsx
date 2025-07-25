@@ -98,8 +98,8 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
   isLoading = false,
 }) => {
   const validAppraisalId = appraisalId;
-  const hasFetchedCollaterals = useRef(false);
-
+  const initializeOnce = useRef<string | null>(null);
+  
   const {
     savingBankGuarantee,
     updatingBankGuarantee,
@@ -120,10 +120,39 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
     fetchSecurityTypes,
     collaterals,
     fetchCollaterals,
+    fetchingCollaterals,
   } = useCollateralStore();
 
   const [submitting, setSubmitting] = useState(false);
   const [formInitialized, setFormInitialized] = useState(false);
+
+  // Create a unique key for this modal session
+  const modalSessionKey = `${productCategory}-${appraisalId}-${open}`;
+
+  // Initialize data only once per unique modal session
+  useEffect(() => {
+    if (open && productCategory === "Loan") {
+      // Only initialize if this is a new session
+      if (initializeOnce.current !== modalSessionKey) {
+        initializeOnce.current = modalSessionKey;
+        
+        // Fetch security types if not already loaded or currently loading
+        if (securityTypes.length === 0 && !securityTypesLoading) {
+          fetchSecurityTypes();
+        }
+
+        // Fetch collaterals if appraisalId exists and not currently loading
+        if (appraisalId && !fetchingCollaterals) {
+          fetchCollaterals(appraisalId);
+        }
+      }
+    }
+
+    // Reset when modal closes
+    if (!open) {
+      initializeOnce.current = null;
+    }
+  }, [modalSessionKey, securityTypes.length, securityTypesLoading, fetchingCollaterals]);
 
   const isSaving =
     savingBankGuarantee ||
@@ -187,28 +216,6 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
     resolver: yupResolver(leaseProductValidationSchema),
     mode: "onSubmit",
   });
-
-  useEffect(() => {
-    if (open && productCategory === "Loan") {
-      fetchSecurityTypes();
-    }
-  }, [open, productCategory, fetchSecurityTypes]);
-
-  useEffect(() => {
-    if (open && appraisalId && productCategory === "Loan" && !hasFetchedCollaterals.current) {
-      if (!collaterals || collaterals.length === 0) {
-        hasFetchedCollaterals.current = true;
-        fetchCollaterals(appraisalId);
-      }
-    }
-  }, [open, appraisalId, productCategory, fetchCollaterals]);
-
-  // Reset the ref when modal closes
-  useEffect(() => {
-    if (!open) {
-      hasFetchedCollaterals.current = false;
-    }
-  }, [open]);
 
   useEffect(() => {
     if (open) {
@@ -291,7 +298,7 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
     (st) => st.code === securityType || st.description === securityType
   );
 
-  useEffect(() => {}, [securityType]);
+  useEffect(() => { }, [securityType]);
 
   useEffect(() => {
     if (securityCategory === "OTHER_SECURITY" && formInitialized) {
@@ -501,13 +508,6 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
           isSaving ||
           (productCategory === "Loan" && securityTypesLoading)
         }
-        tip={
-          isLoading
-            ? "Loading details..."
-            : securityTypesLoading
-            ? "Loading security types..."
-            : "Saving data..."
-        }
       >
         <Form layout="vertical" className="space-y-6">
           {productCategory === "Loan" ? (
@@ -604,31 +604,31 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
 
                     {selectedSecurityType.description ===
                       "MACHINERY AND EQUIPMENT" && (
-                      <MachineryForm
-                        control={control}
-                        errors={errors}
-                        securityType={selectedSecurityType}
-                      />
-                    )}
+                        <MachineryForm
+                          control={control}
+                          errors={errors}
+                          securityType={selectedSecurityType}
+                        />
+                      )}
 
                     {selectedSecurityType.description ===
                       "PROPERTY MORTGAGE" && (
-                      <PropertyMortgageForm
-                        control={control}
-                        errors={errors}
-                        securityType={selectedSecurityType}
-                        setValue={setValue}
-                      />
-                    )}
+                        <PropertyMortgageForm
+                          control={control}
+                          errors={errors}
+                          securityType={selectedSecurityType}
+                          setValue={setValue}
+                        />
+                      )}
 
                     {selectedSecurityType.description ===
                       "FIXED DEPOSITS AND SAVINGS" && (
-                      <SavingsForm
-                        control={control}
-                        errors={errors}
-                        securityType={selectedSecurityType}
-                      />
-                    )}
+                        <SavingsForm
+                          control={control}
+                          errors={errors}
+                          securityType={selectedSecurityType}
+                        />
+                      )}
 
                     {selectedSecurityType.description === "LAND STOCKS" && (
                       <LandStockForm
