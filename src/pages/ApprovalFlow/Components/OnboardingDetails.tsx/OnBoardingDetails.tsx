@@ -14,7 +14,6 @@ const OnBoardingDetails: React.FC<{
   amountsOfTcDetails: any;
 }> = ({ appraisalId, tcDetails, clienteles, amountsOfTcDetails }) => {
 
-  console.log('innnn', clienteles);
   // const [loading, setLoading] = useState(true);
 
   // useEffect(() => {
@@ -47,7 +46,7 @@ const OnBoardingDetails: React.FC<{
         Client Onboarding
       </Title>
       <Tabs tabPosition="top">
-        {clienteles?.map((clientele, index) => (
+        {clienteles?.filter(row => row.type !== "W")?.map((clientele, index) => (
           <TabPane
             tab={`${getValueOfClientele(clientele?.type)} - ${
               clientele?.fullName

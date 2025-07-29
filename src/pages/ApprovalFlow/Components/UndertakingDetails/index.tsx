@@ -31,8 +31,8 @@ const UndertakingDetails: React.FC = () => {
         const signatureResponse:any = await API.mobixCamsLoan.getSignature(appraisalId, "CUSTOMER1");
         const thumbResponse:any = await API.mobixCamsLoan.getThumb(appraisalId, "CUSTOMER1FINGER");
         if (isMounted) {
-          setSignature(signatureResponse);
-          setThumb(thumbResponse);
+          setSignature(signatureResponse?.data);
+          setThumb(thumbResponse?.data);
         }
       } catch (error) {
         message.error("Failed to fetch customer image data");
@@ -45,6 +45,9 @@ const UndertakingDetails: React.FC = () => {
       isMounted = false;
     };
   }, [appraisalId]);
+
+  console.log('thump', thumb);
+  console.log('sign', signature);
 
   return (
     <Spin spinning={loading}>

@@ -95,7 +95,7 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
   //   }
   // }, [selectedRole, isSecondMeeting])
 
-  // const [addingData, setAddingData] = useState("");
+  const [addingData, setAddingData] = useState("");
   const navigate = useNavigate();
 
   const [form] = Form.useForm();
@@ -105,9 +105,13 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
       dataIndex: "stepStatus",
       key: "stepStatus",
       render: (_, { stepStatus }) =>
-        stepStatus === "PENDING" ||
+        stepStatus === "REJECTED" ?
+         <Tag color="red" key={stepStatus}>
+            {stepStatus}
+          </Tag>
+        :(stepStatus === "PENDING" ||
         stepStatus === "RETURNED" ||
-        stepStatus === "SECOND MEETING - PENDING" ? (
+        stepStatus === "SECOND MEETING - PENDING") ? (
           <Tag color="yellow" key={stepStatus}>
             {stepStatus}
           </Tag>
@@ -121,11 +125,15 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
       title: "Role",
       dataIndex: "roleDescription",
       key: "roleDescription",
+      render: (_, {roleDescription, stepStatus}) =>
+        stepStatus === "PENDING"? '' : roleDescription
     },
     {
       title: "Comment",
       dataIndex: "comment",
       key: "comment",
+      render: (_, {comment, stepStatus}) =>
+        stepStatus === "PENDING"? '' : comment
     //   render: ( text,  record) => {
     //     console.log(text);
     //     if (record?.reason != null) {
@@ -182,15 +190,15 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
     // }
     form.validateFields(["comment"]).then(async () => {
       try {
-        // setAddingData(type);
+        setAddingData(type);
         let data;
 
           data = {
             appraisalIdx: appraisalId,
             // secondMeetingStepAction: genarateStepStatus(type, selectedRole),
             // secondMeetingStepStatus: genarateStepAction(type, selectedRole, isSecondMeeting),
-            stepAction: ((currentRole?.code === "CD") && (type == "PROCEED")) ? 'APPROVED' :  type,
-            stepStatus: ((currentRole?.code === "CD") && (type == "PROCEED")) ? 'APPROVED' :  type,
+            stepAction: (((currentRole?.code === "CD") || (currentRole?.code === "CAD")) && (type == "PROCEED")) ? 'APPROVED' :  type,
+            stepStatus: ((currentRole?.code === "CD"|| (currentRole?.code === "CAD")) && (type == "PROCEED")) ? 'APPROVED' :  type,
             reSubmit: "N",
             // appraisalType:
             //   approvalSteps?.data?.approvalStepDtoList?.[
@@ -268,7 +276,7 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
           message: "Application update failed",
         });
       } finally {
-        // setAddingData("");
+        setAddingData("");
       }
     });
   };
@@ -413,10 +421,10 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
                 })} */}
               <Button
                 type="primary"
-                // disabled={
-                //   addingData ? true
-                //     : false
-                // }
+                disabled={
+                  addingData ? true
+                    : false
+                }
                 size="large"
                 onClick={() => handleSubmit("REJECTED")}
                 className="mr-1 "
@@ -426,10 +434,10 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
               </Button>
               <Button
                 type="primary"
-                // disabled={
-                //   addingData ? true
-                //     : false
-                // }
+                disabled={
+                  addingData ? true
+                    : false
+                }
                 size="large"
                 onClick={() => handleSubmit("RETURNED")}
                 className="mr-1 "
@@ -441,10 +449,10 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
                 type="primary"
                 // label={type}
                 // loading={addingData === type ? true : false}
-                // disabled={
-                //   addingData ? true
-                //     : false
-                // }
+                disabled={
+                  addingData ? true
+                    : false
+                }
                 size="large"
                 onClick={() => handleSubmit("PROCEED")}
                 className="mr-1 "

@@ -27,7 +27,7 @@ import {
 // import { getOriginationCommon } from "services/common.service";
 // import { getValueByList, getValueAddressType } from "services/util.service";
 import { APIAuth } from "../../../../services/api";
-import { getValueAddressType, getValueByList, intoCurrency } from "../../../../utils/Common";
+import { getValueAddressType, getValueByList, getValueContactType, getValueIncomeSource, intoCurrency } from "../../../../utils/Common";
 import AsyncImage from "../ImageContainers/AsyncImage";
 
 const { Panel } = Collapse;
@@ -235,13 +235,13 @@ const GuarantorDetails: React.FC<GuarantorDetailsProps> = ({ stakeholders, tcAmo
 
               <Panel header="Contact & Address Information" key="2">
                 {guarantorDetails?.contacts?.map((c: any, i: any) => (
-                  <Descriptions key={i} size="small" column={2} bordered>
-                    {renderDesc("Phone No Type", c.phoneNoType)}
+                  <Descriptions key={i} size="small" column={2} bordered className="my-4 shadow-md rounded-md bg-white">
+                  {renderDesc("Phone No Type", getValueContactType(c.phoneNoType))}
                     {renderDesc("Phone No", c.phoneNo)}
                   </Descriptions>
                 ))}
                 {guarantorDetails?.addresses?.map((r: any, i: any) => (
-                  <Descriptions key={i} size="small" column={2} bordered>
+                  <Descriptions key={i} size="small" column={2} bordered className="my-4 shadow-md rounded-md bg-white">
                     {renderDesc(
                       "Address Type",
                       getValueAddressType(r.addressType)
@@ -281,7 +281,7 @@ const GuarantorDetails: React.FC<GuarantorDetailsProps> = ({ stakeholders, tcAmo
                 <Descriptions bordered column={2} size="small">
                   {renderDesc(
                     "Source of Income",
-                    guarantorDetails.income?.sourceOfIncome
+                    getValueIncomeSource(guarantorDetails.income?.sourceOfIncome)
                   )}
                   {renderDesc(
                     "Monthly Income",

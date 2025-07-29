@@ -84,7 +84,7 @@ const IncomeExpensesDetails: React.FC = () => {
 
   const columnsRevenueSummary = [
     {
-      title: "Revenue Summary",
+      title: "Revenue & Expenses Summary",
       dataIndex: "label",
       key: "label"
     },
@@ -123,8 +123,8 @@ const IncomeExpensesDetails: React.FC = () => {
     const { incomeExpenses } = data;
     const finalData = [
       { label: "Net Monthly Disposable Income", value: incomeExpenses?.netMonthlyDisposable },
-      { label: "Taxable Amount", value: incomeExpenses?.taxableAmount },
-      { label: "BE/BI", value: incomeExpenses?.beBiRate },
+      // { label: "Taxable Amount", value: incomeExpenses?.taxableAmount },
+      // { label: "BE/BI", value: incomeExpenses?.beBiRate },
       { label: "Debt-Service Ratio", value: incomeExpenses?.dscr },
       { label: "Max Debt Burden", value: incomeExpenses?.maxDebtBurden },
       { label: "Tenure", value: incomeExpenses?.tenure },
@@ -151,6 +151,9 @@ const IncomeExpensesDetails: React.FC = () => {
           {bnsOrAgriExpenses.length > 0 && renderTableSection("BUSINESS/AGRI EXPENSES", bnsOrAgriExpenses, columnsWithPeriods)}
           {renderTableSection("EXPENSES SUMMARY", [
             { label: "Total Business/Agri Expenses", value: incomeExpenses?.totBusinessExpense },
+            { label: "Total Household Expenses", value: incomeExpenses?.totHouseholdExpense },
+            { label: "Rental Expenses", value: '-' },
+            { label: "Other Expenses", value: '-' },
             { label: "Total Expenses", value: incomeExpenses?.totExpense },
           ], columnsRevenueSummary)}
           {renderFinalSummary()}

@@ -221,7 +221,7 @@ const assetColumns = [
         <Panel header="INDIVIDUAL LOAN BUSINESS DETAILS" key="2">
           <Tabs activeKey={activeTabs.business} onChange={(key) => setActiveTabs({ ...activeTabs, business: key })}>
             {businessLoanDetails.map((item, index) => (
-              <TabPane tab={`Business 0${index + 1}`} key={index.toString()}>
+              <TabPane tab={`Business`} key={index.toString()}>
                 <Descriptions layout="vertical" bordered column={2} size="small">
                   {renderDesc("Business Name", item.bnsName)}
                   {renderDesc("Nature of Business", getValueByList(originationCommon?.natureOfBusinessDtoList, item.natureOfBns))}
@@ -425,7 +425,7 @@ const assetColumns = [
 
    const renderBaraKarobarEmployeeLoanDetails = () => {
     const { baraKarobarEmployeeLoanDetails} = data;
-    if (!baraKarobarEmployeeLoanDetails) return null;
+    if (!baraKarobarEmployeeLoanDetails?.length) return null;
 
     return (
         <Collapse defaultActiveKey={["4"]} className="my-4">
