@@ -5,7 +5,6 @@ import type { FC } from "react";
 import type { DescriptionsProps } from "antd";
 import { APIAuth } from "../../../../services/api";
 import { getCommonAreaValues, getValueAddressType, getValueByList, getValueContactType, getValuePoliticallyExposed } from "../../../../utils/Common";
-import useCommonStore from "../../../../store/commonStore";
 
 
 
@@ -22,7 +21,6 @@ interface CustomerDetailsProps {
 const CustomerDetails: FC<CustomerDetailsProps> = ({ tcDetails, stakeholders, productDetails }) => {
   const { appraisalId } = useParams<{ appraisalId: string }>();
   const [loading, setLoading] = useState<boolean>(true);
-  const { contactTypes } = useCommonStore()
 
   const [data, setData] = useState<any>({
     tcDetails: {},
