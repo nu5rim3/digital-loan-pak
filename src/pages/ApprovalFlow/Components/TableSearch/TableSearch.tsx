@@ -1,7 +1,17 @@
-// ✅ FILE: pages/GeneralAppraisalList.tsx
-
 import React, { useEffect, useState } from "react";
-import { Table, Input, Select, Button, DatePicker, Row, Col, Card, Tag, Typography } from "antd";
+import {
+  Table,
+  Input,
+  Select,
+  Button,
+  DatePicker,
+  Row,
+  Col,
+  Card,
+  Tag,
+  Typography,
+  Tabs,
+} from "antd";
 import dayjs from "dayjs";
 import { mainURL } from "../../../../App";
 import { useNavigate, useParams } from "react-router-dom";
@@ -10,6 +20,8 @@ import API from "../../../../services/APIServices";
 import { EyeOutlined } from "@ant-design/icons";
 
 const { RangePicker } = DatePicker;
+const { TabPane } = Tabs;
+const { Link } = Typography;
 
 const statusOptions = [
   { label: "Approval Pending", value: "APPROVAL_PENDING" },
@@ -29,57 +41,44 @@ const GeneralAppraisalList: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
-
   const [status, setStatus] = useState("APPROVAL_PENDING");
   const [searchField, setSearchField] = useState("appraisalId");
   const [searchText, setSearchText] = useState("");
   const [dateRange, setDateRange] = useState<[any, any] | null>(null);
+  const [activeTab, setActiveTab] = useState("general");
 
-  const { currentRole, user } = useUserStore()
-  const {flow} = useParams<{ flow: string }>();
-
+  const { currentRole, user } = useUserStore();
+  const { flow } = useParams<{ flow: string }>();
   const navigate = useNavigate();
-  const { Link } = Typography;
 
   const fetchData = async () => {
-    console.log('branch', user);
     setLoading(true);
     try {
       const fromDate = dateRange?.[0]?.isValid() ? dateRange[0].format("YYYY-MM-DD") : "";
       const toDate = dateRange?.[1]?.isValid() ? dateRange[1].format("YYYY-MM-DD") : "";
 
-
-        const params: any = {
+      const params: any = {
         role: currentRole?.code,
         status,
         page: page - 1,
         size: 7,
         fromDate,
         toDate,
-        branch: user?.branches[0].code
+        branch: user?.branches[0].code,
       };
 
       if (searchText && searchField) {
         params[searchField] = searchText;
       }
 
-      // const res = await APIAuth.get(
-      //   "mobixCamsLoan/v1/appraisals/filters",
-      //   { params }
-      // );
-
-      let res
-
-      if(flow === "firstFlow") {
- res = await API.mobixCamsLoan.getFirstFlowApprovals({
-        ...params,
-      });
-      }else{
- res = await API.mobixCamsLoan.getSecondFlowApprovals({
-        ...params,
-      });
+      let res;
+      if (flow === "firstFlow") {
+        res = activeTab === "general"
+          ? await API.mobixCamsLoan.getFirstFlowApprovals(params)
+          : await API.mobixCamsLoan.getExcaptionalApprovals(params);
+      } else {
+        res = await API.mobixCamsLoan.getSecondFlowApprovals(params);
       }
-      
 
       setData(res.data.content);
       setTotal(res.data.totalElements);
@@ -92,7 +91,7 @@ const GeneralAppraisalList: React.FC = () => {
 
   useEffect(() => {
     fetchData();
-  }, [page, status, flow]);
+  }, [page, status, flow, activeTab]);
 
   const columns = [
     {
@@ -137,47 +136,63 @@ const GeneralAppraisalList: React.FC = () => {
     {
       title: "Status",
       dataIndex: "status",
-      align: 'center' as const,
-      render: (status: string) =>
-        status === "C" ? (
-          <Tag color="yellow">APPROVAL PENDING</Tag>
-        ) : 
-        status === "R" ? (
-          <Tag color="yellow">RETURN</Tag>
-        ) :
-        status === "J" ? (
-          <Tag color="yellow">REJECTED</Tag>
-        ) :(
-          <Tag color="red">{status}</Tag>
-        ),
+      align: "center" as const,
+      render: (status: string) => {
+        if (status === "C") return <Tag color="yellow">APPROVAL PENDING</Tag>;
+        if (status === "R") return <Tag color="yellow">RETURN</Tag>;
+        if (status === "J") return <Tag color="yellow">REJECTED</Tag>;
+        return <Tag color="red">{status}</Tag>;
+      },
     },
     {
-  title: "Action",
-  render: (_: any, record: any) => (
-    <Link
-      onClick={() =>
-        navigate(
-          flow === "firstFlow"
-            ? `${mainURL}/approval/preview/firstFlow/${record.idx}`
-            : `${mainURL}/approval/preview/secondFlow/${record.idx}`
-        )
-      }
-    >
-      <EyeOutlined style={{ marginRight: 4 }} />
-    </Link>
-  ),
-},
+      title: "Action",
+      render: (_: any, record: any) => (
+        <Link
+          onClick={() =>
+            navigate(
+              flow === "firstFlow"
+                ? `${mainURL}/approval/preview/firstFlow/${record.idx}`
+                : `${mainURL}/approval/preview/secondFlow/${record.idx}`
+            )
+          }
+        >
+          <EyeOutlined style={{ marginRight: 4 }} />
+        </Link>
+      ),
+    },
   ];
 
   return (
-    <Card title={flow == "firstFlow" ? "First Flow Appraisal Origination" : "Second Flow Appraisal Origination"} style={{ marginTop: 16 }}>
+    <Card
+      title={flow === "firstFlow" ? "First Flow Appraisal Origination" : "Second Flow Appraisal Origination"}
+      style={{ marginTop: 16 }}
+    >
+      {flow === "firstFlow" && (
+        <Tabs activeKey={activeTab} onChange={setActiveTab} style={{ marginBottom: 16 }}>
+          <TabPane tab="General" key="general" />
+          <TabPane tab="Exceptional" key="exceptional" />
+        </Tabs>
+      )}
+
       <Row gutter={[16, 16]}>
-        <Col><Select value={status} onChange={setStatus} style={{ width: 180 }} options={statusOptions} /></Col>
-        <Col><Select value={searchField} onChange={setSearchField} style={{ width: 160 }} options={filterOptions} /></Col>
-        <Col><Input value={searchText} onChange={e => setSearchText(e.target.value)} placeholder="Search..." /></Col>
-        <Col><RangePicker value={dateRange} onChange={setDateRange} /></Col>
-        <Col><Button onClick={() => { setPage(1); fetchData(); }} type="primary">Search</Button></Col>
-        <Col><Button onClick={() => { setSearchText(""); setDateRange(null); fetchData(); }}>Reset</Button></Col>
+        <Col>
+          <Select value={status} onChange={setStatus} style={{ width: 180 }} options={statusOptions} />
+        </Col>
+        <Col>
+          <Select value={searchField} onChange={setSearchField} style={{ width: 160 }} options={filterOptions} />
+        </Col>
+        <Col>
+          <Input value={searchText} onChange={e => setSearchText(e.target.value)} placeholder="Search..." />
+        </Col>
+        <Col>
+          <RangePicker value={dateRange} onChange={setDateRange} />
+        </Col>
+        <Col>
+          <Button onClick={() => { setPage(1); fetchData(); }} type="primary">Search</Button>
+        </Col>
+        <Col>
+          <Button onClick={() => { setSearchText(""); setDateRange(null); fetchData(); }}>Reset</Button>
+        </Col>
       </Row>
 
       <Table
