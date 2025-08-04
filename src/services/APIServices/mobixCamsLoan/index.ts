@@ -36,5 +36,13 @@ export const mobixCamsLoan = {
         ...filterData
       }
     }),
+  getExcaptionalApprovals: async (filterData: any) =>
+    APIAuth.get(`/mobixCamsLoan/v1/appraisals/exceptional-approvals/filters`, {
+      params: {
+        ...filterData
+      }
+    }),
+
+
 
 }

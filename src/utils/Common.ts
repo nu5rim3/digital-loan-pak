@@ -122,5 +122,13 @@ export const getValueIncomeSource = (key: any) => {
     }
 };
 
+export const getObExceptionals = (key: string) => {
+    switch (key) {
+        case "BLACKLIST": return "Blacklist";
+        case "MSASPRO": return "MSAS Pro";
+        case "INTCRIB": return "Internal CRIB";
+    }
+};
+
  
 

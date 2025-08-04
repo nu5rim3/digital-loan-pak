@@ -5,8 +5,13 @@ import {
   Tag,
   notification,
   Typography,
+  Collapse,
+  Tabs,
+  Input,
+  Row,
+  Col,
+  Space,
 } from "antd";
-import TextArea from "antd/es/input/TextArea";
 import { useEffect, useState } from "react";
 // import ButtonContainer from '../../../../components/Buttons/Button';
 // import Title from '../../../../components/Typography/Tytle';
@@ -19,6 +24,8 @@ import { Button } from "antd/lib";
 import API from "../../../../services/APIServices";
 import useUserStore from "../../../../store/userStore";
 import { mainURL } from "../../../../App";
+import { CheckSquareOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import { getObExceptionals } from "../../../../utils/Common";
 // import { genarateStepAction, genarateStepStatus } from '../../../../utils/setpsGenaration';
 // import fileToBase64Async from '../../../../utils/fileToBase64Async';
 
@@ -60,10 +67,17 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
     appraisalId: string;
     flow: string;
   }>();
-  const { currentRole } = useUserStore();
+  const {user, currentRole } = useUserStore();
+   const [exceptionalApprovals, setExceptionalApprovals] = useState<any>([])
+   const [originationApproval, setOriginationApproval] = useState<any>([])
+    const [findUser, setFindUser] = useState<any>(null)
+    const [isLoadingOb, setIsLoadingOb] = useState(false)
 
 
-  const { Title } = Typography;
+  const { Title, Text } = Typography;
+  const { Panel } = Collapse;
+  const { TabPane } = Tabs;
+  const { TextArea } = Input;
   // useEffect(() => {
   //   if (selectedRole) {
   //     if (selectedRole === 'CSA') {
@@ -96,6 +110,8 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
   // }, [selectedRole, isSecondMeeting])
 
   const [addingData, setAddingData] = useState("");
+  const [verticalObActiveTab, setVerticalObActiveTab] = useState(0)
+  const [verticalCaActiveTab, setVerticalCaActiveTab] = useState(0)
   const navigate = useNavigate();
 
   const [form] = Form.useForm();
@@ -188,6 +204,7 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
     // } else {
     //   setIsRequired(false);
     // }
+    setIsLoadingOb(true)
     form.validateFields(["comment"]).then(async () => {
       try {
         setAddingData(type);
@@ -319,25 +336,255 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
     fetchData();
   }, []);
 
-  const fetchData = async () => {
+const fetchData = async () => {
+  console.log('xxx', user);
+  try {
+    if (!appraisalId || !user) return;
+
+    let flowHistory: any = [];
+    let exceptionalApprovals: any = [];
+    let approvalOrigination: any = [];
+    let userVerify: any = null;
+
+    // Fetch flowHistory
     try {
-      const flowHistory = await API.mobixCamsApproval.getApprovalCombinedSteps(
-        appraisalId!
-      );
-      console.log("xx", flowHistory);
-      setFlowHistory(flowHistory.data);
-      // setReasons(allReasons.data);
-      // setIsRequired(false);
-    } catch (e) {
-      console.error("Error fetching approval flow history:", e);
-      notification.error({
-        message: "Failed to load approval flow history",
-      });
+      const result = await API.mobixCamsApproval.getApprovalCombinedSteps(appraisalId);
+      flowHistory = result.data;
+    } catch (err) {
+      console.warn("Failed to fetch flow history", err);
     }
-  };
+
+    // Fetch exceptionalApprovals
+    try {
+      exceptionalApprovals = await API.mobixCamsApproval.getAllExceptionalApprovals(appraisalId);
+    } catch (err) {
+      console.warn("Failed to fetch exceptional approvals", err);
+    }
+
+    // Fetch origination approval
+    try {
+      approvalOrigination = await API.mobixCamsApproval.getAllOriginationApproval(appraisalId);
+    } catch (err) {
+      console.warn("Failed to fetch origination approval", err);
+    }
+
+    // Verify user
+    try {
+      userVerify = await API.mobixCamsApproval.verifyApprovalUser(user?.idx);
+    } catch (err) {
+      console.warn("Failed to verify user", err);
+    }
+
+    // Set state safely even if some values are undefined or null
+    setExceptionalApprovals(exceptionalApprovals || []);
+    setOriginationApproval(approvalOrigination || []);
+    setFindUser(userVerify || null);
+    setFlowHistory(flowHistory || []);
+
+  } catch (e) {
+    console.error("Unexpected error in fetchData:", e);
+    notification.error({
+      message: "Unexpected error occurred while fetching data",
+    });
+  }
+};
+
+
+  //   const verifyActiveStepAndUser = () => {
+  //   var result = false
+  //   if (
+  //     findUser !== null &&
+  //     findUser !== undefined &&
+  //     originationApproval?.approvalStepDto !== null &&
+  //     originationApproval?.approvalStepDto !== undefined
+  //   ) {
+  //     result =
+  //       findUser?.group?.code ===
+  //         originationApproval?.approvalStepDto.workflowStep.name &&
+  //       originationApproval?.approvalStepDto.stepAction === "P"
+  //     return result
+  //   }
+
+  //   if (
+  //     originationApproval?.approvalStepDto !== null &&
+  //     originationApproval?.approvalStepDto !== undefined
+  //   ) {
+  //     var role = currentRole?.code
+  //     result =
+  //       role === originationApproval.approvalStepDto?.workflowStep.roleCode &&
+  //       originationApproval.approvalStepDto?.stepAction === "P"
+  //     return result
+  //   }
+
+  //   return result
+  // }
+
+  const verifyUserWithLevel = (level: string) => {
+    if (level !== "" && level !== null) {
+      var role = currentRole?.code
+      return role === level
+    }
+
+    return false
+  }
+
+  //  const onSubmitCaRejection = () => {
+  //   var value = document.getElementById(`ca_comment_${index1}`).value
+  //   if (value === "") {
+  //     document
+  //       .getElementById(`ca_error_comment_${index1}`)
+  //       .classList.remove("d-none")
+  //     return
+  //   }
+
+  //   var payload = {
+  //     comment: value,
+  //     appType: "CA",
+  //     approvalIdx: item.idx,
+  //     appraisalIdx: item.appraisalIdx,
+  //     action: "R",
+  //   }
+
+  //   if (caApprovalBtnRef.current) {
+  //     caApprovalBtnRef.current.setAttribute("disabled", "disabled")
+  //   }
+
+  //   setIsButtonDisabled(true)
+  //   createCaApprovals(payload)
+  // }
 
   return (
     <div>
+
+       <Panel header="ON-BOARDING EXCEPTIONAL APPROVALS" key="1">
+        <Row gutter={16}>
+          <Col span={6}>
+            <Tabs
+              tabPosition="left"
+              activeKey={verticalObActiveTab.toString()}
+              onChange={(key:any) => 
+                // toggleObVertical(parseInt(key))
+                setVerticalObActiveTab(key)
+              }
+            >
+              {originationApproval.requestDtoList?.map((item: any, index: number) => (
+                <TabPane
+                  tab={
+                    <Space>
+                      <Text strong>{`0${index + 1}. ${getObExceptionals(item.type)}`}</Text>
+                      {item.status === "A" && <CheckSquareOutlined style={{ color: "green" }} />}
+                      {item.status === "R" && <CloseCircleOutlined style={{ color: "red" }} />}
+                    </Space>
+                  }
+                  key={index.toString()}
+                >
+                  <Row>
+                    <Col span={24}>
+                      <Title level={5}>Requester’s Comment:</Title>
+                      <Text>{item.remark}</Text>
+
+                      <TextArea
+                        readOnly={!!item.comments}
+                        defaultValue={item.comments?.comment || ""}
+                        rows={4}
+                      />
+
+                      {item.status === "P" && findUser?.group?.code === "AG_LEVEL_2" && (
+                        <Space className="mt-3" style={{ float: "right" }}>
+                          <Button
+                            danger
+                            loading={isLoadingOb}
+                            // onClick={() => 
+                            //   // handleObExceptionalRejectClickOpen(index, item)
+
+                            // }
+                          >
+                            Reject
+                          </Button>
+                          <Button
+                            type="primary"
+                            loading={isLoadingOb}
+                            // onClick={() => 
+                            //   handleObExceptionalClickApproveOpen(index, item)
+                            // }
+                          >
+                            Approve
+                          </Button>
+                        </Space>
+                      )}
+                    </Col>
+                  </Row>
+                </TabPane>
+              ))}
+            </Tabs>
+          </Col>
+        </Row>
+      </Panel>
+
+      {/* CREDIT APPRAISAL EXCEPTIONAL APPROVALS */}
+      <Panel header="EXCEPTIONAL APPROVALS" key="2">
+        <Row gutter={16}>
+          <Col span={6}>
+            <Tabs
+              tabPosition="left"
+              activeKey={verticalCaActiveTab.toString()}
+              onChange={(key:any) => 
+                // toggleCaVertical(parseInt(key))
+                setVerticalCaActiveTab(key)
+              }
+            >
+              {exceptionalApprovals.map((item: any, index: number) => (
+                <TabPane
+                  tab={
+                    <Space>
+                      <Text strong>{`0${index + 1}. ${item.categoryDec}`}</Text>
+                      {item.status === "A" && <CheckSquareOutlined style={{ color: "green" }} />}
+                      {item.status === "R" && <CloseCircleOutlined style={{ color: "red" }} />}
+                    </Space>
+                  }
+                  key={index.toString()}
+                >
+                  <Row>
+                    <Col span={24}>
+                      <Title level={5}>Approval User:</Title>
+                      <Text>{item.role}</Text>
+
+                      <Title level={5}>Requester’s Comment:</Title>
+                      <Text>{item.remark}</Text>
+
+                      <TextArea
+                        readOnly={!verifyUserWithLevel(item.roleCode) || !!item.comments}
+                        defaultValue={item.comments?.comment || ""}
+                        rows={4}
+                      />
+
+                      {verifyUserWithLevel(item.roleCode) && item.status === "P" && (
+                        <Space className="mt-3" style={{ float: "right" }}>
+                          <Button
+                            danger
+                            // loading={isLoadingCa}
+                            // onClick={() => handleCaRejectClickOpen(index, item)}
+                          >
+                            Reject
+                          </Button>
+                          <Button
+                            type="primary"
+                            // loading={isLoadingCa}
+                            // onClick={() => handleCaClickOpen(index, item)}
+                          >
+                            Approve
+                          </Button>
+                        </Space>
+                      )}
+                    </Col>
+                  </Row>
+                </TabPane>
+              ))}
+            </Tabs>
+          </Col>
+        </Row>
+      </Panel>
+
       {flowHistory?.ibuWf1ApprovalSteps?.find(
         (row: any) => row?.stepAction === "PENDING"
       )?.roleCode === currentRole?.code ||
@@ -356,7 +603,6 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
             {/* {
                 roleWiseApproval?.length && reasons.length > 0 && (selectedRole === 'ADMIN' || selectedRole === 'CA') ?
                   <Form.Item
-
                     name="reason"
                     label="Reason"
                     rules={[
