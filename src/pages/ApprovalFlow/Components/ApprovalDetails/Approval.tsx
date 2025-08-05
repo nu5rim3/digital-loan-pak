@@ -5,7 +5,6 @@ import {
   Tag,
   notification,
   Typography,
-  Collapse,
   Tabs,
   Input,
   Row,
@@ -80,7 +79,6 @@ export default function Approval({
 const [caComments, setCaComments] = useState<Record<string, string>>({});
 
   const { Title, Text } = Typography;
-  const { Panel } = Collapse;
   const { TabPane } = Tabs;
   const { TextArea } = Input;
   // useEffect(() => {
