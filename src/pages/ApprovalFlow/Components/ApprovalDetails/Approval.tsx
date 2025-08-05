@@ -5,7 +5,6 @@ import {
   Tag,
   notification,
   Typography,
-  Collapse,
   Tabs,
   Input,
   Row,
@@ -80,7 +79,6 @@ export default function Approval({
 const [caComments, setCaComments] = useState<Record<string, string>>({});
 
   const { Title, Text } = Typography;
-  const { Panel } = Collapse;
   const { TabPane } = Tabs;
   const { TextArea } = Input;
   // useEffect(() => {
@@ -565,8 +563,10 @@ const validateComment = (comment: string) => {
 
   return (
     <div>
-      <Panel header="ON-BOARDING EXCEPTIONAL APPROVALS" key="1">
+      {/* <Panel header="ON-BOARDING EXCEPTIONAL APPROVALS" key="1"> */}
+      {originationApproval?.requestDtoList?.length? 
         <Row gutter={16}>
+          <Title level={5}>On-Boarding Excaptional Approvals</Title>
           <Col span={6}>
             <Tabs
               tabPosition="left"
@@ -639,10 +639,12 @@ const validateComment = (comment: string) => {
             </Tabs>
           </Col>
         </Row>
-      </Panel>
+      : null}
+      {/* </Panel> */}
 
       {/* CREDIT APPRAISAL EXCEPTIONAL APPROVALS */}
-      <Panel header="EXCEPTIONAL APPROVALS" key="2">
+      {/* <Panel header="EXCEPTIONAL APPROVALS" key="2"> */}
+      {exceptionalApprovals?.length ?
         <Row gutter={16}>
           <Col span={6}>
             <Tabs
@@ -653,7 +655,7 @@ const validateComment = (comment: string) => {
                 setVerticalCaActiveTab(key)
               }
             >
-              {exceptionalApprovals.map((item: any, index: number) => (
+              { exceptionalApprovals?.map((item: any, index: number) => (
                 <TabPane
                   tab={
                     <Space>
@@ -713,7 +715,8 @@ const validateComment = (comment: string) => {
             </Tabs>
           </Col>
         </Row>
-      </Panel>
+      : null}
+      {/* </Panel> */}
 
       {flowHistory?.ibuWf1ApprovalSteps?.find(
         (row: any) => row?.stepAction === "PENDING"
@@ -833,8 +836,8 @@ const validateComment = (comment: string) => {
         </>
       ) : null}
       {flowHistory?.ibuWf1ApprovalSteps?.length > 0 && (
-        <div className="mt-5">
-          <Title level={5}>Application First Flow History</Title>
+        <div className="mt-5"><Title level={5}>Application First Flow History</Title>
+          
           <div className="overflow-x-auto">
             <Table
               className="w-4/4"
