@@ -30,13 +30,17 @@ import { getObExceptionals } from "../../../../utils/Common";
 // import fileToBase64Async from '../../../../utils/fileToBase64Async';
 
 export interface IApprovalProps {
-  fileList: any;  
-  tcDetails:any
-    tcAmount:any;
-    isGoldProduct:boolean
+  fileList: any;
+  tcDetails: any;
+  tcAmount: any;
+  isGoldProduct: boolean;
 }
 
-export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IApprovalProps) {
+export default function Approval({
+  tcDetails,
+  tcAmount,
+  isGoldProduct,
+}: IApprovalProps) {
   // approvalSteps
 
   // const {
@@ -67,12 +71,13 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
     appraisalId: string;
     flow: string;
   }>();
-  const {user, currentRole } = useUserStore();
-   const [exceptionalApprovals, setExceptionalApprovals] = useState<any>([])
-   const [originationApproval, setOriginationApproval] = useState<any>([])
-    const [findUser, setFindUser] = useState<any>(null)
-    const [isLoadingOb, setIsLoadingOb] = useState(false)
-
+  const { user, currentRole } = useUserStore();
+  const [exceptionalApprovals, setExceptionalApprovals] = useState<any>([]);
+  const [originationApproval, setOriginationApproval] = useState<any>([]);
+  const [findUser, setFindUser] = useState<any>(null);
+  const [isLoadingOb, setIsLoadingOb] = useState(false);
+ const [obComments, setObComments] = useState<Record<string, string>>({});
+const [caComments, setCaComments] = useState<Record<string, string>>({});
 
   const { Title, Text } = Typography;
   const { Panel } = Collapse;
@@ -110,8 +115,8 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
   // }, [selectedRole, isSecondMeeting])
 
   const [addingData, setAddingData] = useState("");
-  const [verticalObActiveTab, setVerticalObActiveTab] = useState(0)
-  const [verticalCaActiveTab, setVerticalCaActiveTab] = useState(0)
+  const [verticalObActiveTab, setVerticalObActiveTab] = useState(0);
+  const [verticalCaActiveTab, setVerticalCaActiveTab] = useState(0);
   const navigate = useNavigate();
 
   const [form] = Form.useForm();
@@ -121,13 +126,13 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
       dataIndex: "stepStatus",
       key: "stepStatus",
       render: (_, { stepStatus }) =>
-        stepStatus === "REJECTED" ?
-         <Tag color="red" key={stepStatus}>
+        stepStatus === "REJECTED" ? (
+          <Tag color="red" key={stepStatus}>
             {stepStatus}
           </Tag>
-        :(stepStatus === "PENDING" ||
-        stepStatus === "RETURNED" ||
-        stepStatus === "SECOND MEETING - PENDING") ? (
+        ) : stepStatus === "PENDING" ||
+          stepStatus === "RETURNED" ||
+          stepStatus === "SECOND MEETING - PENDING" ? (
           <Tag color="yellow" key={stepStatus}>
             {stepStatus}
           </Tag>
@@ -141,34 +146,34 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
       title: "Role",
       dataIndex: "roleDescription",
       key: "roleDescription",
-      render: (_, {roleDescription, stepStatus}) =>
-        stepStatus === "PENDING"? '' : roleDescription
+      render: (_, { roleDescription, stepStatus }) =>
+        stepStatus === "PENDING" ? "" : roleDescription,
     },
     {
       title: "Comment",
       dataIndex: "comment",
       key: "comment",
-      render: (_, {comment, stepStatus}) =>
-        stepStatus === "PENDING"? '' : comment
-    //   render: ( text,  record) => {
-    //     console.log(text);
-    //     if (record?.reason != null) {
-    //       return (
-    //         <Space
-    //           direction="vertical"
-    //           size="middle"
-    //           style={{ display: "flex" }}
-    //         >
-    //           <p> {record?.reasonDesc ? record?.reasonDesc : ""} </p>
-    //           <p> {record?.comment} </p>
-    //         </Space>
-    //       );
-    //     } else if (record?.comment === null) {
-    //       return ``;
-    //     } else {
-    //       return `${record?.comment} `;
-    //     }
-    //   },
+      render: (_, { comment, stepStatus }) =>
+        stepStatus === "PENDING" ? "" : comment,
+      //   render: ( text,  record) => {
+      //     console.log(text);
+      //     if (record?.reason != null) {
+      //       return (
+      //         <Space
+      //           direction="vertical"
+      //           size="middle"
+      //           style={{ display: "flex" }}
+      //         >
+      //           <p> {record?.reasonDesc ? record?.reasonDesc : ""} </p>
+      //           <p> {record?.comment} </p>
+      //         </Space>
+      //       );
+      //     } else if (record?.comment === null) {
+      //       return ``;
+      //     } else {
+      //       return `${record?.comment} `;
+      //     }
+      //   },
     },
     {
       title: "created By",
@@ -204,35 +209,43 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
     // } else {
     //   setIsRequired(false);
     // }
-    setIsLoadingOb(true)
+    setIsLoadingOb(true);
     form.validateFields(["comment"]).then(async () => {
       try {
         setAddingData(type);
         let data;
 
-          data = {
-            appraisalIdx: appraisalId,
-            // secondMeetingStepAction: genarateStepStatus(type, selectedRole),
-            // secondMeetingStepStatus: genarateStepAction(type, selectedRole, isSecondMeeting),
-            stepAction: (((currentRole?.code === "CD") || (currentRole?.code === "CAD")) && (type == "PROCEED")) ? 'APPROVED' :  type,
-            stepStatus: ((currentRole?.code === "CD"|| (currentRole?.code === "CAD")) && (type == "PROCEED")) ? 'APPROVED' :  type,
-            reSubmit: "N",
-            // appraisalType:
-            //   approvalSteps?.data?.approvalStepDtoList?.[
-            //     approvalSteps?.data?.approvalStepDtoList?.length - 1
-            //   ]?.appraisalType,
-            loanProduct: tcDetails?.pTrhdLType,
-            loanAmount: tcAmount?.object?.loanAmount,
-            loanTerm: tcDetails?.pTrhdTerm,
-            roleCode: currentRole?.code, //CD
-            loanType: isGoldProduct? "GOLD" : "NORMAL",
-            flowNo: (flow === "firstFlow" ? 1 : 2),
-            // loanRate: financialDetails?.data?.pTrhdTr,
-            comment: form.getFieldValue("comment"),
-            // reason: form.getFieldValue('reason') ? form.getFieldValue('reason').value : "",
-            // reasonDesc: form.getFieldValue('reason') ? form.getFieldValue('reason').label : "",
-            documents: []
-          };
+        data = {
+          appraisalIdx: appraisalId,
+          // secondMeetingStepAction: genarateStepStatus(type, selectedRole),
+          // secondMeetingStepStatus: genarateStepAction(type, selectedRole, isSecondMeeting),
+          stepAction:
+            (currentRole?.code === "CD" || currentRole?.code === "CAD") &&
+            type == "PROCEED"
+              ? "APPROVED"
+              : type,
+          stepStatus:
+            (currentRole?.code === "CD" || currentRole?.code === "CAD") &&
+            type == "PROCEED"
+              ? "APPROVED"
+              : type,
+          reSubmit: "N",
+          // appraisalType:
+          //   approvalSteps?.data?.approvalStepDtoList?.[
+          //     approvalSteps?.data?.approvalStepDtoList?.length - 1
+          //   ]?.appraisalType,
+          loanProduct: tcDetails?.pTrhdLType,
+          loanAmount: tcAmount?.object?.loanAmount,
+          loanTerm: tcDetails?.pTrhdTerm,
+          roleCode: currentRole?.code, //CD
+          loanType: isGoldProduct ? "GOLD" : "NORMAL",
+          flowNo: flow === "firstFlow" ? 1 : 2,
+          // loanRate: financialDetails?.data?.pTrhdTr,
+          comment: form.getFieldValue("comment"),
+          // reason: form.getFieldValue('reason') ? form.getFieldValue('reason').value : "",
+          // reasonDesc: form.getFieldValue('reason') ? form.getFieldValue('reason').label : "",
+          documents: [],
+        };
 
         // const processedFiles = [];
         // if (
@@ -274,18 +287,18 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
         };
 
         if (flow === "firstFlow") {
-           await API.mobixCamsApproval.approvalFirstFlow(newData)
+          await API.mobixCamsApproval.approvalFirstFlow(newData);
         } else {
-          await API.mobixCamsApproval.approvalSecondFlow(newData)
+          await API.mobixCamsApproval.approvalSecondFlow(newData);
         }
 
         notification.success({
           message: "Application Updated Successfully.",
         });
         if (flow === "firstFlow") {
-          return navigate( `${mainURL}/approval/list/firstFlow`);
+          return navigate(`${mainURL}/approval/list/firstFlow`);
         } else {
-           return navigate( `${mainURL}/approval/list/secondFlow`);
+          return navigate(`${mainURL}/approval/list/secondFlow`);
         }
       } catch (err) {
         // console.log('[ERROR] - ', err)
@@ -336,59 +349,61 @@ export default function Approval({  tcDetails, tcAmount, isGoldProduct }: IAppro
     fetchData();
   }, []);
 
-const fetchData = async () => {
-  console.log('xxx', user);
-  try {
-    if (!appraisalId || !user) return;
-
-    let flowHistory: any = [];
-    let exceptionalApprovals: any = [];
-    let approvalOrigination: any = [];
-    let userVerify: any = null;
-
-    // Fetch flowHistory
+  const fetchData = async () => {
+    console.log("xxx", user);
     try {
-      const result = await API.mobixCamsApproval.getApprovalCombinedSteps(appraisalId);
-      flowHistory = result.data;
-    } catch (err) {
-      console.warn("Failed to fetch flow history", err);
+      if (!appraisalId || !user) return;
+
+      let flowHistory: any = [];
+      let exceptionalApprovals: any = [];
+      let approvalOrigination: any = [];
+      let userVerify: any = null;
+
+      // Fetch flowHistory
+      try {
+        const result = await API.mobixCamsApproval.getApprovalCombinedSteps(
+          appraisalId
+        );
+        flowHistory = result.data;
+      } catch (err) {
+        console.warn("Failed to fetch flow history", err);
+      }
+
+      // Fetch exceptionalApprovals
+      try {
+        exceptionalApprovals =
+          await API.mobixCamsApproval.getAllExceptionalApprovals(appraisalId);
+      } catch (err) {
+        console.warn("Failed to fetch exceptional approvals", err);
+      }
+
+      // Fetch origination approval
+      try {
+        approvalOrigination =
+          await API.mobixCamsApproval.getAllOriginationApproval(appraisalId);
+      } catch (err) {
+        console.warn("Failed to fetch origination approval", err);
+      }
+
+      // Verify user
+      try {
+        userVerify = await API.mobixCamsApproval.verifyApprovalUser(user?.idx);
+      } catch (err) {
+        console.warn("Failed to verify user", err);
+      }
+
+      // Set state safely even if some values are undefined or null
+      setExceptionalApprovals(exceptionalApprovals || []);
+      setOriginationApproval(approvalOrigination || []);
+      setFindUser(userVerify || null);
+      setFlowHistory(flowHistory || []);
+    } catch (e) {
+      console.error("Unexpected error in fetchData:", e);
+      notification.error({
+        message: "Unexpected error occurred while fetching data",
+      });
     }
-
-    // Fetch exceptionalApprovals
-    try {
-      exceptionalApprovals = await API.mobixCamsApproval.getAllExceptionalApprovals(appraisalId);
-    } catch (err) {
-      console.warn("Failed to fetch exceptional approvals", err);
-    }
-
-    // Fetch origination approval
-    try {
-      approvalOrigination = await API.mobixCamsApproval.getAllOriginationApproval(appraisalId);
-    } catch (err) {
-      console.warn("Failed to fetch origination approval", err);
-    }
-
-    // Verify user
-    try {
-      userVerify = await API.mobixCamsApproval.verifyApprovalUser(user?.idx);
-    } catch (err) {
-      console.warn("Failed to verify user", err);
-    }
-
-    // Set state safely even if some values are undefined or null
-    setExceptionalApprovals(exceptionalApprovals || []);
-    setOriginationApproval(approvalOrigination || []);
-    setFindUser(userVerify || null);
-    setFlowHistory(flowHistory || []);
-
-  } catch (e) {
-    console.error("Unexpected error in fetchData:", e);
-    notification.error({
-      message: "Unexpected error occurred while fetching data",
-    });
-  }
-};
-
+  };
 
   //   const verifyActiveStepAndUser = () => {
   //   var result = false
@@ -421,101 +436,206 @@ const fetchData = async () => {
 
   const verifyUserWithLevel = (level: string) => {
     if (level !== "" && level !== null) {
-      var role = currentRole?.code
-      return role === level
+      var role = currentRole?.code;
+      return role === level;
     }
 
-    return false
+    return false;
+  };
+
+  // Utility to show error if comment is empty
+const validateComment = (comment: string) => {
+  if (!comment || comment.trim() === "") {
+    notification.error({ message: "Comment is required" });
+    return false;
   }
+  return true;
+};
 
-  //  const onSubmitCaRejection = () => {
-  //   var value = document.getElementById(`ca_comment_${index1}`).value
-  //   if (value === "") {
-  //     document
-  //       .getElementById(`ca_error_comment_${index1}`)
-  //       .classList.remove("d-none")
-  //     return
-  //   }
+  // On-Boarding Exceptional Approve
+  const submitObExceptionalApprove = async (index: number, item: any) => {
+    const comment = obComments[index] || item.comments?.comment || "";
+  if (!validateComment(comment)) return;
 
-  //   var payload = {
-  //     comment: value,
-  //     appType: "CA",
-  //     approvalIdx: item.idx,
-  //     appraisalIdx: item.appraisalIdx,
-  //     action: "R",
-  //   }
+    setIsLoadingOb(true);
+    try {
+      const payload = {
+        comment,
+        appType: "OB",
+        approvalIdx: item.idx,
+        appraisalIdx: item.appraisalIdx,
+        action: "A",
+        clienteleIdx: item.clienteleIdx, // if relevant; original code had it
+      };
 
-  //   if (caApprovalBtnRef.current) {
-  //     caApprovalBtnRef.current.setAttribute("disabled", "disabled")
-  //   }
+      await API.mobixCamsApproval.createApprovalComment(payload);
+      notification.success({ message: "On-boarding exceptional approved" });
+      // refresh data
+      await fetchData();
+    } catch (err) {
+      console.error("OB approve error", err);
+      notification.error({
+        message: "Failed to approve on-boarding exceptional",
+      });
+    } finally {
+      setIsLoadingOb(false);
+    }
+  };
 
-  //   setIsButtonDisabled(true)
-  //   createCaApprovals(payload)
-  // }
+  // On-Boarding Exceptional Reject
+  const submitObExceptionalReject = async (index: number, item: any) => {
+  const comment = obComments[index] || item.comments?.comment || "";
+  if (!validateComment(comment)) return;
+
+    setIsLoadingOb(true);
+    try {
+      const payload = {
+        comment,
+        appType: "OB",
+        approvalIdx: item.idx,
+        appraisalIdx: item.appraisalIdx,
+        action: "R",
+        clienteleIdx: item.clienteleIdx,
+      };
+
+      await API.mobixCamsApproval.createApprovalComment(payload);
+      notification.success({ message: "On-boarding exceptional rejected" });
+      await fetchData();
+    } catch (err) {
+      console.error("OB reject error", err);
+      notification.error({
+        message: "Failed to reject on-boarding exceptional",
+      });
+    } finally {
+      setIsLoadingOb(false);
+    }
+  };
+
+  // Credit Appraisal Exceptional Approve
+  const submitCaApprove = async (index: number, item: any) => {
+    const comment = caComments[index] || item.comments?.comment || "";
+  if (!validateComment(comment)) return;
+
+    setIsLoadingOb(true); // reuse loading flag or introduce separate if needed
+    try {
+      const payload = {
+        comment,
+        appType: "CA",
+        approvalIdx: item.idx,
+        appraisalIdx: item.appraisalIdx,
+        action: "A",
+      };
+
+      await API.mobixCamsApproval.createApprovalComment(payload);
+      notification.success({ message: "Exceptional approval approved" });
+      await fetchData();
+    } catch (err) {
+      console.error("CA approve error", err);
+      notification.error({ message: "Failed to approve exceptional approval" });
+    } finally {
+      setIsLoadingOb(false);
+    }
+  };
+
+  // Credit Appraisal Exceptional Reject
+  const submitCaReject = async (index: number, item: any) => {
+    const comment = caComments[index] || item.comments?.comment || "";
+  if (!validateComment(comment)) return;
+
+    setIsLoadingOb(true);
+    try {
+      const payload = {
+        comment,
+        appType: "CA",
+        approvalIdx: item.idx,
+        appraisalIdx: item.appraisalIdx,
+        action: "R",
+      };
+
+      await API.mobixCamsApproval.createApprovalComment(payload);
+      notification.success({ message: "Exceptional approval rejected" });
+      await fetchData();
+    } catch (err) {
+      console.error("CA reject error", err);
+      notification.error({ message: "Failed to reject exceptional approval" });
+    } finally {
+      setIsLoadingOb(false);
+    }
+  };
 
   return (
     <div>
-
-       <Panel header="ON-BOARDING EXCEPTIONAL APPROVALS" key="1">
+      <Panel header="ON-BOARDING EXCEPTIONAL APPROVALS" key="1">
         <Row gutter={16}>
           <Col span={6}>
             <Tabs
               tabPosition="left"
               activeKey={verticalObActiveTab.toString()}
-              onChange={(key:any) => 
+              onChange={(key: any) =>
                 // toggleObVertical(parseInt(key))
                 setVerticalObActiveTab(key)
               }
             >
-              {originationApproval.requestDtoList?.map((item: any, index: number) => (
-                <TabPane
-                  tab={
-                    <Space>
-                      <Text strong>{`0${index + 1}. ${getObExceptionals(item.type)}`}</Text>
-                      {item.status === "A" && <CheckSquareOutlined style={{ color: "green" }} />}
-                      {item.status === "R" && <CloseCircleOutlined style={{ color: "red" }} />}
-                    </Space>
-                  }
-                  key={index.toString()}
-                >
-                  <Row>
-                    <Col span={24}>
-                      <Title level={5}>Requester’s Comment:</Title>
-                      <Text>{item.remark}</Text>
+              {originationApproval.requestDtoList?.map(
+                (item: any, index: number) => (
+                  <TabPane
+                    tab={
+                      <Space>
+                        <Text strong>{`0${index + 1}. ${getObExceptionals(
+                          item.type
+                        )}`}</Text>
+                        {item.status === "A" && (
+                          <CheckSquareOutlined style={{ color: "green" }} />
+                        )}
+                        {item.status === "R" && (
+                          <CloseCircleOutlined style={{ color: "red" }} />
+                        )}
+                      </Space>
+                    }
+                    key={index.toString()}
+                  >
+                    <Row>
+                      <Col span={24}>
+                        <Title level={5}>Requester’s Comment:</Title>
+                        <Text>{item.remark}</Text>
 
-                      <TextArea
-                        readOnly={!!item.comments}
-                        defaultValue={item.comments?.comment || ""}
-                        rows={4}
-                      />
+                        <TextArea
+                          readOnly={!!item.comments}
+                          defaultValue={item.comments?.comment || ""}
+                          rows={4}
+                           onChange={(e) =>
+    setObComments(prev => ({ ...prev, [index]: e.target.value }))
+  }
+                        />
 
-                      {item.status === "P" && findUser?.group?.code === "AG_LEVEL_2" && (
-                        <Space className="mt-3" style={{ float: "right" }}>
-                          <Button
-                            danger
-                            loading={isLoadingOb}
-                            // onClick={() => 
-                            //   // handleObExceptionalRejectClickOpen(index, item)
-
-                            // }
-                          >
-                            Reject
-                          </Button>
-                          <Button
-                            type="primary"
-                            loading={isLoadingOb}
-                            // onClick={() => 
-                            //   handleObExceptionalClickApproveOpen(index, item)
-                            // }
-                          >
-                            Approve
-                          </Button>
-                        </Space>
-                      )}
-                    </Col>
-                  </Row>
-                </TabPane>
-              ))}
+                        {item.status === "P" &&
+                          findUser?.group?.code === "AG_LEVEL_2" && (
+                            <Space className="mt-3" style={{ float: "right" }}>
+                              <Button
+                                danger
+                                loading={isLoadingOb}
+                                onClick={() =>
+                                  submitObExceptionalReject(index, item)
+                                }
+                              >
+                                Reject
+                              </Button>
+                              <Button
+                                type="primary"
+                                loading={isLoadingOb}
+                                onClick={() =>
+                                  submitObExceptionalApprove(index, item)
+                                }
+                              >
+                                Approve
+                              </Button>
+                            </Space>
+                          )}
+                      </Col>
+                    </Row>
+                  </TabPane>
+                )
+              )}
             </Tabs>
           </Col>
         </Row>
@@ -528,7 +648,7 @@ const fetchData = async () => {
             <Tabs
               tabPosition="left"
               activeKey={verticalCaActiveTab.toString()}
-              onChange={(key:any) => 
+              onChange={(key: any) =>
                 // toggleCaVertical(parseInt(key))
                 setVerticalCaActiveTab(key)
               }
@@ -538,8 +658,12 @@ const fetchData = async () => {
                   tab={
                     <Space>
                       <Text strong>{`0${index + 1}. ${item.categoryDec}`}</Text>
-                      {item.status === "A" && <CheckSquareOutlined style={{ color: "green" }} />}
-                      {item.status === "R" && <CloseCircleOutlined style={{ color: "red" }} />}
+                      {item.status === "A" && (
+                        <CheckSquareOutlined style={{ color: "green" }} />
+                      )}
+                      {item.status === "R" && (
+                        <CloseCircleOutlined style={{ color: "red" }} />
+                      )}
                     </Space>
                   }
                   key={index.toString()}
@@ -553,29 +677,35 @@ const fetchData = async () => {
                       <Text>{item.remark}</Text>
 
                       <TextArea
-                        readOnly={!verifyUserWithLevel(item.roleCode) || !!item.comments}
+                        readOnly={
+                          !verifyUserWithLevel(item.roleCode) || !!item.comments
+                        }
                         defaultValue={item.comments?.comment || ""}
                         rows={4}
+                        onChange={(e) =>
+    setCaComments(prev => ({ ...prev, [index]: e.target.value }))
+  }
                       />
 
-                      {verifyUserWithLevel(item.roleCode) && item.status === "P" && (
-                        <Space className="mt-3" style={{ float: "right" }}>
-                          <Button
-                            danger
-                            // loading={isLoadingCa}
-                            // onClick={() => handleCaRejectClickOpen(index, item)}
-                          >
-                            Reject
-                          </Button>
-                          <Button
-                            type="primary"
-                            // loading={isLoadingCa}
-                            // onClick={() => handleCaClickOpen(index, item)}
-                          >
-                            Approve
-                          </Button>
-                        </Space>
-                      )}
+                      {verifyUserWithLevel(item.roleCode) &&
+                        item.status === "P" && (
+                          <Space className="mt-3" style={{ float: "right" }}>
+                            <Button
+                              danger
+                              // loading={isLoadingCa}
+                              onClick={() => submitCaReject(index, item)}
+                            >
+                              Reject
+                            </Button>
+                            <Button
+                              type="primary"
+                              // loading={isLoadingCa}
+                               onClick={() => submitCaApprove(index, item)}
+                            >
+                              Approve
+                            </Button>
+                          </Space>
+                        )}
                     </Col>
                   </Row>
                 </TabPane>
@@ -667,10 +797,7 @@ const fetchData = async () => {
                 })} */}
               <Button
                 type="primary"
-                disabled={
-                  addingData ? true
-                    : false
-                }
+                disabled={addingData ? true : false}
                 size="large"
                 onClick={() => handleSubmit("REJECTED")}
                 className="mr-1 "
@@ -680,10 +807,7 @@ const fetchData = async () => {
               </Button>
               <Button
                 type="primary"
-                disabled={
-                  addingData ? true
-                    : false
-                }
+                disabled={addingData ? true : false}
                 size="large"
                 onClick={() => handleSubmit("RETURNED")}
                 className="mr-1 "
@@ -695,10 +819,7 @@ const fetchData = async () => {
                 type="primary"
                 // label={type}
                 // loading={addingData === type ? true : false}
-                disabled={
-                  addingData ? true
-                    : false
-                }
+                disabled={addingData ? true : false}
                 size="large"
                 onClick={() => handleSubmit("PROCEED")}
                 className="mr-1 "
