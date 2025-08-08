@@ -120,8 +120,6 @@ const LoanDaashboard: React.FC = () => {
                     <div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}>
                         <LoanApplication />
                     </div>);
-            case 'image-upload':
-                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><UnderConstruction /></div>);
             case 'cash-flow':
                 return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><CashFlow /></div>);
             case 'credit-scoring':
@@ -134,6 +132,22 @@ const LoanDaashboard: React.FC = () => {
                 return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><CollateralDetails /></div>);
             case 'business-introducer':
                 return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><BusinessIntroducer /></div>);
+            case 'customer-biometric':
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><Card className='text-center'>
+                    This component needs to be completed from the mobile application
+                </Card></div>);
+            case 'guarantor_1-biometric':
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><Card className='text-center'>
+                    This component needs to be completed from the mobile application
+                </Card></div>);
+            case 'guarantor_2-biometric':
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><Card className='text-center'>
+                    This component needs to be completed from the mobile application
+                </Card></div>);
+            case 'image-upload':
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><Card className='text-center'>
+                    This component needs to be completed from the mobile application
+                </Card></div>);
             default:
                 return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><UnderConstruction /></div>);
         }
