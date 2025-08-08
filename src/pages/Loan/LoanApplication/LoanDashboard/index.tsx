@@ -1,5 +1,5 @@
 import { Button, Card, Empty, Spin, Tabs } from 'antd'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { getOnlyStatusByName } from '../../../../utils/MSASActionFunctions';
 import useLoanStore from '../../../../store/loanStore';
@@ -36,6 +36,8 @@ function hasAllMandatoryCompleted(validations: any[] = []) {
 
 const LoanDaashboard: React.FC = () => {
 
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const scrollRef2 = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
     const { appId } = useParams();
     const { loading, applicationValidationLoading, applicationValidates, fetchApplicationValidationsByAppId, completeLoanApplication } = useLoanStore();
@@ -59,6 +61,10 @@ const LoanDaashboard: React.FC = () => {
 
     // For tab changed, fetch contact/address if needed
     const onTabChange = (activeKey: string) => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+            scrollRef2.current?.scrollTo({ top: 0, behavior: 'smooth' });
+        }
         let type = '';
         switch (activeKey) {
             case 'customer':
@@ -82,53 +88,54 @@ const LoanDaashboard: React.FC = () => {
     };
 
     // Get the right component for a section
-    const getComponentByName = (name: string) => {
+    const getComponentByName = (name: string, ref: React.Ref<HTMLDivElement>) => {
         switch (name) {
             case 'customer':
                 return (
-                    <div style={{ height: '100vh', overflowY: 'auto' }}>
+                    <div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}>
                         <CustomerDetailsView formDetails={getStakeholderByType('C', stakeholders ?? [])[0] ?? null} />
                     </div>);
             case 'guarantor':
                 return (
-                    <div style={{ height: '100vh', overflowY: 'auto' }}>
+                    <div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}>
                         <GuarantorDetailsView formDetails={getStakeholderByType('G', stakeholders ?? []) ?? []} />
                     </div >);
             case 'witness':
                 return (
-                    <div style={{ height: '100vh', overflowY: 'auto' }}>
+                    <div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}>
                         <WitnessDetails formDetails={getStakeholderByType('W', stakeholders ?? []) ?? []} />
                     </div>);
             case 'liability-affidavit':
                 return (
-                    <div style={{ height: '100vh', overflowY: 'auto' }}>
+                    <div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}>
                         <LiabilityAffidavit />
                     </div>);
             case 'gold-facility':
                 return (
-                    <div style={{ height: '100vh', overflowY: 'auto' }}>
+                    <div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}>
                         <GoldFacilityApplication />
                     </div>);
             case 'loan-application':
-                return (<div style={{ height: '100vh', overflowY: 'auto' }}>
-                    <LoanApplication />
-                </div>);
+                return (
+                    <div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}>
+                        <LoanApplication />
+                    </div>);
             case 'image-upload':
-                return (<div style={{ height: '100vh', overflowY: 'auto' }}><UnderConstruction /></div>);
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><UnderConstruction /></div>);
             case 'cash-flow':
-                return (<div style={{ height: '100vh', overflowY: 'auto' }}><CashFlow /></div>);
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><CashFlow /></div>);
             case 'credit-scoring':
-                return (<div style={{ height: '100vh', overflowY: 'auto' }}><CreditScoringPage appraisalId={appId ?? ''} /></div>);
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><CreditScoringPage appraisalId={appId ?? ''} /></div>);
             case 'customer-risk-profiling':
-                return (<div style={{ height: '100vh', overflowY: 'auto' }}><CustomerRiskProfiling /></div>);
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><CustomerRiskProfiling /></div>);
             case 'exceptional-approval':
-                return (<div style={{ height: '100vh', overflowY: 'auto' }}><ExceptionalApproval /></div>);
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><ExceptionalApproval /></div>);
             case 'collateral-detail':
-                return (<div style={{ height: '100vh', overflowY: 'auto' }}><CollateralDetails /></div>);
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><CollateralDetails /></div>);
             case 'business-introducer':
-                return (<div style={{ height: '100vh', overflowY: 'auto' }}><BusinessIntroducer /></div>);
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><BusinessIntroducer /></div>);
             default:
-                return (<div style={{ height: '100vh', overflowY: 'auto' }}><UnderConstruction /></div>);
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><UnderConstruction /></div>);
         }
     };
 
@@ -157,7 +164,7 @@ const LoanDaashboard: React.FC = () => {
                 </div>
             </div>
         ),
-        children: getComponentByName(rule.section),
+        children: getComponentByName(rule.section, scrollRef),
         disabled: rule.status !== 'A',
     }));
 
@@ -174,7 +181,7 @@ const LoanDaashboard: React.FC = () => {
                     </div>
                 </div>
             ),
-            children: getComponentByName(rule.section),
+            children: getComponentByName(rule.section, scrollRef),
             disabled: getOnlyStatusByName(rule.section, applicationValidates) !== 'A'
         }));
 
@@ -234,7 +241,7 @@ const LoanDaashboard: React.FC = () => {
                     <div className='text-lg'>Customer Name: {customers[0]?.fullName}</div>
                 </div>
             </Card>
-            <div style={{ height: '70vh', overflowY: 'auto' }}>
+            <div ref={scrollRef2} style={{ height: '70vh', overflowY: 'auto' }}>
                 <Tabs
                     tabPosition='left'
                     defaultActiveKey={activeTab}
