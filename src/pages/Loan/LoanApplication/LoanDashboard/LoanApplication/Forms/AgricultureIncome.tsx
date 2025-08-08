@@ -347,7 +347,6 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                 <Controller
                                     name="sourceOfIncome"
                                     control={control}
-                                    disabled
                                     render={({ field }) => (
                                         <Select
                                             {...field}
@@ -360,6 +359,7 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
                                                     { label: 'Live Stock Income', value: 'Live Stock Income' }
                                                 ]
                                             }
+                                            disabled
                                         />
                                     )}
                                 />

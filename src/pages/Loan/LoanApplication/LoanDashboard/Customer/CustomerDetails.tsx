@@ -329,7 +329,13 @@ const CustomerDetails: React.FC = () => {
                             <Controller
                                 name="stkCNicIssuedDate"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter CNIC Issued Date" type='date' />}
+                                render={({ field }) =>
+                                    <Input
+                                        {...field}
+                                        placeholder="Enter CNIC Issued Date"
+                                        type='date'
+                                    />
+                                }
                             />
                         </Form.Item>
 
