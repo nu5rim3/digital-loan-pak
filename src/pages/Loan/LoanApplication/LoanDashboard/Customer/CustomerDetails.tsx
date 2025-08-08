@@ -18,7 +18,13 @@ const schema = yup.object().shape({
     appraisalID: yup.string(),
     stkOrgType: yup.string().required("Organization Type is required"),
     stkCNic: yup.string().required("CNIC is required").matches(/^\d{5}-\d{7}-\d$/, 'CNIC must be in format xxxxx-xxxxxxx-x'),
-    stkDob: yup.string().required("Date of Birth is required"),
+    stkDob: yup.string()
+        .required("Date of Birth is required")
+        .test('is-adult', 'Age must be at least 18', function (value) {
+            const dob = new Date(value);
+            const age = new Date().getFullYear() - dob.getFullYear()
+            return !isNaN(age) && age >= 18;
+        }),
     stkAge: yup.string()
         .required("Age is required")
         .matches(/^\d+$/, "Age must be a number")
@@ -96,8 +102,7 @@ const CustomerDetails: React.FC = () => {
                 stkCusName: customers[0]?.fullName ?? '',
                 stkInitials: data.stkInitials ?? '',
                 stkSurName: data.stkSurName ?? '',
-            }).finally(() => navigate(-1)) // Navigate back after adding stakeholder
-            // TODO: histroy back
+            }).finally(() => navigate(-1))
         } else if (mode === 'edit') {
             updateStakeholder(stakholderId, {
                 ...data,
@@ -108,8 +113,7 @@ const CustomerDetails: React.FC = () => {
                 stkCusName: customers[0]?.fullName ?? '',
                 stkInitials: data.stkInitials ?? '',
                 stkSurName: data.stkSurName ?? '',
-            }).finally(() => navigate(-1)) // Navigate back after adding stakeholder
-            // TODO: histroy back
+            }).finally(() => navigate(-1))
         }
     }
 
