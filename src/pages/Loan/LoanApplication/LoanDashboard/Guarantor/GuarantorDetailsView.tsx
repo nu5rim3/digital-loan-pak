@@ -285,11 +285,28 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                                                 />}
                                             />
                                         </Form.Item>
+
+                                        <Form.Item label="Date of Birth" validateStatus={errors.stkDob ? "error" : ""} help={errors.stkDob?.message} required>
+                                            <Controller
+                                                name="stkDob"
+                                                control={control}
+                                                render={({ field }) => <Input {...field} placeholder="Enter Date of Birth" type='date' />}
+                                            />
+                                        </Form.Item>
+
                                         <Form.Item label="CNIC Issued Date" validateStatus={errors.stkCNicIssuedDate ? "error" : ""} help={errors.stkCNicIssuedDate?.message} required>
                                             <Controller
                                                 name="stkCNicIssuedDate"
                                                 control={control}
-                                                render={({ field }) => <Input {...field} placeholder="Enter CNIC Issued Date" type='date' />}
+                                                render={({ field }) => <Input
+                                                    {...field}
+                                                    placeholder="Enter CNIC Issued Date"
+                                                    type='date'
+                                                    // Ensure the issued date is not earlier than the date of birth
+                                                    min={watch('stkDob') ? moment(watch('stkDob')).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD")}
+                                                    // cannot be in the feture
+                                                    max={moment().format("YYYY-MM-DD")}
+                                                />}
                                             />
                                         </Form.Item>
                                         <Form.Item label="CNIC Expired Date" validateStatus={errors.stkCNicExpDate ? "error" : ""} help={errors.stkCNicExpDate?.message} required>
@@ -300,13 +317,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                                             />
                                         </Form.Item>
 
-                                        <Form.Item label="Date of Birth" validateStatus={errors.stkDob ? "error" : ""} help={errors.stkDob?.message} required>
-                                            <Controller
-                                                name="stkDob"
-                                                control={control}
-                                                render={({ field }) => <Input {...field} placeholder="Enter Date of Birth" type='date' />}
-                                            />
-                                        </Form.Item>
+
                                         <Form.Item label="Age" validateStatus={errors.stkAge ? "error" : ""} help={errors.stkAge?.message} required>
                                             <Controller
                                                 name="stkAge"
