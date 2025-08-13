@@ -345,7 +345,8 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                 render={({ field }) =>
                                     <Select {...field} placeholder="Select an Organization" allowClear loading={organizationTypeLoading} options={organizationType.map((item) => ({
                                         label: formatName(item.description),
-                                        value: item.code
+                                        value: item.code,
+                                        disabled: item.code !== '0907' // Disable the 'Individual' option
                                     }))}>
                                     </Select>
                                 }

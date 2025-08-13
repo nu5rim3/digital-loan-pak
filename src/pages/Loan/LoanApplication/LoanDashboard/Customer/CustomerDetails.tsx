@@ -393,11 +393,14 @@ const CustomerDetails: React.FC = () => {
                             <Controller
                                 name="stkOrgType"
                                 control={control}
+                                defaultValue={'0907'}
                                 render={({ field }) =>
-                                    <Select {...field} placeholder="Select an Organization" allowClear loading={organizationTypeLoading} options={organizationType.map((item) => ({
-                                        label: formatName(item.description),
-                                        value: item.code
-                                    }))}>
+                                    <Select {...field} placeholder="Select an Organization" allowClear loading={organizationTypeLoading} options={
+                                        organizationType.map((item) => ({
+                                            label: formatName(item.description),
+                                            value: item.code,
+                                            disabled: item.code !== '0907' // Disable the 'Individual' option
+                                        }))}>
                                     </Select>
                                 }
                             />
