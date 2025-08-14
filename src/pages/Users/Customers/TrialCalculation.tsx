@@ -1269,7 +1269,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
 
                                 {trailCalulationDetails?.object?.facilityDetails !== undefined &&
                                     <div className='grid grid-cols-2 gap-3'>
-                                        <Card size='small' title={'Installment Details'} className='mb-3'>
+                                        <Card size='small' title={'Installment Details'} className='mb-3' hidden={trailCalulationDetails?.object?.facilityDetails.length === 0}>
                                             {
                                                 trailCalulationDetails?.object?.facilityDetails.map((item, index) => (
                                                     <Descriptions column={3} key={index} className='mb-2'>
