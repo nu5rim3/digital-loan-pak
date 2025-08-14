@@ -136,15 +136,15 @@ const LoanDaashboard: React.FC = () => {
                 return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><Card className='text-center'>
                     This component needs to be completed from the mobile application
                 </Card></div>);
-            case 'guarantor_1-biometric':
-                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><Card className='text-center'>
-                    This component needs to be completed from the mobile application
-                </Card></div>);
-            case 'guarantor_2-biometric':
+            case 'guarantor-biometric':
                 return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><Card className='text-center'>
                     This component needs to be completed from the mobile application
                 </Card></div>);
             case 'image-upload':
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><Card className='text-center'>
+                    This component needs to be completed from the mobile application
+                </Card></div>);
+            case 'customer-acknowledgement':
                 return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><Card className='text-center'>
                     This component needs to be completed from the mobile application
                 </Card></div>);

@@ -288,7 +288,7 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
                         <Input {...field} placeholder="Enter District" />}
                 />
             </Form.Item>
-
+            {/* TODO: check with BE */}
             <Form.Item label="Province" validateStatus={errors.province ? "error" : ""} help={errors.province?.message} required>
                 <Controller
                     name="province"
