@@ -33,10 +33,8 @@ const prepareLandStockData = (formData: FormValues, appraisalId: string) => {
     landStockAgreementNo: formData.landStockAgreementNo || undefined,
     landStockLawyerName: formData.landStockLawyerName || undefined,
     landStockDescription: formData.landStockDescription || undefined,
-    landStockCategory: formData.landStockCategory || undefined,
     landStockSecDate: formData.landStockSecurityDate ?
       dayjs(formData.landStockSecurityDate).format("YYYY-MM-DD") : undefined,
-    landStockSecCategory: formData.landStockSecurityType || undefined,
     landStockSecType: "Primary"
   };
 };
@@ -52,10 +50,6 @@ const LandStockForm: React.FC<LandStockFormProps> = ({
     subTypesLoading: landStockSubTypesLoading,
     ownerships: landStockOwnerships,
     ownershipsLoading: landStockOwnershipsLoading,
-    securityTypes: landStockSecurityTypes,
-    securityTypesLoading: landStockSecurityTypesLoading,
-    securityCategories: landStockCategories,
-    securityCategoriesLoading: landStockCategoriesLoading,
     fetchTypes,
     fetchSubTypes,
     fetchOwnerships,
@@ -305,29 +299,6 @@ const LandStockForm: React.FC<LandStockFormProps> = ({
             </Form.Item>
 
             <Form.Item
-              label="Category"
-              required
-              validateStatus={errors.landStockCategory ? "error" : ""}
-              help={errors.landStockCategory?.message}
-              labelCol={{ span: 24 }}
-              wrapperCol={{ span: 24 }}
-            >
-              <Controller
-                name="landStockCategory"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    showSearch
-                    placeholder="Select Category"
-                    loading={landStockCategoriesLoading}
-                    options={getOptions(landStockCategories, "description", "description")}
-                  />
-                )}
-              />
-            </Form.Item>
-
-            <Form.Item
               label="Security Date"
               validateStatus={errors.landStockSecurityDate ? "error" : ""}
               help={errors.landStockSecurityDate?.message}
@@ -345,29 +316,6 @@ const LandStockForm: React.FC<LandStockFormProps> = ({
                     onChange={(date) => {
                       field.onChange(date ? date.format("YYYY-MM-DD") : undefined);
                     }}
-                  />
-                )}
-              />
-            </Form.Item>
-
-            <Form.Item
-              label="Security Type"
-              required
-              validateStatus={errors.landStockSecurityType ? "error" : ""}
-              help={errors.landStockSecurityType?.message}
-              labelCol={{ span: 24 }}
-              wrapperCol={{ span: 24 }}
-            >
-              <Controller
-                name="landStockSecurityType"
-                control={control}
-                render={({ field }) => (
-                  <Select
-                    {...field}
-                    showSearch
-                    placeholder="Select Security Type"
-                    loading={landStockSecurityTypesLoading}
-                    options={getOptions(landStockSecurityTypes, "description", "description")}
                   />
                 )}
               />

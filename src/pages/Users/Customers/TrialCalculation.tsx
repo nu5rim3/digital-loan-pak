@@ -576,7 +576,51 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
     useEffect(() => {
         if (trailCalulationDetailsByAppId !== null) {
             setHideDetails(true);
+            
+            // Populate form with saved data
+            setValue('productFacility', trailCalulationDetailsByAppId?.pFacilityType ?? '');
+            setValue('productCategory', trailCalulationDetailsByAppId?.prodCat ?? '');
+            setValue('productType', trailCalulationDetailsByAppId?.pTrhdLType ?? '');
+            setValue('productSubType', trailCalulationDetailsByAppId?.pTrhdBus ?? '');
+            setValue('loanAmount', Number(trailCalulationDetailsByAppId?.pTrhdLocCost ?? 0));
+            setValue('trems', Number(trailCalulationDetailsByAppId?.pTrhdTerm ?? 0));
+            setValue('markup', Number(trailCalulationDetailsByAppId?.pTrhdTr ?? 0));
+            setValue('calculationMethod', trailCalulationDetailsByAppId?.pTrhdMethod ?? '');
+            
+            // Set cost and insuranceVE from pTreq array
+            if (trailCalulationDetailsByAppId?.pTreq && trailCalulationDetailsByAppId.pTreq.length > 0) {
+                setValue('cost', Number(trailCalulationDetailsByAppId.pTreq[0]?.treqEqpCost ?? 0));
+                setValue('insuranceVE', trailCalulationDetailsByAppId.pTreq[0]?.treqEv ?? '');
+            }
+            
+            // Set pSnrv data for product types '9' or 'E9'
+            if (trailCalulationDetailsByAppId?.pSnrv && trailCalulationDetailsByAppId.pSnrv.length > 0) {
+                const snrvData = trailCalulationDetailsByAppId.pSnrv[0];
+                setValue('loanAmount', Number(snrvData?.snrvFac ?? 0));
+                setValue('capitalPaid', Number(snrvData?.snrvCap ?? 0));
+                setValue('expiryDate', snrvData?.snrvExpDate ? moment(snrvData.snrvExpDate, 'YYYYMMDD').format('YYYY-MM-DD') : '');
+                setValue('dateOfPaymenent', snrvData?.snrvDtPay ? moment(snrvData.snrvDtPay, 'YYYYMMDD').format('YYYY-MM-DD') : '');
+                setValue('gracePeriod', Number(snrvData?.snrvGPrd ?? 0));
+            }
+            
+            // Set trial calculation data for other components
+            const mappedData = {
+                calculationMethod: trailCalulationDetailsByAppId?.pTrhdMethod ?? '',
+                productCategory: trailCalulationDetailsByAppId?.prodCat ?? '',
+                cost: trailCalulationDetailsByAppId?.pTreq && trailCalulationDetailsByAppId.pTreq.length > 0 ? Number(trailCalulationDetailsByAppId.pTreq[0]?.treqEqpCost ?? 0) : 0,
+                insuranceVE: trailCalulationDetailsByAppId?.pTreq && trailCalulationDetailsByAppId.pTreq.length > 0 ? trailCalulationDetailsByAppId.pTreq[0]?.treqEv ?? '' : '',
+                loanAmount: Number(trailCalulationDetailsByAppId?.pTrhdLocCost ?? 0),
+                markup: Number(trailCalulationDetailsByAppId?.pTrhdTr ?? 0),
+                trems: Number(trailCalulationDetailsByAppId?.pTrhdTerm ?? 0),
+                // Additional fields for product types '9' or 'E9'
+                capitalPaid: trailCalulationDetailsByAppId?.pSnrv && trailCalulationDetailsByAppId.pSnrv.length > 0 ? Number(trailCalulationDetailsByAppId.pSnrv[0]?.snrvCap ?? 0) : 0,
+                expiryDate: trailCalulationDetailsByAppId?.pSnrv && trailCalulationDetailsByAppId.pSnrv.length > 0 ? (trailCalulationDetailsByAppId.pSnrv[0]?.snrvExpDate ? moment(trailCalulationDetailsByAppId.pSnrv[0].snrvExpDate, 'YYYYMMDD').format('YYYY-MM-DD') : '') : '',
+                dateOfPaymenent: trailCalulationDetailsByAppId?.pSnrv && trailCalulationDetailsByAppId.pSnrv.length > 0 ? (trailCalulationDetailsByAppId.pSnrv[0]?.snrvDtPay ? moment(trailCalulationDetailsByAppId.pSnrv[0].snrvDtPay, 'YYYYMMDD').format('YYYY-MM-DD') : '') : '',
+                gracePeriod: trailCalulationDetailsByAppId?.pSnrv && trailCalulationDetailsByAppId.pSnrv.length > 0 ? Number(trailCalulationDetailsByAppId.pSnrv[0]?.snrvGPrd ?? 0) : 0
+            };
+            setTrialCalculationData(mappedData);
         }
+        
         if (trailCalulationDetailsByAppId !== null && trailCalulationDetailsByAppId?.prodCat && trailCalulationDetailsByAppId?.prodCat !== '') {
             fetchProductTypes(trailCalulationDetailsByAppId?.prodCat ?? '')
         }

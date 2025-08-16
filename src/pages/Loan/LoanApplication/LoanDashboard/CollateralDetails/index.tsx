@@ -154,11 +154,9 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.landStockAgreementNo = collateral.landStockAgreementNo;
       formValues.landStockLawyerName = collateral.landStockLawyerName;
       formValues.landStockDescription = collateral.landStockDescription;
-      formValues.landStockCategory = collateral.landStockCategory;
       formValues.landStockSecurityDate = collateral.landStockSecDate
         ? new Date(collateral.landStockSecDate.split(" ")[0])
         : undefined;
-      formValues.landStockSecurityType = collateral.landStockSecType;
       break;
     case "savings":
       formValues.securityType = "FIXED DEPOSITS AND SAVINGS";
@@ -470,11 +468,9 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             landStockAgreementNo: detailedData.landStockAgreementNo,
             landStockLawyerName: detailedData.landStockLawyerName,
             landStockDescription: detailedData.landStockDescription,
-            landStockCategory: detailedData.landStockCategory,
             landStockSecurityDate: detailedData.landStockSecDate
               ? detailedData.landStockSecDate.split(" ")[0]
               : undefined,
-            landStockSecurityType: detailedData.landStockSecType,
           };
 
           setEditingId(detailedData.landStockIdx || data.id);
