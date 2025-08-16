@@ -63,6 +63,7 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
     }
 
     useEffect(() => {
+
         fetchFacilityPurpose()
         setValue('sourceOfIncome', sourceOfIncome)
         fetchProduct(appId ?? '')

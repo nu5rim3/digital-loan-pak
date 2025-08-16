@@ -22,6 +22,7 @@ import CashFlow from './CashFlow';
 import ExceptionalApproval from './ExceptionalApproval';
 import LoanApplication from './LoanApplication';
 import UnderConstruction from '../../../UnderConstroction';
+import CheckMobile from '../../../CheckMobile';
 
 // Add this function to check mandatory completion
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -133,21 +134,13 @@ const LoanDaashboard: React.FC = () => {
             case 'business-introducer':
                 return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><BusinessIntroducer /></div>);
             case 'customer-biometric':
-                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><Card className='text-center'>
-                    This component needs to be completed from the mobile application
-                </Card></div>);
-            case 'guarantor_1-biometric':
-                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><Card className='text-center'>
-                    This component needs to be completed from the mobile application
-                </Card></div>);
-            case 'guarantor_2-biometric':
-                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><Card className='text-center'>
-                    This component needs to be completed from the mobile application
-                </Card></div>);
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><CheckMobile /></div>);
+            case 'guarantor-biometric':
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><CheckMobile /></div>);
             case 'image-upload':
-                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><Card className='text-center'>
-                    This component needs to be completed from the mobile application
-                </Card></div>);
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><CheckMobile /></div>);
+            case 'customer-acknowledgement':
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><CheckMobile /></div>);
             default:
                 return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><UnderConstruction /></div>);
         }

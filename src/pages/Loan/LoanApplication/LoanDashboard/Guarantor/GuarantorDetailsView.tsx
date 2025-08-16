@@ -165,6 +165,8 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
         setSelectedIndex(0);
     }
 
+    console.log('guarantors : ', guarantors);
+
     if (guarantors?.length === 0) {
         return (
             <Card>
@@ -187,7 +189,7 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                             setSelectedIndex(index + 1);
                             selectedGuarantor(item.identificationNumber ?? '');
                         }}>
-                            {`Guarantor ${index + 1}`}
+                            {`Guarantor ${item.sequence}`}
                         </Button>
                     ))}
                 </div>
