@@ -142,8 +142,8 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
     submitting;
 
   const memoizedValidationSchema = useMemo(() => {
-    return createValidationSchema(securityTypes);
-  }, [securityTypes]);
+    return createValidationSchema();
+  }, []);
 
   const {
     control,
@@ -558,7 +558,7 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
                             {securityTypes.map((securityType) => (
                               <Select.Option
                                 key={securityType.code}
-                                value={securityType.code}
+                                value={securityType.description}
                               >
                                 {securityType.description}
                               </Select.Option>
