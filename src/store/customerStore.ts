@@ -21,6 +21,9 @@ interface ICustomer {
   lastModifiedBy?: string;
   lastModifiedDate?: string;
   client: "WEB";
+  onBoardingStatus?: "P" | "C" | "R" | "A";
+  otpConfirmed?: boolean;
+  sequence?: number;
 }
 
 interface ICustomerState {

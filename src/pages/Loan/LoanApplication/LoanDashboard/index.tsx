@@ -1,5 +1,5 @@
 import { Button, Card, Empty, Spin, Tabs } from 'antd'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { getOnlyStatusByName } from '../../../../utils/MSASActionFunctions';
 import useLoanStore from '../../../../store/loanStore';
@@ -44,7 +44,7 @@ const LoanDaashboard: React.FC = () => {
     const { loading, applicationValidationLoading, applicationValidates, fetchApplicationValidationsByAppId, completeLoanApplication } = useLoanStore();
     const { stakeholders, fetchStackholderByAppId, fetchContactDetailsByStkId, fetchAddressDetailsByStkId, resetStakeholder } = useStakeholderStore();
     const { customers, fetchCustomerByAppId } = useCustomerStore();
-    const [activeTab, setActiveTab] = useState('customer');
+    // const [activeTab, setActiveTab] = useState('customer');
 
     const onCompleteApplication = () => {
         completeLoanApplication({
@@ -85,7 +85,7 @@ const LoanDaashboard: React.FC = () => {
             fetchContactDetailsByStkId(selectedIdx ?? '')
             fetchAddressDetailsByStkId(selectedIdx ?? '')
         }
-        setActiveTab(activeKey);
+        // setActiveTab(activeKey);
     };
 
     // Get the right component for a section
@@ -251,7 +251,7 @@ const LoanDaashboard: React.FC = () => {
             <div ref={scrollRef2} style={{ height: '70vh', overflowY: 'auto' }}>
                 <Tabs
                     tabPosition='left'
-                    defaultActiveKey={activeTab}
+                    // defaultActiveKey={activeTab}
                     onChange={onTabChange}
                     items={tabItems.length === 0 ? _tabItems : tabItems}
                 />

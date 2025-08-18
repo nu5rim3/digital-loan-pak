@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useForm, Controller } from "react-hook-form";
-import { Input, Form, Button, Card, Select, Collapse } from "antd";
+import { Input, Form, Button, Card, Select, Collapse, Result } from "antd";
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import useCommonStore from '../../../../../store/commonStore';
@@ -9,7 +9,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import useCustomerStore from '../../../../../store/customerStore';
 import { mainURL } from '../../../../../App';
 import { IStakeholder } from '../../../../../store/stakeholderStore';
-import { EditOutlined, QrcodeOutlined } from '@ant-design/icons';
+import { EditOutlined, QrcodeOutlined, PicCenterOutlined } from '@ant-design/icons';
 // import TrailCalculation from '../../../../Users/Customers/TrialCalculation';
 import ContactDetailsCard from '../../../../../components/common/stakeHolder/ContactDetailsCard';
 import AddressDetailsCard from '../../../../../components/common/stakeHolder/AddressDetailsCard';
@@ -19,6 +19,7 @@ import OtherDetails from '../../../../../components/common/stakeHolder/OtherDeta
 import BankDetails from '../../../../../components/common/stakeHolder/BankDetails';
 import NADRAModal from '../../../../../components/common/modal/NADRAModal';
 import moment from 'moment';
+import OTPModal from '../../../../../components/common/modal/OTPModal';
 
 // ✅ Validation Schema
 const schema = yup.object().shape({
@@ -75,7 +76,7 @@ interface ICustomerDetailsView {
 
 const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) => {
     const [nadraModalOpen, setNadraModalOpen] = useState(false)
-
+    const [otpModalOpen, setOtpModalOpen] = useState(false);
     const { control, formState: { errors }, setValue, watch } = useForm({
         resolver: yupResolver(schema),
     });
@@ -150,43 +151,71 @@ const CustomerDetailsView: React.FC<ICustomerDetailsView> = ({ formDetails }) =>
     const physDisability = watch('stkPhysDisability');
 
     if (formDetails === null) {
-        return (
-            <Card>
-                <div className='pb-5'>
-                    <TrialCalculation cliIdx={customers[0]?.idx ?? ''} cnic={customers[0]?.identificationNumber} />
-                </div>
-                <Card title={'Customer Details'}
-                    extra={
-                        <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} >Customer QR</Button>
-                    }
-                >
-                    <Form layout="vertical">
-                        <div className="grid grid-cols-4 gap-3">
-                            <Form.Item label="Full Name">
-                                <Input value={customers[0]?.fullName ?? '-'} disabled />
-                            </Form.Item>
-                            <Form.Item label={'CNIC Type'}>
-                                <Input value={customers[0]?.identificationType ?? '-'} disabled />
-                            </Form.Item>
-                            <Form.Item label="CNIC">
-                                <Input value={customers[0]?.identificationNumber ?? '-'} disabled />
-                            </Form.Item>
-                            <Form.Item label="Contact Number">
-                                <Input value={customers[0]?.contactNumber ?? '-'} disabled />
-                            </Form.Item>
-                        </div>
-                        <div className="flex gap-3">
-                            <Button type="primary" onClick={() => navigate(`${mainURL}/loan/application/${appId}/customer`, { state: { mode: 'create' } })}>
-                                Add More Details
+        if (customers[0]?.otpConfirmed === false) {
+            return (
+                <Card>
+                    <Result
+                        status="warning"
+                        title="OTP Verfication Required"
+                        subTitle="Please complete the customer onboarding OTP process to view details."
+                        extra={
+                            <Button
+                                type="primary"
+                                onClick={() => setOtpModalOpen(true)}
+                                icon={<PicCenterOutlined />}
+                            >
+                                Verifiy OTP
                             </Button>
-                        </div>
-                    </Form>
+                        }
+                    />
+                    <OTPModal visible={otpModalOpen} onCancel={() => setOtpModalOpen(false)} idx={customers[0]?.idx ?? ''}
+                        onCompleted={
+                            () => navigate(`${mainURL}/loan/application/${appId}/customer`, { state: { mode: 'create' } })
+                        } resetUser={function (): void {
+                            throw new Error('Function not implemented.');
+                        }} />
                 </Card>
+            )
+        } else {
+            return (
+                <Card>
+                    <div className='pb-5'>
+                        <TrialCalculation cliIdx={customers[0]?.idx ?? ''} cnic={customers[0]?.identificationNumber} />
+                    </div>
+                    <Card title={'Customer Details'}
+                        extra={
+                            <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} >Customer QR</Button>
+                        }
+                    >
+                        <Form layout="vertical">
+                            <div className="grid grid-cols-4 gap-3">
+                                <Form.Item label="Full Name">
+                                    <Input value={customers[0]?.fullName ?? '-'} disabled />
+                                </Form.Item>
+                                <Form.Item label={'CNIC Type'}>
+                                    <Input value={customers[0]?.identificationType ?? '-'} disabled />
+                                </Form.Item>
+                                <Form.Item label="CNIC">
+                                    <Input value={customers[0]?.identificationNumber ?? '-'} disabled />
+                                </Form.Item>
+                                <Form.Item label="Contact Number">
+                                    <Input value={customers[0]?.contactNumber ?? '-'} disabled />
+                                </Form.Item>
+                            </div>
+                            <div className="flex gap-3">
+                                <Button type="primary" onClick={() => navigate(`${mainURL}/loan/application/${appId}/customer`, { state: { mode: 'create' } })}>
+                                    Add More Details
+                                </Button>
+                            </div>
+                        </Form>
+                    </Card>
 
-                {/* <CustomerScreen mode={mode} setMode={setMode} /> */}
-                <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={customers[0]?.idx ?? ''} />
-            </Card>
-        )
+                    {/* <CustomerScreen mode={mode} setMode={setMode} /> */}
+                    <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={customers[0]?.idx ?? ''} />
+                </Card>
+            )
+        }
+
     }
 
     return (
