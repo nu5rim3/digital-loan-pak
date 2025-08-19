@@ -210,7 +210,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
                   options={getOptions(
                     vehicleTypes,
                     "description",
-                    "description"
+                    "code"
                   )}
                 />
               )}
@@ -237,7 +237,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
                   options={getOptions(
                     vehicleOwnerships,
                     "description",
-                    "description"
+                    "code"
                   )}
                 />
               )}
@@ -287,7 +287,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
                   options={getOptions(
                     vehicleConditions,
                     "description",
-                    "description"
+                    "code"
                   )}
                 />
               )}

@@ -160,7 +160,7 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors, security
                   showSearch
                   placeholder="Select Type"
                   loading={machineryTypesLoading}
-                  options={getOptions(machineryTypes, "description", "description")}
+                  options={getOptions(machineryTypes, "description", "code")}
                 />
               )}
             />
@@ -183,7 +183,7 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors, security
                   showSearch
                   placeholder="Select Ownership"
                   loading={machineryOwnershipsLoading}
-                  options={getOptions(machineryOwnerships, "description", "description")}
+                  options={getOptions(machineryOwnerships, "description", "code")}
                 />
               )}
             />
@@ -229,7 +229,7 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors, security
                   showSearch
                   placeholder="Select Condition"
                   loading={machineryConditionsLoading}
-                  options={getOptions(machineryConditions, "description", "description")}
+                  options={getOptions(machineryConditions, "description", "code")}
                 />
               )}
             />

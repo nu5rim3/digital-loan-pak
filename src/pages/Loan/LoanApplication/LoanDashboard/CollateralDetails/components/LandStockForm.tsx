@@ -123,7 +123,7 @@ const LandStockForm: React.FC<LandStockFormProps> = ({
                     showSearch
                     placeholder="Select Type"
                     loading={landStockTypesLoading}
-                    options={getOptions(landStockTypes, "description", "description")}
+                    options={getOptions(landStockTypes, "description", "code")}
                   />
                 )}
               />
@@ -145,7 +145,7 @@ const LandStockForm: React.FC<LandStockFormProps> = ({
                     showSearch
                     placeholder="Select Type"
                     loading={landStockSubTypesLoading}
-                    options={getOptions(landStockSubTypes, "description", "description")}
+                    options={getOptions(landStockSubTypes, "description", "code")}
                   />
                 )}
               />
@@ -168,7 +168,7 @@ const LandStockForm: React.FC<LandStockFormProps> = ({
                     showSearch
                     placeholder="Select Ownership"
                     loading={landStockOwnershipsLoading}
-                    options={getOptions(landStockOwnerships, "description", "description")}
+                    options={getOptions(landStockOwnerships, "description", "code")}
                   />
                 )}
               />
