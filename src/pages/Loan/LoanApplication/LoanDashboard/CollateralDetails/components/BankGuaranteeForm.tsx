@@ -101,8 +101,8 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
 
   const isEditMode = !!bgId;
   const dataFetched = useRef(false);
-  const isLOFIN = bankGuaranteeType === "Issued by LOLC";
-  const isOnDemand = bankGuaranteeType === "On Demand";
+  const isLOFIN = bankGuaranteeType === "1";
+  const isOnDemand = bankGuaranteeType === "2";
 
   useEffect(() => {
     if (!dataFetched.current) {
@@ -157,7 +157,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                     showSearch
                     placeholder="Select Type"
                     loading={bankGuaranteeTypesLoading}
-                    options={getOptions(bankGuaranteeTypes)}
+                    options={getOptions(bankGuaranteeTypes, "description", "code")}
                   />
                 )}
               />
@@ -180,7 +180,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                     showSearch
                     placeholder="Select Ownership"
                     loading={bankGuaranteeOwnershipsLoading}
-                    options={getOptions(bankGuaranteeOwnerships)}
+                    options={getOptions(bankGuaranteeOwnerships, "description", "code")}
                   />
                 )}
               />

@@ -153,7 +153,7 @@ const SavingsForm: React.FC<SavingsFormProps> = ({
                   options={getOptions(
                     savingsTypes,
                     "description",
-                    "description"
+                    "code"
                   )}
                 />
               )}
@@ -179,7 +179,7 @@ const SavingsForm: React.FC<SavingsFormProps> = ({
                   options={getOptions(
                     savingsSubTypes,
                     "description",
-                    "description"
+                    "code"
                   )}
                 />
               )}
@@ -206,7 +206,7 @@ const SavingsForm: React.FC<SavingsFormProps> = ({
                   options={getOptions(
                     savingsOwnerships,
                     "description",
-                    "description"
+                    "code"
                   )}
                 />
               )}
