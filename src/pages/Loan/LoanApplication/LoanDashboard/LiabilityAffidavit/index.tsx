@@ -32,7 +32,7 @@ const LiabilityAffidavit: React.FC<ILiabilityAffidavit> = () => {
         // Set the initial state of switches based on fetched liability validation
         if (liabilityValidation) {
             const glSection = Array.isArray(liabilityValidation) ? liabilityValidation.find(item => item.isEnabled === 'gold-loan') : undefined;
-            const tdpSection = Array.isArray(liabilityValidation) ? liabilityValidation.find(item => item.isEnabled === 'term-deposit') : undefined;
+            const tdpSection = Array.isArray(liabilityValidation) ? liabilityValidation.find(item => item.isEnabled === 'tdp') : undefined;
 
             setGlSwitch(glSection?.section === 'Y' ? true : false);
             setTdpSwitch(tdpSection?.section === 'Y' ? true : false);
@@ -52,12 +52,12 @@ const LiabilityAffidavit: React.FC<ILiabilityAffidavit> = () => {
                 section: section
             });
         }
-        if (isEnabled === 'term-deposit') {
+        if (isEnabled === 'tdp') {
             setTdpSwitch(section === 'Y');
             setActiveTdpKey(section === 'Y' ? ['1'] : ['0']);
             addLiabilityValidation({
                 appraisalIdx: appId ?? '',
-                isEnabled: 'term-deposit',
+                isEnabled: 'tdp',
                 section: section
             });
         }
