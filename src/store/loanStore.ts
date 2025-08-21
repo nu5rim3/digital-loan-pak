@@ -647,10 +647,10 @@ const useLoanStore = create<ILoanState>((set) => ({
     }
   },
 
-  addTermDepositPlaced: async () => {
+  addTermDepositPlaced: async (termDepositeData: ITermDepositPlaced) => {
     set({ termDepositPlacedLoading: true, termDepositPlacedError: null });
     try {
-      await APIAuth.post(`/mobixCamsLoan/v1/term-deposits`);
+      await APIAuth.post(`/mobixCamsLoan/v1/term-deposits`, termDepositeData);
       set({
         termDepositPlacedLoading: false,
       });
