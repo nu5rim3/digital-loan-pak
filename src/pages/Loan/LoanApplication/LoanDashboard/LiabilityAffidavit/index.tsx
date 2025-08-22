@@ -31,33 +31,33 @@ const LiabilityAffidavit: React.FC<ILiabilityAffidavit> = () => {
     useEffect(() => {
         // Set the initial state of switches based on fetched liability validation
         if (liabilityValidation) {
-            const glSection = Array.isArray(liabilityValidation) ? liabilityValidation.find(item => item.isEnabled === 'gold-loan') : undefined;
-            const tdpSection = Array.isArray(liabilityValidation) ? liabilityValidation.find(item => item.isEnabled === 'tdp') : undefined;
+            const glSection = Array.isArray(liabilityValidation) ? liabilityValidation.find(item => item.section === 'gold-facility') : undefined;
+            const tdpSection = Array.isArray(liabilityValidation) ? liabilityValidation.find(item => item.section === 'term-deposit') : undefined;
 
-            setGlSwitch(glSection?.section === 'Y' ? true : false);
-            setTdpSwitch(tdpSection?.section === 'Y' ? true : false);
+            setGlSwitch(glSection?.isEnabled === 'Y' ? true : false);
+            setTdpSwitch(tdpSection?.isEnabled === 'Y' ? true : false);
 
-            setActiveGlKey(glSection?.section === 'Y' ? ['1'] : ['0']);
-            setActiveTdpKey(tdpSection?.section === 'Y' ? ['1'] : ['0']);
+            setActiveGlKey(glSection?.isEnabled === 'Y' ? ['1'] : ['0']);
+            setActiveTdpKey(tdpSection?.isEnabled === 'Y' ? ['1'] : ['0']);
         }
     }, [liabilityValidation]);
 
-    const onLiabilityEnabledHandle = (section: 'Y' | 'N', isEnabled: string) => {
-        if (isEnabled === 'gold-loan') {
-            setGlSwitch(section === 'Y');
-            setActiveGlKey(section === 'Y' ? ['1'] : ['0']);
+    const onLiabilityEnabledHandle = (isEnabled: 'Y' | 'N', section: string) => {
+        if (section === 'gold-facility') {
+            setGlSwitch(isEnabled === 'Y');
+            setActiveGlKey(isEnabled === 'Y' ? ['1'] : ['0']);
             addLiabilityValidation({
                 appraisalIdx: appId ?? '',
-                isEnabled: 'gold-loan',
+                isEnabled: isEnabled,
                 section: section
             });
         }
-        if (isEnabled === 'tdp') {
-            setTdpSwitch(section === 'Y');
-            setActiveTdpKey(section === 'Y' ? ['1'] : ['0']);
+        if (section === 'term-deposit') {
+            setTdpSwitch(isEnabled === 'Y');
+            setActiveTdpKey(isEnabled === 'Y' ? ['1'] : ['0']);
             addLiabilityValidation({
                 appraisalIdx: appId ?? '',
-                isEnabled: 'tdp',
+                isEnabled: isEnabled,
                 section: section
             });
         }
@@ -99,7 +99,7 @@ const LiabilityAffidavit: React.FC<ILiabilityAffidavit> = () => {
                                     onClick={(checked, event) => {
                                         // If you don't want click extra trigger collapse, you can prevent this:
                                         event.stopPropagation(); // Correctly access the event object
-                                        onLiabilityEnabledHandle(checked ? 'Y' : 'N', 'gold-loan');
+                                        onLiabilityEnabledHandle(checked ? 'Y' : 'N', 'gold-facility');
                                     }} />,
 
                         }
@@ -126,7 +126,7 @@ const LiabilityAffidavit: React.FC<ILiabilityAffidavit> = () => {
                                     onClick={(checked, event) => {
                                         // If you don't want click extra trigger collapse, you can prevent this:
                                         event.stopPropagation(); // Correctly access the event object
-                                        onLiabilityEnabledHandle(checked ? 'Y' : 'N', 'tdp');
+                                        onLiabilityEnabledHandle(checked ? 'Y' : 'N', 'term-deposit');
                                     }} />,
                         }
                     ]}

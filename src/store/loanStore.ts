@@ -186,14 +186,14 @@ export interface ITermDepositPlaced {
 }
 export interface ILiabilityValidationPayload {
   appraisalIdx: string;
-  section: "Y" | "N";
-  isEnabled: string;
+  isEnabled: "Y" | "N";
+  section: string;
 }
 
 export interface ILiabilityValidationResponse {
   appraisalIdx: string;
-  section: "Y" | "N";
-  isEnabled: string;
+  isEnabled: "Y" | "N";
+  section: string;
 }
 
 export interface IApplicationValidations {

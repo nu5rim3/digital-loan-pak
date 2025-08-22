@@ -71,8 +71,6 @@ const TermDepositPlaced: React.FC<ITermDeposit> = () => {
     };
 
     const onSubmit = (data: ITermDepositPlaced) => {
-        console.log('Form Data:', data);
-        console.log('mode:', mode);
         if (mode === 'update') {
             updateTermDepositPlaced(selectedDetail?.idx ?? '', { ...data, depositPlaced: 'Y' }).finally(closeModal);
         } else if (mode === 'save') {
