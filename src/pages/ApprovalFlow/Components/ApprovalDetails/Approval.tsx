@@ -177,13 +177,17 @@ const [caComments, setCaComments] = useState<Record<string, string>>({});
       title: "created By",
       dataIndex: "lastModifiedBy",
       key: "lastModifiedBy",
+       render: (_, { lastModifiedBy, stepStatus }) =>
+        stepStatus === "PENDING" ? "" : lastModifiedBy,
     },
     {
       title: "lastModifiedDate",
       key: "lastModifiedDate",
       dataIndex: "lastModifiedDate",
-      render: (_, { lastModifiedDate }) =>
-        moment(lastModifiedDate).format("YYYY-MM-DD - hh:mm:ss A"),
+      // render: (_, { lastModifiedDate }) =>
+      //   moment(lastModifiedDate).format("YYYY-MM-DD - hh:mm:ss A"),
+       render: (_, { lastModifiedDate, stepStatus }) =>
+        stepStatus === "PENDING" ? "" : moment(lastModifiedDate).format("YYYY-MM-DD - hh:mm:ss A"),
     },
   ];
 
@@ -561,6 +565,10 @@ const validateComment = (comment: string) => {
     }
   };
 
+  const isRejected =
+  flowHistory?.ibuWf1ApprovalSteps?.[0]?.stepAction === "REJECTED" ||
+  flowHistory?.ibuWf2ApprovalSteps?.[0]?.stepAction === "REJECTED";
+
   return (
     <div>
       {/* <Panel header="ON-BOARDING EXCEPTIONAL APPROVALS" key="1"> */}
@@ -733,41 +741,7 @@ const validateComment = (comment: string) => {
             // disabled={componentDisabled}
             // style={{ maxWidth: 600 }}
           >
-            {/* {
-                roleWiseApproval?.length && reasons.length > 0 && (selectedRole === 'ADMIN' || selectedRole === 'CA') ?
-                  <Form.Item
-                    name="reason"
-                    label="Reason"
-                    rules={[
-                      {
-                        required: isRequired,
-                      },
-                    ]}
-                    style={{
-                      fontWeight: 600,
-                    }}
-                  >
-                    <Select
-                      showSearch
-                      labelInValue
-                    >
-                      {
-                        reasons?.map((option: any, index) => (
-
-                          < Select.Option
-                            value={option.code}
-                            key={index.toString()}
-                          >
-                            {option.description}
-                          </Select.Option>
-
-                        ))
-                      }
-                    </Select>
-                  </Form.Item>
-                  : null} */}
-            {/* {
-                roleWiseApproval.length ? */}
+           
             <Form.Item
               label="Comment"
               name="comment"
@@ -777,27 +751,11 @@ const validateComment = (comment: string) => {
                 },
               ]}
             >
-              <TextArea rows={4} placeholder="Add Comment here" />
+              <TextArea rows={4} placeholder="Add Comment here"  disabled={isRejected}/>
             </Form.Item>
             {/* : null} */}
             <div className="flex justify-center">
-              {/* {roleWiseApproval.map((type: any) => {
-                  return (
-                    <Button
-                      type='primary'
-                      // label={type}
-                      loading={addingData === type ? true : false}
-                      disabled={
-                        addingData ? true
-                          : false
-                      }
-                      size='large'
-                      // onClick={() => handleSubmit(type)}
-                      className='mr-1 '
-                      shape='round'
-                    />
-                  )
-                })} */}
+             
               <Button
                 type="primary"
                 disabled={addingData ? true : false}
