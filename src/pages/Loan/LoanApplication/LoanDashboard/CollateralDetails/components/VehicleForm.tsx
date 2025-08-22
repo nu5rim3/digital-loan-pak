@@ -131,6 +131,11 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
     name: "vehicleMake",
   });
 
+  const vehicleCondition = useWatch({
+    control,
+    name: "vehicleCondition",
+  });
+
   const vehicleId = useWatch({
     control,
     name: "id",
@@ -205,7 +210,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
                   options={getOptions(
                     vehicleTypes,
                     "description",
-                    "description"
+                    "code"
                   )}
                 />
               )}
@@ -232,7 +237,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
                   options={getOptions(
                     vehicleOwnerships,
                     "description",
-                    "description"
+                    "code"
                   )}
                 />
               )}
@@ -282,7 +287,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
                   options={getOptions(
                     vehicleConditions,
                     "description",
-                    "description"
+                    "code"
                   )}
                 />
               )}
@@ -333,11 +338,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
                   showSearch
                   placeholder="Select Make"
                   loading={vehicleMakesLoading}
-                  options={getOptions(
-                    vehicleMakes,
-                    "description",
-                    "code"
-                  )}
+                  options={getOptions(vehicleMakes, "description", "code")}
                 />
               )}
             />
@@ -360,11 +361,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
                   showSearch
                   placeholder="Select Model"
                   loading={vehicleModelsLoading}
-                  options={getOptions(
-                    vehicleModels,
-                    "description",
-                    "code"
-                  )}
+                  options={getOptions(vehicleModels, "description", "code")}
                 />
               )}
             />
@@ -372,6 +369,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
 
           <Form.Item
             label="Engine No"
+            required={!!(vehicleCondition && vehicleCondition !== "NEW")}
             validateStatus={errors.vehicleEngineNo ? "error" : ""}
             help={errors.vehicleEngineNo?.message}
             labelCol={{ span: 24 }}
@@ -388,6 +386,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
 
           <Form.Item
             label="Chassis No"
+            required={!!(vehicleCondition && vehicleCondition !== "NEW")}
             validateStatus={errors.vehicleChassisNo ? "error" : ""}
             help={errors.vehicleChassisNo?.message}
             labelCol={{ span: 24 }}
@@ -429,7 +428,16 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
               name="vehicleYearManufacture"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter Year of Manufacture" />
+                <DatePicker
+                  className="w-full"
+                  picker="year"
+                  format="YYYY"
+                  value={field.value ? dayjs(field.value, "YYYY") : null}
+                  onChange={(date) =>
+                    field.onChange(date ? date.format("YYYY") : "")
+                  }
+                  placeholder="Select Manufacture Year"
+                />
               )}
             />
           </Form.Item>
@@ -512,6 +520,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
 
           <Form.Item
             label="Date of 1st Reg"
+            required={!!(vehicleCondition && vehicleCondition !== "NEW")}
             validateStatus={errors.vehicleDateOfFirstReg ? "error" : ""}
             help={errors.vehicleDateOfFirstReg?.message}
             labelCol={{ span: 24 }}
@@ -527,6 +536,9 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
                   value={field.value ? dayjs(field.value) : null}
                   onChange={(date) => {
                     field.onChange(date);
+                  }}
+                  disabledDate={(current) => {
+                    return current && current > dayjs().endOf('day');
                   }}
                 />
               )}
@@ -544,7 +556,26 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
               name="vehicleRegBookNo"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter Reg Book No" />
+                <InputNumber
+                  {...field}
+                  style={{ width: "100%" }}
+                  placeholder="Enter Registration Book No"
+                  controls={false}
+                  onKeyDown={(e) => {
+                    if (
+                      !/[0-9]/.test(e.key) &&
+                      ![
+                        "Backspace",
+                        "Delete",
+                        "ArrowLeft",
+                        "ArrowRight",
+                        "Tab",
+                      ].includes(e.key)
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
+                />
               )}
             />
           </Form.Item>
@@ -566,6 +597,9 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
                   value={field.value ? dayjs(field.value) : null}
                   onChange={(date) => {
                     field.onChange(date);
+                  }}
+                  disabledDate={(current) => {
+                    return current && current > dayjs().endOf('day');
                   }}
                 />
               )}
@@ -589,6 +623,9 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
                   value={field.value ? dayjs(field.value) : null}
                   onChange={(date) => {
                     field.onChange(date);
+                  }}
+                  disabledDate={(current) => {
+                    return current && current > dayjs().endOf('day');
                   }}
                 />
               )}

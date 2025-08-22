@@ -1,19 +1,18 @@
-import { Button, Card, Collapse, CollapseProps, Empty, Spin } from 'antd'
-import React, { useEffect } from 'react'
+import { Button, Card, Empty, Spin, Tabs } from 'antd'
+import React, { useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
-import { getLoanStatusByName, getOnlyStatusByName } from '../../../../utils/MSASActionFunctions';
+import { getOnlyStatusByName } from '../../../../utils/MSASActionFunctions';
 import useLoanStore from '../../../../store/loanStore';
 import { kebabToTitleCase } from '../../../../utils/formatterFunctions';
 import LoanStatusTag from '../../../../components/common/tags/LoanStatusTag';
 import useStakeholderStore from '../../../../store/stakeholderStore';
 import { getStakeholderByType } from '../../../../utils/stakholderFunction';
-import { CaretLeftOutlined } from '@ant-design/icons';
+import { CaretLeftOutlined, SendOutlined } from '@ant-design/icons';
 import useCustomerStore from '../../../../store/customerStore';
 import BusinessIntroducer from './BusinessIntroducer/BusinessIntroducer';
 import CreditScoringPage from './CreditScoring/CreditScoringPage';
 import CollateralDetails from './CollateralDetails';
 import CustomerRiskProfiling from './CustomerRiskProfiling';
-import { SendOutlined } from '@ant-design/icons';
 import CustomerDetailsView from './Customer/CustomerDetailsView';
 import GuarantorDetailsView from './Guarantor/GuarantorDetailsView';
 import WitnessDetails from './Witness/WitnessDetails';
@@ -23,15 +22,14 @@ import CashFlow from './CashFlow';
 import ExceptionalApproval from './ExceptionalApproval';
 import LoanApplication from './LoanApplication';
 import UnderConstruction from '../../../UnderConstroction';
-
-interface StatusProps {
-    isCompleted: string;
-    isMandatory: string;
-}
+import CheckMobile from '../../../CheckMobile';
 
 // Add this function to check mandatory completion
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function hasAllMandatoryCompleted(validations: any[] = []) {
+    if (!validations || validations.length === 0) {
+        return false;
+    }
     return !validations.some(
         v => v.isMandatory === "1" && v.completed === "0"
     );
@@ -39,11 +37,14 @@ function hasAllMandatoryCompleted(validations: any[] = []) {
 
 const LoanDaashboard: React.FC = () => {
 
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const scrollRef2 = useRef<HTMLDivElement>(null);
     const navigate = useNavigate();
     const { appId } = useParams();
     const { loading, applicationValidationLoading, applicationValidates, fetchApplicationValidationsByAppId, completeLoanApplication } = useLoanStore();
     const { stakeholders, fetchStackholderByAppId, fetchContactDetailsByStkId, fetchAddressDetailsByStkId, resetStakeholder } = useStakeholderStore();
     const { customers, fetchCustomerByAppId } = useCustomerStore();
+    // const [activeTab, setActiveTab] = useState('customer');
 
     const onCompleteApplication = () => {
         completeLoanApplication({
@@ -59,10 +60,14 @@ const LoanDaashboard: React.FC = () => {
             });
     }
 
-    const onChange = (key: string | string[]) => {
-        const triggerKey = key[0]
-        let type = ''
-        switch (triggerKey) {
+    // For tab changed, fetch contact/address if needed
+    const onTabChange = (activeKey: string) => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+            scrollRef2.current?.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        let type = '';
+        switch (activeKey) {
             case 'customer':
                 type = 'C'
                 break;
@@ -80,45 +85,64 @@ const LoanDaashboard: React.FC = () => {
             fetchContactDetailsByStkId(selectedIdx ?? '')
             fetchAddressDetailsByStkId(selectedIdx ?? '')
         }
+        // setActiveTab(activeKey);
     };
 
-    const genExtra = ({ isCompleted, isMandatory }: StatusProps) => (
-        <>
-            <LoanStatusTag type={'C'} status={isCompleted} />
-            <LoanStatusTag type={'M'} status={isMandatory} />
-        </>
-    );
-
-    const getComponentByName = (name: string) => {
+    // Get the right component for a section
+    const getComponentByName = (name: string, ref: React.Ref<HTMLDivElement>) => {
         switch (name) {
             case 'customer':
-                return <CustomerDetailsView formDetails={getStakeholderByType('C', stakeholders ?? [])[0] ?? null} />;
+                return (
+                    <div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}>
+                        <CustomerDetailsView formDetails={getStakeholderByType('C', stakeholders ?? [])[0] ?? null} />
+                    </div>);
             case 'guarantor':
-                return <GuarantorDetailsView formDetails={getStakeholderByType('G', stakeholders ?? []) ?? []} />;
+                return (
+                    <div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}>
+                        <GuarantorDetailsView formDetails={getStakeholderByType('G', stakeholders ?? []) ?? []} />
+                    </div >);
             case 'witness':
-                return <WitnessDetails formDetails={getStakeholderByType('W', stakeholders ?? []) ?? []} />;
+                return (
+                    <div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}>
+                        <WitnessDetails formDetails={getStakeholderByType('W', stakeholders ?? []) ?? []} />
+                    </div>);
             case 'liability-affidavit':
-                return <LiabilityAffidavit />;
+                return (
+                    <div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}>
+                        <LiabilityAffidavit />
+                    </div>);
             case 'gold-facility':
-                return <GoldFacilityApplication />;
+                return (
+                    <div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}>
+                        <GoldFacilityApplication />
+                    </div>);
             case 'loan-application':
-                return <LoanApplication />;
-            case 'image-upload':
-                return <UnderConstruction />;
+                return (
+                    <div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}>
+                        <LoanApplication />
+                    </div>);
             case 'cash-flow':
-                return <CashFlow />;
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><CashFlow /></div>);
             case 'credit-scoring':
-                return <CreditScoringPage appraisalId={appId ?? ''} />;
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><CreditScoringPage appraisalId={appId ?? ''} /></div>);
             case 'customer-risk-profiling':
-                return <CustomerRiskProfiling />;
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><CustomerRiskProfiling /></div>);
             case 'exceptional-approval':
-                return <ExceptionalApproval />;
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><ExceptionalApproval /></div>);
             case 'collateral-detail':
-                return <CollateralDetails />;
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><CollateralDetails /></div>);
             case 'business-introducer':
-                return <BusinessIntroducer />;
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><BusinessIntroducer /></div>);
+            case 'customer-biometric':
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><CheckMobile /></div>);
+            case 'guarantor-biometric':
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><CheckMobile /></div>);
+            case 'image-upload':
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><CheckMobile /></div>);
+            case 'customer-acknowledgement':
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><CheckMobile /></div>);
             default:
-                return null;
+                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><UnderConstruction /></div>);
         }
     };
 
@@ -135,29 +159,40 @@ const LoanDaashboard: React.FC = () => {
         "status": "A"
     },]
 
-    const _item: CollapseProps['items'] = onlyCustomer.map((rule) => ({
+    // For when there are no applicationValidates
+    const _tabItems = onlyCustomer.map((rule) => ({
         key: `${rule.section}`,
-        label: kebabToTitleCase(rule.section),
-        children: getComponentByName(rule.section),
-        extra: genExtra(getLoanStatusByName(rule.section, onlyCustomer)),
-        collapsible: rule.status !== 'A' ? 'disabled' : undefined,
+        label: (
+            <div className="flex flex-col items-start gap-1">
+                <span className='text-base font-semibold'>{kebabToTitleCase(rule.section)}</span>
+                <div className="flex gap-1">
+                    <LoanStatusTag type={'M'} status={rule.isMandatory} />
+                    <LoanStatusTag type={'C'} status={rule.completed} />
+                </div>
+            </div>
+        ),
+        children: getComponentByName(rule.section, scrollRef),
+        disabled: rule.status !== 'A',
     }));
 
-    const items: CollapseProps['items'] = applicationValidates
+    const tabItems = applicationValidates
         ?.filter(rule => rule.isVisible === "1")
         .map((rule) => ({
             key: `${rule.section}`,
-            label: kebabToTitleCase(rule.section),
-            children: getComponentByName(rule.section),
-            extra: genExtra(getLoanStatusByName(rule.section, applicationValidates)),
-            collapsible: getOnlyStatusByName(rule.section, applicationValidates) !== 'A' ? 'disabled' : undefined,
+            label: (
+                <div className="flex flex-col items-start gap-1">
+                    <span className='text-base font-semibold'>{kebabToTitleCase(rule.section)}</span>
+                    <div className="flex gap-1">
+                        <LoanStatusTag type={'M'} status={rule.isMandatory} />
+                        <LoanStatusTag type={'C'} status={rule.completed} />
+                    </div>
+                </div>
+            ),
+            children: getComponentByName(rule.section, scrollRef),
+            disabled: getOnlyStatusByName(rule.section, applicationValidates) !== 'A'
         }));
 
-
     useEffect(() => {
-        // if (customers.length === 0) {
-        //     fetchCustomerByAppId(appId ?? '')
-        // }
         if (stakeholders.length === 0) {
             fetchStackholderByAppId(appId ?? '')
         } else {
@@ -175,7 +210,6 @@ const LoanDaashboard: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [appId])
 
-
     const isAllMandatoryCompleted = hasAllMandatoryCompleted(applicationValidates);
 
     if (applicationValidationLoading) {
@@ -188,7 +222,7 @@ const LoanDaashboard: React.FC = () => {
         )
     }
 
-    if (applicationValidates.length === 0 && _item.length === 0) {
+    if (applicationValidates.length === 0 && _tabItems.length === 0) {
         return (
             <Card title={`Loan Application - ${appId}`}>
                 <Empty
@@ -206,22 +240,26 @@ const LoanDaashboard: React.FC = () => {
 
     return (
         <>
-            <Card title={
+            <Card
+                className='loan-card mb-3'
+            >
                 <div className='flex justify-between'>
-                    <div>Loan Application: {appId}</div>
-                    <div>Customer Name: {customers[0]?.fullName}</div>
+                    <div className='text-lg'>Loan Application: {appId}</div>
+                    <div className='text-lg'>Customer Name: {customers[0]?.fullName}</div>
                 </div>
-            }>
-                <Collapse
-                    accordion
-                    size="large"
-                    defaultActiveKey={['customer']}
-                    expandIconPosition={'start'}
-                    onChange={onChange}
-                    items={items.length === 0 ? _item : items}
+            </Card>
+            <div ref={scrollRef2} style={{ height: '70vh', overflowY: 'auto' }}>
+                <Tabs
+                    tabPosition='left'
+                    // defaultActiveKey={activeTab}
+                    onChange={onTabChange}
+                    items={tabItems.length === 0 ? _tabItems : tabItems}
                 />
+            </div>
+            <Card className='mt-3'>
 
-                <div className="mt-5">
+
+                <div className="flex justify-end">
                     <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
                     <Button type="primary" className="ml-3" icon={<SendOutlined />} disabled={!isAllMandatoryCompleted} onClick={onCompleteApplication} loading={loading}>Submit to Approval</Button>
                 </div>

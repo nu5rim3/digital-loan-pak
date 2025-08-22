@@ -55,18 +55,18 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
 
     if (formDetails?.length === 0) {
         return (
-            <div>
+            <Card>
                 <Empty description={<span>Witnesses are not available. Please create a witness.</span>} children={<Button type="primary" onClick={() => setOpenModal(true)} icon={<PlusOutlined />}>Add Witness</Button>} />
 
                 <CommonModal open={openModal} onClose={() => setOpenModal(false)} title={'Add Witness'} size='large' footer={true}>
                     <CreateWitness appId={appId ?? ''} mode='create' onClose={() => setOpenModal(false)} />
                 </CommonModal>
-            </div>
+            </Card>
         )
     }
 
     return (
-        <div>
+        <Card>
             {
                 formDetails && formDetails?.length > 0 && (
                     <div className='flex flex-col gap-3'>
@@ -84,7 +84,7 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
                                             console.log('item', item)
                                             setSelectedIdx(item.idx ?? '')
                                         }}>
-                                        Witness {index + 1}
+                                        Witness {index + 1} -  {item.stkSequence}
                                     </Button>
                                 ))
                             }
@@ -129,7 +129,7 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
                     /> : <CreateWitness appId={appId ?? ''} mode={mode} onClose={() => setOpenModal(false)} />
                 }
             </CommonModal>
-        </div>
+        </Card>
     )
 }
 

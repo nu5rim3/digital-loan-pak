@@ -122,7 +122,6 @@ const OtherIncome: React.FC<IOtherIncomeProps> = ({ sourceOfIncome, resetSourceO
                         <Controller
                             name="sourceOfIncome"
                             control={control}
-                            disabled
                             render={({ field }) => (
                                 <Select
                                     {...field}
@@ -135,6 +134,7 @@ const OtherIncome: React.FC<IOtherIncomeProps> = ({ sourceOfIncome, resetSourceO
                                             { label: 'Live Stock Income', value: 'Live Stock Income' }
                                         ]
                                     }
+                                    disabled
                                 />
                             )}
                         />

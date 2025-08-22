@@ -21,7 +21,13 @@ const schema = yup.object().shape({
     appraisalID: yup.string(),
     stkOrgType: yup.string().required("Organization Type is required"),
     stkCNic: yup.string().required("CNIC is required").matches(/^\d{5}-\d{7}-\d$/, 'CNIC must be in format xxxxx-xxxxxxx-x'),
-    stkDob: yup.string().required("Date of Birth is required"),
+    stkDob: yup.string()
+        .required("Date of Birth is required")
+        .test('is-adult', 'Age must be at least 18', function (value) {
+            const dob = new Date(value);
+            const age = new Date().getFullYear() - dob.getFullYear()
+            return !isNaN(age) && age >= 18;
+        }),
     stkAge: yup.string()
         .required("Age is required")
         .matches(/^\d+$/, "Age must be a number")
@@ -276,11 +282,26 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                 />}
                             />
                         </Form.Item>
+                        <Form.Item label="Date of Birth" validateStatus={errors.stkDob ? "error" : ""} help={errors.stkDob?.message} required>
+                            <Controller
+                                name="stkDob"
+                                control={control}
+                                render={({ field }) => <Input {...field} placeholder="Enter Date of Birth" type='date' />}
+                            />
+                        </Form.Item>
                         <Form.Item label="CNIC Issued Date" validateStatus={errors.stkCNicIssuedDate ? "error" : ""} help={errors.stkCNicIssuedDate?.message} required>
                             <Controller
                                 name="stkCNicIssuedDate"
                                 control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter CNIC Issued Date" type='date' />}
+                                render={({ field }) => <Input
+                                    {...field}
+                                    placeholder="Enter CNIC Issued Date"
+                                    type='date'
+                                    // Ensure the issued date is not earlier than the date of birth
+                                    min={watch('stkDob') ? moment(watch('stkDob')).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD")}
+                                    // cannot be in the feture
+                                    max={moment().format("YYYY-MM-DD")}
+                                />}
                             />
                         </Form.Item>
                         <Form.Item label="CNIC Expired Date" validateStatus={errors.stkCNicExpDate ? "error" : ""} help={errors.stkCNicExpDate?.message} required>
@@ -291,13 +312,7 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                             />
                         </Form.Item>
 
-                        <Form.Item label="Date of Birth" validateStatus={errors.stkDob ? "error" : ""} help={errors.stkDob?.message} required>
-                            <Controller
-                                name="stkDob"
-                                control={control}
-                                render={({ field }) => <Input {...field} placeholder="Enter Date of Birth" type='date' />}
-                            />
-                        </Form.Item>
+
                         <Form.Item label="Age" validateStatus={errors.stkAge ? "error" : ""} help={errors.stkAge?.message} required>
                             <Controller
                                 name="stkAge"
@@ -330,7 +345,8 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                 render={({ field }) =>
                                     <Select {...field} placeholder="Select an Organization" allowClear loading={organizationTypeLoading} options={organizationType.map((item) => ({
                                         label: formatName(item.description),
-                                        value: item.code
+                                        value: item.code,
+                                        disabled: item.code !== '0907' // Disable the 'Individual' option
                                     }))}>
                                     </Select>
                                 }

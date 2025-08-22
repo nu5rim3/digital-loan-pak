@@ -63,6 +63,7 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
     }
 
     useEffect(() => {
+
         fetchFacilityPurpose()
         setValue('sourceOfIncome', sourceOfIncome)
         fetchProduct(appId ?? '')
@@ -152,7 +153,6 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                         <Controller
                             name="sourceOfIncome"
                             control={control}
-                            disabled
                             render={({ field }) => (
                                 <Select
                                     {...field}
@@ -165,6 +165,7 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                                             { label: 'Live Stock Income', value: 'Live Stock Income' }
                                         ]
                                     }
+                                    disabled
                                 />
                             )}
                         />

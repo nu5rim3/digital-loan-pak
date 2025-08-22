@@ -203,7 +203,6 @@ const LiveStockIncome: React.FC<ILiveStockIncomeProps> = ({ sourceOfIncome, rese
                         <Controller
                             name="sourceOfIncome"
                             control={control}
-                            disabled
                             render={({ field }) => (
                                 <Select
                                     {...field}
@@ -216,6 +215,7 @@ const LiveStockIncome: React.FC<ILiveStockIncomeProps> = ({ sourceOfIncome, rese
                                             { label: 'Live Stock Income', value: 'Live Stock Income' }
                                         ]
                                     }
+                                    disabled
                                 />
                             )}
                         />

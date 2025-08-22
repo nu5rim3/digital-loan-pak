@@ -19,7 +19,7 @@ const schema = yup.object().shape({
     residenceType: yup.string().required("Residence Type is required"),
     addressType: yup.string().required("Address Type is required"),
     addressLine1: yup.string().required("Address Line 1 is required"),
-    addressLine2: yup.string(),
+    addressLine2: yup.string().required("Address Line 2 is required"),
     addressLine3: yup.string(),
     addressLine4: yup.string(),
     area: yup.string().required("Area is required"),
@@ -223,7 +223,7 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
                 />
             </Form.Item>
 
-            <Form.Item label="Address Line 2" validateStatus={errors.addressLine2 ? "error" : ""} help={errors.addressLine2?.message}>
+            <Form.Item label="Address Line 2" validateStatus={errors.addressLine2 ? "error" : ""} help={errors.addressLine2?.message} required>
                 <Controller
                     name="addressLine2"
                     control={control}
@@ -288,7 +288,7 @@ const AddressDetailsCard: React.FC<IAddressDetailsCard> = ({ stkId, subTitle }) 
                         <Input {...field} placeholder="Enter District" />}
                 />
             </Form.Item>
-
+            {/* TODO: check with BE */}
             <Form.Item label="Province" validateStatus={errors.province ? "error" : ""} help={errors.province?.message} required>
                 <Controller
                     name="province"

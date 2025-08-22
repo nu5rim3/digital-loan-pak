@@ -119,7 +119,6 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
     securityTypesLoading,
     fetchSecurityTypes,
     collaterals,
-    fetchCollaterals,
   } = useCollateralStore();
 
   const [submitting, setSubmitting] = useState(false);
@@ -143,8 +142,8 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
     submitting;
 
   const memoizedValidationSchema = useMemo(() => {
-    return createValidationSchema(securityTypes);
-  }, [securityTypes]);
+    return createValidationSchema();
+  }, []);
 
   const {
     control,
@@ -194,16 +193,6 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
     }
   }, [open, productCategory, fetchSecurityTypes]);
 
-  useEffect(() => {
-    if (open && appraisalId && productCategory === "Loan" && !hasFetchedCollaterals.current) {
-      if (!collaterals || collaterals.length === 0) {
-        hasFetchedCollaterals.current = true;
-        fetchCollaterals(appraisalId);
-      }
-    }
-  }, [open, appraisalId, productCategory, fetchCollaterals]);
-
-  // Reset the ref when modal closes
   useEffect(() => {
     if (!open) {
       hasFetchedCollaterals.current = false;
@@ -560,14 +549,16 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
                             {...field}
                             showSearch
                             placeholder="Select Security Type"
-                            disabled={isSaving || securityTypesLoading || isEdit}
+                            disabled={
+                              isSaving || securityTypesLoading || isEdit
+                            }
                             loading={securityTypesLoading}
                             onChange={handleSecurityTypeChange}
                           >
                             {securityTypes.map((securityType) => (
                               <Select.Option
                                 key={securityType.code}
-                                value={securityType.code}
+                                value={securityType.description}
                               >
                                 {securityType.description}
                               </Select.Option>

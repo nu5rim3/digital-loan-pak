@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Button, App, Row, Col, message, Spin, Modal } from "antd";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-empty-object-type */
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { Button, Row, Col, message, Spin, Modal, Card } from "antd";
 import { PlusOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { FormValues, validationSchema } from "./types";
 import DetailsCard from "./components/DetailsCard";
@@ -152,11 +154,9 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.landStockAgreementNo = collateral.landStockAgreementNo;
       formValues.landStockLawyerName = collateral.landStockLawyerName;
       formValues.landStockDescription = collateral.landStockDescription;
-      formValues.landStockCategory = collateral.landStockCategory;
       formValues.landStockSecurityDate = collateral.landStockSecDate
         ? new Date(collateral.landStockSecDate.split(" ")[0])
         : undefined;
-      formValues.landStockSecurityType = collateral.landStockSecType;
       break;
     case "savings":
       formValues.securityType = "FIXED DEPOSITS AND SAVINGS";
@@ -218,6 +218,16 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
 
   const appraisalId = appId;
 
+  // Memoize the product category to prevent unnecessary re-renders
+  const productCategory = useMemo(() => {
+    if (trialCalculationData?.productCategory === "A") {
+      return "Lease";
+    } else if (trialCalculationData?.productCategory === "C") {
+      return "Loan";
+    }
+    return null;
+  }, [trialCalculationData?.productCategory]);
+
   const [isEditing, setIsEditing] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState<FormValues[]>([]);
@@ -264,26 +274,26 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
   useEffect(() => {
     if (collaterals && collaterals.length > 0) {
       const mappedData = collaterals.map(mapCollateralToFormValues);
-      
+
       // Filter based on product category
       let filteredData = mappedData;
-      if (trialCalculationData?.productCategory === "A") {
+      if (productCategory === "Lease") {
         // Show only lease collaterals for Lease product
-        filteredData = mappedData.filter(collateral => 
+        filteredData = mappedData.filter(collateral =>
           collateral.securityType === "LEASE"
         );
-      } else if (trialCalculationData?.productCategory === "C") {
+      } else if (productCategory === "Loan") {
         // Show all collateral types except lease for Loan product
-        filteredData = mappedData.filter(collateral => 
+        filteredData = mappedData.filter(collateral =>
           collateral.securityType !== "LEASE"
         );
       }
-      
+
       setFormData(filteredData);
     } else {
       setFormData([]);
     }
-  }, [collaterals, trialCalculationData?.productCategory]);
+  }, [collaterals, productCategory]);
 
   const formMethods = useForm<FormValues>({
     resolver: yupResolver(validationSchema),
@@ -458,11 +468,9 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             landStockAgreementNo: detailedData.landStockAgreementNo,
             landStockLawyerName: detailedData.landStockLawyerName,
             landStockDescription: detailedData.landStockDescription,
-            landStockCategory: detailedData.landStockCategory,
             landStockSecurityDate: detailedData.landStockSecDate
               ? detailedData.landStockSecDate.split(" ")[0]
               : undefined,
-            landStockSecurityType: detailedData.landStockSecType,
           };
 
           setEditingId(detailedData.landStockIdx || data.id);
@@ -928,6 +936,8 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           console.error("Error deleting collateral:", error);
           message.error("Failed to delete collateral");
         } finally {
+          // Refresh collaterals after deletion
+          refreshCollaterals();
         }
       },
       onCancel: () => { },
@@ -943,7 +953,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
   if (fetchingCollaterals && !formData.length) {
     return (
       <div className="flex justify-center items-center h-64">
-        <Spin size="large" tip="Loading collateral details..." />
+        <Spin size="small" tip="Loading..." spinning />
       </div>
     );
   }
@@ -962,7 +972,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
   }
 
   return (
-    <App>
+    <Card>
       <div>
         <div className="flex justify-end mb-6">
           <Button
@@ -978,20 +988,20 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         {formData.length === 0 ? (
           <div className="text-center p-6 bg-gray-50 rounded-lg">
             <p className="text-gray-500">
-              {trialCalculationData?.productCategory === "A" 
+              {productCategory === "Lease"
                 ? "No lease collateral details found. Click 'Add Collateral' to add lease collateral."
-                : trialCalculationData?.productCategory === "C"
-                ? "No loan collateral details found. Click 'Add Collateral' to add loan collateral."
-                : "No collateral details found. Click 'Add Collateral' to add one."
+                : productCategory === "Loan"
+                  ? "No loan collateral details found. Click 'Add Collateral' to add loan collateral."
+                  : "No collateral details found. Click 'Add Collateral' to add one."
               }
             </p>
             {collaterals && collaterals.length > 0 && (
               <p className="text-blue-500 text-sm mt-2">
-                {trialCalculationData?.productCategory === "A" 
+                {productCategory === "Lease"
                   ? "Note: Only lease collaterals are shown for Lease products."
-                  : trialCalculationData?.productCategory === "C"
-                  ? "Note: Only non-lease collaterals are shown for Loan products."
-                  : ""
+                  : productCategory === "Loan"
+                    ? "Note: Only non-lease collaterals are shown for Loan products."
+                    : ""
                 }
               </p>
             )}
@@ -1017,13 +1027,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           onSave={handleSubmit}
           isEdit={isEditing}
           initialData={currentFormData}
-          productCategory={
-            trialCalculationData?.productCategory === "A"
-              ? "Lease"
-              : trialCalculationData?.productCategory === "C"
-                ? "Loan"
-                : null
-          }
+          productCategory={productCategory}
           appraisalId={appraisalId}
           isLoading={
             fetchingDetail ||
@@ -1037,7 +1041,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           }
         />
       </div>
-    </App>
+    </Card>
   );
 };
 

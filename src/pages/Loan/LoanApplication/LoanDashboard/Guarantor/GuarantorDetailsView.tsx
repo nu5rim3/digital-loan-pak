@@ -167,278 +167,291 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
 
     if (guarantors?.length === 0) {
         return (
-            <div>
+            <Card>
                 <Spin spinning={guarantorLoading}>
                     <Empty description={<span>Guarantors are not available. Please create a guarantor.</span>} children={<Button type="primary" onClick={onClickCreate} icon={<PlusOutlined />}>Add Guarantor</Button>} />
                 </Spin>
-            </div>
+            </Card>
         )
     }
 
     return (
-        <div className='flex flex-col gap-3'>
-            <div className='flex justify-end mb-4'>
-                <Button type="primary" onClick={onClickCreate} icon={<PlusOutlined />} disabled={guarantors.length >= 2}>Add Guarantor</Button>
-            </div>
-            <div className="grid grid-cols-4 gap-3">
-                {guarantors?.map((item, index) => (
-                    <Button key={index} type="primary" onClick={() => {
-                        setSelectedIndex(index + 1);
-                        selectedGuarantor(item.identificationNumber ?? '');
-                    }}>
-                        {`Guarantor ${index + 1}`}
-                    </Button>
-                ))}
-            </div>
-            {
-                selectedIndex > 0 && (
-                    <>
-                        <Card title={`Personal Details: Guarantor ${selectedIndex}`}
-                            extra={
-                                <div className='grid grid-cols-3 gap-2'>
-                                    <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} >Guarantor QR</Button>
-                                    <Button type="default" onClick={() => {
-                                        navigate(`${mainURL}/loan/application/${appId}/guarantor`, { state: { mode: 'edit', idx: idx, cnicNumber: cnicNumber } })
-                                    }} icon={<EditOutlined />}>Update details</Button>
-                                    <Button type='default' danger icon={<DeleteOutlined />} onClick={onDeleteGuarantor}>Delete</Button>
-                                </div>
-                            }
-                        >
-                            <Form layout="vertical" disabled>
-                                <div className="grid grid-cols-4 gap-3">
-                                    <Form.Item label="Title" validateStatus={errors.stkTitle ? "error" : ""} help={errors.stkTitle?.message} required>
-                                        <Controller
-                                            name="stkTitle"
-                                            control={control}
-                                            render={({ field }) =>
-                                                <Select
-                                                    {...field}
-                                                    allowClear
-                                                    options={[
-                                                        { value: 'MR', label: 'Mr.' },
-                                                        { value: 'MRS', label: 'Mrs.' },
-                                                        { value: 'MS', label: 'Ms.' },
-                                                        { value: 'DR', label: 'Dr.' },
-                                                        { value: 'PROF', label: 'Prof.' },
-                                                        { value: 'ENG', label: 'Eng.' },
-                                                        { value: 'REV', label: 'Rev.' },
-                                                        { value: 'M/S', label: 'M/S' },
-                                                        { value: 'MST', label: 'Mst.' },
-                                                    ]}
-                                                    placeholder="Select Title"
-                                                />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Full Name" validateStatus={errors.stkCusName ? "error" : ""} help={errors.stkCusName?.message} required>
-                                        <Controller
-                                            disabled
-                                            name="stkCusName"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Customer Name" />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Initial" validateStatus={errors.stkInitials ? "error" : ""} help={errors.stkInitials?.message} required>
-                                        <Controller
-                                            name="stkInitials"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Initial" />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Surname" validateStatus={errors.stkSurName ? "error" : ""} help={errors.stkSurName?.message} required>
-                                        <Controller
-                                            name="stkSurName"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Surname" />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Other Name" validateStatus={errors.stkOtherName ? "error" : ""} help={errors.stkOtherName?.message} required>
-                                        <Controller
-                                            name="stkOtherName"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Other Name" />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="CNIC Status" validateStatus={errors.stkCNicStatus ? "error" : ""} help={errors.stkCNicStatus?.message} required>
-                                        <Controller
-                                            name="stkCNicStatus"
-                                            control={control}
-                                            render={({ field }) => <Select {...field} placeholder="Select a CNIC Status" allowClear loading={cnicStausLoading} options={cnicStaus.map((item) => ({
-                                                label: item.description,
-                                                value: item.code
-                                            }))}>
-                                            </Select>}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="CNIC" validateStatus={errors.stkCNic ? "error" : ""} help={errors.stkCNic?.message} required>
-                                        <Controller
-                                            name="stkCNic"
-                                            disabled
-                                            control={control}
-                                            render={({ field }) => <Input {...field}
-                                                maxLength={15} // Max length considering dashes
-                                                placeholder="xxxxx-xxxxxxx-x"
-                                                onChange={(e) => {
-                                                    const formatted = formatCNIC(e.target.value);
-                                                    setValue("stkCNic", formatted, { shouldValidate: true });
-                                                }}
-                                            />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="CNIC Issued Date" validateStatus={errors.stkCNicIssuedDate ? "error" : ""} help={errors.stkCNicIssuedDate?.message} required>
-                                        <Controller
-                                            name="stkCNicIssuedDate"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter CNIC Issued Date" type='date' />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="CNIC Expired Date" validateStatus={errors.stkCNicExpDate ? "error" : ""} help={errors.stkCNicExpDate?.message} required>
-                                        <Controller
-                                            name="stkCNicExpDate"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter CNIC Expired Date" type='date' min={moment().format("YYYY-MM-DD")} />}
-                                        />
-                                    </Form.Item>
-
-                                    <Form.Item label="Date of Birth" validateStatus={errors.stkDob ? "error" : ""} help={errors.stkDob?.message} required>
-                                        <Controller
-                                            name="stkDob"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Date of Birth" type='date' />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Age" validateStatus={errors.stkAge ? "error" : ""} help={errors.stkAge?.message} required>
-                                        <Controller
-                                            name="stkAge"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Age" type='number' />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Gender" validateStatus={errors.stkGender ? "error" : ""} help={errors.stkGender?.message} required>
-                                        <Controller
-                                            name='stkGender'
-                                            control={control}
-                                            render={({ field }) =>
-                                                <Select
-                                                    {...field}
-                                                    allowClear
-                                                    options={[
-                                                        { value: 'F', label: 'Female' },
-                                                        { value: 'M', label: 'Male' },
-                                                        { value: 'A', label: 'Androgynous' },
-                                                    ]}
-                                                    placeholder="Select Gender"
-                                                />
-                                            }
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Organization Type" validateStatus={errors.stkOrgType ? "error" : ""} help={errors.stkOrgType?.message} required>
-                                        <Controller
-                                            name="stkOrgType"
-                                            control={control}
-                                            render={({ field }) =>
-                                                <Select {...field} placeholder="Select an Organization" allowClear loading={organizationTypeLoading} options={organizationType.map((item) => ({
-                                                    label: item.description,
-                                                    value: item.code
-                                                }))}>
-                                                </Select>
-                                            }
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Marital Status" validateStatus={errors.stkMaritialStatus ? "error" : ""} help={errors.stkMaritialStatus?.message} required>
-                                        <Controller
-                                            name="stkMaritialStatus"
-                                            control={control}
-                                            render={({ field }) =>
-                                                <Select
-                                                    {...field}
-                                                    allowClear
-                                                    options={[
-                                                        { value: 'M', label: 'Married' },
-                                                        { value: 'S', label: 'Single' },
-                                                        { value: 'P', label: 'Separated' },
-                                                        { value: 'W', label: 'Widow' },
-                                                        { value: 'I', label: 'Widower' },
-                                                    ]}
-                                                    placeholder="Select Marital Status" />
-                                            }
-                                        />
-                                    </Form.Item>
-
-                                    <Form.Item label="Father or Husband Name" validateStatus={errors.stkFatherOrHusName ? "error" : ""} help={errors.stkFatherOrHusName?.message} required>
-                                        <Controller
-                                            name="stkFatherOrHusName"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Father or Husband Name" />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Status" validateStatus={errors.status ? "error" : ""} help={errors.status?.message} hidden>
-                                        <Controller
-                                            name="status"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Status" />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Relationship" validateStatus={errors.relationship ? "error" : ""} help={errors.relationship?.message} required>
-                                        <Controller
-                                            name="relationship"
-                                            control={control}
-                                            render={({ field }) =>
-                                                <Select {...field} placeholder="Select a Relationship" allowClear loading={relationaShipGaurantorLoading} options={relationaShipGaurantor.map((item) => ({
-                                                    label: item.description,
-                                                    value: item.code
-                                                }))}>
-                                                </Select>
-                                            }
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Mode of Security" validateStatus={errors.modeOfSecurity ? "error" : ""} help={errors.modeOfSecurity?.message} required>
-                                        <Controller
-                                            name="modeOfSecurity"
-                                            control={control}
-                                            render={({ field }) =>
-                                                <Select {...field} placeholder="Select a Mode of Security" allowClear loading={modeOfSecurityLoading} options={modeOfSecurity.map((item) => ({
+        <Card>
+            <div className='flex flex-col gap-3'>
+                <div className='flex justify-end mb-4'>
+                    <Button type="primary" onClick={onClickCreate} icon={<PlusOutlined />} disabled={guarantors.length >= 2}>Add Guarantor</Button>
+                </div>
+                <div className="grid grid-cols-4 gap-3">
+                    {guarantors?.map((item, index) => (
+                        <Button key={index} type="primary" onClick={() => {
+                            setSelectedIndex(index + 1);
+                            selectedGuarantor(item.identificationNumber ?? '');
+                        }}>
+                            {`Guarantor ${index + 1} - ${item.sequence}`}
+                        </Button>
+                    ))}
+                </div>
+                {
+                    selectedIndex > 0 && (
+                        <>
+                            <Card title={`Personal Details: Guarantor ${selectedIndex}`}
+                                extra={
+                                    <div className='grid grid-cols-3 gap-2'>
+                                        <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} >Guarantor QR</Button>
+                                        <Button type="default" onClick={() => {
+                                            navigate(`${mainURL}/loan/application/${appId}/guarantor`, { state: { mode: 'edit', idx: idx, cnicNumber: cnicNumber } })
+                                        }} icon={<EditOutlined />}>Update details</Button>
+                                        <Button type='default' danger icon={<DeleteOutlined />} onClick={onDeleteGuarantor}>Delete</Button>
+                                    </div>
+                                }
+                            >
+                                <Form layout="vertical" disabled>
+                                    <div className="grid grid-cols-4 gap-3">
+                                        <Form.Item label="Title" validateStatus={errors.stkTitle ? "error" : ""} help={errors.stkTitle?.message} required>
+                                            <Controller
+                                                name="stkTitle"
+                                                control={control}
+                                                render={({ field }) =>
+                                                    <Select
+                                                        {...field}
+                                                        allowClear
+                                                        options={[
+                                                            { value: 'MR', label: 'Mr.' },
+                                                            { value: 'MRS', label: 'Mrs.' },
+                                                            { value: 'MS', label: 'Ms.' },
+                                                            { value: 'DR', label: 'Dr.' },
+                                                            { value: 'PROF', label: 'Prof.' },
+                                                            { value: 'ENG', label: 'Eng.' },
+                                                            { value: 'REV', label: 'Rev.' },
+                                                            { value: 'M/S', label: 'M/S' },
+                                                            { value: 'MST', label: 'Mst.' },
+                                                        ]}
+                                                        placeholder="Select Title"
+                                                    />}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label="Full Name" validateStatus={errors.stkCusName ? "error" : ""} help={errors.stkCusName?.message} required>
+                                            <Controller
+                                                disabled
+                                                name="stkCusName"
+                                                control={control}
+                                                render={({ field }) => <Input {...field} placeholder="Enter Customer Name" />}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label="Initial" validateStatus={errors.stkInitials ? "error" : ""} help={errors.stkInitials?.message} required>
+                                            <Controller
+                                                name="stkInitials"
+                                                control={control}
+                                                render={({ field }) => <Input {...field} placeholder="Enter Initial" />}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label="Surname" validateStatus={errors.stkSurName ? "error" : ""} help={errors.stkSurName?.message} required>
+                                            <Controller
+                                                name="stkSurName"
+                                                control={control}
+                                                render={({ field }) => <Input {...field} placeholder="Enter Surname" />}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label="Other Name" validateStatus={errors.stkOtherName ? "error" : ""} help={errors.stkOtherName?.message} required>
+                                            <Controller
+                                                name="stkOtherName"
+                                                control={control}
+                                                render={({ field }) => <Input {...field} placeholder="Enter Other Name" />}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label="CNIC Status" validateStatus={errors.stkCNicStatus ? "error" : ""} help={errors.stkCNicStatus?.message} required>
+                                            <Controller
+                                                name="stkCNicStatus"
+                                                control={control}
+                                                render={({ field }) => <Select {...field} placeholder="Select a CNIC Status" allowClear loading={cnicStausLoading} options={cnicStaus.map((item) => ({
                                                     label: item.description,
                                                     value: item.code
                                                 }))}>
                                                 </Select>}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item label="Current Residence" validateStatus={errors.currentResPlace ? "error" : ""} help={errors.currentResPlace?.message} required>
-                                        <Controller
-                                            name="currentResPlace"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} placeholder="Enter Current Residence" />}
-                                        />
-                                    </Form.Item>
-                                    <Form.Item hidden>
-                                        <Controller
-                                            name="idx"
-                                            control={control}
-                                            render={({ field }) => <Input {...field} />}
-                                        />
-                                    </Form.Item>
-                                </div>
-                            </Form>
-                        </Card>
-                        {
-                            selectedIdx !== '' && (
-                                <>
-                                    <ContactDetailsCard stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label="CNIC" validateStatus={errors.stkCNic ? "error" : ""} help={errors.stkCNic?.message} required>
+                                            <Controller
+                                                name="stkCNic"
+                                                disabled
+                                                control={control}
+                                                render={({ field }) => <Input {...field}
+                                                    maxLength={15} // Max length considering dashes
+                                                    placeholder="xxxxx-xxxxxxx-x"
+                                                    onChange={(e) => {
+                                                        const formatted = formatCNIC(e.target.value);
+                                                        setValue("stkCNic", formatted, { shouldValidate: true });
+                                                    }}
+                                                />}
+                                            />
+                                        </Form.Item>
 
-                                    <AddressDetailsCard stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
+                                        <Form.Item label="Date of Birth" validateStatus={errors.stkDob ? "error" : ""} help={errors.stkDob?.message} required>
+                                            <Controller
+                                                name="stkDob"
+                                                control={control}
+                                                render={({ field }) => <Input {...field} placeholder="Enter Date of Birth" type='date' />}
+                                            />
+                                        </Form.Item>
 
-                                    <IncomeDetails stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
-                                </>
-                            )
-                        }
+                                        <Form.Item label="CNIC Issued Date" validateStatus={errors.stkCNicIssuedDate ? "error" : ""} help={errors.stkCNicIssuedDate?.message} required>
+                                            <Controller
+                                                name="stkCNicIssuedDate"
+                                                control={control}
+                                                render={({ field }) => <Input
+                                                    {...field}
+                                                    placeholder="Enter CNIC Issued Date"
+                                                    type='date'
+                                                    // Ensure the issued date is not earlier than the date of birth
+                                                    min={watch('stkDob') ? moment(watch('stkDob')).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD")}
+                                                    // cannot be in the feture
+                                                    max={moment().format("YYYY-MM-DD")}
+                                                />}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label="CNIC Expired Date" validateStatus={errors.stkCNicExpDate ? "error" : ""} help={errors.stkCNicExpDate?.message} required>
+                                            <Controller
+                                                name="stkCNicExpDate"
+                                                control={control}
+                                                render={({ field }) => <Input {...field} placeholder="Enter CNIC Expired Date" type='date' min={moment().format("YYYY-MM-DD")} />}
+                                            />
+                                        </Form.Item>
 
-                        <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={guarantors[selectedIndex]?.idx ?? selectedCliIdx} />
 
-                    </>
-                )
-            }
+                                        <Form.Item label="Age" validateStatus={errors.stkAge ? "error" : ""} help={errors.stkAge?.message} required>
+                                            <Controller
+                                                name="stkAge"
+                                                control={control}
+                                                render={({ field }) => <Input {...field} placeholder="Enter Age" type='number' />}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label="Gender" validateStatus={errors.stkGender ? "error" : ""} help={errors.stkGender?.message} required>
+                                            <Controller
+                                                name='stkGender'
+                                                control={control}
+                                                render={({ field }) =>
+                                                    <Select
+                                                        {...field}
+                                                        allowClear
+                                                        options={[
+                                                            { value: 'F', label: 'Female' },
+                                                            { value: 'M', label: 'Male' },
+                                                            { value: 'A', label: 'Androgynous' },
+                                                        ]}
+                                                        placeholder="Select Gender"
+                                                    />
+                                                }
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label="Organization Type" validateStatus={errors.stkOrgType ? "error" : ""} help={errors.stkOrgType?.message} required>
+                                            <Controller
+                                                name="stkOrgType"
+                                                control={control}
+                                                render={({ field }) =>
+                                                    <Select {...field} placeholder="Select an Organization" allowClear loading={organizationTypeLoading} options={organizationType.map((item) => ({
+                                                        label: item.description,
+                                                        value: item.code
+                                                    }))}>
+                                                    </Select>
+                                                }
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label="Marital Status" validateStatus={errors.stkMaritialStatus ? "error" : ""} help={errors.stkMaritialStatus?.message} required>
+                                            <Controller
+                                                name="stkMaritialStatus"
+                                                control={control}
+                                                render={({ field }) =>
+                                                    <Select
+                                                        {...field}
+                                                        allowClear
+                                                        options={[
+                                                            { value: 'M', label: 'Married' },
+                                                            { value: 'S', label: 'Single' },
+                                                            { value: 'P', label: 'Separated' },
+                                                            { value: 'W', label: 'Widow' },
+                                                            { value: 'I', label: 'Widower' },
+                                                        ]}
+                                                        placeholder="Select Marital Status" />
+                                                }
+                                            />
+                                        </Form.Item>
 
-        </div >
+                                        <Form.Item label="Father or Husband Name" validateStatus={errors.stkFatherOrHusName ? "error" : ""} help={errors.stkFatherOrHusName?.message} required>
+                                            <Controller
+                                                name="stkFatherOrHusName"
+                                                control={control}
+                                                render={({ field }) => <Input {...field} placeholder="Enter Father or Husband Name" />}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label="Status" validateStatus={errors.status ? "error" : ""} help={errors.status?.message} hidden>
+                                            <Controller
+                                                name="status"
+                                                control={control}
+                                                render={({ field }) => <Input {...field} placeholder="Enter Status" />}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label="Relationship" validateStatus={errors.relationship ? "error" : ""} help={errors.relationship?.message} required>
+                                            <Controller
+                                                name="relationship"
+                                                control={control}
+                                                render={({ field }) =>
+                                                    <Select {...field} placeholder="Select a Relationship" allowClear loading={relationaShipGaurantorLoading} options={relationaShipGaurantor.map((item) => ({
+                                                        label: item.description,
+                                                        value: item.code
+                                                    }))}>
+                                                    </Select>
+                                                }
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label="Mode of Security" validateStatus={errors.modeOfSecurity ? "error" : ""} help={errors.modeOfSecurity?.message} required>
+                                            <Controller
+                                                name="modeOfSecurity"
+                                                control={control}
+                                                render={({ field }) =>
+                                                    <Select {...field} placeholder="Select a Mode of Security" allowClear loading={modeOfSecurityLoading} options={modeOfSecurity.map((item) => ({
+                                                        label: item.description,
+                                                        value: item.code
+                                                    }))}>
+                                                    </Select>}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item label="Current Residence" validateStatus={errors.currentResPlace ? "error" : ""} help={errors.currentResPlace?.message} required>
+                                            <Controller
+                                                name="currentResPlace"
+                                                control={control}
+                                                render={({ field }) => <Input {...field} placeholder="Enter Current Residence" />}
+                                            />
+                                        </Form.Item>
+                                        <Form.Item hidden>
+                                            <Controller
+                                                name="idx"
+                                                control={control}
+                                                render={({ field }) => <Input {...field} />}
+                                            />
+                                        </Form.Item>
+                                    </div>
+                                </Form>
+                            </Card>
+                            {
+                                selectedIdx !== '' && (
+                                    <>
+                                        <ContactDetailsCard stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
+
+                                        <AddressDetailsCard stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
+
+                                        <IncomeDetails stkId={selectedIdx ?? ''} subTitle={`Guarantor ${selectedIndex}`} />
+                                    </>
+                                )
+                            }
+
+                            <NADRAModal open={nadraModalOpen} onCancel={() => setNadraModalOpen(false)} cliIdx={guarantors[selectedIndex]?.idx ?? selectedCliIdx} />
+
+                        </>
+                    )
+                }
+
+            </div>
+        </Card>
     )
 }
 

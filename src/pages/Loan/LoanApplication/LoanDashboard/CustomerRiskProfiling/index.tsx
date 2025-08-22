@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Empty } from "antd";
+import { Button, Card, Empty } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { useForm } from "react-hook-form";
 import { CustomerRiskProfilingFormData } from "./types";
@@ -37,7 +37,7 @@ const CustomerRiskProfiling: React.FC = () => {
       if (mode === "save") {
         setProfiles([...profiles, { ...data, id: Date.now() }]);
       } else if (mode === "update" && selectedDetail) {
-        setProfiles(profiles.map(profile => 
+        setProfiles(profiles.map(profile =>
           profile.id === selectedDetail.id ? { ...data, id: profile.id } : profile
         ));
       }
@@ -59,7 +59,7 @@ const CustomerRiskProfiling: React.FC = () => {
   };
 
   return (
-    <div>
+    <Card>
       <div className="flex justify-end">
         <Button
           type="primary"
@@ -95,7 +95,7 @@ const CustomerRiskProfiling: React.FC = () => {
         onSubmit={handleFormSubmit}
         onRemove={handleRemove}
       />
-    </div>
+    </Card>
   );
 };
 

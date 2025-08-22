@@ -63,15 +63,16 @@ const LoanApplication: React.FC = () => {
         }
     }
 
+    // https://lolcfusion.atlassian.net/browse/MDV-12327 add a message to the user when no income source is selected
 
     return (
-        <>
+        <Card>
             <div className='flex justify-between'>
                 <Form className='w-1/4' layout='vertical'>
-                    <Form.Item label="Source of Income">
+                    <Form.Item label="View Added Source of Income">
                         <Select
                             className='w-1/4'
-                            placeholder="Select Income Source"
+                            placeholder="Select a Source Income"
                             value={sourceOfIncome}
                             options={[
                                 { label: 'Agriculture Income ', value: 'Agriculture Income ' },
@@ -88,6 +89,17 @@ const LoanApplication: React.FC = () => {
                     Create a Loan Application
                 </Button>
             </div>
+            {sourceOfIncome && (
+                <div className='flex justify-end mb-3'>
+                    <Button type='primary' onClick={() => setSourceOfIncome(null)}>Reset Source of Income</Button>
+                </div>
+            )}
+
+            {
+                sourceOfIncome === null && (
+                    <Empty description="Please select a source of income to view details." />
+                )
+            }
             {
                 businessIncome.length === 0 && sourceOfIncome === 'Business Income' && (
                     <Spin spinning={businessIncomeLoading} size='small'>
@@ -110,7 +122,7 @@ const LoanApplication: React.FC = () => {
             }
 
             {
-                agricultureIncome.length === 0 && sourceOfIncome === 'Agricultural Income' && (
+                agricultureIncome.length === 0 && sourceOfIncome === 'Agriculture Income ' && (
                     <Spin spinning={agricultureIncomeLoading} size='small'>
                         <Empty description="No Agricultural Income Found" />
                     </Spin>
@@ -192,7 +204,7 @@ const LoanApplication: React.FC = () => {
                 </div>
             )
             }
-        </>
+        </Card>
     )
 }
 

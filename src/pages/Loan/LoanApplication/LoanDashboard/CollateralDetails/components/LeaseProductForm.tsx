@@ -318,7 +318,20 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
               name="equipmentName"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="Enter Equipment Name" />
+                <Select
+                  {...field}
+                  loading={suppliersLoading}
+                  options={[
+                    {
+                      label: "Equipment",
+                      value: "Equipment",
+                    },
+                    {
+                      label: "Vehicle",
+                      value: "Vehicle",
+                    },
+                  ]}
+                />
               )}
             />
           </Form.Item>

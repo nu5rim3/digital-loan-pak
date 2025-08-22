@@ -31,7 +31,7 @@ export const dateFormats = (date: string, dateFormat: string) => {
 
 export function kebabToTitleCase(str: string): string {
   return str
-    .split("-")
+    .split(/[-_]/) // Split on both - and _
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 }

@@ -374,6 +374,20 @@ export interface ITrailCalulation {
     struPrds: string;
     struRent: string;
   }[];
+  pTreq?: {
+    treqEv: string;
+    treqEqpCost: string;
+  }[];
+  pSnrv?: {
+    snrvFac: string;
+    snrvCap: string;
+    snrvExpDate: string;
+    snrvIntRt: string;
+    snrvPInt: string;
+    snrvDtPay: string;
+    snrvGPrd: string;
+  }[];
+  client?: string;
 }
 
 export interface ITrailCalulationResponse {

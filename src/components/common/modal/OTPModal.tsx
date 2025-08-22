@@ -16,13 +16,11 @@ interface OTPModalProps {
 const OTPModal: React.FC<OTPModalProps> = ({ idx, visible, onCancel, onCompleted, resetUser }) => {
 
     const { control, handleSubmit, setValue, watch, reset } = useForm();
-    const { sendOTP, verifyOTP, otpLoading, otpVerificationLoading, otpVerificationResponse, otpVerificationError, restOtpVerificationResponse } = useOTPStore()
+    const { sendOTP, verifyOTP, otpLoading, otpVerificationLoading, otpVerificationResponse, restOtpVerificationResponse } = useOTPStore()
     const { resetAll } = useVerificationStore()
     const otpRefs = useRef<(HTMLInputElement | null)[]>(Array(6).fill(null));
     const [isResendDisabled, setIsResendDisabled] = useState(true);
     const [resetTrigger, setResetTrigger] = useState(0);
-
-    console.log('otpVerificationError:', otpVerificationError);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {

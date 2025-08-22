@@ -94,10 +94,15 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
     name: "bankGuaranteeType",
   });
 
+  const startDate = useWatch({
+    control,
+    name: "startDate",
+  });
+
   const isEditMode = !!bgId;
   const dataFetched = useRef(false);
-  const isLOFIN = bankGuaranteeType === "Issued by LOLC";
-  const isOnDemand = bankGuaranteeType === "On Demand";
+  const isLOFIN = bankGuaranteeType === "1";
+  const isOnDemand = bankGuaranteeType === "2";
 
   useEffect(() => {
     if (!dataFetched.current) {
@@ -152,7 +157,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                     showSearch
                     placeholder="Select Type"
                     loading={bankGuaranteeTypesLoading}
-                    options={getOptions(bankGuaranteeTypes)}
+                    options={getOptions(bankGuaranteeTypes, "description", "code")}
                   />
                 )}
               />
@@ -175,7 +180,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                     showSearch
                     placeholder="Select Ownership"
                     loading={bankGuaranteeOwnershipsLoading}
-                    options={getOptions(bankGuaranteeOwnerships)}
+                    options={getOptions(bankGuaranteeOwnerships, "description", "code")}
                   />
                 )}
               />
@@ -283,7 +288,19 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                           );
                         }}
                         disabledDate={(current) => {
-                          return current && current < dayjs().startOf("day");
+                          // Disable dates before today
+                          if (current && current < dayjs().startOf("day")) {
+                            return true;
+                          }
+                          // Disable dates before or equal to start date
+                          if (
+                            startDate &&
+                            current &&
+                            current <= dayjs(startDate).startOf("day")
+                          ) {
+                            return true;
+                          }
+                          return false;
                         }}
                       />
                     )}
@@ -316,17 +333,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                   <Controller
                     name="guaranteeValue"
                     control={control}
-                    rules={{
-                      validate: (value) => {
-                        if (isLOFIN) {
-                          const fdValue = Number(useWatch({ control, name: 'fdValue' }));
-                          if (value && fdValue && Number(value) > fdValue) {
-                            return 'Guarantee Value cannot exceed FD Value';
-                          }
-                        }
-                        return true;
-                      },
-                    }}
+                    rules={{}}
                     render={({ field }) => (
                       <InputNumber
                         {...field}
@@ -413,7 +420,18 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                         }}
                         disabledDate={(current) => {
                           // Disable dates before today
-                          return current && current < dayjs().startOf("day");
+                          if (current && current < dayjs().startOf("day")) {
+                            return true;
+                          }
+                          // Disable dates before or equal to start date (if start date exists)
+                          if (
+                            startDate &&
+                            current &&
+                            current <= dayjs(startDate).startOf("day")
+                          ) {
+                            return true;
+                          }
+                          return false;
                         }}
                       />
                     )}

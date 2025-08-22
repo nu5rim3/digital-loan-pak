@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // ✅ FILE: pages/CreditScoringPage.tsx (clean full version with completion)
 
 import React, { useEffect, useState } from "react";
@@ -11,8 +12,10 @@ import {
   Input,
   Tag,
   InputNumber,
+  Col,
 } from "antd";
 import { APIAuth } from "../../../../../services/api";
+import { ContainerFilled, ReloadOutlined } from "@ant-design/icons";
 
 const { Panel } = Collapse;
 
@@ -73,6 +76,7 @@ const CreditScoringPage: React.FC<{
         perception,
         arrears,
         residence,
+        outstanding
       ] = await Promise.all([
         APIAuth.get("/mobixCamsCommon/v1/business-owners"),
         APIAuth.get("/mobixCamsCommon/v1/new-other-source-incomes"),
@@ -81,6 +85,7 @@ const CreditScoringPage: React.FC<{
         APIAuth.get("/mobixCamsCommon/v1/sub-perceptions"),
         APIAuth.get("/mobixCamsCommon/v1/loan-arrears"),
         APIAuth.get("/mobixCamsCommon/v1/current-residences"),
+        APIAuth.get("/mobixCamsCommon/v1/outStanding-loans"),
       ]);
       setDropdowns({
         ownership: ownership.data,
@@ -90,6 +95,7 @@ const CreditScoringPage: React.FC<{
         perception: perception.data,
         arrears: arrears.data,
         residence: residence.data,
+        outstanding: outstanding.data,
       });
     } catch {
       message.error("Failed to load dropdowns");
@@ -141,7 +147,7 @@ const CreditScoringPage: React.FC<{
 
   const fetchScore = async (productCode: string) => {
     try {
-     
+
       const res = await APIAuth.get(
         `/mobixCamsCredit/v1/credits-scores/products/${productCode}/appraisals/${appraisalId}`
       );
@@ -170,7 +176,7 @@ const CreditScoringPage: React.FC<{
         status: "A",
       });
       message.success("Scoring submitted");
-        fetchScore(resProduct.data?.pTrhdLType);
+      fetchScore(resProduct.data?.pTrhdLType);
       // setResult(mockResult);
     } catch {
       message.error("Submit failed");
@@ -229,6 +235,12 @@ const CreditScoringPage: React.FC<{
               data: dropdowns.residence,
               field: "description",
             },
+            {
+              label: "Outstanding Loan in ECIB",
+              name: "outStandingLoanTaken",
+              data: dropdowns.outstanding,
+              field: "description",
+            },
           ].map((item) => (
             <Form.Item
               label={item.label}
@@ -244,11 +256,21 @@ const CreditScoringPage: React.FC<{
             </Form.Item>
           ))}
         </div>
-        {/* <Row gutter={16}> */}
-        {/* </Row> */}
-        <Button type="primary" htmlType="submit" loading={loading} block>
-          Get Credit Score
-        </Button>
+        {/* must show the button in left end corner  */}
+        <Col span={24} className="text-right">
+          <Button type="primary" htmlType="submit" loading={loading} icon={<ContainerFilled />}>
+            Get Credit Score
+          </Button>
+          <Button
+            type="default"
+            className="ml-2"
+            danger
+            onClick={() => form.resetFields()}
+            icon={<ReloadOutlined />}
+          >
+            Reset
+          </Button>
+        </Col>
       </Form>
       {result && (
         <Card className="mt-6" title="Scoring Result">

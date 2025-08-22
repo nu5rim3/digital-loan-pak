@@ -221,7 +221,7 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
                   options={getOptions(
                     propertyTypes,
                     "description",
-                    "description"
+                    "code"
                   )}
                 />
               )}
@@ -248,7 +248,7 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
                   options={getOptions(
                     propertySubTypes,
                     "description",
-                    "description"
+                    "code"
                   )}
                 />
               )}
@@ -272,7 +272,7 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
                   showSearch
                   placeholder="Select Ownership"
                   loading={propertyOwnershipsLoading}
-                  options={getOptions(propertyOwnerships, "description", "description")}
+                  options={getOptions(propertyOwnerships, "description", "code")}
                 />
               )}
             />

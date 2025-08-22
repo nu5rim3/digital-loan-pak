@@ -19,6 +19,25 @@ body {
   border-color: #002140 !important;
 }
 
+.ant-tabs .ant-tabs-tab {
+  margin: 0px !important;
+}
+
+.ant-tabs .ant-tabs-tab.ant-tabs-tab-active {
+  background-color: #002140 !important;
+  border-color: #002140 !important;
+}
+
+.ant-tabs .ant-tabs-tab:hover {
+  background-color: #d2d2d2 !important;
+  border-color: #d2d2d2 !important;
+  color: white !important;
+}
+
+.ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: white !important;
+}
+
 .ant-tabs-card .ant-tabs-tab-active .ant-tabs-tab-btn {
   color: white !important;
 }
@@ -37,6 +56,18 @@ body {
   color: #002140bc !important;
   /* background-color: #000080 !important; Navy Blue */
   /* Add other styles as needed, e.g., border-color, text-color, etc. */
+}
+
+:where(.css-dev-only-do-not-override-1uy9k67).ant-tabs-left
+  > .ant-tabs-content-holder
+  > .ant-tabs-content
+  > .ant-tabs-tabpane,
+:where(.css-dev-only-do-not-override-1uy9k67).ant-tabs-left
+  > div
+  > .ant-tabs-content-holder
+  > .ant-tabs-content
+  > .ant-tabs-tabpane {
+  padding: 10px !important;
 }
 
 input:not([type="date"]),

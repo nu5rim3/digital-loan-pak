@@ -46,7 +46,6 @@ interface LandStockPayload {
   landStockAgreementNo?: string;
   landStockLawyerName?: string;
   landStockDescription?: string;
-  landStockCategory?: string;
   landStockSecDate?: string;
   landStockSecCategory?: string;
   landStockSecType?: string;
