@@ -68,7 +68,9 @@ const GeneralAppraisalList: React.FC = () => {
         size: 7,
         fromDate,
         toDate,
-        branch: user?.branches[0].code,
+        branchCode: user?.branches[0].code,
+        unit:"IBU"
+ 
       };
 
       if (searchText && searchField) {
