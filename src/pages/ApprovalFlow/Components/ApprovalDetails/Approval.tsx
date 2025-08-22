@@ -10,6 +10,8 @@ import {
   Row,
   Col,
   Space,
+  Collapse,
+  Modal,
 } from "antd";
 import { useEffect, useState } from "react";
 // import ButtonContainer from '../../../../components/Buttons/Button';
@@ -23,8 +25,13 @@ import { Button } from "antd/lib";
 import API from "../../../../services/APIServices";
 import useUserStore from "../../../../store/userStore";
 import { mainURL } from "../../../../App";
-import { CheckSquareOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import {
+  CheckSquareOutlined,
+  CloseCircleOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
 import { getObExceptionals } from "../../../../utils/Common";
+
 // import { genarateStepAction, genarateStepStatus } from '../../../../utils/setpsGenaration';
 // import fileToBase64Async from '../../../../utils/fileToBase64Async';
 
@@ -63,7 +70,7 @@ export default function Approval({
   // const [isRequired, setIsRequired] = useState(false);
   // const [isCAImage, setCAImage] = useState(false);
   // const [isBMImage, setBMImage] = useState(false);
-
+  const { Panel } = Collapse;
   const [flowHistory, setFlowHistory] = useState<any>({});
 
   const { appraisalId, flow } = useParams<{
@@ -75,8 +82,8 @@ export default function Approval({
   const [originationApproval, setOriginationApproval] = useState<any>([]);
   const [findUser, setFindUser] = useState<any>(null);
   const [isLoadingOb, setIsLoadingOb] = useState(false);
- const [obComments, setObComments] = useState<Record<string, string>>({});
-const [caComments, setCaComments] = useState<Record<string, string>>({});
+  const [obComments, setObComments] = useState<Record<string, string>>({});
+  const [caComments, setCaComments] = useState<Record<string, string>>({});
 
   const { Title, Text } = Typography;
   const { TabPane } = Tabs;
@@ -382,7 +389,7 @@ const [caComments, setCaComments] = useState<Record<string, string>>({});
       // Fetch origination approval
       try {
         approvalOrigination =
-          await API.mobixCamsApproval.getAllOriginationApproval(appraisalId);
+          await API.mobixCamsApproval.getOriginationApproval(appraisalId);
       } catch (err) {
         console.warn("Failed to fetch origination approval", err);
       }
@@ -395,7 +402,7 @@ const [caComments, setCaComments] = useState<Record<string, string>>({});
       }
 
       // Set state safely even if some values are undefined or null
-      setExceptionalApprovals(exceptionalApprovals || []);
+      setExceptionalApprovals(exceptionalApprovals?.data || []);
       setOriginationApproval(approvalOrigination || []);
       setFindUser(userVerify || null);
       setFlowHistory(flowHistory || []);
@@ -446,18 +453,18 @@ const [caComments, setCaComments] = useState<Record<string, string>>({});
   };
 
   // Utility to show error if comment is empty
-const validateComment = (comment: string) => {
-  if (!comment || comment.trim() === "") {
-    notification.error({ message: "Comment is required" });
-    return false;
-  }
-  return true;
-};
+  const validateComment = (comment: string) => {
+    if (!comment || comment.trim() === "") {
+      notification.error({ message: "Comment is required" });
+      return false;
+    }
+    return true;
+  };
 
   // On-Boarding Exceptional Approve
   const submitObExceptionalApprove = async (index: number, item: any) => {
     const comment = obComments[index] || item.comments?.comment || "";
-  if (!validateComment(comment)) return;
+    if (!validateComment(comment)) return;
 
     setIsLoadingOb(true);
     try {
@@ -486,8 +493,8 @@ const validateComment = (comment: string) => {
 
   // On-Boarding Exceptional Reject
   const submitObExceptionalReject = async (index: number, item: any) => {
-  const comment = obComments[index] || item.comments?.comment || "";
-  if (!validateComment(comment)) return;
+    const comment = obComments[index] || item.comments?.comment || "";
+    if (!validateComment(comment)) return;
 
     setIsLoadingOb(true);
     try {
@@ -516,7 +523,7 @@ const validateComment = (comment: string) => {
   // Credit Appraisal Exceptional Approve
   const submitCaApprove = async (index: number, item: any) => {
     const comment = caComments[index] || item.comments?.comment || "";
-  if (!validateComment(comment)) return;
+    if (!validateComment(comment)) return;
 
     setIsLoadingOb(true); // reuse loading flag or introduce separate if needed
     try {
@@ -542,7 +549,7 @@ const validateComment = (comment: string) => {
   // Credit Appraisal Exceptional Reject
   const submitCaReject = async (index: number, item: any) => {
     const comment = caComments[index] || item.comments?.comment || "";
-  if (!validateComment(comment)) return;
+    if (!validateComment(comment)) return;
 
     setIsLoadingOb(true);
     try {
@@ -571,146 +578,224 @@ const validateComment = (comment: string) => {
 
   return (
     <div>
-      {/* <Panel header="ON-BOARDING EXCEPTIONAL APPROVALS" key="1"> */}
-      {originationApproval?.requestDtoList?.length? 
-        <Row gutter={16}>
-          <Title level={5}>On-Boarding Excaptional Approvals</Title>
-          <Col span={6}>
+      <Collapse accordion>
+        {/* <Panel header="ON-BOARDING EXCEPTIONAL APPROVALS" key="1">
+          {originationApproval?.requestDtoList?.length ? (
+            <Row gutter={16}>
+              <Title level={5}>On-Boarding Excaptional Approvals</Title>
+              <Col span={6}>
+                <Tabs
+                  tabPosition="left"
+                  activeKey={verticalObActiveTab.toString()}
+                  onChange={(key: any) =>
+                    // toggleObVertical(parseInt(key))
+                    setVerticalObActiveTab(key)
+                  }
+                >
+                  {originationApproval.requestDtoList?.map(
+                    (item: any, index: number) => (
+                      <TabPane
+                        tab={
+                          <Space>
+                            <Text strong>{`0${index + 1}. ${getObExceptionals(
+                              item.type
+                            )}`}</Text>
+                            {item.status === "A" && (
+                              <CheckSquareOutlined style={{ color: "green" }} />
+                            )}
+                            {item.status === "R" && (
+                              <CloseCircleOutlined style={{ color: "red" }} />
+                            )}
+                          </Space>
+                        }
+                        key={index.toString()}
+                      >
+                        <Row>
+                          <Col span={24}>
+                            <Title level={5}>Requester’s Comment:</Title>
+                            <Text>{item.remark}</Text>
+
+                            <TextArea
+                              readOnly={!!item.comments}
+                              defaultValue={item.comments?.comment || ""}
+                              rows={4}
+                              onChange={(e) =>
+                                setObComments((prev) => ({
+                                  ...prev,
+                                  [index]: e.target.value,
+                                }))
+                              }
+                            />
+
+                            {item.status === "P" &&
+                              findUser?.group?.code === "AG_LEVEL_2" && (
+                                <Space
+                                  className="mt-3"
+                                  style={{ float: "right" }}
+                                >
+                                  <Button
+                                    danger
+                                    loading={isLoadingOb}
+                                    onClick={() =>
+                                      submitObExceptionalReject(index, item)
+                                    }
+                                  >
+                                    Reject
+                                  </Button>
+                                  <Button
+                                    type="primary"
+                                    loading={isLoadingOb}
+                                    onClick={() =>
+                                      submitObExceptionalApprove(index, item)
+                                    }
+                                  >
+                                    Approve
+                                  </Button>
+                                </Space>
+                              )}
+                          </Col>
+                        </Row>
+                      </TabPane>
+                    )
+                  )}
+                </Tabs>
+              </Col>
+            </Row>
+          ) : null}
+        </Panel> */}
+        {/* ON-BOARDING EXCEPTIONAL APPROVALS */}
+        <Panel header="ON-BOARDING EXCEPTIONAL APPROVALS" key="1">
+          {originationApproval?.length ? (
             <Tabs
               tabPosition="left"
-              activeKey={verticalObActiveTab.toString()}
-              onChange={(key: any) =>
-                // toggleObVertical(parseInt(key))
-                setVerticalObActiveTab(key)
-              }
-            >
-              {originationApproval.requestDtoList?.map(
-                (item: any, index: number) => (
-                  <TabPane
-                    tab={
-                      <Space>
-                        <Text strong>{`0${index + 1}. ${getObExceptionals(
-                          item.type
-                        )}`}</Text>
-                        {item.status === "A" && (
-                          <CheckSquareOutlined style={{ color: "green" }} />
-                        )}
-                        {item.status === "R" && (
-                          <CloseCircleOutlined style={{ color: "red" }} />
-                        )}
-                      </Space>
-                    }
-                    key={index.toString()}
-                  >
-                    <Row>
-                      <Col span={24}>
-                        <Title level={5}>Requester’s Comment:</Title>
-                        <Text>{item.remark}</Text>
-
-                        <TextArea
-                          readOnly={!!item.comments}
-                          defaultValue={item.comments?.comment || ""}
-                          rows={4}
-                           onChange={(e) =>
-    setObComments(prev => ({ ...prev, [index]: e.target.value }))
-  }
-                        />
-
-                        {item.status === "P" &&
-                          findUser?.group?.code === "AG_LEVEL_2" && (
-                            <Space className="mt-3" style={{ float: "right" }}>
-                              <Button
-                                danger
-                                loading={isLoadingOb}
-                                onClick={() =>
-                                  submitObExceptionalReject(index, item)
-                                }
-                              >
-                                Reject
-                              </Button>
-                              <Button
-                                type="primary"
-                                loading={isLoadingOb}
-                                onClick={() =>
-                                  submitObExceptionalApprove(index, item)
-                                }
-                              >
-                                Approve
-                              </Button>
-                            </Space>
-                          )}
-                      </Col>
-                    </Row>
-                  </TabPane>
-                )
-              )}
-            </Tabs>
-          </Col>
-        </Row>
-      : null}
-      {/* </Panel> */}
-
-      {/* CREDIT APPRAISAL EXCEPTIONAL APPROVALS */}
-      {/* <Panel header="EXCEPTIONAL APPROVALS" key="2"> */}
-      {exceptionalApprovals?.length ?
-        <Row gutter={16}>
-          <Col span={6}>
-            <Tabs
-              tabPosition="left"
-              activeKey={verticalCaActiveTab.toString()}
+              activeKey={String(verticalCaActiveTab)}
               onChange={(key: any) =>
                 // toggleCaVertical(parseInt(key))
                 setVerticalCaActiveTab(key)
               }
             >
-              { exceptionalApprovals?.map((item: any, index: number) => (
+              {originationApproval?.map((item: any, index: number) => (
                 <TabPane
                   tab={
-                    <Space>
-                      <Text strong>{`0${index + 1}. ${item.categoryDec}`}</Text>
-                      {item.status === "A" && (
-                        <CheckSquareOutlined style={{ color: "green" }} />
-                      )}
-                      {item.status === "R" && (
-                        <CloseCircleOutlined style={{ color: "red" }} />
-                      )}
-                    </Space>
+                    <Row
+                      className={`w-full px-2 py-1 rounded-md text-sm ${
+                        String(verticalCaActiveTab) === String(item.id)
+                          ? "bg-[#f1b44c] text-white"
+                          : "bg-[#f1b44c] text-gray-800"
+                      }`}
+                      align="middle"
+                    >
+                      {/* Left column: number + category, left-aligned */}
+                      <Col
+                        flex="1 1 200px"
+                        style={{
+                          minWidth: 200,
+                          textAlign: "left",
+                          color: "white",
+                        }}
+                      >
+                        {`0${index + 1}. `}
+                        <span>{getObExceptionals(item.type)}</span>
+                      </Col>
+
+                      {/* Right column: status icons */}
+                      <Col flex="0 0 32px" className="text-right">
+                        {item.status === "A" && (
+                          <CheckSquareOutlined
+                            style={{ strokeWidth: 2 }}
+                            className="text-white"
+                          />
+                        )}
+                        {item.status === "R" && (
+                          <CloseCircleOutlined className="text-white" />
+                        )}
+                      </Col>
+                    </Row>
                   }
-                  key={index.toString()}
+                  key={String(index)}
                 >
                   <Row>
                     <Col span={24}>
-                      <Title level={5}>Approval User:</Title>
-                      <Text>{item.role}</Text>
-
-                      <Title level={5}>Requester’s Comment:</Title>
+                      <Title level={5}>Requester's Comment:</Title>
                       <Text>{item.remark}</Text>
 
                       <TextArea
-                        readOnly={
-                          !verifyUserWithLevel(item.roleCode) || !!item.comments
-                        }
+                       className="mt-3"
+                        readOnly={!!item.comments}
                         defaultValue={item.comments?.comment || ""}
                         rows={4}
                         onChange={(e) =>
-    setCaComments(prev => ({ ...prev, [index]: e.target.value }))
-  }
+                          setObComments((prev) => ({
+                            ...prev,
+                            [index]: e.target.value,
+                          }))
+                        }
                       />
-
-                      {verifyUserWithLevel(item.roleCode) &&
+                    </Col>
+                    <Col>
+                      {findUser?.group?.code === "AG_LEVEL_2" &&
                         item.status === "P" && (
                           <Space className="mt-3" style={{ float: "right" }}>
                             <Button
-                              danger
+                              className="bg-[#f46a6a] text-white border-none"
+                              icon={
+                                <CloseCircleOutlined className="text-white" />
+                              }
                               // loading={isLoadingCa}
-                              onClick={() => submitCaReject(index, item)}
+                              //onClick={() => submitCaReject(index, item)}
+                              onClick={() => {
+                                Modal.confirm({
+                                  title: `Are you sure that you want to reject?`,
+                                  icon: (
+                                    <ExclamationCircleOutlined
+                                      style={{ color: "#080808ff" }}
+                                    />
+                                  ),
+                                  content: (
+                                    <span>
+                                      You are about to Reject the On-Boarding Exceptional.
+                                      Do you want to continue?
+                                    </span>
+                                  ),
+                                  okText: "Yes",
+                                  cancelText: "No",
+                                  onOk: async () => {
+                                    submitObExceptionalReject(index, item);
+                                  },
+                                });
+                              }}
                             >
                               Reject
                             </Button>
                             <Button
                               type="primary"
                               // loading={isLoadingCa}
-                               onClick={() => submitCaApprove(index, item)}
+                              className="bg-[#34c38f] text-white border-none"
+                              icon={
+                                <CheckSquareOutlined className="text-white" />
+                              }
+                              // onClick={() => submitCaApprove(index, item)}
+                              onClick={() => {
+                                Modal.confirm({
+                                  title: `Are you sure that you want to approve?`,
+                                  icon: (
+                                    <ExclamationCircleOutlined
+                                      style={{ color: "#131313ff" }}
+                                    />
+                                  ),
+                                  content: (
+                                    <span>
+                                      You are about to Approve the
+                                      On-Boarding Exceptional.Do you want to continue?
+                                    </span>
+                                  ),
+                                  okText: "Yes",
+                                  cancelText: "No",
+                                  onOk: async () => {
+                                    submitObExceptionalApprove(index, item);
+                                  },
+                                });
+                              }}
                             >
                               Approve
                             </Button>
@@ -721,10 +806,160 @@ const validateComment = (comment: string) => {
                 </TabPane>
               ))}
             </Tabs>
-          </Col>
-        </Row>
-      : null}
-      {/* </Panel> */}
+          ) : null}
+        </Panel>
+
+        {/* CREDIT APPRAISAL EXCEPTIONAL APPROVALS */}
+        <Panel header="EXCEPTIONAL APPROVALS" key="2">
+          {exceptionalApprovals?.length ? (
+            <Tabs
+              tabPosition="left"
+              activeKey={String(verticalCaActiveTab)}
+              onChange={(key: any) =>
+                // toggleCaVertical(parseInt(key))
+                setVerticalCaActiveTab(key)
+              }
+            >
+              {exceptionalApprovals?.map((item: any, index: number) => (
+                <TabPane
+                  tab={
+                    <Row
+                      className={`w-full px-2 py-1 rounded-md text-sm ${
+                        String(verticalCaActiveTab) === String(item.id)
+                          ? "bg-[#f46a6a] text-white"
+                          : "bg-[#f46a6a] text-gray-800"
+                      }`}
+                      align="middle"
+                    >
+                      {/* Left column: number + category, left-aligned */}
+                      <Col
+                        flex="1 1 200px"
+                        style={{
+                          minWidth: 200,
+                          textAlign: "left",
+                          color: "white",
+                        }}
+                      >
+                        {`0${index + 1}. `}
+                        <span>{item.categoryDec}</span>
+                      </Col>
+
+                      {/* Right column: status icons */}
+                      <Col flex="0 0 32px" className="text-right">
+                        {item.status === "A" && (
+                          <CheckSquareOutlined
+                            style={{ strokeWidth: 2 }}
+                            className="text-white"
+                          />
+                        )}
+                        {item.status === "R" && (
+                          <CloseCircleOutlined className="text-white" />
+                        )}
+                      </Col>
+                    </Row>
+                  }
+                  key={String(index)}
+                >
+                  <Row>
+                    <Col span={24}>
+                      <Title level={5}>Approval User:</Title>
+                      <Text>{item.role}</Text>
+
+                      <Title level={5}>Requester's Comment:</Title>
+                      <Text  >{item.remark}</Text>
+
+                      <TextArea
+                      className="mt-3"
+                        readOnly={
+                          !verifyUserWithLevel(item.roleCode) || !!item.comments
+                        }
+                        defaultValue={item.comments?.comment || ""}
+                        rows={4}
+                        onChange={(e) =>
+                          setCaComments((prev) => ({
+                            ...prev,
+                            [index]: e.target.value,
+                          }))
+                        }
+                      />
+                    </Col>
+                    <Col>
+                      {verifyUserWithLevel(item.roleCode) &&
+                        item.status === "P" && (
+                          <Space className="mt-3" style={{ float: "right" }}>
+                            <Button
+                              className="bg-[#f46a6a]  text-white border-none"
+                              icon={
+                                <CloseCircleOutlined className="text-white" />
+                              }
+                              // loading={isLoadingCa}
+                              //onClick={() => submitCaReject(index, item)}
+                              onClick={() => {
+                                Modal.confirm({
+                                  title: `Are you sure that you want to reject?`,
+                                  icon: (
+                                    <ExclamationCircleOutlined
+                                      style={{ color: "#080808ff" }}
+                                    />
+                                  ),
+                                  content: (
+                                    <span>
+                                      You are about to Reject the Exceptional.
+                                      Do you want to continue?
+                                    </span>
+                                  ),
+                                  okText: "Yes",
+                                  cancelText: "No",
+                                  onOk: async () => {
+                                    submitCaReject(index, item);
+                                  },
+                                });
+                              }}
+                            >
+                              Reject
+                            </Button>
+                            <Button
+                              type="primary"
+                              // loading={isLoadingCa}
+                              className="bg-[#34c38f] text-white border-none"
+                              icon={
+                                <CheckSquareOutlined className="text-white" />
+                              }
+                              // onClick={() => submitCaApprove(index, item)}
+                              onClick={() => {
+                                Modal.confirm({
+                                  title: `Are you sure that you want to approve?`,
+                                  icon: (
+                                    <ExclamationCircleOutlined
+                                      style={{ color: "#131313ff" }}
+                                    />
+                                  ),
+                                  content: (
+                                    <span>
+                                      You are about to Approve the
+                                      Exceptional.Do you want to continue?
+                                    </span>
+                                  ),
+                                  okText: "Yes",
+                                  cancelText: "No",
+                                  onOk: async () => {
+                                    submitCaApprove(index, item);
+                                  },
+                                });
+                              }}
+                            >
+                              Approve
+                            </Button>
+                          </Space>
+                        )}
+                    </Col>
+                  </Row>
+                </TabPane>
+              ))}
+            </Tabs>
+          ) : null}
+        </Panel>
+      </Collapse>
 
       {flowHistory?.ibuWf1ApprovalSteps?.find(
         (row: any) => row?.stepAction === "PENDING"
@@ -794,8 +1029,9 @@ const validateComment = (comment: string) => {
         </>
       ) : null}
       {flowHistory?.ibuWf1ApprovalSteps?.length > 0 && (
-        <div className="mt-5"><Title level={5}>Application First Flow History</Title>
-          
+        <div className="mt-5">
+          <Title level={5}>Application First Flow History</Title>
+
           <div className="overflow-x-auto">
             <Table
               className="w-4/4"

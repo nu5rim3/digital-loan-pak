@@ -18,5 +18,8 @@ export const mobixCamsApproval = {
     verifyApprovalUser :(username: string) => 
     APIAuth.get(`/mobixCamsApproval/v1/approvals/users/${username}`),
     createApprovalComment :(data: any) => 
-    APIAuth.post("/mobixCamsApproval/v1/approvals/comments", data)
+    APIAuth.post("/mobixCamsApproval/v1/approvals/comments", data),
+    getOriginationApproval : (appraisalId:string) => 
+    APIAuth.get(`/mobixCamsApproval/v1/approvals/on-boarding/${appraisalId}`),
+   
 };
