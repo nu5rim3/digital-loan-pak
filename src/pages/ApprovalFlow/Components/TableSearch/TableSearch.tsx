@@ -20,7 +20,6 @@ import API from "../../../../services/APIServices";
 import { EyeOutlined } from "@ant-design/icons";
 
 const { RangePicker } = DatePicker;
-const { TabPane } = Tabs;
 const { Link } = Typography;
 
 const statusOptions = [
@@ -34,6 +33,11 @@ const filterOptions = [
   { label: "Customer CNIC", value: "customerCnic" },
   { label: "Customer Name", value: "customerName" },
   { label: "Contract ID", value: "contractId" },
+];
+
+const tabItems = [
+  { key: "general", label: "General" },
+  { key: "exceptional", label: "Exceptional" },
 ];
 
 const GeneralAppraisalList: React.FC = () => {
@@ -99,10 +103,10 @@ const GeneralAppraisalList: React.FC = () => {
       dataIndex: "idx",
       render: (text: string) => <Tag color="#faad14">{text}</Tag>,
     },
-    {
-      title: "Contract ID",
-      dataIndex: "contractNo",
-    },
+    // {
+    //   title: "Contract ID",
+    //   dataIndex: "contractNo",
+    // },
     {
       title: "Product Name",
       dataIndex: "productName",
@@ -168,10 +172,12 @@ const GeneralAppraisalList: React.FC = () => {
       style={{ marginTop: 16 }}
     >
       {flow === "firstFlow" && (
-        <Tabs activeKey={activeTab} onChange={setActiveTab} style={{ marginBottom: 16 }}>
-          <TabPane tab="General" key="general" />
-          <TabPane tab="Exceptional" key="exceptional" />
-        </Tabs>
+        <Tabs
+      activeKey={activeTab}
+      onChange={(key) => setActiveTab(key)}
+      items={tabItems}
+      style={{ marginBottom: 16 }}
+    />
       )}
 
       <Row gutter={[16, 16]}>
