@@ -120,7 +120,7 @@ export default function Approval({
   // }, [selectedRole, isSecondMeeting])
 
   const [addingData, setAddingData] = useState("");
-  const [verticalObActiveTab, setVerticalObActiveTab] = useState(0);
+  //const [verticalObActiveTab, setVerticalObActiveTab] = useState(0);
   const [verticalCaActiveTab, setVerticalCaActiveTab] = useState(0);
   const navigate = useNavigate();
 
@@ -490,7 +490,6 @@ export default function Approval({
       setIsLoadingOb(false);
     }
   };
-
   // On-Boarding Exceptional Reject
   const submitObExceptionalReject = async (index: number, item: any) => {
     const comment = obComments[index] || item.comments?.comment || "";
@@ -741,7 +740,7 @@ export default function Approval({
                               icon={
                                 <CloseCircleOutlined className="text-white" />
                               }
-                              // loading={isLoadingCa}
+                                loading={isLoadingOb}
                               //onClick={() => submitCaReject(index, item)}
                               onClick={() => {
                                 Modal.confirm({
@@ -769,7 +768,7 @@ export default function Approval({
                             </Button>
                             <Button
                               type="primary"
-                              // loading={isLoadingCa}
+                                loading={isLoadingOb}
                               className="bg-[#34c38f] text-white border-none"
                               icon={
                                 <CheckSquareOutlined className="text-white" />
