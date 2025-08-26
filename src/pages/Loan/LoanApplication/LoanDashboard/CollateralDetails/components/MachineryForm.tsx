@@ -415,7 +415,7 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors, security
                   showSearch
                   placeholder="Select Insurance Company"
                   loading={insuranceCompaniesLoading}
-                  options={getOptions(insuranceCompanies, "description", "description")}
+                  options={getOptions(insuranceCompanies, "description", "code")}
                 />
               )}
             />

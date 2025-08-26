@@ -314,7 +314,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
                   options={getOptions(
                     vehicleCategories,
                     "description",
-                    "description"
+                    "code"
                   )}
                 />
               )}
@@ -444,6 +444,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
 
           <Form.Item
             label="MV"
+            required={true}
             validateStatus={errors.vehicleMV ? "error" : ""}
             help={errors.vehicleMV?.message}
             labelCol={{ span: 24 }}
@@ -645,7 +646,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
                   options={getOptions(
                     insuranceCompanies,
                     "description",
-                    "description"
+                    "code"
                   )}
                 />
               )}

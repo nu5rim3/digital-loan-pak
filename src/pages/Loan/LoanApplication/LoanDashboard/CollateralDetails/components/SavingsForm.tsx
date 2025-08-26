@@ -231,6 +231,7 @@ const SavingsForm: React.FC<SavingsFormProps> = ({
 
           <Form.Item
             label="Amount"
+            required
             validateStatus={errors.savingsAmount ? "error" : ""}
             help={errors.savingsAmount?.message}
             labelCol={{ span: 24 }}
