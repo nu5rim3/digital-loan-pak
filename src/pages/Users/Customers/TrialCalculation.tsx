@@ -369,7 +369,10 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
             setSelectedProductType(null)
             setSelectedSubProductType(null)
             resetProductDetails()
-            fetchProductTypes(productCategory ?? '')
+            if(productCategory){
+                 fetchProductTypes(productCategory ?? '')
+            }
+           
 
             // Save the selected product category to the store
             const selectedCategory = productCategories.find(cat => cat.code === productCategory);
