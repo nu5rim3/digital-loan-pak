@@ -26,11 +26,16 @@ import API from "../../../../services/APIServices";
 import useUserStore from "../../../../store/userStore";
 import { mainURL } from "../../../../App";
 import {
+  CheckOutlined,
   CheckSquareOutlined,
+  ClockCircleOutlined,
   CloseCircleOutlined,
+  CloseOutlined,
   ExclamationCircleOutlined,
+  RollbackOutlined,
 } from "@ant-design/icons";
 import { getObExceptionals } from "../../../../utils/Common";
+import { assets } from "../../../../utils/ui-assetsColor";
 
 // import { genarateStepAction, genarateStepStatus } from '../../../../utils/setpsGenaration';
 // import fileToBase64Async from '../../../../utils/fileToBase64Async';
@@ -82,9 +87,10 @@ export default function Approval({
   const [originationApproval, setOriginationApproval] = useState<any>([]);
   const [findUser, setFindUser] = useState<any>(null);
   const [isLoadingOb, setIsLoadingOb] = useState(false);
+  const [isLoadingExceptional, setIsLoadingExceptional] = useState(false);
+  const [isLoadingApproval, setIsLoadingApproval] = useState(false);
   const [obComments, setObComments] = useState<Record<string, string>>({});
   const [caComments, setCaComments] = useState<Record<string, string>>({});
-
   const { Title, Text } = Typography;
   const { TabPane } = Tabs;
   const { TextArea } = Input;
@@ -151,8 +157,20 @@ export default function Approval({
       title: "Role",
       dataIndex: "roleDescription",
       key: "roleDescription",
-      render: (_, { roleDescription, stepStatus }) =>
-        stepStatus === "PENDING" ? "" : roleDescription,
+      // render: (_, { roleDescription, stepStatus }) =>
+      //   stepStatus === "PENDING" ? "" : roleDescription,
+      render: (_, { roleDescription, stepStatus }) => (
+        <div>
+          <div>{roleDescription}</div>
+          {stepStatus === "PENDING" && (
+            <div
+              className={`flex items-center gap-2 text-gray-500 ${assets.color.ashe}`}
+            >
+              <ClockCircleOutlined /> Waiting for Approval
+            </div>
+          )}
+        </div>
+      ),
     },
     {
       title: "Comment",
@@ -184,7 +202,7 @@ export default function Approval({
       title: "created By",
       dataIndex: "lastModifiedBy",
       key: "lastModifiedBy",
-       render: (_, { lastModifiedBy, stepStatus }) =>
+      render: (_, { lastModifiedBy, stepStatus }) =>
         stepStatus === "PENDING" ? "" : lastModifiedBy,
     },
     {
@@ -193,8 +211,10 @@ export default function Approval({
       dataIndex: "lastModifiedDate",
       // render: (_, { lastModifiedDate }) =>
       //   moment(lastModifiedDate).format("YYYY-MM-DD - hh:mm:ss A"),
-       render: (_, { lastModifiedDate, stepStatus }) =>
-        stepStatus === "PENDING" ? "" : moment(lastModifiedDate).format("YYYY-MM-DD - hh:mm:ss A"),
+      render: (_, { lastModifiedDate, stepStatus }) =>
+        stepStatus === "PENDING"
+          ? ""
+          : moment(lastModifiedDate).format("YYYY-MM-DD - hh:mm:ss A"),
     },
   ];
 
@@ -218,9 +238,10 @@ export default function Approval({
     // } else {
     //   setIsRequired(false);
     // }
-    setIsLoadingOb(true);
+
     form.validateFields(["comment"]).then(async () => {
       try {
+        setIsLoadingApproval(true);
         setAddingData(type);
         let data;
 
@@ -304,6 +325,7 @@ export default function Approval({
         notification.success({
           message: "Application Updated Successfully.",
         });
+        setIsLoadingApproval(false);
         if (flow === "firstFlow") {
           return navigate(`${mainURL}/approval/list/firstFlow`);
         } else {
@@ -314,12 +336,14 @@ export default function Approval({
         notification.error({
           message: "Application update failed",
         });
+        setIsLoadingApproval(false);
       } finally {
         setAddingData("");
+        setIsLoadingApproval(false);
       }
     });
   };
-
+  console.log("addingData", addingData);
   // useEffect(() => {
   //   const BMStatus = approvalSteps.data?.secondMeetingApprovalStepDtoList?.
   //     find((row: any) => row.secondMeetingCurrentRole == "BM")?.secondMeetingStepStatus
@@ -359,7 +383,6 @@ export default function Approval({
   }, []);
 
   const fetchData = async () => {
-    console.log("xxx", user);
     try {
       if (!appraisalId || !user) return;
 
@@ -479,6 +502,7 @@ export default function Approval({
 
       await API.mobixCamsApproval.createApprovalComment(payload);
       notification.success({ message: "On-boarding exceptional approved" });
+      setIsLoadingOb(false);
       // refresh data
       await fetchData();
     } catch (err) {
@@ -508,6 +532,7 @@ export default function Approval({
 
       await API.mobixCamsApproval.createApprovalComment(payload);
       notification.success({ message: "On-boarding exceptional rejected" });
+      setIsLoadingOb(false);
       await fetchData();
     } catch (err) {
       console.error("OB reject error", err);
@@ -524,7 +549,7 @@ export default function Approval({
     const comment = caComments[index] || item.comments?.comment || "";
     if (!validateComment(comment)) return;
 
-    setIsLoadingOb(true); // reuse loading flag or introduce separate if needed
+     setIsLoadingExceptional(true);
     try {
       const payload = {
         comment,
@@ -536,12 +561,14 @@ export default function Approval({
 
       await API.mobixCamsApproval.createApprovalComment(payload);
       notification.success({ message: "Exceptional approval approved" });
+       setIsLoadingExceptional(false);
       await fetchData();
+       
     } catch (err) {
       console.error("CA approve error", err);
       notification.error({ message: "Failed to approve exceptional approval" });
     } finally {
-      setIsLoadingOb(false);
+       setIsLoadingExceptional(false);
     }
   };
 
@@ -550,7 +577,7 @@ export default function Approval({
     const comment = caComments[index] || item.comments?.comment || "";
     if (!validateComment(comment)) return;
 
-    setIsLoadingOb(true);
+      setIsLoadingExceptional(true);
     try {
       const payload = {
         comment,
@@ -562,18 +589,20 @@ export default function Approval({
 
       await API.mobixCamsApproval.createApprovalComment(payload);
       notification.success({ message: "Exceptional approval rejected" });
+       setIsLoadingExceptional(false);
       await fetchData();
+       
     } catch (err) {
       console.error("CA reject error", err);
       notification.error({ message: "Failed to reject exceptional approval" });
     } finally {
-      setIsLoadingOb(false);
+       setIsLoadingExceptional(false);
     }
   };
 
   const isRejected =
-  flowHistory?.ibuWf1ApprovalSteps?.[0]?.stepAction === "REJECTED" ||
-  flowHistory?.ibuWf2ApprovalSteps?.[0]?.stepAction === "REJECTED";
+    flowHistory?.ibuWf1ApprovalSteps?.[0]?.stepAction === "REJECTED" ||
+    flowHistory?.ibuWf2ApprovalSteps?.[0]?.stepAction === "REJECTED";
 
   return (
     <div>
@@ -677,11 +706,7 @@ export default function Approval({
                 <TabPane
                   tab={
                     <Row
-                      className={`w-full px-2 py-1 rounded-md text-sm ${
-                        String(verticalCaActiveTab) === String(item.id)
-                          ? "bg-[#f1b44c] text-white"
-                          : "bg-[#f1b44c] text-gray-800"
-                      }`}
+                      className={`w-full px-2 py-1 rounded-md text-sm`}
                       align="middle"
                     >
                       {/* Left column: number + category, left-aligned */}
@@ -702,11 +727,13 @@ export default function Approval({
                         {item.status === "A" && (
                           <CheckSquareOutlined
                             style={{ strokeWidth: 2 }}
-                            className="text-white"
+                            //  className="text-white"
                           />
                         )}
                         {item.status === "R" && (
-                          <CloseCircleOutlined className="text-white" />
+                          <CloseCircleOutlined
+                          // className="text-white"
+                          />
                         )}
                       </Col>
                     </Row>
@@ -719,7 +746,7 @@ export default function Approval({
                       <Text>{item.remark}</Text>
 
                       <TextArea
-                       className="mt-3"
+                        className="mt-3"
                         readOnly={!!item.comments}
                         defaultValue={item.comments?.comment || ""}
                         rows={4}
@@ -736,11 +763,14 @@ export default function Approval({
                         item.status === "P" && (
                           <Space className="mt-3" style={{ float: "right" }}>
                             <Button
-                              className="bg-[#f46a6a] text-white border-none"
+                              type="default"
+                              className="!bg-[#e3e3e3] !text-black !border-none hover:!bg-gray-200"
                               icon={
-                                <CloseCircleOutlined className="text-white" />
+                                <CloseCircleOutlined 
+                                //className="text-white" 
+                                />
                               }
-                                loading={isLoadingOb}
+                              loading={isLoadingOb}
                               //onClick={() => submitCaReject(index, item)}
                               onClick={() => {
                                 Modal.confirm({
@@ -752,8 +782,8 @@ export default function Approval({
                                   ),
                                   content: (
                                     <span>
-                                      You are about to Reject the On-Boarding Exceptional.
-                                      Do you want to continue?
+                                      You are about to Reject the On-Boarding
+                                      Exceptional. Do you want to continue?
                                     </span>
                                   ),
                                   okText: "Yes",
@@ -768,12 +798,12 @@ export default function Approval({
                             </Button>
                             <Button
                               type="primary"
-                                loading={isLoadingOb}
-                              className="bg-[#34c38f] text-white border-none"
+                              loading={isLoadingOb}
+                              variant="filled"
+                              className="!bg-[#002140] !text-white hover:!bg-[#002140]"
                               icon={
                                 <CheckSquareOutlined className="text-white" />
                               }
-                              // onClick={() => submitCaApprove(index, item)}
                               onClick={() => {
                                 Modal.confirm({
                                   title: `Are you sure that you want to approve?`,
@@ -784,8 +814,8 @@ export default function Approval({
                                   ),
                                   content: (
                                     <span>
-                                      You are about to Approve the
-                                      On-Boarding Exceptional.Do you want to continue?
+                                      You are about to Approve the On-Boarding
+                                      Exceptional.Do you want to continue?
                                     </span>
                                   ),
                                   okText: "Yes",
@@ -823,11 +853,7 @@ export default function Approval({
                 <TabPane
                   tab={
                     <Row
-                      className={`w-full px-2 py-1 rounded-md text-sm ${
-                        String(verticalCaActiveTab) === String(item.id)
-                          ? "bg-[#f46a6a] text-white"
-                          : "bg-[#f46a6a] text-gray-800"
-                      }`}
+                      className={`w-full px-2 py-1 rounded-md text-sm  `}
                       align="middle"
                     >
                       {/* Left column: number + category, left-aligned */}
@@ -836,7 +862,7 @@ export default function Approval({
                         style={{
                           minWidth: 200,
                           textAlign: "left",
-                          color: "white",
+                          // color: "white",
                         }}
                       >
                         {`0${index + 1}. `}
@@ -848,11 +874,13 @@ export default function Approval({
                         {item.status === "A" && (
                           <CheckSquareOutlined
                             style={{ strokeWidth: 2 }}
-                            className="text-white"
+                            // className="text-white"
                           />
                         )}
                         {item.status === "R" && (
-                          <CloseCircleOutlined className="text-white" />
+                          <CloseCircleOutlined
+                          //  className="text-white"
+                          />
                         )}
                       </Col>
                     </Row>
@@ -865,10 +893,10 @@ export default function Approval({
                       <Text>{item.role}</Text>
 
                       <Title level={5}>Requester's Comment:</Title>
-                      <Text  >{item.remark}</Text>
+                      <Text>{item.remark}</Text>
 
                       <TextArea
-                      className="mt-3"
+                        className="mt-3"
                         readOnly={
                           !verifyUserWithLevel(item.roleCode) || !!item.comments
                         }
@@ -887,12 +915,15 @@ export default function Approval({
                         item.status === "P" && (
                           <Space className="mt-3" style={{ float: "right" }}>
                             <Button
-                              className="bg-[#f46a6a]  text-white border-none"
+                              //className="bg-[#f46a6a]  text-white border-none"
+                              type="default"
+                              className="!bg-[#e3e3e3] !text-black !border-none hover:!bg-gray-200"
                               icon={
-                                <CloseCircleOutlined className="text-white" />
+                                <CloseCircleOutlined
+                                //className="text-white"
+                                />
                               }
-                              // loading={isLoadingCa}
-                              //onClick={() => submitCaReject(index, item)}
+                              loading={isLoadingExceptional}
                               onClick={() => {
                                 Modal.confirm({
                                   title: `Are you sure that you want to reject?`,
@@ -918,13 +949,14 @@ export default function Approval({
                               Reject
                             </Button>
                             <Button
-                              type="primary"
-                              // loading={isLoadingCa}
-                              className="bg-[#34c38f] text-white border-none"
+                              // type="primary"
+                              variant="filled"
+                              className="!bg-[#002140] !text-white hover:!bg-[#002140]"
+                              //  className="bg-[#34c38f] text-white border-none"
                               icon={
                                 <CheckSquareOutlined className="text-white" />
                               }
-                              // onClick={() => submitCaApprove(index, item)}
+                              loading={isLoadingExceptional}
                               onClick={() => {
                                 Modal.confirm({
                                   title: `Are you sure that you want to approve?`,
@@ -966,66 +998,148 @@ export default function Approval({
       flowHistory?.ibuWf2ApprovalSteps?.find(
         (row: any) => row?.stepAction === "PENDING"
       )?.roleCode === currentRole?.code ? (
-        <>
-          <Form
-            form={form}
-            labelCol={{ span: 4 }}
-            wrapperCol={{ span: 26 }}
-            layout="vertical"
-            // disabled={componentDisabled}
-            // style={{ maxWidth: 600 }}
-          >
+      <>
+        <Form
+          form={form}
+          labelCol={{ span: 4 }}
+          wrapperCol={{ span: 26 }}
+          layout="vertical"
+          // disabled={componentDisabled}
+          // style={{ maxWidth: 600 }}
+        >
            
-            <Form.Item
-              label="Comment"
-              name="comment"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
+          <Form.Item
+            label="Comment"
+            name="comment"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+          >
+            <TextArea
+              rows={4}
+              placeholder="Add Comment here"
+              disabled={isRejected}
+            />
+          </Form.Item>
+          {/* : null} */}
+          <div className="flex justify-center space-x-3">
+            <Button
+              type="default"
+              disabled={isLoadingApproval}
+              // danger
+              onClick={() => {
+                form.validateFields(["comment"]).then(async () => {
+                  Modal.confirm({
+                    title: (
+                      <span style={{ color: "red" }}>
+                        Are you sure that you want to reject?
+                      </span>
+                    ),
+                    icon: (
+                      <ExclamationCircleOutlined style={{ color: "red" }} />
+                    ),
+                    content: (
+                      <span>
+                        You are about to Reject the Approval details. Do you
+                        want to continue?
+                      </span>
+                    ),
+                    okText: "Yes",
+                    cancelText: "No",
+                    onOk: async () => {
+                      form.validateFields(["comment"]).then(async () => {
+                        handleSubmit("REJECTED");
+                      });
+                    },
+                  });
+                });
+              }}
+              //color="red" variant="outlined"
+              className="!bg-[#e3e3e3] !text-black !border-none hover:!bg-gray-200 mr-2"
+              //danger className="bg-red-600 hover:bg-red-700 text-white border border-red-700 mr-1"
+              icon={<CloseOutlined />}
             >
-              <TextArea rows={4} placeholder="Add Comment here"  disabled={isRejected}/>
-            </Form.Item>
-            {/* : null} */}
-            <div className="flex justify-center">
-             
-              <Button
-                type="primary"
-                disabled={addingData ? true : false}
-                size="large"
-                onClick={() => handleSubmit("REJECTED")}
-                className="mr-1 "
-                shape="round"
-              >
-                Reject
-              </Button>
-              <Button
-                type="primary"
-                disabled={addingData ? true : false}
-                size="large"
-                onClick={() => handleSubmit("RETURNED")}
-                className="mr-1 "
-                shape="round"
-              >
-                Return
-              </Button>
-              <Button
-                type="primary"
-                // label={type}
-                // loading={addingData === type ? true : false}
-                disabled={addingData ? true : false}
-                size="large"
-                onClick={() => handleSubmit("PROCEED")}
-                className="mr-1 "
-                shape="round"
-              >
-                Approve
-              </Button>
-            </div>
-          </Form>
-          <Divider />
-        </>
+              Reject
+            </Button>
+            <Button
+              //type="primary"
+              disabled={isLoadingApproval}
+              // color="orange" variant="outlined"
+              //  className="ml-2 bg-yellow-500 border-hidden outline-none text-white  hover:bg-sky-700 mr-1"
+              type="default"
+              //  type="default"
+              className="!bg-[#e3e3e3] !text-black !border-none hover:!bg-gray-200 mr-2"
+              //  className="mr-2"
+              icon={<RollbackOutlined />}
+              onClick={() => {
+                form.validateFields(["comment"]).then(async () => {
+                  Modal.confirm({
+                    title: <span>Are you sure that you want to return?</span>,
+                    icon: (
+                      <ExclamationCircleOutlined style={{ color: "#002140" }} />
+                    ),
+                    content: (
+                      <span>
+                        You are about to Return the Approval details. Do you
+                        want to continue?
+                      </span>
+                    ),
+                    okText: "Yes",
+                    cancelText: "No",
+                    onOk: async () => {
+                      handleSubmit("RETURNED");
+                    },
+                  });
+                });
+              }}
+            >
+              Return
+            </Button>
+            <Button
+              type="primary"
+              className="!bg-[#002140] !text-white hover:!bg-[#002140]"
+              loading={isLoadingApproval}
+              // label={type}
+              // loading={addingData === type ? true : false}
+              color="green"
+              variant="outlined"
+              //sclassName="bg-green-600 hover:bg-green-700 text-white border border-green-700"
+              icon={<CheckOutlined />}
+              disabled={isLoadingApproval}
+              //size="large"
+              onClick={() => {
+                form.validateFields(["comment"]).then(async () => {
+                  Modal.confirm({
+                    title: <span>Are you sure that you want to approve?</span>,
+                    icon: (
+                      <ExclamationCircleOutlined
+                        style={{ color: "#080808ff" }}
+                      />
+                    ),
+                    content: (
+                      <span>
+                        You are about to Approve the Approval details. Do you
+                        want to continue?
+                      </span>
+                    ),
+                    okText: "Yes",
+                    cancelText: "No",
+                    onOk: async () => {
+                      handleSubmit("PROCEED");
+                    },
+                  });
+                });
+              }}
+              // shape="round"
+            >
+              Approve
+            </Button>
+          </div>
+        </Form>
+        <Divider />
+      </>
       ) : null}
       {flowHistory?.ibuWf1ApprovalSteps?.length > 0 && (
         <div className="mt-5">
