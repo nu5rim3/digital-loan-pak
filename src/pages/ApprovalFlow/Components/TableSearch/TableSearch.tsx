@@ -112,11 +112,15 @@ const GeneralAppraisalList: React.FC = () => {
       dataIndex: "idx",
       render: (text: string) => <Tag color="#faad14">{text}</Tag>,
     },
-     // {
-    //   title: "Contract ID",
-    //   dataIndex: "contractNo",
-    // },
-          {
+     ...(status !== "APPROVAL_PENDING"
+    ? [
+        {
+          title: "Contract ID",
+          dataIndex: "contractNo",
+        },
+      ]
+    : []),
+    {
       title: "Product Name",
       dataIndex: "productName",
     },
