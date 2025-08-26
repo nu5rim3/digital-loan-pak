@@ -175,10 +175,11 @@ const GeneralAppraisalList: React.FC = () => {
     >
       {flow === "firstFlow" && (
         <Tabs
-      activeKey={activeTab}
-      onChange={(key) => setActiveTab(key)}
-      items={tabItems}
-      style={{ marginBottom: 16 }}
+         type="card"
+       activeKey={activeTab}
+       onChange={(key) => setActiveTab(key)}
+       items={tabItems}
+       style={{ marginBottom: 16 ,outline:'none', border:'none'}}
     />
       )}
 
