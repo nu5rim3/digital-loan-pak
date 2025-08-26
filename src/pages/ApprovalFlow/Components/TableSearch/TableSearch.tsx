@@ -22,11 +22,7 @@ import { EyeOutlined } from "@ant-design/icons";
 const { RangePicker } = DatePicker;
 const { Link } = Typography;
 
-const statusOptions = [
-  { label: "Approval Pending", value: "APPROVAL_PENDING" },
-  { label: "Approved", value: "APPROVED" },
-  { label: "Rejected", value: "REJECTED" },
-];
+
 
 const filterOptions = [
   { label: "Appraisal ID", value: "appraisalId" },
@@ -54,6 +50,17 @@ const GeneralAppraisalList: React.FC = () => {
   const { currentRole, user } = useUserStore();
   const { flow } = useParams<{ flow: string }>();
   const navigate = useNavigate();
+
+  const statusOptions = [
+  { label: "Approval Pending", value: "APPROVAL_PENDING" },
+  { label: "Approved", value: "APPROVED" },
+  { label: "Rejected", value: "REJECTED" },
+  { 
+    label: "Returned", 
+    value: "RETURNED", 
+    disabled: activeTab !== "general" //  disable when firstFlow is true
+  },
+];
 
   const fetchData = async () => {
     setLoading(true);
@@ -105,10 +112,14 @@ const GeneralAppraisalList: React.FC = () => {
       dataIndex: "idx",
       render: (text: string) => <Tag color="#faad14">{text}</Tag>,
     },
-    // {
-    //   title: "Contract ID",
-    //   dataIndex: "contractNo",
-    // },
+     ...(status !== "APPROVAL_PENDING"
+    ? [
+        {
+          title: "Contract ID",
+          dataIndex: "contractNo",
+        },
+      ]
+    : []),
     {
       title: "Product Name",
       dataIndex: "productName",
@@ -175,10 +186,11 @@ const GeneralAppraisalList: React.FC = () => {
     >
       {flow === "firstFlow" && (
         <Tabs
-      activeKey={activeTab}
-      onChange={(key) => setActiveTab(key)}
-      items={tabItems}
-      style={{ marginBottom: 16 }}
+         type="card"
+       activeKey={activeTab}
+       onChange={(key) => setActiveTab(key)}
+       items={tabItems}
+       style={{ marginBottom: 16 ,outline:'none', border:'none'}}
     />
       )}
 
