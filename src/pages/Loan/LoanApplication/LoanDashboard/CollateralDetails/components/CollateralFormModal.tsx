@@ -521,10 +521,10 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
                           placeholder="Select Category"
                           disabled={isSaving || securityTypesLoading || isEdit}
                         >
-                          <Select.Option value="MAIN_SECURITY">
+                          <Select.Option value="M">
                             Main Security
                           </Select.Option>
-                          <Select.Option value="OTHER_SECURITY">
+                          <Select.Option value="O">
                             Other Security
                           </Select.Option>
                         </Select>
@@ -532,7 +532,7 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
                     />
                   </Form.Item>
 
-                  {securityCategory === "MAIN_SECURITY" && (
+                  {securityCategory === "M" && (
                     <Form.Item
                       label="Security Type"
                       required
@@ -571,7 +571,7 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
                 </div>
               </div>
 
-              {securityCategory === "MAIN_SECURITY" &&
+              {securityCategory === "M" &&
                 selectedSecurityType &&
                 (isEdit ? formInitialized : true) && (
                   <>
@@ -587,6 +587,7 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
                       <BankGuaranteeForm
                         control={control}
                         errors={errors}
+                        setValue={setValue}
                         appraisalId={validAppraisalId}
                         onSubmitSuccess={() => onClose()}
                         securityType={selectedSecurityType}

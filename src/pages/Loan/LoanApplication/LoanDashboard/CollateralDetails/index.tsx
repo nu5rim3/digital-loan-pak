@@ -330,7 +330,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
-            securityCategory: "MAIN_SECURITY",
+            securityCategory: "M",
             // Map API response fields to form fields
             id: detailedData.vehIdx || data.id,
             vehicleType: detailedData.vehicleType,
@@ -367,15 +367,15 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         } else {
           message.error("Failed to fetch vehicle details");
           setEditingId(data.id || null);
-          setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
-          formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
+          setCurrentFormData({ ...data, securityCategory: "M" });
+          formMethods.reset({ ...data, securityCategory: "M" });
         }
       } catch (error) {
         console.error("Error fetching vehicle details:", error);
         message.error("Failed to fetch vehicle details");
         setEditingId(data.id || null);
-        setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
-        formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
+        setCurrentFormData({ ...data, securityCategory: "M" });
+        formMethods.reset({ ...data, securityCategory: "M" });
       } finally {
         setFetchingDetail(false);
       }
@@ -395,7 +395,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
-            securityCategory: "MAIN_SECURITY",
+            securityCategory: "M",
             // Map API response fields to form fields
             id: detailedData.bankGuaranteeIdx || data.id,
             bankGuaranteeType: detailedData.type,
@@ -425,15 +425,15 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         } else {
           message.error("Failed to fetch bank guarantee details");
           setEditingId(data.id || null);
-          setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
-          formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
+          setCurrentFormData({ ...data, securityCategory: "M" });
+          formMethods.reset({ ...data, securityCategory: "M" });
         }
       } catch (error) {
         console.error("Error fetching bank guarantee details:", error);
         message.error("Failed to fetch bank guarantee details");
         setEditingId(data.id || null);
-        setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
-        formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
+        setCurrentFormData({ ...data, securityCategory: "M" });
+        formMethods.reset({ ...data, securityCategory: "M" });
       } finally {
         setFetchingDetail(false);
       }
@@ -455,7 +455,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
-            securityCategory: "MAIN_SECURITY",
+            securityCategory: "M",
             // Map API response fields to form fields
             id: detailedData.landStockIdx || data.id,
             landStockType: detailedData.landStockType,
@@ -479,15 +479,15 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         } else {
           message.error("Failed to fetch land stock details");
           setEditingId(data.id || null);
-          setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
-          formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
+          setCurrentFormData({ ...data, securityCategory: "M" });
+          formMethods.reset({ ...data, securityCategory: "M" });
         }
       } catch (error) {
         console.error("Error fetching land stock details:", error);
         message.error("Failed to fetch land stock details");
         setEditingId(data.id || null);
-        setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
-        formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
+        setCurrentFormData({ ...data, securityCategory: "M" });
+        formMethods.reset({ ...data, securityCategory: "M" });
       } finally {
         setFetchingDetail(false);
       }
@@ -509,7 +509,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
-            securityCategory: "MAIN_SECURITY",
+            securityCategory: "M",
             // Map API response fields to form fields
             id: detailedData.machineryEquipIdx || data.id,
             machineryType: detailedData.type,
@@ -535,15 +535,15 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         } else {
           message.error("Failed to fetch machinery equipment details");
           setEditingId(data.id || null);
-          setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
-          formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
+          setCurrentFormData({ ...data, securityCategory: "M" });
+          formMethods.reset({ ...data, securityCategory: "M" });
         }
       } catch (error) {
         console.error("Error fetching machinery equipment details:", error);
         message.error("Failed to fetch machinery equipment details");
         setEditingId(data.id || null);
-        setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
-        formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
+        setCurrentFormData({ ...data, securityCategory: "M" });
+        formMethods.reset({ ...data, securityCategory: "M" });
       } finally {
         setFetchingDetail(false);
       }
@@ -565,7 +565,8 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
-            securityCategory: "MAIN_SECURITY",
+            securityCategory: "M",
+            mortgageSecCategory: "M",
             // Map API response fields to form fields
             id: detailedData.mortgageIdx || data.id,
             propertyType: detailedData.mortgageType,
@@ -603,15 +604,15 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         } else {
           message.error("Failed to fetch property mortgage details");
           setEditingId(data.id || null);
-          setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
-          formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
+          setCurrentFormData({ ...data, securityCategory: "M" });
+          formMethods.reset({ ...data, securityCategory: "M" });
         }
       } catch (error) {
         console.error("Error fetching property mortgage details:", error);
         message.error("Failed to fetch property mortgage details");
         setEditingId(data.id || null);
-        setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
-        formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
+        setCurrentFormData({ ...data, securityCategory: "M" });
+        formMethods.reset({ ...data, securityCategory: "M" });
       } finally {
         setFetchingDetail(false);
       }
@@ -633,7 +634,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
-            securityCategory: "MAIN_SECURITY",
+            securityCategory: "M",
             // Map API response fields to form fields
             id: detailedData.savingsIdx || data.id,
             savingsType: detailedData.type,
@@ -656,15 +657,15 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         } else {
           message.error("Failed to fetch savings details");
           setEditingId(data.id || null);
-          setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
-          formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
+          setCurrentFormData({ ...data, securityCategory: "M" });
+          formMethods.reset({ ...data, securityCategory: "M" });
         }
       } catch (error) {
         console.error("Error fetching savings details:", error);
         message.error("Failed to fetch savings details");
         setEditingId(data.id || null);
-        setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
-        formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
+        setCurrentFormData({ ...data, securityCategory: "M" });
+        formMethods.reset({ ...data, securityCategory: "M" });
       } finally {
         setFetchingDetail(false);
       }
@@ -686,7 +687,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
           // Map the detailed API data to form values
           const formattedData: FormValues = {
             ...data,
-            securityCategory: "MAIN_SECURITY",
+            securityCategory: "M",
             // Map API response fields to form fields
             id: detailedData.leaseIdx || data.id,
             leaseEquipType: detailedData.leaseEquipType,
@@ -722,23 +723,23 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
         } else {
           message.error("Failed to fetch lease details");
           setEditingId(data.id || null);
-          setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
-          formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
+          setCurrentFormData({ ...data, securityCategory: "M" });
+          formMethods.reset({ ...data, securityCategory: "M" });
         }
       } catch (error) {
         console.error("Error fetching lease details:", error);
         message.error("Failed to fetch lease details");
         setEditingId(data.id || null);
-        setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
-        formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
+        setCurrentFormData({ ...data, securityCategory: "M" });
+        formMethods.reset({ ...data, securityCategory: "M" });
       } finally {
         setFetchingDetail(false);
       }
     } else if (data) {
       // For other types or new items
       setEditingId(data.id || null);
-      setCurrentFormData({ ...data, securityCategory: "MAIN_SECURITY" });
-      formMethods.reset({ ...data, securityCategory: "MAIN_SECURITY" });
+      setCurrentFormData({ ...data, securityCategory: "M" });
+      formMethods.reset({ ...data, securityCategory: "M" });
     } else {
       setEditingId(null);
       setCurrentFormData(null);

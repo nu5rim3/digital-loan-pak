@@ -8,7 +8,7 @@ import {
   message,
   Spin,
 } from "antd";
-import { Controller, Control, useWatch } from "react-hook-form";
+import { Controller, Control, useWatch, UseFormSetValue } from "react-hook-form";
 import { FormValues } from "../types";
 import dayjs from "dayjs";
 import useCollateralStore from "../../../../../../store/collateralStore";
@@ -22,6 +22,7 @@ interface IBaseItem {
 interface BankGuaranteeFormProps {
   control: Control<FormValues>;
   errors: Record<string, any>;
+  setValue?: UseFormSetValue<FormValues>;
   appraisalId?: string;
   onSubmitSuccess?: () => void;
   securityType?: IBaseItem;
@@ -31,8 +32,8 @@ const prepareBankGuaranteeData = (
   formData: FormValues,
   appraisalId: string
 ) => {
-  const isLOFIN = formData.bankGuaranteeType === "Issued by LOLC";
-  const isOnDemand = formData.bankGuaranteeType === "On Demand";
+  const isLOFIN = formData.bankGuaranteeType === "2";
+  const isOnDemand = formData.bankGuaranteeType === "1";
 
   const payload = {
     appraisalId: appraisalId,
@@ -67,6 +68,7 @@ const prepareBankGuaranteeData = (
 const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
   control,
   errors,
+  setValue,
 }) => {
   const {
     types: bankGuaranteeTypes,
@@ -99,10 +101,15 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
     name: "startDate",
   });
 
+  const expiryDate = useWatch({
+    control,
+    name: "expiryDate",
+  });
+
   const isEditMode = !!bgId;
   const dataFetched = useRef(false);
-  const isLOFIN = bankGuaranteeType === "1";
-  const isOnDemand = bankGuaranteeType === "2";
+  const isLOFIN = bankGuaranteeType === "2";
+  const isOnDemand = bankGuaranteeType === "1";
 
   useEffect(() => {
     if (!dataFetched.current) {
@@ -254,13 +261,29 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                     control={control}
                     render={({ field }) => (
                       <DatePicker
+                        key={`start-${expiryDate || 'no-expiry'}`}
                         className="w-full"
                         format="YYYY-MM-DD"
                         value={field.value ? dayjs(field.value) : null}
                         onChange={(date) => {
-                          field.onChange(
-                            date ? date.format("YYYY-MM-DD") : null
-                          );
+                          const newStartDate = date ? date.format("YYYY-MM-DD") : null;
+                          field.onChange(newStartDate);
+                          
+                          // Clear expiry date if it's now before the new start date
+                          if (newStartDate && expiryDate && dayjs(expiryDate).isBefore(dayjs(newStartDate))) {
+                            setValue?.("expiryDate", undefined);
+                          }
+                        }}
+                        disabledDate={(current) => {
+                          // Disable dates before today
+                          if (current && current < dayjs().startOf("day")) {
+                            return true;
+                          }
+                          // Disable dates after expiry date if expiry date is selected
+                          if (expiryDate && current && current > dayjs(expiryDate).startOf("day")) {
+                            return true;
+                          }
+                          return false;
                         }}
                       />
                     )}
@@ -279,6 +302,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                     control={control}
                     render={({ field }) => (
                       <DatePicker
+                        key={`expiry-${startDate || 'no-start'}`}
                         className="w-full"
                         format="YYYY-MM-DD"
                         value={field.value ? dayjs(field.value) : null}
@@ -410,6 +434,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                     control={control}
                     render={({ field }) => (
                       <DatePicker
+                        key={`expiry-ondemand-${startDate || 'no-start'}`}
                         className="w-full"
                         format="YYYY-MM-DD"
                         value={field.value ? dayjs(field.value) : null}
@@ -524,7 +549,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                         showSearch
                         placeholder="Select Insurance Company"
                         loading={insuranceCompaniesLoading}
-                        options={getOptions(insuranceCompanies)}
+                        options={getOptions(insuranceCompanies, "description", "code")}
                       />
                     )}
                   />

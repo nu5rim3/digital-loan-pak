@@ -375,7 +375,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
                   options={getOptions(
                     vehicleCategories,
                     "description",
-                    "description"
+                    "code"
                   )}
                 />
               )}
@@ -395,7 +395,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
                 <Select
                   {...field}
                   showSearch
-                  placeholder="Select Category"
+                  placeholder="Select Code"
                   loading={fetchingDepreciationRates}
                   options={getOptions(
                     depreciationRates,
@@ -712,7 +712,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
                   options={getOptions(
                     insuranceCompanies,
                     "description",
-                    "description"
+                    "code"
                   )}
                 />
               )}

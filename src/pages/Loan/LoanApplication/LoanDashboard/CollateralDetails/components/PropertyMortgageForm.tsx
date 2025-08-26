@@ -716,7 +716,7 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
                   options={getOptions(
                     insuranceCompanies,
                     "description",
-                    "description"
+                    "code"
                   )}
                 />
               )}

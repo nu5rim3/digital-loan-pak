@@ -66,7 +66,7 @@ const LandStockForm: React.FC<LandStockFormProps> = ({
 
   useEffect(() => {
     if (!dataFetched.current) {
-      fetchTypes("F");
+      fetchTypes("L");
       fetchSubTypes("F");
       fetchOwnerships();
       fetchSecurityCategories();
