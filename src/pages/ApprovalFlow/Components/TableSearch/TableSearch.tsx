@@ -150,17 +150,17 @@ const GeneralAppraisalList: React.FC = () => {
       title: "Created By",
       dataIndex: "createdBy",
     },
-    {
-      title: "Status",
-      dataIndex: "status",
-      align: "center" as const,
-      render: (status: string) => {
-        if (status === "C") return <Tag color="yellow">APPROVAL PENDING</Tag>;
-        if (status === "R") return <Tag color="yellow">RETURN</Tag>;
-        if (status === "J") return <Tag color="yellow">REJECTED</Tag>;
-        return <Tag color="red">{status}</Tag>;
-      },
-    },
+    // {
+    //   title: "Status",
+    //   dataIndex: "status",
+    //   align: "center" as const,
+    //   render: (status: string) => {
+    //     if (status === "C") return <Tag color="yellow">APPROVAL PENDING</Tag>;
+    //     if (status === "R") return <Tag color="yellow">RETURN</Tag>;
+    //     if (status === "J") return <Tag color="yellow">REJECTED</Tag>;
+    //     return <Tag color="red">{status}</Tag>;
+    //   },
+    // },
     {
       title: "Action",
       render: (_: any, record: any) => (
