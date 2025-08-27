@@ -31,10 +31,7 @@ const filterOptions = [
   { label: "Contract ID", value: "contractId" },
 ];
 
-const tabItems = [
-  { key: "general", label: "General" },
-  { key: "exceptional", label: "Exceptional" },
-];
+
 
 const GeneralAppraisalList: React.FC = () => {
   const [data, setData] = useState<any[]>([]);
@@ -61,7 +58,16 @@ const GeneralAppraisalList: React.FC = () => {
     disabled: activeTab !== "general" //  disable when firstFlow is true
   },
 ];
-
+const showGeneral =
+  activeTab === "general" &&
+  flow === "firstFlow" &&
+  ["AM", "COO", "RBH"].includes(currentRole?.code!);
+const tabItems = [
+...(showGeneral
+    ? []
+    : [{ key: "general", label: "General" }]),
+  { key: "exceptional", label: "Exceptional" },
+];
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -150,17 +156,17 @@ const GeneralAppraisalList: React.FC = () => {
       title: "Created By",
       dataIndex: "createdBy",
     },
-    {
-      title: "Status",
-      dataIndex: "status",
-      align: "center" as const,
-      render: (status: string) => {
-        if (status === "C") return <Tag color="yellow">APPROVAL PENDING</Tag>;
-        if (status === "R") return <Tag color="yellow">RETURN</Tag>;
-        if (status === "J") return <Tag color="yellow">REJECTED</Tag>;
-        return <Tag color="red">{status}</Tag>;
-      },
-    },
+    // {
+    //   title: "Status",
+    //   dataIndex: "status",
+    //   align: "center" as const,
+    //   render: (status: string) => {
+    //     if (status === "C") return <Tag color="yellow">APPROVAL PENDING</Tag>;
+    //     if (status === "R") return <Tag color="yellow">RETURN</Tag>;
+    //     if (status === "J") return <Tag color="yellow">REJECTED</Tag>;
+    //     return <Tag color="red">{status}</Tag>;
+    //   },
+    // },
     {
       title: "Action",
       render: (_: any, record: any) => (

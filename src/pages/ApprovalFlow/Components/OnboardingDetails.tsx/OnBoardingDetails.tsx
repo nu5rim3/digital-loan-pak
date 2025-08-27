@@ -45,7 +45,7 @@ const OnBoardingDetails: React.FC<{
       <Title level={5} className="mb-3">
         Client Onboarding
       </Title>
-      <Tabs tabPosition="top">
+      <Tabs  type="card" tabPosition="top" >
         {clienteles?.filter(row => row.type !== "W")?.map((clientele, index) => (
           <TabPane
             tab={`${getValueOfClientele(clientele?.type)} - ${
