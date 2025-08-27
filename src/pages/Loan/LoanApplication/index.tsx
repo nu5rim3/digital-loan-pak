@@ -80,11 +80,22 @@ const LoanApplication: React.FC = () => {
             align: 'right',
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             render: (_: string, item: any) => (
-                <a onClick={() => {
-                    resetAllTrailCalucationData();
-                    navigate(`${item.appIdx}`)
-                }}>
-                    <EyeOutlined /> </a>
+                 <Button
+                    type="link"
+                    icon={<EyeOutlined />}
+                    disabled={activeTab === "COMPLETED"} 
+                    onClick={() => {
+                       
+                        resetAllTrailCalucationData();
+                        navigate(`${item.appIdx}`);
+                       
+                    }}
+    />
+                // <a onClick={() => {
+                //     resetAllTrailCalucationData();
+                //     navigate(`${item.appIdx}`)
+                // }}>
+                //     <EyeOutlined /> </a>
             ),
         },
     ];
