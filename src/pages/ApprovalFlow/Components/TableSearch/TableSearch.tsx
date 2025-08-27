@@ -42,12 +42,14 @@ const GeneralAppraisalList: React.FC = () => {
   const [searchField, setSearchField] = useState("appraisalId");
   const [searchText, setSearchText] = useState("");
   const [dateRange, setDateRange] = useState<[any, any] | null>(null);
-  const [activeTab, setActiveTab] = useState("general");
 
   const { currentRole, user } = useUserStore();
   const { flow } = useParams<{ flow: string }>();
   const navigate = useNavigate();
-
+  const exceptionalView =
+  flow === "firstFlow" &&
+  ["AM", "COO", "RBH"].includes(currentRole?.code!);
+  const [activeTab, setActiveTab] = useState(!exceptionalView ?"general":"exceptional");
   const statusOptions = [
   { label: "Approval Pending", value: "APPROVAL_PENDING" },
   { label: "Approved", value: "APPROVED" },
@@ -58,12 +60,9 @@ const GeneralAppraisalList: React.FC = () => {
     disabled: activeTab !== "general" //  disable when firstFlow is true
   },
 ];
-const showGeneral =
-  activeTab === "general" &&
-  flow === "firstFlow" &&
-  ["AM", "COO", "RBH"].includes(currentRole?.code!);
+
 const tabItems = [
-...(showGeneral
+...(exceptionalView
     ? []
     : [{ key: "general", label: "General" }]),
   { key: "exceptional", label: "Exceptional" },
