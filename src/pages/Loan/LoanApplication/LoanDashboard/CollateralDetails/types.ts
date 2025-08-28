@@ -936,7 +936,7 @@ export const leaseProductValidationSchema = yup.object().shape({
   }),
 
   // Optional fields
-  duplicateKey: yup.string().optional(),
+  duplicateKey: yup.string().max(20, "Cannot exceed 20 characters").optional(),
   registrationBookNo: yup.string().optional(),
   registrationYear: yup.string().optional(),
   internalMV: yup.string().optional(),

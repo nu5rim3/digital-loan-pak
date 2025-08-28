@@ -572,7 +572,9 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
             />
           </Form.Item>
 
-          <Form.Item label="Duplicate Key">
+          <Form.Item label="Duplicate Key" 
+          validateStatus={errors.duplicateKey ? "error" : ""}
+          help={errors.duplicateKey?.message}>
             <Controller
               name="duplicateKey"
               control={control}
