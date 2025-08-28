@@ -66,6 +66,10 @@ interface IVerificationECIBResponse {
   outstandingLoan: string;
 }
 
+interface IfetchECIBReportByIdResponse {
+  hasEcib: "Y" | "N";
+}
+
 interface IVerificationState {
   blacklistDetails: IVerificationBlacklistResponse | null;
   msasDetails: IVerificationMSASResponse | null;
@@ -76,11 +80,15 @@ interface IVerificationState {
   cribLoading: boolean;
   ecibLoading: boolean;
   error: string | null;
+  ecribreport: IfetchECIBReportByIdResponse | null;
+  ecribreportLoading: boolean;
+  ecribreportError: string | null;
 
   fetchBlacklistByCnic: (cnic: string) => Promise<void>;
   fetchMSASByIdx: (cnic: string) => Promise<void>;
   fetchCRIBByCnic: (cnic: string) => Promise<void>;
   fetchECIBById: (cnic: string) => Promise<void>;
+  fetchECIBReportById: (cnic: string) => Promise<void>;
   resetCRIBDetails: () => void;
 
   resetAll: () => void;
@@ -96,6 +104,9 @@ const useVerificationStore = create<IVerificationState>((set) => ({
   cribLoading: false,
   ecibLoading: false,
   error: null,
+  ecribreport: null,
+  ecribreportLoading: false,
+  ecribreportError: null,
 
   fetchBlacklistByCnic: async (cnic: string) => {
     set({ blLoading: true, error: null });
@@ -131,7 +142,6 @@ const useVerificationStore = create<IVerificationState>((set) => ({
       const response = await API.get(
         `/mobixCamsCredit/v1/credits/crib/internal/${cnic}`
       );
-      // TODO: Handle the response based on the API structure
       if (response.data?.code === "000") {
         set({ cribDetails: response.data?.object, cribLoading: false });
         return;
@@ -143,6 +153,24 @@ const useVerificationStore = create<IVerificationState>((set) => ({
     } catch (error: any) {
       console.error(error);
       set({ error: error.message, cribLoading: false });
+    }
+  },
+
+  fetchECIBReportById: async (cnic: string) => {
+    set({
+      ecribreportLoading: true,
+      ecribreportError: null,
+      ecribreport: null,
+    });
+    try {
+      const response = await API.get(
+        `/mobixCamsCredit/v1/credit/ecib/reports/${cnic}`
+      );
+      set({ ecribreport: response.data, ecribreportLoading: false });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      set({ ecribreportError: error.message, ecribreportLoading: false });
     }
   },
 
@@ -174,6 +202,9 @@ const useVerificationStore = create<IVerificationState>((set) => ({
       cribLoading: false,
       ecibLoading: false,
       error: null,
+      ecribreport: null,
+      ecribreportLoading: false,
+      ecribreportError: null,
     })),
 }));
 

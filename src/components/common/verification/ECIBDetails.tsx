@@ -1,4 +1,4 @@
-import { Button, Card, Form, Typography, Empty } from 'antd'
+import { Button, Card, Typography, Empty } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { ReloadOutlined, EyeOutlined } from "@ant-design/icons";
 import useCommonStore from '../../../store/commonStore';
@@ -10,25 +10,25 @@ interface IECIBDetails {
     cnic: string;
 }
 
-const ECIBDetails: React.FC<IECIBDetails> = ({ idx, cnic }) => {
+const ECIBDetails: React.FC<IECIBDetails> = ({ cnic }) => {
 
-    const { ecibDetails, ecibLoading, fetchECIBById } = useVerificationStore()
+    const { ecribreportLoading, ecribreport, fetchECIBReportById } = useVerificationStore()
     const { ecibReportUrl, fetchECIBReport } = useCommonStore()
     const [openModal, setOpenModal] = useState(false);
 
     useEffect(() => {
-        fetchECIBById(idx)
         fetchECIBReport(cnic)
+        fetchECIBReportById(cnic)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cnic])
 
     const onRefresh = () => {
-        fetchECIBById(idx)
+        fetchECIBReportById(cnic)
     }
 
-    if (ecibDetails === null) {
+    if (ecribreport === null) {
         return (
-            <Card title={'Extrenal CIB Details'} loading={ecibLoading} extra={
+            <Card title={'Extrenal CIB Details'} loading={ecribreportLoading} extra={
                 <Button type="text" icon={<ReloadOutlined />} onClick={onRefresh} />
             }>
                 <Empty description={<span><b>No data found</b></span>} />
@@ -38,13 +38,13 @@ const ECIBDetails: React.FC<IECIBDetails> = ({ idx, cnic }) => {
 
     return (
         <>
-            <Card title={'Extrenal CIB Details'} loading={ecibLoading} extra={
+            <Card title={'Extrenal CIB Details'} loading={ecribreportLoading} extra={
                 <>
-                    <Button type="text" icon={<EyeOutlined />} onClick={() => setOpenModal(true)} disabled={ecibDetails !== null}>View Report</Button>
+                    <Button type="text" icon={<EyeOutlined />} onClick={() => setOpenModal(true)} disabled={ecribreport?.hasEcib === 'N'}>View Report</Button>
                     <Button type="text" icon={<ReloadOutlined />} onClick={onRefresh} />
                 </>
             }>
-                <Form>
+                {/* <Form>
                     <div className="grid grid-cols-3 gap-3">
                         {ecibDetails !== null &&
                             <>
@@ -62,7 +62,7 @@ const ECIBDetails: React.FC<IECIBDetails> = ({ idx, cnic }) => {
                                 </Form.Item>
                             </>}
                     </div>
-                </Form>
+                </Form> */}
             </Card>
             <CommonModal open={openModal} onClose={() => setOpenModal(false)} title={'ECIB Details'} size='xlarge' footer={true}>
                 <>
