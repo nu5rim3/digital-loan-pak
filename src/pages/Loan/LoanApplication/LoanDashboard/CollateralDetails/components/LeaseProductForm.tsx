@@ -210,8 +210,8 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
     control,
     name: "condition",
   });
-
-  const isNotNew = Boolean(condition && condition !== "NEW");
+//mapped with condition's code
+  const isNotNew = Boolean(condition && condition !== "1");
 
   const getOptions = (
     arr: any[],
@@ -351,7 +351,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
                   showSearch
                   placeholder="Select Condition"
                   loading={conditionsLoading}
-                  options={getOptions(conditions, "description", "description")}
+                  options={getOptions(conditions, "description", "code")}
                 />
               )}
             />
@@ -572,7 +572,9 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
             />
           </Form.Item>
 
-          <Form.Item label="Duplicate Key">
+          <Form.Item label="Duplicate Key" 
+          validateStatus={errors.duplicateKey ? "error" : ""}
+          help={errors.duplicateKey?.message}>
             <Controller
               name="duplicateKey"
               control={control}

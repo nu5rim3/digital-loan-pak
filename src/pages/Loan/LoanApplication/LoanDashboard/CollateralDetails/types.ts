@@ -909,25 +909,25 @@ export const leaseProductValidationSchema = yup.object().shape({
 
   // Conditional fields based on condition
   engineNo: yup.string().when("condition", {
-    is: (val: string) => val && val !== "NEW",
+    is: (val: string) => val && val !== "1",
     then: (schema) =>
       schema.required("Engine No is required when condition is not NEW"),
     otherwise: (schema) => schema.optional(),
   }),
   chassisNo: yup.string().when("condition", {
-    is: (val: string) => val && val !== "NEW",
+    is: (val: string) => val && val !== "1",
     then: (schema) =>
       schema.required("Chassis No is required when condition is not NEW"),
     otherwise: (schema) => schema.optional(),
   }),
   vehicleNo: yup.string().when("condition", {
-    is: (val: string) => val && val !== "NEW",
+    is: (val: string) => val && val !== "1",
     then: (schema) =>
       schema.required("Vehicle No is required when condition is not NEW"),
     otherwise: (schema) => schema.optional(),
   }),
   registrationDate: yup.date().when("condition", {
-    is: (val: string) => val && val !== "NEW",
+    is: (val: string) => val && val !== "1",
     then: (schema) =>
       schema.required(
         "Registration Date is required when condition is not NEW"
@@ -936,7 +936,7 @@ export const leaseProductValidationSchema = yup.object().shape({
   }),
 
   // Optional fields
-  duplicateKey: yup.string().optional(),
+  duplicateKey: yup.string().max(20, "Cannot exceed 20 characters").optional(),
   registrationBookNo: yup.string().optional(),
   registrationYear: yup.string().optional(),
   internalMV: yup.string().optional(),

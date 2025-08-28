@@ -219,7 +219,7 @@ const assetColumns = [
     return (
       <Collapse defaultActiveKey={["2"]} className="my-4">
         <Panel header="INDIVIDUAL LOAN BUSINESS DETAILS" key="2">
-          <Tabs activeKey={activeTabs.business} onChange={(key) => setActiveTabs({ ...activeTabs, business: key })}>
+          <Tabs type="card" activeKey={activeTabs.business} onChange={(key) => setActiveTabs({ ...activeTabs, business: key })}>
             {businessLoanDetails.map((item, index) => (
               <TabPane tab={`Business`} key={index.toString()}>
                 <Descriptions layout="vertical" bordered column={2} size="small">
