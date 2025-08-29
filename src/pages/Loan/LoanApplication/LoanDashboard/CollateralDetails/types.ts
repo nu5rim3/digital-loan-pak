@@ -146,6 +146,7 @@ export interface LeaseProductFormValues {
   // Equipment Details - Required fields
   equipmentCost: string;
   equipmentType: string;
+  equipmentTypeCode?: string;
   supplierCode: string;
   equipmentName: string;
   condition: string;
@@ -171,6 +172,7 @@ export interface LeaseProductFormValues {
   registrationYear?: string;
   internalMV?: string;
   internalFSV?: string;
+  securityCategory?: string;
 }
 
 export const createValidationSchema = () => {
@@ -318,11 +320,33 @@ export const createValidationSchema = () => {
         securityType === BANK_GUARANTEE_CODE && type === "2",
       then: (schema) => schema,
     }),
-    guaranteeValue: yup.string().when(["securityType", "bankGuaranteeType"], {
-      is: (securityType: string, type: string) =>
-        securityType === BANK_GUARANTEE_CODE && type === "2",
-      then: (schema) =>
-        schema.test(
+    // guaranteeValue: yup.string().when(["securityType", "bankGuaranteeType"], {
+    //   is: (securityType: string, type: string) =>
+    //     securityType === BANK_GUARANTEE_CODE && type === "2",
+    //   then: (schema) =>
+    //     schema.test(
+    //       "guarantee-value-validation",
+    //       "Guarantee Value cannot exceed FD Value",
+    //       function (value) {
+    //         const { fdValue } = this.parent;
+    //         if (value && fdValue) {
+    //           const guaranteeValueNum = Number(value);
+    //           const fdValueNum = Number(fdValue);
+    //           return guaranteeValueNum <= fdValueNum;
+    //         }
+    //         return true;
+    //       }
+    //     ),
+    // }),
+    guaranteeValue: yup.string().when(
+  ["securityType", "bankGuaranteeType"],
+  {
+    is: (securityType: string, type: string) =>
+      securityType === BANK_GUARANTEE_CODE && type === "2",
+    then: (schema) =>
+      schema
+        .required("Guarantee Value is required")
+        .test(
           "guarantee-value-validation",
           "Guarantee Value cannot exceed FD Value",
           function (value) {
@@ -335,7 +359,10 @@ export const createValidationSchema = () => {
             return true;
           }
         ),
-    }),
+    otherwise: (schema) => schema.notRequired(),
+  }
+),
+
     guaranteedTo: yup.string().when(["securityType", "bankGuaranteeType"], {
       is: (securityType: string, type: string) =>
         securityType === BANK_GUARANTEE_CODE && type === "2",
@@ -669,24 +696,49 @@ export const validationSchema = yup.object().shape({
       securityType === "BANK GUARANTEE" && type === "2",
     then: (schema) => schema,
   }),
-  guaranteeValue: yup.string().when(["securityType", "bankGuaranteeType"], {
+  guaranteeValue: yup.string().when(
+  ["securityType", "bankGuaranteeType"],
+  {
     is: (securityType: string, type: string) =>
       securityType === "BANK GUARANTEE" && type === "2",
     then: (schema) =>
-      schema.test(
-        "guarantee-value-validation",
-        "Guarantee Value cannot exceed FD Value",
-        function (value) {
-          const { fdValue } = this.parent;
-          if (value && fdValue) {
-            const guaranteeValueNum = Number(value);
-            const fdValueNum = Number(fdValue);
-            return guaranteeValueNum <= fdValueNum;
+      schema
+        .required("Guarantee Value is required")
+        .test(
+          "guarantee-value-validation",
+          "Guarantee Value cannot exceed FD Value",
+          function (value) {
+            const { fdValue } = this.parent;
+            if (value && fdValue) {
+              const guaranteeValueNum = Number(value);
+              const fdValueNum = Number(fdValue);
+              return guaranteeValueNum <= fdValueNum;
+            }
+            return true;
           }
-          return true;
-        }
-      ),
-  }),
+        ),
+    otherwise: (schema) => schema.notRequired(),
+  }
+),
+
+  // guaranteeValue: yup.string().when(["securityType", "bankGuaranteeType"], {
+  //   is: (securityType: string, type: string) =>
+  //     securityType === "BANK GUARANTEE" && type === "2",
+  //   then: (schema) =>
+  //     schema.test(
+  //       "guarantee-value-validation",
+  //       "Guarantee Value cannot exceed FD Value",
+  //       function (value) {
+  //         const { fdValue } = this.parent;
+  //         if (value && fdValue) {
+  //           const guaranteeValueNum = Number(value);
+  //           const fdValueNum = Number(fdValue);
+  //           return guaranteeValueNum <= fdValueNum;
+  //         }
+  //         return true;
+  //       }
+  //     ),
+  // }),
   guaranteedTo: yup.string().when(["securityType", "bankGuaranteeType"], {
     is: (securityType: string, type: string) =>
       securityType === "BANK GUARANTEE" && type === "2",

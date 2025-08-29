@@ -44,6 +44,7 @@ const GuarantorDetails: React.FC<GuarantorDetailsProps> = ({ stakeholders, tcAmo
   const [loading, setLoading] = useState(true);
   const [loanDetails, setLoanDetails] = useState<any>({});
   const [guarantors, setGuarantors] = useState<any[]>([]);
+  const [selectedOrgType, setSelectedOrgType] = useState<string>();
   const [guarantorDetails, setGuarantorDetails] = useState<any>({
     master: null,
     contacts: [],
@@ -93,7 +94,26 @@ const GuarantorDetails: React.FC<GuarantorDetailsProps> = ({ stakeholders, tcAmo
 
     fetchInitialData();
   }, [ appraisalId]);
-
+useEffect(() => {
+    const fetchOrgTypeByCode = async (orgTypeCode:string) => {
+      setLoading(true);
+      try {
+        const response:any = await APIAuth.get(`/mobixCamsCommon/v1/organizations/${orgTypeCode}`);
+        if(response?.data && response?.data?.description){
+            setSelectedOrgType(response?.data?.description);
+        }
+        
+      } catch (error) {
+        console.error("Failed to fetch organization Type", error);
+         setLoading(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if(guarantorDetails?.master?.stkOrgType){
+       fetchOrgTypeByCode(guarantorDetails.master.stkOrgType);
+    }
+  }, [guarantorDetails?.master?.stkOrgType]);
   const loadGuarantorDetails = async (guarantor: any, index: number) => {
     setLoading(true);
     try {
@@ -195,7 +215,7 @@ const GuarantorDetails: React.FC<GuarantorDetailsProps> = ({ stakeholders, tcAmo
                 <Descriptions bordered column={3} size="small">
                   {renderDesc(
                     "Organization Type",
-                    guarantorDetails.master.stkOrgType
+                    selectedOrgType
                   )}
                   {renderDesc("Customer CNIC", guarantorDetails.master.stkCNic)}
                   {renderDesc(

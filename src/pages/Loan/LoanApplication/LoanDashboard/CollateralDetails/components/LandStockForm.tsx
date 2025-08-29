@@ -20,7 +20,7 @@ interface LandStockFormProps {
   securityType?: IBaseItem;
 }
 
-const prepareLandStockData = (formData: FormValues, appraisalId: string) => {
+const prepareLandStockData = (formData: FormValues, appraisalId: string,) => {
   return {
     appraisalId: appraisalId,
     landStockType: formData.landStockType || "",
@@ -37,7 +37,8 @@ const prepareLandStockData = (formData: FormValues, appraisalId: string) => {
       dayjs(formData.landStockSecurityDate).format("YYYY-MM-DD") : undefined,
     landStockSecType: "Primary",
     landStockCategory: "M",
-     landStockSecCategory: "M"
+    landStockSecCategory: "M",
+    securityCategory: formData?.securityCategory || "M",
   };
 };
 

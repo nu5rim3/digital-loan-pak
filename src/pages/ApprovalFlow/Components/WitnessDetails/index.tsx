@@ -35,6 +35,7 @@ const WitnessDetails: React.FC<GuarantorDetailsProps> = ({ stakeholders }) => {
   const { appraisalId } = useParams();
   const [loading, setLoading] = useState(true);
   const [witnesses, setWitnesses] = useState<any[]>([]);
+  const [selectedArea, setSelectedArea] = useState<string>();
   const [details, setDetails] = useState<any>({
     master: null,
     contacts: [],
@@ -86,6 +87,28 @@ const WitnessDetails: React.FC<GuarantorDetailsProps> = ({ stakeholders }) => {
     }
   };
 
+  useEffect(() => {
+    const fetchAreaByCode = async (provinceCode:string) => {
+        setLoading(true);
+      try {
+        const response:any = await APIAuth.get(`/mobixCamsCommon/v1/cities/areas/${provinceCode}`);
+        if(response?.data){
+            setSelectedArea(response?.data?.description);
+        }
+        
+      } catch (error) {
+        console.error("Failed to fetch area code", error);
+         setLoading(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+      if(details.address?.province){
+          fetchAreaByCode(details.address?.province);
+      }
+   
+  }, [details?.address?.province]);
+
   return (
     <Card>
       <Spin spinning={loading} fullscreen={false}>
@@ -129,7 +152,7 @@ const WitnessDetails: React.FC<GuarantorDetailsProps> = ({ stakeholders }) => {
                 {renderDesc("Address Line 2", details.address?.addressLine2)}
                 {renderDesc("Address Line 3", details.address?.addressLine3)}
                 {renderDesc("Address Line 4", details.address?.addressLine4)}
-                {renderDesc("Area", details.address?.area)}
+                {renderDesc("Area", selectedArea)}
                 {renderDesc("City", details.address?.city)}
                 {renderDesc("District", details.address?.district)}
                 {renderDesc("Province", details.address?.province)}

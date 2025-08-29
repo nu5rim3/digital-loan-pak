@@ -40,6 +40,7 @@ export const submitMachinery = async (
       machineryValuedBy,
       machineryInsuranceCompany,
       machineryReferenceNo,
+      securityCategory
     } = data;
 
     const payload = {
@@ -60,7 +61,8 @@ export const submitMachinery = async (
       insuCompany: machineryInsuranceCompany,
       refNo: machineryReferenceNo,
       machineryEquipSecCategory: "Main Security",
-      machineryEquipSecType: "MACHINERY AND EQUIPMENT"
+      machineryEquipSecType: "MACHINERY AND EQUIPMENT",
+      securityCategory: securityCategory || "M",
     };
 
     if (isEdit && id) {

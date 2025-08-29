@@ -37,6 +37,7 @@ export const submitSavings = async (
       savingsCompany,
       savingsDescription,
       savingsBuildUpValue,
+      securityCategory
     } = data;
 
     // Prepare payload for API
@@ -58,6 +59,7 @@ export const submitSavings = async (
       refNo: "",
       savingsSecCategory: "Main Security",
       savingsSecType: "Fixed Deposits and Savings",
+      securityCategory: securityCategory 
     };
 
     if (isEdit && id) {

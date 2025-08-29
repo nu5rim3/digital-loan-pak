@@ -41,6 +41,7 @@ const prepareBankGuaranteeData = (
     ownership: formData.bankGuaranteeOwnership,
     bankGuaranteeSecCategory: "Main Security",
     bankGuaranteeSecType: "BANK GUARANTEE",
+    securityCategory: formData?.securityCategory 
   } as any;
 
   if (isLOFIN) {
@@ -124,7 +125,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
   const getOptions = (
     arr: any[],
     labelKey: string = "description",
-    valueKey: string = "description"
+    valueKey: string = "code"
   ) =>
     arr
       .filter((item) => (item.status ? item.status === "A" : true))
@@ -348,6 +349,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                 </Form.Item>
 
                 <Form.Item
+                required
                   label="Guarantee Value"
                   validateStatus={errors.guaranteeValue ? "error" : ""}
                   help={errors.guaranteeValue?.message}
