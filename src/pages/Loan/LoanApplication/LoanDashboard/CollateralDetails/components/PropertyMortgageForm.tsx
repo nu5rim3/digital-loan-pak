@@ -82,9 +82,10 @@ export const submitPropertyMortgage = async (
       mortgageLotNo: propertyLotNo || "",
       mortgageInsuranceCompany: propertyInsuranceCompany,
       mortgageReferenceNo: propertyReferenceNo,
-      mortgageSecCategory: "Mortgage",
+      mortgageSecCategory: securityCategory || "M",
       mortgageSecType: "Primary",
-      securityCategory: securityCategory || "M",
+      securityCategory: securityCategory || "M"
+     
     };
 
     if (isEdit && id) {

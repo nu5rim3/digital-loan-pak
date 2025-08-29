@@ -349,6 +349,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                 </Form.Item>
 
                 <Form.Item
+                required
                   label="Guarantee Value"
                   validateStatus={errors.guaranteeValue ? "error" : ""}
                   help={errors.guaranteeValue?.message}

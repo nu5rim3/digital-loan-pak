@@ -44,7 +44,7 @@ export const submitLease = async (
       internalFSV,
       insuranceCompany,
       referenceNo,
-      securityCategory
+      securityCategory,
     } = data;
 
     const formatDate = (date: Date | undefined) => {
@@ -402,7 +402,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
                   options={getOptions(
                     depreciationRates,
                     "description",
-                    "description"
+                    "code"
                   )}
                 />
               )}
@@ -430,7 +430,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
                   options={getOptions(
                     vehicleTypes,
                     "description",
-                    "description"
+                    "code"
                   )}
                 />
               )}
