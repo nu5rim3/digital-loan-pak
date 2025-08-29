@@ -911,26 +911,26 @@ export const leaseProductValidationSchema = yup.object().shape({
   engineNo: yup.string().when("condition", {
     is: (val: string) => val && val !== "1",
     then: (schema) =>
-      schema.required("Engine No is required when condition is not NEW"),
+      schema.required("Engine No is required"),
     otherwise: (schema) => schema.optional(),
   }),
   chassisNo: yup.string().when("condition", {
     is: (val: string) => val && val !== "1",
     then: (schema) =>
-      schema.required("Chassis No is required when condition is not NEW"),
+      schema.required("Chassis No is required"),
     otherwise: (schema) => schema.optional(),
   }),
   vehicleNo: yup.string().when("condition", {
     is: (val: string) => val && val !== "1",
     then: (schema) =>
-      schema.required("Vehicle No is required when condition is not NEW"),
+      schema.required("Vehicle No is required"),
     otherwise: (schema) => schema.optional(),
   }),
   registrationDate: yup.date().when("condition", {
     is: (val: string) => val && val !== "1",
     then: (schema) =>
       schema.required(
-        "Registration Date is required when condition is not NEW"
+        "Registration Date is required"
       ),
     otherwise: (schema) => schema.optional(),
   }),
