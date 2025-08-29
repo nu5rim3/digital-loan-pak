@@ -44,6 +44,7 @@ export const submitLease = async (
       internalFSV,
       insuranceCompany,
       referenceNo,
+      securityCategory
     } = data;
 
     const formatDate = (date: Date | undefined) => {
@@ -76,6 +77,7 @@ export const submitLease = async (
       foreSaleValue: internalFSV || "0",
       insuCompany: insuranceCompany,
       refNo: referenceNo,
+      securityCategory: securityCategory ??"O"
     };
 
     if (isEdit && id) {

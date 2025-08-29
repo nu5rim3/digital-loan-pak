@@ -45,6 +45,7 @@ export const submitVehicle = async (
       vehicleCRReleasedDate,
       vehicleInsuranceCompany,
       vehicleReferenceNo,
+      securityCategory,
     } = data;
 
     const formatDate = (date: Date | undefined) => {
@@ -75,6 +76,7 @@ export const submitVehicle = async (
       crReleasedDate: formatDate(vehicleCRReleasedDate),
       insuCompany: vehicleInsuranceCompany,
       refNo: vehicleReferenceNo,
+      securityCategory: securityCategory || "M",
     };
 
     if (isEdit && id) {

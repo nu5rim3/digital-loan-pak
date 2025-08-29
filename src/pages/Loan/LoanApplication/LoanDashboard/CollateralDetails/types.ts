@@ -171,6 +171,7 @@ export interface LeaseProductFormValues {
   registrationYear?: string;
   internalMV?: string;
   internalFSV?: string;
+  securityCategory?: string;
 }
 
 export const createValidationSchema = () => {
@@ -322,7 +323,7 @@ export const createValidationSchema = () => {
       is: (securityType: string, type: string) =>
         securityType === BANK_GUARANTEE_CODE && type === "2",
       then: (schema) =>
-        schema.test(
+        schema.required("Guarantee Value is required").test(
           "guarantee-value-validation",
           "Guarantee Value cannot exceed FD Value",
           function (value) {

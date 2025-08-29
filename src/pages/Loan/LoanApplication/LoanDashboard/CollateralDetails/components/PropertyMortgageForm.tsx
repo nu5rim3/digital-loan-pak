@@ -49,6 +49,7 @@ export const submitPropertyMortgage = async (
       propertyLotNo,
       propertyInsuranceCompany,
       propertyReferenceNo,
+      securityCategory
     } = data;
 
     const payload = {
@@ -83,6 +84,7 @@ export const submitPropertyMortgage = async (
       mortgageReferenceNo: propertyReferenceNo,
       mortgageSecCategory: "Mortgage",
       mortgageSecType: "Primary",
+      securityCategory: securityCategory || "M",
     };
 
     if (isEdit && id) {
