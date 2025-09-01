@@ -18,10 +18,11 @@ export const submitLease = async (
   appraisalId: string,
   isEdit: boolean = false
 ): Promise<boolean> => {
+
   try {
     const {
       id,
-      equipmentType,
+
       equipmentCost,
       supplierCode,
       equipmentName,
@@ -45,6 +46,7 @@ export const submitLease = async (
       insuranceCompany,
       referenceNo,
       securityCategory,
+      equipmentTypeCode
     } = data;
 
     const formatDate = (date: Date | undefined) => {
@@ -53,7 +55,7 @@ export const submitLease = async (
 
     const payload = {
       appraisalId,
-      leaseEquipType: equipmentType || "E",
+      leaseEquipType: equipmentTypeCode || "E",
       leaseCost: equipmentCost || "0",
       leaseSupplierCode: supplierCode || "",
       leaseEquipName: equipmentName || "",
@@ -133,11 +135,13 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
     control,
     name: "manufacturer",
   });
-
+  
+    console.log("trialCalculationData:", trialCalculationData);
   // Watch current form values to check if they need to be set
   const currentEquipmentType = useWatch({
     control,
     name: "equipmentType",
+    
   });
 
   const currentEquipmentCost = useWatch({

@@ -18,6 +18,7 @@ import SavingsForm, { submitSavings } from "./SavingsForm";
 import LandStockForm, { submitLandStock } from "./LandStockForm";
 import { LeaseProductForm, submitLease } from "./LeaseProductForm";
 import useCollateralStore from "../../../../../../store/collateralStore";
+import useCommonStore from "../../../../../../store/commonStore";
 
 interface CollateralFormModalProps {
   open: boolean;
@@ -120,7 +121,7 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
     fetchSecurityTypes,
     collaterals,
   } = useCollateralStore();
-
+const { trialCalculationData } = useCommonStore();
   const [submitting, setSubmitting] = useState(false);
   const [formInitialized, setFormInitialized] = useState(false);
 
@@ -415,6 +416,7 @@ const CollateralFormModal: React.FC<CollateralFormModalProps> = ({
       const leaseData = {
         ...data,
         id: isEdit && initialData?.id ? initialData.id : data.id,
+        equipmentTypeCode:trialCalculationData?.insuranceVE
       };
 
       const response = await submitLease(leaseData, validAppraisalId, isEdit);
