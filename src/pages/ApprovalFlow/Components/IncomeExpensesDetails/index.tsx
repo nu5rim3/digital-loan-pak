@@ -92,7 +92,9 @@ const IncomeExpensesDetails: React.FC = () => {
       title: "Monthly",
       dataIndex: "value",
       key: "value",
-      render: format
+      render: (value:any,record:any) =>{
+        return record.label !== "Tenure"? format(value) : value
+      } 
     }
   ];
 

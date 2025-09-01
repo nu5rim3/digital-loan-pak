@@ -384,7 +384,9 @@ export const createValidationSchema = () => {
     valueOfGuarantee: yup.string().when(["securityType", "bankGuaranteeType"], {
       is: (securityType: string, type: string) =>
         securityType === BANK_GUARANTEE_CODE && type === "1",
-      then: (schema) => schema,
+      then:(schema) =>
+      schema.required("Value of Guarantee is required"),
+    otherwise: (schema) => schema.notRequired(),
     }),
     renewedBy: yup.string().when(["securityType", "bankGuaranteeType"], {
       is: (securityType: string, type: string) =>

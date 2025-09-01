@@ -57,7 +57,7 @@ export const submitSavings = async (
       subType: savingsSubType,
       insuCompany: "",
       refNo: "",
-      savingsSecCategory: "Main Security",
+      savingsSecCategory: securityCategory || "M",
       savingsSecType: "Fixed Deposits and Savings",
       securityCategory: securityCategory 
     };

@@ -39,7 +39,7 @@ const prepareBankGuaranteeData = (
     appraisalId: appraisalId,
     type: formData.bankGuaranteeType,
     ownership: formData.bankGuaranteeOwnership,
-    bankGuaranteeSecCategory: "Main Security",
+    bankGuaranteeSecCategory:  formData?.securityCategory  || "M",
     bankGuaranteeSecType: "BANK GUARANTEE",
     securityCategory: formData?.securityCategory 
   } as any;
@@ -482,6 +482,7 @@ const BankGuaranteeForm: React.FC<BankGuaranteeFormProps> = ({
                 </Form.Item>
 
                 <Form.Item
+                required
                   label="Value of Guarantee"
                   validateStatus={errors.valueOfGuarantee ? "error" : ""}
                   help={errors.valueOfGuarantee?.message}
