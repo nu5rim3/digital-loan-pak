@@ -36,8 +36,8 @@ const prepareLandStockData = (formData: FormValues, appraisalId: string,) => {
     landStockSecDate: formData.landStockSecurityDate ?
       dayjs(formData.landStockSecurityDate).format("YYYY-MM-DD") : undefined,
     landStockSecType: "Primary",
-    landStockCategory: "M",
-    landStockSecCategory: "M",
+    landStockCategory: formData?.securityCategory,
+    landStockSecCategory: formData?.securityCategory,
     securityCategory: formData?.securityCategory || "M",
   };
 };

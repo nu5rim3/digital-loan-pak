@@ -60,7 +60,7 @@ export const submitMachinery = async (
       valuedBy: machineryValuedBy,
       insuCompany: machineryInsuranceCompany,
       refNo: machineryReferenceNo,
-      machineryEquipSecCategory: "Main Security",
+      machineryEquipSecCategory:  securityCategory || "M",
       machineryEquipSecType: "MACHINERY AND EQUIPMENT",
       securityCategory: securityCategory || "M",
     };

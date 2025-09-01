@@ -55,7 +55,7 @@ export const submitVehicle = async (
     const payload = {
       appraisalId,
       vehicleType: vehicleType || "",
-      vehicleSecCategory: "Main Security",
+      vehicleSecCategory:  securityCategory || "M",
       vehicleSecType: "VEHICLE",
       ownership: vehicleOwnership || "",
       supplier: vehicleSupplier || "",
