@@ -1,11 +1,14 @@
-import React, { useEffect, useRef } from "react";
-import { Form, Input, Select, DatePicker, InputNumber } from "antd";
+import React, { useEffect, useRef, useState } from "react";
+import { Form, Input, Select, DatePicker, InputNumber, Spin } from "antd";
 import { Control, Controller, useWatch } from "react-hook-form";
 import { LeaseProductFormValues } from "../types";
 import dayjs from "dayjs";
 import useCollateralStore from "../../../../../../store/collateralStore";
 import useCommonStore from "../../../../../../store/commonStore";
 import { message } from "antd";
+import useCreditStore from "../../../../../../store/creditStore";
+import { useParams } from "react-router-dom";
+import moment from "moment";
 
 interface LeaseProductFormProps {
   control: Control<LeaseProductFormValues>;
@@ -46,7 +49,7 @@ export const submitLease = async (
       insuranceCompany,
       referenceNo,
       securityCategory,
-      equipmentTypeCode
+      equipmentTypeCode,
     } = data;
 
     const formatDate = (date: Date | undefined) => {
@@ -101,6 +104,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
   errors,
   setValue,
 }) => {
+    const { appId } = useParams()
   const {
     suppliers,
     suppliersLoading,
@@ -127,16 +131,47 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
     fetchMakes,
     fetchModels,
   } = useCollateralStore();
-
-  const { trialCalculationData } = useCommonStore();
+  const {trailCalulationDetailsByAppIdLoading, trailCalulationDetailsByAppId, fetchTrailCalulationDetailsByAppId } =
+    useCreditStore();
+  const { trialCalculationData ,setTrialCalculationData} = useCommonStore();
 
   const dataFetched = useRef(false);
   const selectedMake = useWatch({
     control,
     name: "manufacturer",
   });
-  
-    console.log("trialCalculationData:", trialCalculationData);
+
+  const [getTrialData, setIsGetTrialData] = useState<boolean>(false)
+ 
+  useEffect(() => {
+    //if user is not visit tial calculation section and come directly to collateral section
+    if (!trailCalulationDetailsByAppId && appId)
+      fetchTrailCalulationDetailsByAppId(appId ?? "");
+      setIsGetTrialData(true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appId]);
+  useEffect(() => {
+    if (trailCalulationDetailsByAppId !== null && getTrialData) {
+     // Set trial calculation data for other components
+                const mappedData = {
+                    calculationMethod: trailCalulationDetailsByAppId?.pTrhdMethod ?? '',
+                    productCategory: trailCalulationDetailsByAppId?.prodCat ?? '',
+                    cost: trailCalulationDetailsByAppId?.pTreq && trailCalulationDetailsByAppId.pTreq.length > 0 ? Number(trailCalulationDetailsByAppId.pTreq[0]?.treqEqpCost ?? 0) : 0,
+                    insuranceVE: trailCalulationDetailsByAppId?.pTreq && trailCalulationDetailsByAppId.pTreq.length > 0 ? trailCalulationDetailsByAppId.pTreq[0]?.treqEv ?? '' : '',
+                    loanAmount: Number(trailCalulationDetailsByAppId?.pTrhdLocCost ?? 0),
+                    markup: Number(trailCalulationDetailsByAppId?.pTrhdTr ?? 0),
+                    trems: Number(trailCalulationDetailsByAppId?.pTrhdTerm ?? 0),
+                    // Additional fields for product types '9' or 'E9'
+                    capitalPaid: trailCalulationDetailsByAppId?.pSnrv && trailCalulationDetailsByAppId.pSnrv.length > 0 ? Number(trailCalulationDetailsByAppId.pSnrv[0]?.snrvCap ?? 0) : 0,
+                    expiryDate: trailCalulationDetailsByAppId?.pSnrv && trailCalulationDetailsByAppId.pSnrv.length > 0 ? (trailCalulationDetailsByAppId.pSnrv[0]?.snrvExpDate ? moment(trailCalulationDetailsByAppId.pSnrv[0].snrvExpDate, 'YYYYMMDD').format('YYYY-MM-DD') : '') : '',
+                    dateOfPaymenent: trailCalulationDetailsByAppId?.pSnrv && trailCalulationDetailsByAppId.pSnrv.length > 0 ? (trailCalulationDetailsByAppId.pSnrv[0]?.snrvDtPay ? moment(trailCalulationDetailsByAppId.pSnrv[0].snrvDtPay, 'YYYYMMDD').format('YYYY-MM-DD') : '') : '',
+                    gracePeriod: trailCalulationDetailsByAppId?.pSnrv && trailCalulationDetailsByAppId.pSnrv.length > 0 ? Number(trailCalulationDetailsByAppId.pSnrv[0]?.snrvGPrd ?? 0) : 0
+                };
+                setTrialCalculationData(mappedData);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trailCalulationDetailsByAppId]);
   // Watch current form values to check if they need to be set
   const currentEquipmentType = useWatch({
     control,
@@ -235,7 +270,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
     <div className="space-y-6">
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-4">Lease Details</h3>
-
+         <Spin spinning={trailCalulationDetailsByAppIdLoading}>
         <div className="grid grid-cols-4 gap-4">
           <Form.Item
             label="Equipment Type"
@@ -413,7 +448,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
             />
           </Form.Item>
         </div>
-
+         </Spin>
         <h3 className="text-lg font-semibold mb-4 mt-6">Vehicle Details</h3>
         <div className="grid grid-cols-4 gap-4">
           <Form.Item
