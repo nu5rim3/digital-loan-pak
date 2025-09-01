@@ -88,7 +88,18 @@ const schema = yup.object().shape({
     }),
     cost: yup.number().when('insuranceVE', {
         is: (val: string) => val === 'V',
-        then: (schema) => schema.required('Cost is required'),
+        then: (schema) => schema.required('Cost is required')
+        .test(
+          "cost-equals-loanAmount",
+          "Cost should be equal to Loan Amount",
+          function (value) {
+            const { loanAmount } = this.parent;
+            if (value != null && loanAmount != null) {
+              return Number(value) === Number(loanAmount);
+            }
+            return true; // if one is missing, let required handle it
+          }
+        ),
         otherwise: (schema) => schema.notRequired(),
     }),
     structuredPayment: yup.array().of(
