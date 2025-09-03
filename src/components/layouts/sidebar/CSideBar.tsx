@@ -39,14 +39,14 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
             key: '1',
             icon: <ProductOutlined />,
             onClick: () => navigate(`/${mainNavigation}/dashboard`),
-            roles: ["ADMIN"],
+            roles: ["ADMIN","AUDITOR"],
         },
         {
             type: 'submenu',
             icon: <RubyOutlined />,
             label: 'Access and Permission',
             key: '2',
-            roles: ["ADMIN"],
+            roles: ["ADMIN","AUDITOR"],
             children: [
                 {
                     label: 'Roles',
@@ -73,7 +73,7 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
             icon: <NodeIndexOutlined />,
             label: 'Approval and Ratification',
             key: '4',
-            roles: ["ADMIN"],
+            roles: ["ADMIN","AUDITOR"],
             children: [
                 {
                     label: 'Group',
@@ -100,7 +100,7 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
             icon: <BlockOutlined />,
             label: 'Approval Flow',
             key: '3',
-            roles: ["ADMIN", "CO", "BHO", "CC", "IBU", "IMD", "CR", "CA", "CAD", "AM", "RBH", "COO", "CEO", "CD"],
+            roles: ["ADMIN", "CO", "BHO", "CC", "IBU", "IMD", "CR", "CA", "CAD", "AM", "RBH", "COO", "CEO", "CD","AUDITOR"],
             children: [
                 {
                     label: 'Approvals For First Flow',
@@ -116,39 +116,40 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
                 },
             ]
         },
-        {
-            type: 'submenu',
-            icon: <TeamOutlined />,
-            label: 'Application Users',
-            key: '5',
-            roles: ["ADMIN"],
-            children: [
-                {
-                    label: 'Customers',
-                    key: '5-1',
-                    icon: <UserOutlined />,
-                    onClick: () => navigate(`/${mainNavigation}/users/customers`),
-                },
-                {
-                    label: 'Guarantors',
-                    key: '5-2',
-                    icon: <UserOutlined />,
-                    onClick: () => navigate(`/${mainNavigation}/users/guarantors`),
-                },
-                {
-                    label: 'Witnesses',
-                    key: '5-3',
-                    icon: <UserOutlined />,
-                    onClick: () => navigate(`/${mainNavigation}/users/witnesses`),
-                },
-            ]
-        },
+        //comment per  BA request (Shabira)
+        // {
+        //     type: 'submenu',
+        //     icon: <TeamOutlined />,
+        //     label: 'Application Users',
+        //     key: '5',
+        //     roles: ["ADMIN","AUDITOR"],
+        //     children: [
+        //         {
+        //             label: 'Customers',
+        //             key: '5-1',
+        //             icon: <UserOutlined />,
+        //             onClick: () => navigate(`/${mainNavigation}/users/customers`),
+        //         },
+        //         {
+        //             label: 'Guarantors',
+        //             key: '5-2',
+        //             icon: <UserOutlined />,
+        //             onClick: () => navigate(`/${mainNavigation}/users/guarantors`),
+        //         },
+        //         {
+        //             label: 'Witnesses',
+        //             key: '5-3',
+        //             icon: <UserOutlined />,
+        //             onClick: () => navigate(`/${mainNavigation}/users/witnesses`),
+        //         },
+        //     ]
+        // },
         {
             type: 'submenu',
             icon: <RocketOutlined />,
             label: 'Loan Application',
             key: '6',
-            roles: ["ADMIN", 'CRO'],
+            roles: ["ADMIN", 'CRO',"AUDITOR"],
             children: [
                 {
                     label: 'Loan Request',

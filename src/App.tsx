@@ -155,7 +155,7 @@ const App: React.FC = () => {
                     path="users/*"
                     element={
                       <PrivateRoute allowedRoles={
-                        ["ADMIN", "BHO", "CRO"]
+                        ["ADMIN", "BHO", "CRO","AUDITOR"]
                       } />}>
                     <Route path="customer" element={<CustomerOnboarding />} />
                     <Route path="customers" element={<Customers />} />
@@ -174,7 +174,7 @@ const App: React.FC = () => {
                     path="approval/*"
                     element={
                       <PrivateRoute allowedRoles={
-                        ["ADMIN", "CO", "BHO", "CC", "IBU", "IMD", "CR", "CA", "CAD", "AM", "RBH", "COO", "CEO", "CD"]
+                        ["ADMIN", "CO", "BHO", "CC", "IBU", "IMD", "CR", "CA", "CAD", "AM", "RBH", "COO", "CEO", "CD","AUDITOR"]
                       } />}>
                     <Route path="list/:flow" element={<GeneralAppraisalList />} />
                     <Route path="preview/:flow/:appraisalId" element={<AppraisalPreviewPage />} />
@@ -184,7 +184,7 @@ const App: React.FC = () => {
                     path="loan/*"
                     element={
                       <PrivateRoute allowedRoles={
-                        ["ADMIN", "BHO", "CRO"]
+                        ["ADMIN", "BHO", "CRO","AUDITOR"]
                       } />}>
                     <Route path="application" element={<LoanApplication />} />
                     {/* <Route path="application/:appId" element={<LoanDashboard />} /> */}

@@ -111,6 +111,8 @@ export const getRoleName = (role: string) => {
       return "Chief Executive Officer";
     case "COP":
       return "----- Credit Operations";
+    case "AUDITOR":
+      return "Auditor";
     default:
       return role;
   }
