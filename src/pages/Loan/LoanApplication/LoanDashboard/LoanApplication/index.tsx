@@ -86,7 +86,7 @@ const LoanApplication: React.FC = () => {
                     </Form.Item>
                 </Form>
                 <Button type='primary' icon={<PlusOutlined />} onClick={handleCreateLoanApplication}>
-                    Create a Loan Application
+                    Create a Facility Application
                 </Button>
             </div>
             {sourceOfIncome && (

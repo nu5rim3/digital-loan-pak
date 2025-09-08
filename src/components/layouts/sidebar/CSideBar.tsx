@@ -1,4 +1,4 @@
-import { ApartmentOutlined, BlockOutlined, DeploymentUnitOutlined, GroupOutlined, NodeIndexOutlined, ProductOutlined, ProjectOutlined, RocketOutlined, RubyOutlined, UngroupOutlined, UsergroupAddOutlined, UserOutlined, UserSwitchOutlined, TeamOutlined, PushpinOutlined, PushpinFilled } from '@ant-design/icons';
+import { ApartmentOutlined, BlockOutlined, DeploymentUnitOutlined, GroupOutlined, NodeIndexOutlined, ProductOutlined, ProjectOutlined, RocketOutlined, RubyOutlined, UngroupOutlined, UsergroupAddOutlined, UserOutlined, UserSwitchOutlined, PushpinOutlined, PushpinFilled } from '@ant-design/icons';
 import { Button, Layout, Menu } from 'antd';
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
@@ -147,12 +147,12 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
         {
             type: 'submenu',
             icon: <RocketOutlined />,
-            label: 'Loan Application',
+            label: 'Facility Application',
             key: '6',
             roles: ["ADMIN", 'CRO',"AUDITOR"],
             children: [
                 {
-                    label: 'Loan Request',
+                    label: 'Facility Request',
                     key: '6-1',
                     icon: <UngroupOutlined />,
                     onClick: () => navigate(`/${mainNavigation}/loan/application`),
