@@ -14,7 +14,7 @@ export const handleAxiosError = (error: AxiosError) => {
   switch (status) {
     case 400:
       notification.error({
-        message: "Bad Request",
+        message: "Error",
         description: message || "The request was invalid.",
       });
       break;
