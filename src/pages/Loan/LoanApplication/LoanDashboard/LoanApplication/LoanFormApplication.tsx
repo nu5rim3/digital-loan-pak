@@ -39,11 +39,11 @@ const LoanFormApplication: React.FC = () => {
                         title: <a onClick={() => navigate(cleanUrl)}>Loan Dashboard</a>
                     },
                     {
-                        title: 'Loan Application'
+                        title: 'Facility Application'
                     },
                 ]}
             />
-            <Card title={"Loan Application"} className='mt-3'>
+            <Card title={"Facility Application"} className='mt-3'>
                 {/* https://lolcfusion.atlassian.net/browse/MDV-12222 - change the label title */}
                 <Form className='w-1/4' layout='vertical'>
                     <Form.Item label="Add a Source of Income">

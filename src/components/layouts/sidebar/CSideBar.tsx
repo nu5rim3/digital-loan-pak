@@ -147,12 +147,12 @@ const CSideBar: React.FC<ICSideBarProps> = ({ collapsed, setCollapsed }) => {
         {
             type: 'submenu',
             icon: <RocketOutlined />,
-            label: 'Loan Application',
+            label: 'Facility Application',
             key: '6',
             roles: ["ADMIN", 'CRO',"AUDITOR"],
             children: [
                 {
-                    label: 'Loan Request',
+                    label: 'Facility Request',
                     key: '6-1',
                     icon: <UngroupOutlined />,
                     onClick: () => navigate(`/${mainNavigation}/loan/application`),

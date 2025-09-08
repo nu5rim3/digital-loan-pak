@@ -215,7 +215,7 @@ const LoanDaashboard: React.FC = () => {
     if (applicationValidationLoading) {
         return (
             <Spin>
-                <Card title={`Loan Application - ${appId}`}>
+                <Card title={`Facility Application - ${appId}`}>
                     <Empty description={'Loading...'} />
                 </Card>
             </Spin>
@@ -224,7 +224,7 @@ const LoanDaashboard: React.FC = () => {
 
     if (applicationValidates.length === 0 && _tabItems.length === 0) {
         return (
-            <Card title={`Loan Application - ${appId}`}>
+            <Card title={`Facility Application - ${appId}`}>
                 <Empty
                     description={'No Data Found'}
                     children={
@@ -244,7 +244,7 @@ const LoanDaashboard: React.FC = () => {
                 className='loan-card mb-3'
             >
                 <div className='flex justify-between'>
-                    <div className='text-lg'>Loan Application: {appId}</div>
+                    <div className='text-lg'>Facility Application: {appId}</div>
                     <div className='text-lg'>Customer Name: {customers[0]?.fullName}</div>
                 </div>
             </Card>

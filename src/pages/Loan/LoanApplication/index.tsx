@@ -137,14 +137,14 @@ const LoanApplication: React.FC = () => {
 
     return (
         <Content>
-            <Card title="Loan Request">
+            <Card title="Facility Request">
 
 
                 <Tabs
                     onChange={onChange}
                     type="card"
                     tabBarExtraContent={{
-                        right: <Button type='primary' onClick={newLoanHandler} loading={loading} icon={<PlusOutlined />}>New Loan</Button>
+                        right: <Button type='primary' onClick={newLoanHandler} loading={loading} icon={<PlusOutlined />}>New Facility</Button>
                     }}
                     defaultActiveKey={activeTab}
                     items={[
