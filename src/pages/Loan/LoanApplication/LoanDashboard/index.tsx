@@ -181,7 +181,7 @@ const LoanDaashboard: React.FC = () => {
             key: `${rule.section}`,
             label: (
                 <div className="flex flex-col items-start gap-1">
-                    <span className='text-base font-semibold'>{kebabToTitleCase(rule.section)}</span>
+                    <span className='text-base font-semibold'>{rule.section === "loan-application"? "Facility Application":kebabToTitleCase(rule.section)}</span>
                     <div className="flex gap-1">
                         <LoanStatusTag type={'M'} status={rule.isMandatory} />
                         <LoanStatusTag type={'C'} status={rule.completed} />
