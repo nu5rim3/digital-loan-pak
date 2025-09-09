@@ -145,7 +145,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
  
   useEffect(() => {
     //if user is not visit tial calculation section and come directly to collateral section
-    if (!trailCalulationDetailsByAppId && appId)
+    if (appId)
       fetchTrailCalulationDetailsByAppId(appId ?? "");
       setIsGetTrialData(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
