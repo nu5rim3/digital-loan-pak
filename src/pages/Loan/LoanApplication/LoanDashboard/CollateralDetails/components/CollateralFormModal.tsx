@@ -640,6 +640,7 @@ const { trialCalculationData } = useCommonStore();
                 control={leaseControl}
                 errors={leaseErrors}
                 setValue={setLeaseValue}
+                resetLeaseForm={resetLeaseForm}
               />
             </div>
           )}
