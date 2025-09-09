@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Form, Input, Select, DatePicker, InputNumber, Spin } from "antd";
-import { Control, Controller, useWatch } from "react-hook-form";
+import { Control, Controller, UseFormReset, useWatch } from "react-hook-form";
 import { LeaseProductFormValues } from "../types";
 import dayjs from "dayjs";
 import useCollateralStore from "../../../../../../store/collateralStore";
@@ -14,6 +14,7 @@ interface LeaseProductFormProps {
   control: Control<LeaseProductFormValues>;
   errors: Record<string, any>;
   setValue?: (name: keyof LeaseProductFormValues, value: any) => void;
+  resetLeaseForm: UseFormReset<LeaseProductFormValues>;
 }
 
 export const submitLease = async (
@@ -103,6 +104,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
   control,
   errors,
   setValue,
+  resetLeaseForm
 }) => {
     const { appId } = useParams()
   const {
@@ -142,7 +144,14 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
   });
 
   const [getTrialData, setIsGetTrialData] = useState<boolean>(false)
- 
+ // Restore saved trial calculation data when component mounts
+      useEffect(() => {
+          if (trialCalculationData && resetLeaseForm) {
+             resetLeaseForm?.({ equipmentType: "",equipmentCost: "" });
+
+          }
+          // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, []);
   useEffect(() => {
     //if user is not visit tial calculation section and come directly to collateral section
     if (appId)
@@ -150,6 +159,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
       setIsGetTrialData(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appId]);
+  
   useEffect(() => {
     if (trailCalulationDetailsByAppId !== null && getTrialData) {
      // Set trial calculation data for other components
