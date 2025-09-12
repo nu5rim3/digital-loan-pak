@@ -51,13 +51,13 @@ const GeneralAppraisalList: React.FC = () => {
   ["AM", "COO", "RBH"].includes(currentRole?.code!);
   const [activeTab, setActiveTab] = useState(!exceptionalView ?"general":"exceptional");
   const statusOptions = [
-  { label: "Approval Pending", value: "APPROVAL_PENDING" },
-  { label: "Approved", value: "APPROVED" },
-  { label: "Rejected", value: "REJECTED" },
+  { label: "Approval Pending", value: "APPROVAL_PENDING" , },
+  { label: "Approved", value: "APPROVED", disabled: flow !== "firstFlow" },
+  { label: "Rejected", value: "REJECTED" ,disabled: flow !== "firstFlow"},
   { 
     label: "Returned", 
     value: "RETURNED", 
-    disabled: activeTab !== "general" //  disable when firstFlow is true
+    disabled: activeTab !== "general"  //  disable when firstFlow is true
   },
 ];
 
