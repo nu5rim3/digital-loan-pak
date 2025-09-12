@@ -13,7 +13,10 @@ import useCommonStore from '../../../../../store/commonStore';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface ITermDeposit {
-    // Add any props if needed
+      termDepositPlaced:ITermDepositPlaced[];
+      termDepositPlacedLoading:boolean;
+     isModalOpen: boolean;
+     setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const schema = yup.object().shape({
@@ -32,10 +35,15 @@ const schema = yup.object().shape({
 
 
 
-const TermDepositPlaced: React.FC<ITermDeposit> = () => {
+const TermDepositPlaced: React.FC<ITermDeposit> = ({
+    termDepositPlaced,
+    termDepositPlacedLoading,
+    isModalOpen,
+    setIsModalOpen
+}) => {
 
     const { appId } = useParams()
-    const [isModalOpen, setIsModalOpen] = useState(false);
+   // const [isModalOpen, setIsModalOpen] = useState(false);
     const [mode, setMode] = useState<'save' | 'update' | 'remove'>('save');
     const [selectedDetail, setSelectedDetail] = useState<ITermDepositPlaced | null>(null);
     const { control, formState: { errors }, setValue, handleSubmit, reset } = useForm({
@@ -43,7 +51,10 @@ const TermDepositPlaced: React.FC<ITermDeposit> = () => {
     });
 
 
-    const { termDepositPlaced, termDepositPlacedLoading, fetchTermDepositByAppId, addTermDepositPlaced, updateTermDepositPlaced, deleteTermDepositPlaced } = useLoanStore()
+    const { 
+        // termDepositPlaced, termDepositPlacedLoading,
+         fetchTermDepositByAppId, 
+         addTermDepositPlaced, updateTermDepositPlaced, deleteTermDepositPlaced } = useLoanStore()
 
     const { banks, bankLoading, fetchBanks } = useCommonStore()
 
@@ -80,12 +91,12 @@ const TermDepositPlaced: React.FC<ITermDeposit> = () => {
         }
     };
 
-    useEffect(() => {
-        if (!isModalOpen) {
-            fetchTermDepositByAppId(appId ?? '')
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [appId, fetchTermDepositByAppId, fetchBanks])
+    // useEffect(() => {
+    //     if (!isModalOpen) {
+    //         fetchTermDepositByAppId(appId ?? '')
+    //     }
+    //     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [appId, fetchTermDepositByAppId, fetchBanks])
 
     useEffect(() => {
         fetchBanks()
@@ -104,7 +115,7 @@ const TermDepositPlaced: React.FC<ITermDeposit> = () => {
                 ) : termDepositPlaced.length === 0 ? (
                     <Empty description="No Term Deposit Placed" />
                 ) : (
-                    <div className='grid grid-cols-4 gap-3'>
+                    <div className='grid  grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-3 gap-3'>
                         {termDepositPlaced.map((item, index) => (
                             <DetailsCard detail={item} key={index} onEdit={() => openModal('update', item)} onRemove={() => openModal('remove', item)} dataArray={[banks]} />
                         ))}

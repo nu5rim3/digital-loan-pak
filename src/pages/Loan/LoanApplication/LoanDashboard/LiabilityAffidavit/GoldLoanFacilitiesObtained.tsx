@@ -14,6 +14,10 @@ import useCommonStore from '../../../../../store/commonStore';
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface IGoldLoanFacilitiesObtained {
     // Add any props if needed
+    goldLoanFacilities:IGoldLoanFacilities[];
+    goldLoanFacilitiesLoading:boolean;
+   isModalOpen: boolean;
+   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const schema = yup.object().shape({
@@ -21,15 +25,26 @@ const schema = yup.object().shape({
     loanAmount: yup.string().required('Loan Amount is required'),
     renewalDate: yup.string().required('Renewal Date is required'),
 })
-const GoldLoanFacilitiesObtained: React.FC<IGoldLoanFacilitiesObtained> = () => {
+const GoldLoanFacilitiesObtained: React.FC<IGoldLoanFacilitiesObtained> = (
+   { 
+    goldLoanFacilities,
+    goldLoanFacilitiesLoading,
+    isModalOpen,
+    setIsModalOpen
+}
+
+
+) => {
     const { appId } = useParams()
-    const [isModalOpen, setIsModalOpen] = useState(false);
+   
     const [mode, setMode] = useState<'save' | 'update' | 'remove'>('save');
     const [selectedDetail, setSelectedDetail] = useState<IGoldLoanFacilities | null>(null);
     const { control, formState: { errors }, setValue, handleSubmit, reset } = useForm({
         resolver: yupResolver(schema),
     });
-    const { goldLoanFacilities, goldLoanFacilitiesLoading, fetchGoldLoanFacilities, addGoldLoanFacilities, updateGoldLoanFacilities, deleteGoldLoanFacilities } = useLoanStore()
+    const { 
+       // goldLoanFacilities, goldLoanFacilitiesLoading, fetchGoldLoanFacilities,  
+        addGoldLoanFacilities, updateGoldLoanFacilities, deleteGoldLoanFacilities } = useLoanStore()
     const { banks, bankLoading, fetchBanks } = useCommonStore()
 
     const openModal = (mode: 'save' | 'update' | 'remove', details: IGoldLoanFacilities | null = null) => {
@@ -60,11 +75,11 @@ const GoldLoanFacilitiesObtained: React.FC<IGoldLoanFacilitiesObtained> = () => 
         }
     };
 
-    useEffect(() => {
-        if (!isModalOpen) {
-            fetchGoldLoanFacilities(appId ?? '')
-        }
-    }, [isModalOpen, fetchGoldLoanFacilities, appId, fetchBanks])
+    // useEffect(() => {
+    //     if (!isModalOpen) {
+    //         fetchGoldLoanFacilities(appId ?? '')
+    //     }
+    // }, [isModalOpen, fetchGoldLoanFacilities, appId, fetchBanks])
 
 
     useEffect(() => {
@@ -84,7 +99,7 @@ const GoldLoanFacilitiesObtained: React.FC<IGoldLoanFacilitiesObtained> = () => 
             ) : (
                 <>
                     {goldLoanFacilities.length > 0 ? (
-                        <div className='grid grid-cols-4 gap-4'>
+                        <div className='grid  grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-3 gap-3'>
                             {
                                 goldLoanFacilities.map((detail, index) => (
                                     <DetailsCard key={index} detail={detail} onEdit={() => openModal('update', detail)} onRemove={() => openModal('remove', detail)} dataArray={[banks]} />

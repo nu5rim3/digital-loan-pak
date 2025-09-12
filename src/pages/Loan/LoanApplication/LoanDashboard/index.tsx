@@ -108,7 +108,7 @@ const LoanDaashboard: React.FC = () => {
                     </div>);
             case 'liability-affidavit':
                 return (
-                    <div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}>
+                    <div ref={ref} style={{ height: '150vh', overflowY: 'auto' }}>
                         <LiabilityAffidavit />
                     </div>);
             case 'gold-facility':

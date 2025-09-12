@@ -16,7 +16,7 @@ import {
 //   contactInformation,
 //   residentialInformation,
 // } from "services/witness.service";
-import { getValueAddressType } from "../../../../utils/Common";
+import { capitalize, getCommonAreaValues, getValueAddressType } from "../../../../utils/Common";
 import { APIAuth } from "../../../../services/api";
 
 
@@ -152,10 +152,10 @@ const WitnessDetails: React.FC<GuarantorDetailsProps> = ({ stakeholders }) => {
                 {renderDesc("Address Line 2", details.address?.addressLine2)}
                 {renderDesc("Address Line 3", details.address?.addressLine3)}
                 {renderDesc("Address Line 4", details.address?.addressLine4)}
-                {renderDesc("Area", selectedArea)}
+                {renderDesc("Area", capitalize( getCommonAreaValues(details.address?.area?? "") ?? ""))}
                 {renderDesc("City", details.address?.city)}
                 {renderDesc("District", details.address?.district)}
-                {renderDesc("Province", details.address?.province)}
+                {renderDesc("Province", selectedArea)}
               </Descriptions>
             </Panel>
           </Collapse>
