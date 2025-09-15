@@ -140,13 +140,14 @@ useEffect(() => {
           APIAuth.get(
             `/mobixCamsLoan/v1/loans/image/details/${appraisalId}/master/G${
               index + 1
-            }FINGER/sub/SIGN`
+            }/sub/SIGN`
           ),
           APIAuth.get(
             `/mobixCamsLoan/v1/loans/image/details/${appraisalId}/master/G${
               index + 1
-            }/sub/1`
+            }FINGER/sub/1`
           ),
+         
         ]);
 
       setGuarantorDetails({
