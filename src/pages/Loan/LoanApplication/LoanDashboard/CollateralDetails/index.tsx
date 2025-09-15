@@ -12,6 +12,7 @@ import { v4 } from "uuid";
 import { useParams } from "react-router-dom";
 import useCollateralStore from "../../../../../store/collateralStore";
 import useCommonStore from "../../../../../store/commonStore";
+import { securityTypes } from "../../../../../utils/Common";
 
 interface CollateralDetailsComponentProps { }
 
@@ -24,8 +25,8 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
   // Map the security type based on the collateral type
   switch (collateral.type) {
     case "bank-guarantee":
-      formValues.securityType = "BANK GUARANTEE";
-      formValues.bankGuaranteeType = collateral.type;
+      formValues.securityType = securityTypes.BANK_GUARANTEE;
+      formValues.bankGuaranteeType = collateral.bankGuaranteeType;
       formValues.bankGuaranteeOwnership = collateral.ownership;
       formValues.fdNo = collateral.fdNo;
       formValues.fdValue = collateral.fdValue;
@@ -46,7 +47,7 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.bankReferenceNo = collateral.insuRefNo;
       break;
     case "vehicle":
-      formValues.securityType = "VEHICLE";
+      formValues.securityType = securityTypes.VEHICLE;
       // Map vehicle specific fields - using the renamed fields from our transform
       formValues.vehicleType = collateral.vehicleType || collateral.type;
       formValues.vehicleOwnership =
@@ -90,7 +91,7 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
         collateral.vehicleReferenceNo || collateral.refNo;
       break;
     case "machinery":
-      formValues.securityType = "MACHINERY AND EQUIPMENT";
+      formValues.securityType = securityTypes.MACHINERY_AND_EQUIPMENT;
       // Map machinery specific fields
       formValues.machineryType = collateral.machineryType;
       formValues.machineryOwnership = collateral.machineryOwnership;
@@ -110,7 +111,7 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.machineryReferenceNo = collateral.machineryReferenceNo;
       break;
     case "property-mortgage":
-      formValues.securityType = "PROPERTY MORTGAGE";
+      formValues.securityType = securityTypes.PROPERTY_MORTGAGE;
       // Map property mortgage specific fields
       formValues.propertyType = collateral.propertyType;
       formValues.propertySubType = collateral.propertySubType;
@@ -141,7 +142,7 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.propertyReferenceNo = collateral.propertyReferenceNo;
       break;
     case "land-stock":
-      formValues.securityType = "LAND STOCKS";
+      formValues.securityType = securityTypes.LAND_STOCKS;
       // Map land stock specific fields
       formValues.landStockType = collateral.landStockType;
       formValues.landStockSubType = collateral.landStockSubType;
@@ -154,12 +155,13 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.landStockAgreementNo = collateral.landStockAgreementNo;
       formValues.landStockLawyerName = collateral.landStockLawyerName;
       formValues.landStockDescription = collateral.landStockDescription;
+      formValues.landStockSecCategory = collateral.landStockSecCategory;
       formValues.landStockSecurityDate = collateral.landStockSecDate
         ? new Date(collateral.landStockSecDate.split(" ")[0])
         : undefined;
       break;
     case "savings":
-      formValues.securityType = "FIXED DEPOSITS AND SAVINGS";
+      formValues.securityType = securityTypes.FIXED_DEPOSITS_AND_SAVINGS;
       // Map savings specific fields
       formValues.savingsType = collateral.savingsType;
       formValues.savingsSubType = collateral.savingsSubType;
@@ -175,7 +177,7 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.savingsBuildUpValue = collateral.savingsBuildUpValue;
       break;
     case "lease":
-      formValues.securityType = "LEASE";
+      formValues.securityType = securityTypes.LEASE;
       // Map lease specific fields
       formValues.leaseEquipType = collateral.leaseEquipType;
       formValues.leaseCost = collateral.leaseCost?.toString();
@@ -253,6 +255,9 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
     fetchingSavings,
     fetchingVehicle,
     fetchingLease,
+    fetchSecurityTypes,
+    securityTypesLoading,
+    securityTypes
   } = useCollateralStore();
 
   useEffect(() => {
@@ -269,6 +274,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
     };
 
     loadCollaterals();
+    fetchSecurityTypes();
   }, [appraisalId]); // Only depend on appraisalId
 
   useEffect(() => {
@@ -471,6 +477,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             landStockSecurityDate: detailedData.landStockSecDate
               ? detailedData.landStockSecDate.split(" ")[0]
               : undefined,
+            landStockSecCategory: detailedData.landStockSecCategory
           };
 
           setEditingId(detailedData.landStockIdx || data.id);
@@ -1016,6 +1023,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
                   securityType={data.securityType || ""}
                   onUpdate={() => handleUpdate(index)}
                   onDelete={() => handleDelete(index)}
+                  securityTypes={securityTypes}
                 />
               </Col>
             ))}
@@ -1038,7 +1046,8 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             fetchingPropertyMortgage ||
             fetchingSavings ||
             fetchingVehicle ||
-            fetchingLease
+            fetchingLease ||
+            securityTypesLoading
           }
         />
       </div>
