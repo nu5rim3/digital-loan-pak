@@ -1,11 +1,38 @@
 import { create } from "zustand";
 import { API, APIAuth } from "../services/api";
+import { categoryMap } from "../utils/Common";
 
 // Common interfaces
 interface IBaseItem {
   code: string;
   description: string;
   status?: string;
+}
+interface ownerShipData {
+  bankGuaranteeOwnership?: IBaseItem;
+  machineryOwnership?: IBaseItem;
+  propertyOwnership?: IBaseItem;
+  vehicleOwnership?: IBaseItem;
+}
+
+interface conditionData {
+  machineryCondition?: IBaseItem;
+  vehicleCondition?: IBaseItem;
+  leaseCondition?: IBaseItem;
+}
+
+interface typesData {
+  vehicleTypes?: IBaseItem;
+  savingsTypes?: IBaseItem;
+  propertyTypes?: IBaseItem;
+  machineryTypes?: IBaseItem;
+  landStockTypes?: IBaseItem;
+  bankGuarantees?: IBaseItem;
+}
+interface subTypesData {
+  savingsSubType?: IBaseItem;
+  propertySubType?: IBaseItem;
+  landStockSubType?: IBaseItem;
 }
 
 interface IType extends IBaseItem {
@@ -206,6 +233,16 @@ interface ICollateralState {
   vehicleCategories: IBaseItem[];
   depreciationRates: IBaseItem[];
 
+  insuaranceCompanyData: IBaseItem;
+  ownershipData: ownerShipData;
+  typesData: typesData;
+  conditionData: conditionData;
+  securityCategoryData: any;
+  securityTypeData: any;
+  subTypesData: subTypesData;
+  vehicleCategoryData: IBaseItem;
+
+
   // Loading states
   typesLoading: boolean;
   subTypesLoading: boolean;
@@ -247,6 +284,15 @@ interface ICollateralState {
   updatingLease: boolean;
   fetchingLease: boolean;
 
+  insuranceCompanyByCodeLoading: boolean;
+  ownershipByCodeLoading: boolean;
+  typeByCodeLoading: boolean;
+  subTypeByCodeLoading: boolean;
+  conditionByCodeLoading: boolean;
+  securityCategoryDataLoading: boolean;
+  vehicleCategoryLoading: boolean;
+
+
   // Error states
   saveBankGuaranteeError: string | null;
   updateBankGuaranteeError: string | null;
@@ -274,7 +320,7 @@ interface ICollateralState {
   fetchLeaseError: string | null;
 
   // Fetch functions
-  fetchTypes: (type: string) => Promise<void>;
+  fetchTypes: (type: string, category?: string) => Promise<void>;
   fetchSubTypes: (type: string) => Promise<void>;
   fetchOwnerships: () => Promise<void>;
   fetchSecurityTypes: () => Promise<void>;
@@ -346,6 +392,15 @@ interface ICollateralState {
     type: string,
     appraisalId?: string
   ) => Promise<boolean>;
+
+  fetchInsuranceCompaniesByCode(code: string): Promise<void>;
+  fetchOwnershipByCode(field: string, code: string): Promise<void>;
+  fetchTypeByCode(type: string, code: string): Promise<void>;
+  fetchSubTypeByCode(subTypeFieldName:string,type: string, code: string): Promise<void>;
+  fetchSecurityCategoryByCode: (code: string) => Promise<void>;
+  fetchConditionByCode: (field: string, code: string) => Promise<void>;
+  fetchVehicleCategoryByCode: (code: string) => Promise<void>;
+
 }
 
 const useCollateralStore = create<ICollateralState>((set, get) => ({
@@ -367,6 +422,16 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   collaterals: [],
   vehicleCategories: [],
   depreciationRates: [],
+
+  insuaranceCompanyData: {} as IBaseItem,
+  ownershipData: {} as ownerShipData,
+  typesData: {} as typesData,
+  subTypesData: {} as subTypesData,
+  conditionData: {} as conditionData,
+  securityCategoryData: {} as IBaseItem,
+  securityTypeData: {},
+  vehicleCategoryData: {} as IBaseItem,
+
 
   // Initialize loading states
   typesLoading: false,
@@ -409,6 +474,15 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   updatingLease: false,
   fetchingLease: false,
 
+  insuranceCompanyByCodeLoading: false,
+  ownershipByCodeLoading: false,
+  typeByCodeLoading: false,
+  subTypeByCodeLoading: false,
+  conditionByCodeLoading: false,
+  securityCategoryDataLoading: false,
+  vehicleCategoryLoading: false,
+
+
   // Initialize error states
   saveBankGuaranteeError: null,
   updateBankGuaranteeError: null,
@@ -435,12 +509,20 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   updateLeaseError: null,
   fetchLeaseError: null,
 
-  fetchTypes: async (securityType) => {
+  fetchTypes: async (securityType, category) => {
     set({ typesLoading: true });
     try {
       const endpoint = `/mobixCamsCommon/v1/sub-security/types-1/${securityType}`;
       const response = await API.get(endpoint);
       set({ types: response.data });
+      if (category) {
+        set((prev) => ({
+          securityTypeData: {
+            ...prev.securityTypeData,
+            [category]: response.data, // store by category
+          },
+        }));
+      }
     } catch (error) {
       console.error("Error fetching types:", error);
     } finally {
@@ -1238,12 +1320,14 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
         ...(collateralsData.bankGuarantees || []).map((item: any) => ({
           ...item,
           id: item.bankGuaranteeIdx,
+          bankGuaranteeType: item.type,
           type: "bank-guarantee",
         })),
         ...(collateralsData.vehicles || []).map((item: any) => ({
           ...item,
           id: item.vehIdx,
           type: "vehicle",
+          typeCode: item.type,
           engineNo: item.enginNo,
           chassisNo: item.chasisNo,
           registrationNo: item.regNo,
@@ -1418,6 +1502,124 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       return false;
     }
   },
+  fetchOwnershipByCode: async (field: string, code: string) => {
+    set({ ownershipsLoading: true });
+    try {
+      const response = await API.get(`/mobixCamsCommon/v1/ownerships/${code}`);
+      set((prev) => ({
+        ownershipData: {
+          ...prev.ownershipData,
+          [field]: response.data, // store separately by field
+        },
+      }));
+    } catch (error) {
+      console.error(`Error fetching ownerships for by code:`, error);
+    } finally {
+      set({ ownershipsLoading: false });
+    }
+  },
+
+  fetchInsuranceCompaniesByCode: async (code: string) => {
+    set({ insuranceCompanyByCodeLoading: true });
+    try {
+      const response = await API.get(
+        `/mobixCamsCommon/v1/insurance-companies/${code}`
+      );
+      set({ insuaranceCompanyData: response.data });
+    } catch (error) {
+      console.error("Error fetching insurance companies by code:", error);
+    } finally {
+      set({ insuranceCompanyByCodeLoading: false });
+    }
+  },
+  fetchTypeByCode: async (securityType, code) => {
+    const category = categoryMap[code];
+    set({ typeByCodeLoading: true });
+    try {
+      const endpoint = `/mobixCamsCommon/v1/sub-security/types-1/${securityType}/types/${code}`;
+      const response = await API.get(endpoint);
+      set((prev) => ({
+        typesData: {
+          ...prev.typesData,
+          // store by securityType+code to avoid collisions
+          [category]: response.data,
+        },
+      }));
+    } catch (error) {
+      console.error("Error fetching types by code:", error);
+    } finally {
+      set({ typeByCodeLoading: false });
+    }
+  },
+  fetchSubTypeByCode: async (subTypeFieldName, securityType, code) => {
+
+    set({ subTypeByCodeLoading: true });
+    try {
+      const endpoint = `/mobixCamsCommon/v1/sub-security/types-2/${securityType}/types/${code}`;
+      const response = await API.get(endpoint);
+      set((prev) => ({
+        subTypesData: {
+          ...prev.subTypesData,
+         
+          [subTypeFieldName]: response.data,
+        },
+      }));
+    } catch (error) {
+      console.error("Error fetching types by code:", error);
+    } finally {
+      set({ subTypeByCodeLoading: false });
+    }
+  },
+
+  fetchSecurityCategoryByCode: async (code: string) => {
+    set({ securityCategoryDataLoading: true });
+    try {
+      const response = await API.get(
+        `/mobixCamsCommon/v1/security/categories/${code}`
+      );
+      set({ securityCategoryData: response.data });
+    } catch (error) {
+      console.error("Error fetching security category by code:", error);
+    } finally {
+      set({ securityCategoryDataLoading: false });
+    }
+  },
+
+
+
+  fetchConditionByCode: async (field: string, code: string) => {
+    set({ conditionByCodeLoading: true });
+    try {
+      const response = await API.get(`/mobixCamsCommon/v1/conditions/${code}`);
+      set((prev) => ({
+        conditionData: {
+          ...prev.conditionData,
+          [field]: response.data, // store separately by field
+        },
+      }));
+    } catch (error) {
+      console.error(`Error fetching  condition`,error);
+    } finally {
+      set({ conditionByCodeLoading: false });
+    }
+  },
+
+  fetchVehicleCategoryByCode: async (code: string) => {
+    set({ vehicleCategoryLoading: true });
+    try {
+      const response = await API.get(
+        `/mobixCamsCommon/v1/equipment-vehicle/types/${code}`
+      );
+      set({ vehicleCategoryData: response.data });
+    } catch (error) {
+      console.error("Error fetching vehicle type by code", error);
+    } finally {
+      set({ vehicleCategoryLoading: false });
+    }
+  },
+
+
+
 }));
 
 export default useCollateralStore;
