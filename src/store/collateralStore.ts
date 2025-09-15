@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { API, APIAuth } from "../services/api";
-import { categoryMap } from "../utils/Common";
+
 
 // Common interfaces
 interface IBaseItem {
