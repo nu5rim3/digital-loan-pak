@@ -21,13 +21,20 @@ interface conditionData {
   leaseCondition?: IBaseItem;
 }
 
+interface categoryData {
+  vehicleCategory?: IBaseItem;
+  leaseCategory?: IBaseItem;
+  
+}
+
 interface typesData {
-  vehicleTypes?: IBaseItem;
-  savingsTypes?: IBaseItem;
-  propertyTypes?: IBaseItem;
-  machineryTypes?: IBaseItem;
-  landStockTypes?: IBaseItem;
-  bankGuarantees?: IBaseItem;
+  vehicleType?: IBaseItem;
+  savingsType?: IBaseItem;
+  propertyType?: IBaseItem;
+  machineryType?: IBaseItem;
+  landStockType?: IBaseItem;
+  bankGuaranteeType?: IBaseItem;
+  leaseVehicleType?: IBaseItem;
 }
 interface subTypesData {
   savingsSubType?: IBaseItem;
@@ -240,7 +247,7 @@ interface ICollateralState {
   securityCategoryData: any;
   securityTypeData: any;
   subTypesData: subTypesData;
-  vehicleCategoryData: IBaseItem;
+  vehicleCategoryData: categoryData;
 
 
   // Loading states
@@ -395,11 +402,11 @@ interface ICollateralState {
 
   fetchInsuranceCompaniesByCode(code: string): Promise<void>;
   fetchOwnershipByCode(field: string, code: string): Promise<void>;
-  fetchTypeByCode(type: string, code: string): Promise<void>;
+  fetchTypeByCode(typeFieldName:string, type: string, code: string): Promise<void>;
   fetchSubTypeByCode(subTypeFieldName:string,type: string, code: string): Promise<void>;
   fetchSecurityCategoryByCode: (code: string) => Promise<void>;
   fetchConditionByCode: (field: string, code: string) => Promise<void>;
-  fetchVehicleCategoryByCode: (code: string) => Promise<void>;
+  fetchVehicleCategoryByCode: (field: string,code: string) => Promise<void>;
 
 }
 
@@ -430,7 +437,7 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   conditionData: {} as conditionData,
   securityCategoryData: {} as IBaseItem,
   securityTypeData: {},
-  vehicleCategoryData: {} as IBaseItem,
+  vehicleCategoryData: {} as categoryData,
 
 
   // Initialize loading states
@@ -1431,6 +1438,7 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
           province: item.leaseProvince,
           insuranceCompany: item.insuCompany,
           referenceNo: item.refNo,
+           leaseEquipType: item.leaseEquipType === "V" ? "Vehicle" : "Equipment",
         })),
       ];
 
@@ -1532,8 +1540,8 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       set({ insuranceCompanyByCodeLoading: false });
     }
   },
-  fetchTypeByCode: async (securityType, code) => {
-    const category = categoryMap[code];
+  fetchTypeByCode: async (typeFieldName,securityType, code) => {
+  
     set({ typeByCodeLoading: true });
     try {
       const endpoint = `/mobixCamsCommon/v1/sub-security/types-1/${securityType}/types/${code}`;
@@ -1542,7 +1550,7 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
         typesData: {
           ...prev.typesData,
           // store by securityType+code to avoid collisions
-          [category]: response.data,
+          [typeFieldName]: response.data,
         },
       }));
     } catch (error) {
@@ -1604,13 +1612,18 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
     }
   },
 
-  fetchVehicleCategoryByCode: async (code: string) => {
+  fetchVehicleCategoryByCode: async (field: string,code: string) => {
     set({ vehicleCategoryLoading: true });
     try {
       const response = await API.get(
         `/mobixCamsCommon/v1/equipment-vehicle/types/${code}`
       );
-      set({ vehicleCategoryData: response.data });
+       set((prev) => ({
+        vehicleCategoryData: {
+          ...prev.vehicleCategoryData,
+          [field]: response.data, // store separately by field
+        },
+      }));
     } catch (error) {
       console.error("Error fetching vehicle type by code", error);
     } finally {

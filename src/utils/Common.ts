@@ -160,7 +160,7 @@ export const getTypeFieldName = (key: string) => {
     case securityTypes.FIXED_DEPOSITS_AND_SAVINGS:
       return "savingsType";
     case securityTypes.LEASE:
-      return "leaseEquipType";
+      return "leaseVehicleType";
     default:
       "";
   }
@@ -210,6 +210,17 @@ export const getConditionFieldName = (key: string) => {
   }
 };
 
+export const getVehicleCategoryFieldName = (key: string) => {
+  switch (key) {
+    case securityTypes.VEHICLE:
+      return "vehicleCategory";
+     case securityTypes.LEASE:
+      return "leaseCategory";
+    default:
+      "";
+  }
+};
+
 export const categoryMap: Record<string, string> = {
   B: "bankGuarantees",
   M: "machineryTypes",
@@ -217,6 +228,7 @@ export const categoryMap: Record<string, string> = {
   L: "landStockTypes",
   F: "savingsTypes",
   V: "vehicleTypes",
+ 
 };
 
 export const subCategoryMap: Record<string, string[]> = {

@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import useCollateralStore from "../../../../../../store/collateralStore";
 import { formatCurrency } from "../../../../../../utils/formatterFunctions";
 
-import { getConditionFieldName, getOwnershipFieldName, getSubTypeFieldName, getTypeFieldName } from "../../../../../../utils/Common";
+import { getConditionFieldName, getOwnershipFieldName, getSubTypeFieldName, getTypeFieldName, getVehicleCategoryFieldName } from "../../../../../../utils/Common";
 // Or, if the correct file is creditStore.ts but in a different folder, adjust accordingly.
 // import useCollateralStore from "../../../../store/creditStore";
 interface DetailsCardProps {
@@ -170,9 +170,11 @@ useEffect(() => {
   if (data?.landStockSecCategory) {
     fetchSecurityCategoryByCode(data.landStockSecCategory);
   }
+  const categoryFieldName = getVehicleCategoryFieldName(securityType);
+  const categoryCode = categoryFieldName ? data?.[categoryFieldName] : null
 
-  if (data?.vehicleCategory) {
-    fetchVehicleCategoryByCode(data.vehicleCategory);
+    if (categoryFieldName && categoryCode) {
+    fetchVehicleCategoryByCode(categoryFieldName, categoryCode);
   }
   const conditionFieldName = getConditionFieldName(securityType);
   const conditionCode = conditionFieldName ? data?.[conditionFieldName] : null;
@@ -194,7 +196,8 @@ useEffect(() => {
     //because not passing description from API
   if (!securityTypes.length) return;
 
-  const selectedSecurityTypeCode =
+  const selectedSecurityTypeCode =  
+securityType === "LEASE"? "V":
     securityTypes.find((item: any) => item.description === securityType)?.code ?? "";
 
   if (!selectedSecurityTypeCode) return;
@@ -202,8 +205,8 @@ useEffect(() => {
   const typeFieldName = getTypeFieldName(securityType);
   const typeCode = typeFieldName ? data?.[typeFieldName] : null;
 
-  if (typeCode) {
-    fetchTypeByCode(typeCode, selectedSecurityTypeCode);
+  if (typeCode && typeFieldName) {
+    fetchTypeByCode(typeFieldName,typeCode, selectedSecurityTypeCode);
   }
 
   const subTypeFieldName = getSubTypeFieldName(securityType);
@@ -231,34 +234,37 @@ useEffect(() => {
   };
 
   const renderDetails = () => {
+    const getDescription = (source: any, key: string) =>
+      source?.[key]?.description ?? "-";
+
     const modifiedData = {
       ...data,
-      bankGuaranteeOwnershipName:
-        ownershipData?.bankGuaranteeOwnership?.description || "-",
-      machineryOwnershipName:
-        ownershipData?.machineryOwnership?.description || "-",
-      propertyOwnershipName:
-        ownershipData?.propertyOwnership?.description || "-",
-      vehicleOwnership:  ownershipData?.vehicleOwnership?.description || "-",
-      machineryCondition: conditionData?.machineryCondition?.description || "-",
-      vehicleCondition: conditionData?.vehicleCondition?.description || "-",
-         leaseCondition: conditionData?.leaseCondition?.description || "-",
-      landStockCategory: securityCategoryData?.description || "-",
-      vehicleCategory: vehicleCategoryData?.description || "-",
-      leaseEquipType:"",
-      savingsType: typesData.savingsTypes?.description ?? "-",
-      vehicleType: typesData.vehicleTypes?.description ?? "-",
-      propertyType: typesData.propertyTypes?.description ?? "-",
-      bankGuaranteeType: typesData.bankGuarantees?.description ?? "-",
-      machineryType: typesData.machineryTypes?.description ?? "-",
-      landStockType: typesData.landStockTypes?.description ?? "-",
-     propertySubType: subTypesData.propertySubType?.description ?? "",
-     landStockSubType: subTypesData.landStockSubType?.description?? "",
-      savingsSubType: subTypesData.savingsSubType?.description?? "",  
+      bankGuaranteeOwnershipName: getDescription(ownershipData, "bankGuaranteeOwnership"),
+      machineryOwnershipName: getDescription(ownershipData, "machineryOwnership"),
+      propertyOwnershipName: getDescription(ownershipData, "propertyOwnership"),
+      vehicleOwnership: getDescription(ownershipData, "vehicleOwnership"),
 
+      machineryCondition: getDescription(conditionData, "machineryCondition"),
+      vehicleCondition: getDescription(conditionData, "vehicleCondition"),
+      leaseCondition: getDescription(conditionData, "leaseCondition"),
 
+      landStockCategory: securityCategoryData?.description ?? "-",
+      vehicleCategory: vehicleCategoryData?.vehicleCategory?.description ?? "-",
+      leaseCategory: vehicleCategoryData?.leaseCategory?.description ?? "-",
 
-    };
+      savingsType: getDescription(typesData, "savingsType"),
+      vehicleType: getDescription(typesData, "vehicleType"),
+      propertyType: getDescription(typesData, "propertyType"),
+      bankGuaranteeType: getDescription(typesData, "bankGuaranteeType"),
+      machineryType: getDescription(typesData, "machineryType"),
+      landStockType: getDescription(typesData, "landStockType"),
+      leaseVehicleType: getDescription(typesData, "leaseVehicleType"),
+
+      propertySubType: getDescription(subTypesData, "propertySubType"),
+      landStockSubType: getDescription(subTypesData, "landStockSubType"),
+      savingsSubType: getDescription(subTypesData, "savingsSubType"),
+};
+
     const config =
       SECURITY_TYPE_CONFIG[securityType as keyof typeof SECURITY_TYPE_CONFIG];
 
