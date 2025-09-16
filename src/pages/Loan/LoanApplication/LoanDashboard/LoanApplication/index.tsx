@@ -4,27 +4,26 @@ import React, { useEffect, useState } from 'react'
 import {
     PlusOutlined,
     EditOutlined,
-    DeleteOutlined
+    DeleteOutlined,
+    UndoOutlined
     //  EditOutlined, SaveOutlined, DeleteOutlined, UndoOutlined 
 } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import useCreditStore, { IAgricultureIncome, IBusinessIncome, ILiveStockIncome, IOtherIncome, ISalaryIncome } from '../../../../../store/creditStore';
 import { formatCurrency } from '../../../../../utils/formatterFunctions';
+interface ILoanApplication {
 
-const LoanApplication: React.FC = () => {
-    const { appId } = useParams()
+}
 
-    const navigate = useNavigate()
-
-    const handleCreateLoanApplication = () => {
-        navigate('loan-application', { state: { sourceOfIncome } })
-    }
-
+const LoanApplication: React.FC<ILoanApplication> = () => {
+  const { appId } = useParams();
+  const navigate = useNavigate();
     const [sourceOfIncome, setSourceOfIncome] = useState(null)
     const [selectedIdx, setSelectedIdx] = useState('')
-
     const { otherIncome, otherIncomeLoading, liveStockIncome, liveStockIncomeLoading, salaryIncome, salaryIncomeLoading, agricultureIncome, agricultureIncomeLoading, businessIncome, businessIncomeLoading, fetchBusinessIncome, fetchAgricultureIncome, fetchSalaryIncome, fetchLiveStockIncome, fetchOtherIncome } = useCreditStore()
-
+ const handleCreateLoanApplication = () => {
+     navigate('loan-application', { state: { sourceOfIncome ,mode: 'save'} })
+    }
 
     useEffect(() => {
         if (sourceOfIncome === 'Salary Income') {
@@ -67,10 +66,20 @@ const LoanApplication: React.FC = () => {
 
     return (
         <Card>
-            <div className='flex justify-between'>
-                <Form className='w-1/4' layout='vertical'>
-                    <Form.Item label="View Added Source of Income">
-                        <Select
+           <div className="flex justify-end">
+                <Button className="mr-7" type='primary' icon={<PlusOutlined />} onClick={handleCreateLoanApplication}>
+                    Create a Facility Application
+                </Button>
+            </div>
+            <Card className="mt-5" type="inner">
+                {/* <h3 className="text-lg font-semibold mb-4">Source of Income</h3> */}
+            <div className="flex items-end justify-start">
+              {/* Dropdown */}
+                <Form className="w-1/3" layout="vertical">
+                <Form.Item
+                    label={<span className="font-medium text-gray-700">View Added Source of Income</span>}
+                >
+                      <Select
                             className='w-1/4'
                             placeholder="Select a Source Income"
                             value={sourceOfIncome}
@@ -83,17 +92,25 @@ const LoanApplication: React.FC = () => {
                             ]}
                             onChange={(value => setSourceOfIncome(value))}
                         />
-                    </Form.Item>
+                 </Form.Item>
                 </Form>
-                <Button type='primary' icon={<PlusOutlined />} onClick={handleCreateLoanApplication}>
-                    Create a Facility Application
-                </Button>
-            </div>
-            {sourceOfIncome && (
-                <div className='flex justify-end mb-3'>
-                    <Button type='primary' onClick={() => setSourceOfIncome(null)}>Reset Source of Income</Button>
+                 {/* {sourceOfIncome && ( */}
+                <div className='flex justify-start mb-3'>
+                  <Button
+                  disabled={sourceOfIncome===null}
+                   type="default" htmlType="reset" 
+                    danger
+                    icon={<UndoOutlined />}
+                    className="ml-6 !rounded-md !px-6 mb-4"
+                    onClick={() => setSourceOfIncome(null)}
+                    >
+                    Reset Source of Income
+                    </Button>
+                    
                 </div>
-            )}
+            {/* )} */}
+            </div>
+         
 
             {
                 sourceOfIncome === null && (
@@ -107,7 +124,7 @@ const LoanApplication: React.FC = () => {
                     </Spin>
                 )}
             {sourceOfIncome === 'Business Income' && (
-                <div className='grid grid-cols-4 gap-3'>
+                <div className='grid grid-cols-3 gap-3'>
                     {businessIncome.map((item) => (
                         <BusinessDetailsCard detail={item}
                             onEdit={() => {
@@ -128,7 +145,7 @@ const LoanApplication: React.FC = () => {
                     </Spin>
                 )}
             {sourceOfIncome === 'Agricultural Income' && (
-                <div className='grid grid-cols-4 gap-3'>
+                <div className='grid grid-cols-3 gap-3'>
                     {agricultureIncome.map((item) => (
                         <AgriDetailsCard detail={item}
                             onEdit={() => { }}
@@ -148,7 +165,7 @@ const LoanApplication: React.FC = () => {
                 )}
 
             {sourceOfIncome === 'Salary Income' && (
-                <div className='grid grid-cols-4 gap-3'>
+                <div className='grid grid-cols-3 gap-3'>
                     {salaryIncome.map((item) => (
                         <SalaryDetailsCard detail={item}
                             onEdit={() => {
@@ -169,7 +186,7 @@ const LoanApplication: React.FC = () => {
                     </Spin>
                 )}
             {sourceOfIncome === 'Live Stock Income' && (
-                <div className='grid grid-cols-4 gap-3'>
+                <div className='grid grid-cols-3 gap-3'>
                     {liveStockIncome.map((item) => (
                         <LiveStockDetailsCard detail={item}
                             onEdit={() => {
@@ -191,7 +208,7 @@ const LoanApplication: React.FC = () => {
                 )}
 
             {sourceOfIncome === 'Other Income' && (
-                <div className='grid grid-cols-4 gap-3'>
+                <div className='grid grid-cols-3 gap-3'>
                     {otherIncome.map((item) => (
                         <OtherDetailsCard detail={item}
                             onEdit={() => {
@@ -204,6 +221,7 @@ const LoanApplication: React.FC = () => {
                 </div>
             )
             }
+            </Card>
         </Card>
     )
 }
