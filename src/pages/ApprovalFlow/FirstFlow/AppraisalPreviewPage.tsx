@@ -51,7 +51,7 @@ const AppraisalPreviewPage: React.FC = () => {
 
   useEffect(() => {
     const fetchMetaData = async () => {
-        console.log('ttttttt');
+       
       try {
         const onboarding:any = await APIAuth.get(
         `/mobixCamsLoan/v1/appraisals/${appraisalId}/clienteles`,
@@ -59,15 +59,14 @@ const AppraisalPreviewPage: React.FC = () => {
         const sorted = onboarding?.data?.clienteles?.sort((a: any, b: any) =>
           a.type.toLowerCase().localeCompare(b.type.toLowerCase())
         );
-        console.log('onbo 1', onboarding.data);
-        console.log('onbo 2', sorted);
+       ;
         setClienteles(sorted);
         setIsReturned(onboarding?.data?.isReturned === 'Y');
 
         const tcDetailsRes:any = await API.get(
           `/mobixCamsCredit/v1/credit/tc/${appraisalId}`);
 
-          console.log('tcDetailsxxxxxxxx', tcDetailsRes);
+     
         setTcDetails(tcDetailsRes?.data || {});
 
         const stakeholderResponse = await APIAuth.get(`/mobixCamsClientele/v1/clienteles/stakeholder/${appraisalId}/appraisal`);

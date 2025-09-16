@@ -22,7 +22,7 @@ const Category: React.FC<{ groups: ImageGroup[] }> = ({ groups }) => {
 
   const removeUnderscore = (str: string) => str.replace(/_/g, " ");
 
-  console.log('images', images);
+
 
   return (
     <>

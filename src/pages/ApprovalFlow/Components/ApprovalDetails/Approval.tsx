@@ -332,7 +332,7 @@ export default function Approval({
           return navigate(`${mainURL}/approval/list/secondFlow`);
         }
       } catch (err) {
-        // console.log('[ERROR] - ', err)
+        
         notification.error({
           message: "Application update failed",
         });

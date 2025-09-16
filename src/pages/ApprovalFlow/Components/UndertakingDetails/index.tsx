@@ -46,8 +46,7 @@ const UndertakingDetails: React.FC = () => {
     };
   }, [appraisalId]);
 
-  console.log('thump', thumb);
-  console.log('sign', signature);
+
 
   return (
     <Spin spinning={loading}>
