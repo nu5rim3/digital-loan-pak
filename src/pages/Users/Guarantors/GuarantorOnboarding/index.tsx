@@ -14,10 +14,12 @@ import FormDetails from '../../../../components/common/verification/FormDetails'
 import { getStatusByName, TRule } from '../../../../utils/MSASActionFunctions';
 import { mainURL } from '../../../../App';
 import useGuarantorStore from '../../../../store/guarantorStore';
+import useCreditStore from '../../../../store/creditStore';
 // import useGuarantorStore from '../../../../store/guarantorStore';
 
 const GuarantorOnboarding: React.FC = () => {
     const { selectedGuarantor } = useGuarantorStore()
+    const {setActiveStep } = useCreditStore()
     const [otpModalOpen, setOtpModalOpen] = useState(false);
     const [nadraModalOpen, setNadraModalOpen] = useState(false)
     const [guarantorIdx, setGuarantorIdx] = useState<string | undefined>('');//CLI0000000000001, CLI0000000103821
@@ -28,10 +30,7 @@ const GuarantorOnboarding: React.FC = () => {
     const [ruleStatus, setRuleStatus] = useState<TRule[]>([]);
 
     const { state } = useLocation();
-
     const navigate = useNavigate();
-
-
     const { appId } = state as { appId: string };
 
 
@@ -40,7 +39,9 @@ const GuarantorOnboarding: React.FC = () => {
         if (otpVerification !== 'Y') {
             setOtpModalOpen(true)
         } else {
-            navigate(`${mainURL}/loan/application/${appId ?? ''}`)
+                setActiveStep("guarantor")
+                navigate(-1)
+            // navigate(`${mainURL}/loan/application/${appId ?? ''}`)
         }
     }
 
