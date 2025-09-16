@@ -128,17 +128,22 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
         facilityPurpose, facilityPurposeLoading, fetchFacilityPurpose, fetchRepeatCustomersWithProdCode, fetchOwnership, fetchIrrigation, fetchFloodsFactor, fetchProofOfCultivation, fetchAgriMethods, fetchCultLoanPurposes,
         fetchMarketCheck } = useCommonStore()
 
-    const { agricultureIncomeLoading, ownerships, product, fetchProduct, addOwnerships, updateOwnerships, removeOwnerships, addOwnershipsList, resetOwnerships, addAgricultureIncome, updateAgricultureIncome } = useCreditStore()
+    const { agricultureIncomeLoading, ownerships, product, fetchProduct, addOwnerships, updateOwnerships, removeOwnerships, addOwnershipsList, resetOwnerships, addAgricultureIncome, updateAgricultureIncome,setActiveStep } = useCreditStore()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = (data: any) => {
         if (formMode === 'save') {
             delete data.isAgriSecured
-            addAgricultureIncome(appId ?? '', data).finally(onReset)
+            addAgricultureIncome(appId ?? '', data).finally(onReset);
+                 setActiveStep("loan-application")
+                navigate(-1)
         } else if (formMode === 'update') {
             delete data.isAgriSecured
             const _data = { ...updateData, ...data }
             updateAgricultureIncome(updateData?.idx ?? '', _data).finally(onReset)
+             setActiveStep("loan-application")
+            navigate(-1)
+
         }
     }
 

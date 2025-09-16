@@ -138,8 +138,6 @@ const IncomeExpensesDetails: React.FC = () => {
     return renderTableSection("FINAL SUMMARY", finalData, columnsRevenueSummary);
   };
 
-  console.log('xxxx', data);
-
   const { applicantRevenue, houseHoldContribution, houseHoldExpenses, bnsOrAgriExpenses, incomeExpenses } = data;
 
   return (

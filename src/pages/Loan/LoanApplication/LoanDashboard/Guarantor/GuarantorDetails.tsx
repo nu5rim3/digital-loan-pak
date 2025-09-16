@@ -11,6 +11,7 @@ import { formatCNIC, formatName, splitInitialAndSurname, titleGenderMaritalMap }
 import { CaretLeftOutlined, EditOutlined, UndoOutlined } from '@ant-design/icons';
 import useGuarantorStore from '../../../../../store/guarantorStore';
 import moment from 'moment';
+import useCreditStore from '../../../../../store/creditStore';
 
 interface IGuarantorDetails {
     formDetails?: IStakeholder[];
@@ -77,6 +78,8 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
     const { selectedProductCode, relationaShipGaurantor, relationaShipGaurantorLoading, modeOfSecurity, modeOfSecurityLoading, organizationType, organizationTypeLoading, fetchOrganizationType, cnicStaus, cnicStausLoading, fetchCNICStaus, fetchEducationLevel, fetchModeOfSecurity, fetchRelationaShipGaurantor } = useCommonStore()
     const { stakeholderLoading, stakeholders, fetchStackholderByAppId, addStakeholder, updateStakeholder } = useStakeholderStore()
     const { guarantors, fetchGuarantorByAppId } = useGuarantorStore();
+    const { setActiveStep } = useCreditStore()
+    
     const [initialSave, setInitialSave] = useState(false);
 
     const { appId } = useParams()
@@ -414,7 +417,13 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                         </Form.Item>
                     </div>
                     <div className="flex gap-3 mt-5">
-                        <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>
+                        <Button type="default" onClick={() =>
+                            {
+                                setActiveStep("guarantor")
+                                navigate(-1)
+                            }
+                            
+                             } icon={<CaretLeftOutlined />}>
                             Back
                         </Button>
                         <Button type="primary" htmlType="submit" loading={false} icon={<EditOutlined />}>

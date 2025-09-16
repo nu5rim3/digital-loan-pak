@@ -81,7 +81,7 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
                                         type='primary'
                                         onClick={() => {
                                             setSelectedIndex(index)
-                                            console.log('item', item)
+                                         
                                             setSelectedIdx(item.idx ?? '')
                                         }}>
                                         Witness {index + 1} -  {item.stkSequence}

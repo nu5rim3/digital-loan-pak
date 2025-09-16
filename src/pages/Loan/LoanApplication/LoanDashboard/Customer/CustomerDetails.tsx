@@ -91,7 +91,7 @@ const CustomerDetails: React.FC = () => {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
-        console.log('Form Data:', data);
+     
         if (mode === 'create') {
             addStakeholder({
                 ...data,

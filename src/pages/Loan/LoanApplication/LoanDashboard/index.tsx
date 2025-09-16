@@ -23,6 +23,7 @@ import ExceptionalApproval from './ExceptionalApproval';
 import LoanApplication from './LoanApplication';
 import UnderConstruction from '../../../UnderConstroction';
 import CheckMobile from '../../../CheckMobile';
+import useCreditStore from '../../../../store/creditStore';
 
 // Add this function to check mandatory completion
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -43,6 +44,7 @@ const LoanDaashboard: React.FC = () => {
     const { appId } = useParams();
     const { loading, applicationValidationLoading, applicationValidates, fetchApplicationValidationsByAppId, completeLoanApplication } = useLoanStore();
     const { stakeholders, fetchStackholderByAppId, fetchContactDetailsByStkId, fetchAddressDetailsByStkId, resetStakeholder } = useStakeholderStore();
+    const {activeStep , setActiveStep } = useCreditStore()
     const { customers,customerLoading, fetchCustomerByAppId } = useCustomerStore();
     // const [activeTab, setActiveTab] = useState('customer');
 
@@ -85,7 +87,8 @@ const LoanDaashboard: React.FC = () => {
             fetchContactDetailsByStkId(selectedIdx ?? '')
             fetchAddressDetailsByStkId(selectedIdx ?? '')
         }
-        // setActiveTab(activeKey);
+      //   setActiveKey(activeKey);
+         setActiveStep(activeKey)
     };
 
     // Get the right component for a section
@@ -254,7 +257,7 @@ const LoanDaashboard: React.FC = () => {
             <div ref={scrollRef2} style={{ height: '70vh', overflowY: 'auto' }}>
                 <Tabs
                     tabPosition='left'
-                    // defaultActiveKey={activeTab}
+                    activeKey={activeStep}
                     onChange={onTabChange}
                     items={tabItems.length === 0 ? _tabItems : tabItems}
                 />

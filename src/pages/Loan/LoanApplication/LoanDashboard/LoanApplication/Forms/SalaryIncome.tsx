@@ -50,15 +50,22 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
         facilityPurpose, facilityPurposeLoading, fetchFacilityPurpose, fetchNatureOfBusiness, fetchNatureOfEmployment,
         fetchJobs, fetchDistanceForResidenceOrWork, fetchSalary, fetchRepeatCustomersWithProdCode } = useCommonStore()
 
-    const { salaryIncomeLoading, product, fetchProduct, addSalaryIncome, updateSalaryIncome } = useCreditStore()
+    const { salaryIncomeLoading, product, fetchProduct, addSalaryIncome, updateSalaryIncome,setActiveStep } = useCreditStore()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = (data: any) => {
         if (mode === 'save') {
-            addSalaryIncome(appId ?? '', data).finally(() => navigate(-1))
+            addSalaryIncome(appId ?? '', data).finally(() => {
+                setActiveStep("loan-application")
+                navigate(-1)
+            }     
+            )
         } else if (mode === 'update') {
             const _data = { ...updateData, ...data }
-            updateSalaryIncome(appId ?? '', _data).finally(() => navigate(-1))
+            updateSalaryIncome(appId ?? '', _data).finally(() => {
+                setActiveStep("loan-application")
+                navigate(-1)
+            })
         }
     }
 
@@ -315,7 +322,10 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
                     </Form.Item>
                 </div>
                 <div className='pt-5'>
-                    <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
+                    <Button type="default" onClick={() => {
+                                setActiveStep("loan-application")
+                                  navigate(-1)
+                            }} icon={<CaretLeftOutlined />}>Back</Button>
                     <Button type='primary' className='ml-3' htmlType='submit' icon={<SaveOutlined />} loading={salaryIncomeLoading}>
                         {formatSentence(mode)} Salary
                     </Button>

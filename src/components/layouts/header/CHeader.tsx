@@ -51,7 +51,7 @@ const CHeader: React.FC<ICHeaderProps> = ({ collapsed, setCollapsed }) => {
       key: '4',
       danger: true,
       label: <a onClick={() => {
-        // console.log('Logout')
+        
         logOut();
         localStorage.removeItem("oauth_token");
         sessionStorage.clear(); // Clear all session data

@@ -70,7 +70,7 @@ const LiveStockIncome: React.FC<ILiveStockIncomeProps> = ({ sourceOfIncome, rese
         facilityPurpose, facilityPurposeLoading, fetchFacilityPurpose, fetchRepeatCustomersWithProdCode, fetchOwnership, fetchIrrigation, fetchFloodsFactor, fetchProofOfCultivation, fetchAgriMethods,
         fetchMarketCheck } = useCommonStore()
 
-    const { liveStockIncomeLoading, fetchProduct, product, addLiveStockIncome, updateLiveStockIncome } = useCreditStore()
+    const { liveStockIncomeLoading, fetchProduct, product, addLiveStockIncome, updateLiveStockIncome ,setActiveStep} = useCreditStore()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = (data: any) => {
@@ -80,6 +80,7 @@ const LiveStockIncome: React.FC<ILiveStockIncomeProps> = ({ sourceOfIncome, rese
             addLiveStockIncome(appId ?? '', data).finally(() => {
                 reset()
                 resetSourceOfIncome()
+                setActiveStep("loan-application");
                 navigate(-1)
             })
         } else if (mode === 'update') {
@@ -87,6 +88,7 @@ const LiveStockIncome: React.FC<ILiveStockIncomeProps> = ({ sourceOfIncome, rese
             updateLiveStockIncome(updateData?.idx ?? '', _data).finally(() => {
                 reset()
                 resetSourceOfIncome()
+                setActiveStep("loan-application");
                 navigate(-1)
             })
         }
@@ -625,7 +627,12 @@ const LiveStockIncome: React.FC<ILiveStockIncomeProps> = ({ sourceOfIncome, rese
                     </Card>
                 </div>
                 <div className='flex justify-start pt-5'>
-                    <Button type="default" icon={<CaretLeftOutlined />} onClick={() => navigate(-1)} className='mr-2'>
+                    <Button type="default" icon={<CaretLeftOutlined />}
+                     onClick={() => {
+                         setActiveStep("loan-application")
+                        navigate(-1) }
+                       
+                        } className='mr-2'>
                         Back
                     </Button>
                     <Button type="primary" icon={<SaveOutlined />} htmlType="submit" className='mr-2' loading={liveStockIncomeLoading}>

@@ -166,7 +166,7 @@ useEffect(() => {
     }
   };
 
-  console.log('guarantorDetails', guarantorDetails);
+
 
   const renderDesc = (label: string, value: any) => (
     <Descriptions.Item label={label}>{value || "\u00A0"}</Descriptions.Item>

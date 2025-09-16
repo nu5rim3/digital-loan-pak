@@ -8,7 +8,7 @@ export const getValueOfClientele = (key: string) => {
 };
 
 export const intoCurrency = (num: number | string ) => {
-    console.log('num', num);
+  
     let convertedNum = typeof num === 'string' ? parseFloat(num) : num;
     if (isNaN(convertedNum)) return "-";
     return convertedNum?.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,")

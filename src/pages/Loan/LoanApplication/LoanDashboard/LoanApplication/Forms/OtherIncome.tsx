@@ -37,13 +37,14 @@ const OtherIncome: React.FC<IOtherIncomeProps> = ({ sourceOfIncome, resetSourceO
     });
 
     const { facilityPurpose, facilityPurposeLoading, fetchFacilityPurpose } = useCommonStore()
-    const { otherIncomeLoading, addOtherIncome, updateOtherIncome } = useCreditStore()
+    const { otherIncomeLoading, addOtherIncome, updateOtherIncome ,setActiveStep} = useCreditStore()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = async (data: any) => {
         if (mode === 'save') {
             addOtherIncome(appId ?? '', data).finally(() => {
-                onRest()
+                onRest();
+                setActiveStep("loan-application");
                 navigate(-1)
             })
         }
@@ -51,6 +52,7 @@ const OtherIncome: React.FC<IOtherIncomeProps> = ({ sourceOfIncome, resetSourceO
             const _data = { ...updateData, ...data }
             updateOtherIncome(updateData?.idx ?? '', _data).finally(() => {
                 onRest()
+                setActiveStep("loan-application");
                 navigate(-1)
             })
         }
@@ -167,7 +169,10 @@ const OtherIncome: React.FC<IOtherIncomeProps> = ({ sourceOfIncome, resetSourceO
                     </Form.Item>
                 </div>
                 <div className='pt-5'>
-                    <Button type="default" onClick={() => navigate(-1)} icon={<CaretLeftOutlined />}>Back</Button>
+                    <Button type="default" onClick={() =>{
+                                setActiveStep("loan-application")
+                                  navigate(-1)
+                            }} icon={<CaretLeftOutlined />}>Back</Button>
                     <Button type='primary' className='ml-3' htmlType='submit' icon={<SaveOutlined />} loading={otherIncomeLoading}>
                         {formatSentence(mode)} Other Income
                     </Button>
