@@ -14,6 +14,7 @@ import useCreditStore, { ITrailCalulationResponse } from '../../../store/creditS
 import { useParams } from 'react-router-dom'
 import useVerificationStore from '../../../store/verificationStore'
 import moment from 'moment'
+import useCustomerStore from '../../../store/customerStore'
 
 const schema = yup.object().shape({
     productFacility: yup.string().required('Type of Facility is required'),
@@ -203,7 +204,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
     const { user } = useUserStore()
     const { cribDetails, cribLoading, fetchCRIBByCnic, resetCRIBDetails } = useVerificationStore()
     const { trailCalulation, trailCalulationDetails, trailCalulationDetailsLoading, trailCalulationDetailsByAppId, trailCalulationDetailsByAppIdLoading, trailCalulationLoading, sendTrailCalulation, fetchTrailCalulation, resetTrailCalculationDetails, saveTrailCalulation, fetchTrailCalulationDetailsByAppId } = useCreditStore()
-
+     const {customerLoading, fetchCustomerByAppId } = useCustomerStore();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onSubmit = (data: any) => {
 
@@ -534,6 +535,8 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
         saveTrailCalulation(appId ?? '', cliIdx, { ...__calculationPayload, tcNo: trailCalulation?.object.tcNo ?? '' }).finally(() => {
             fetchTrailCalulationDetailsByAppId(appId ?? '')
             fetchApplicationValidationsByAppId(appId ?? '')
+            fetchCustomerByAppId(appId ?? '')
+
         });
     }
 
@@ -1371,7 +1374,7 @@ const TrialCalculation: React.FC<ISaveTrialCalculation> = ({ cliIdx, cnic }) => 
 
                     </div>
                     <div>
-                        <Button type="primary" className='mr-2' icon={<SaveOutlined />} loading={trailCalulationLoading} onClick={
+                        <Button type="primary" className='mr-2' icon={<SaveOutlined />} loading={trailCalulationLoading || customerLoading} onClick={
                             saveCalculationHandle
                         } hidden={!isSaveShow}>
                             Save Calculation

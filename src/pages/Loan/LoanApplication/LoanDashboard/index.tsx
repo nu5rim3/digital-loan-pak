@@ -44,8 +44,8 @@ const LoanDaashboard: React.FC = () => {
     const { appId } = useParams();
     const { loading, applicationValidationLoading, applicationValidates, fetchApplicationValidationsByAppId, completeLoanApplication } = useLoanStore();
     const { stakeholders, fetchStackholderByAppId, fetchContactDetailsByStkId, fetchAddressDetailsByStkId, resetStakeholder } = useStakeholderStore();
-    const { customers, fetchCustomerByAppId } = useCustomerStore();
     const {activeStep , setActiveStep } = useCreditStore()
+    const { customers,customerLoading, fetchCustomerByAppId } = useCustomerStore();
     // const [activeTab, setActiveTab] = useState('customer');
 
     const onCompleteApplication = () => {
@@ -243,6 +243,7 @@ const LoanDaashboard: React.FC = () => {
 
     return (
         <>
+        <Spin spinning={customerLoading}>
             <Card
                 className='loan-card mb-3'
             >
@@ -251,6 +252,8 @@ const LoanDaashboard: React.FC = () => {
                     <div className='text-lg'>Customer Name: {customers[0]?.fullName}</div>
                 </div>
             </Card>
+        </Spin>
+            
             <div ref={scrollRef2} style={{ height: '70vh', overflowY: 'auto' }}>
                 <Tabs
                     tabPosition='left'

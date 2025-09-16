@@ -112,6 +112,8 @@ export interface FormValues {
   landStockLawyerName?: string;
   landStockDescription?: string;
   landStockSecurityDate?: Date;
+  landStockSecCategory?: string;
+  
 
   // Lease fields
   leaseEquipType?: string;

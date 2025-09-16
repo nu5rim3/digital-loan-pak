@@ -26,24 +26,28 @@ const AsyncImage: React.FC<AsyncImageProps> = ({
     const fetchImage = async () => {
       try {
         // const response = await viewImageOrPDF(src);
-        const response = await APIAuth(`/mobixCamsLoan/v1/loans/static-assets/${src}`);
-        const contentType = response?.headers["content-type"];
+          const response = await APIAuth.get(
+      `/mobixCamsLoan/v1/loans/static-assets/${src}`,
+      { responseType: "blob" } // force axios to return a Blob
+    );
+        const contentType = response.headers["content-type"];
 
-        if (contentType === "application/pdf") {
-          const blob = new Blob([response.data], { type: contentType });
-          const pdfUrl = URL.createObjectURL(blob);
-          if (mounted) {
-            setDataUrl(pdfUrl);
-            setIsPdf(true);
-          }
-        } else {
-          const base64 = Buffer.from(response.data).toString("base64");
-          const imageUrl = `data:${contentType};base64,${base64}`;
-          if (mounted) {
-            setDataUrl(imageUrl);
-            setIsPdf(false);
-          }
+    if (contentType === "application/pdf") {
+      const pdfUrl = URL.createObjectURL(response.data); // response.data is now a Blob
+      if (mounted) {
+        setDataUrl(pdfUrl);
+        setIsPdf(true);
+      }
+    } else {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (mounted) {
+          setDataUrl(reader.result as string);
+          setIsPdf(false);
         }
+      };
+      reader.readAsDataURL(response.data); // safe now because it's a Blob
+    }
       } catch (error) {
         console.error("Failed to load media:", error);
       }

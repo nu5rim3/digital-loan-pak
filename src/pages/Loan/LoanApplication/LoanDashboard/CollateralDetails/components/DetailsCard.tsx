@@ -1,14 +1,21 @@
-import React from "react";
-import { Card, Descriptions, Button, Space } from "antd";
+import React, { useEffect } from "react";
+import { Card, Descriptions, Button, Space, Spin } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { FormValues } from "../types";
 import dayjs from "dayjs";
+// Update the import path below to the correct location of creditStore, for example:
+import useCollateralStore from "../../../../../../store/collateralStore";
+import { formatCurrency } from "../../../../../../utils/formatterFunctions";
 
+import { getConditionFieldName, getOwnershipFieldName, getSubTypeFieldName, getTypeFieldName, getVehicleCategoryFieldName } from "../../../../../../utils/Common";
+// Or, if the correct file is creditStore.ts but in a different folder, adjust accordingly.
+// import useCollateralStore from "../../../../store/creditStore";
 interface DetailsCardProps {
   data: FormValues;
   securityType: string;
   onUpdate: () => void;
   onDelete: () => void;
+  securityTypes: any
 }
 
 const toTitleCase = (text: string): string => {
@@ -49,6 +56,7 @@ interface FieldConfig {
   label: string;
   fallback?: string;
   isDate?: boolean;
+  isCurrency?: boolean;
 }
 
 interface SecurityTypeConfig {
@@ -68,9 +76,13 @@ const SECURITY_TYPE_CONFIG: Record<string, SecurityTypeConfig> = {
   "BANK GUARANTEE": {
     fields: [
       { key: "bankGuaranteeType", label: "Type" },
-      { key: "bankGuaranteeOwnership", label: "Ownership" },
+      { key: "bankGuaranteeOwnershipName", label: "Ownership" },
       { key: "institutionName", label: "Institution" },
-      { key: "valueOfGuarantee", label: "Value of Guarantee" },
+      {
+        key: "valueOfGuarantee",
+        label: "Value of Guarantee",
+        isCurrency: true,
+      },
       {
         key: "referenceNo",
         label: "Reference No",
@@ -83,14 +95,14 @@ const SECURITY_TYPE_CONFIG: Record<string, SecurityTypeConfig> = {
       { key: "landStockType", label: "Type" },
       { key: "landStockSubType", label: "Sub Type" },
       { key: "landStockCategory", label: "Category" },
-      { key: "landStockOwnership", label: "Deed No" },
+      { key: "landStockDeedTransferNo", label: "Deed No" },
       { key: "landStockAgreementNo", label: "Agreement No" },
     ],
   },
   "MACHINERY AND EQUIPMENT": {
     fields: [
       { key: "machineryType", label: "Type" },
-      { key: "machineryOwnership", label: "Ownership" },
+      { key: "machineryOwnershipName", label: "Ownership" },
       { key: "machinerySupplier", label: "Supplier" },
       { key: "machineryCondition", label: "Condition" },
       { key: "machineryReferenceNo", label: "Reference No" },
@@ -100,7 +112,7 @@ const SECURITY_TYPE_CONFIG: Record<string, SecurityTypeConfig> = {
     fields: [
       { key: "propertyType", label: "Type" },
       { key: "propertySubType", label: "Sub Type" },
-      { key: "propertyOwnership", label: "Ownership" },
+      { key: "propertyOwnershipName", label: "Ownership" },
       { key: "propertyBondNo", label: "Bond No" },
       { key: "propertyReferenceNo", label: "Reference No" },
     ],
@@ -111,7 +123,7 @@ const SECURITY_TYPE_CONFIG: Record<string, SecurityTypeConfig> = {
       { key: "savingsSubType", label: "Sub Type" },
       { key: "savingsNo", label: "Account No" },
       { key: "savingsFDNo", label: "FD No" },
-      { key: "savingsAmount", label: "Amount" },
+      { key: "savingsAmount", label: "Amount", isCurrency: true },
     ],
   },
   LEASE: {
@@ -130,7 +142,82 @@ const DetailsCard: React.FC<DetailsCardProps> = ({
   securityType,
   onUpdate,
   onDelete,
+  securityTypes
 }) => {
+  const {
+    conditionData,
+    fetchConditionByCode,
+    ownershipsLoading,
+    ownershipData,
+    fetchOwnershipByCode,
+    typesLoading,
+    securityCategoryData,
+    securityCategoryDataLoading,
+    fetchSecurityCategoryByCode,
+    subTypesData,
+    fetchSubTypeByCode,
+    fetchTypeByCode,
+    typeByCodeLoading,
+    subTypeByCodeLoading,
+    typesData,
+    fetchVehicleCategoryByCode,
+    vehicleCategoryData,
+    vehicleCategoryLoading
+  } = useCollateralStore();
+
+
+useEffect(() => {
+  if (data?.landStockSecCategory) {
+    fetchSecurityCategoryByCode(data.landStockSecCategory);
+  }
+  const categoryFieldName = getVehicleCategoryFieldName(securityType);
+  const categoryCode = categoryFieldName ? data?.[categoryFieldName] : null
+
+    if (categoryFieldName && categoryCode) {
+    fetchVehicleCategoryByCode(categoryFieldName, categoryCode);
+  }
+  const conditionFieldName = getConditionFieldName(securityType);
+  const conditionCode = conditionFieldName ? data?.[conditionFieldName] : null;
+
+  if (conditionFieldName && conditionCode) {
+    fetchConditionByCode(conditionFieldName, conditionCode);
+  }
+
+  const ownershipFieldName = getOwnershipFieldName(securityType);
+  const ownershipCode = ownershipFieldName ? data?.[ownershipFieldName] : null;
+
+  if (ownershipFieldName && ownershipCode) {
+    fetchOwnershipByCode(ownershipFieldName, ownershipCode);
+  }
+}, [data.landStockSecCategory,data.vehicleCategory ]);
+
+  useEffect(() => {
+     //below structure used to find the selected security type's code based on description
+    //because not passing description from API
+  if (!securityTypes.length) return;
+
+  const selectedSecurityTypeCode =  
+securityType === "LEASE"? "V":
+    securityTypes.find((item: any) => item.description === securityType)?.code ?? "";
+
+  if (!selectedSecurityTypeCode) return;
+
+  const typeFieldName = getTypeFieldName(securityType);
+  const typeCode = typeFieldName ? data?.[typeFieldName] : null;
+
+  if (typeCode && typeFieldName) {
+    fetchTypeByCode(typeFieldName,typeCode, selectedSecurityTypeCode);
+  }
+
+  const subTypeFieldName = getSubTypeFieldName(securityType);
+  const subTypeCode = subTypeFieldName ? data?.[subTypeFieldName] : null;
+
+  if (subTypeCode && subTypeFieldName) {
+    fetchSubTypeByCode(subTypeFieldName, subTypeCode , subTypeFieldName === "landStockSubType" ? "F":selectedSecurityTypeCode);
+  }
+}, [ securityType, data]);
+
+
   const renderFieldValue = (field: FieldConfig, data: FormValues): string => {
     const value =
       data[field.key as keyof FormValues] ||
@@ -139,11 +226,45 @@ const DetailsCard: React.FC<DetailsCardProps> = ({
     if (field.isDate && value) {
       return dayjs(value).format("YYYY-MM-DD");
     }
+    if (field.isCurrency && value) {
+      return formatCurrency(Number(value));
+    }
 
     return String(value || "-");
   };
 
   const renderDetails = () => {
+    const getDescription = (source: any, key: string) =>
+      source?.[key]?.description ?? "-";
+
+    const modifiedData = {
+      ...data,
+      bankGuaranteeOwnershipName: getDescription(ownershipData, "bankGuaranteeOwnership"),
+      machineryOwnershipName: getDescription(ownershipData, "machineryOwnership"),
+      propertyOwnershipName: getDescription(ownershipData, "propertyOwnership"),
+      vehicleOwnership: getDescription(ownershipData, "vehicleOwnership"),
+
+      machineryCondition: getDescription(conditionData, "machineryCondition"),
+      vehicleCondition: getDescription(conditionData, "vehicleCondition"),
+      leaseCondition: getDescription(conditionData, "leaseCondition"),
+
+      landStockCategory: securityCategoryData?.description ?? "-",
+      vehicleCategory: vehicleCategoryData?.vehicleCategory?.description ?? "-",
+      leaseCategory: vehicleCategoryData?.leaseCategory?.description ?? "-",
+
+      savingsType: getDescription(typesData, "savingsType"),
+      vehicleType: getDescription(typesData, "vehicleType"),
+      propertyType: getDescription(typesData, "propertyType"),
+      bankGuaranteeType: getDescription(typesData, "bankGuaranteeType"),
+      machineryType: getDescription(typesData, "machineryType"),
+      landStockType: getDescription(typesData, "landStockType"),
+      leaseVehicleType: getDescription(typesData, "leaseVehicleType"),
+
+      propertySubType: getDescription(subTypesData, "propertySubType"),
+      landStockSubType: getDescription(subTypesData, "landStockSubType"),
+      savingsSubType: getDescription(subTypesData, "savingsSubType"),
+};
+
     const config =
       SECURITY_TYPE_CONFIG[securityType as keyof typeof SECURITY_TYPE_CONFIG];
 
@@ -153,28 +274,39 @@ const DetailsCard: React.FC<DetailsCardProps> = ({
 
     return config.fields.map((field) => (
       <Descriptions.Item key={field.key} label={field.label}>
-        {renderFieldValue(field, data)}
+        {renderFieldValue(field, modifiedData)}
       </Descriptions.Item>
     ));
   };
 
   return (
-    <Card
-      title={toTitleCase(securityType)}
-      extra={
-        <Space>
-          <Button type="text" icon={<EditOutlined />} onClick={onUpdate} />
-          <Button
-            type="text"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={onDelete}
-          />
-        </Space>
+    <Spin
+      spinning={
+        ownershipsLoading ||
+        typesLoading ||
+        securityCategoryDataLoading ||
+        typeByCodeLoading ||
+        subTypeByCodeLoading ||
+        vehicleCategoryLoading
       }
     >
-      <Descriptions column={1}>{renderDetails()}</Descriptions>
-    </Card>
+      <Card
+        title={toTitleCase(securityType)}
+        extra={
+          <Space>
+            <Button type="text" icon={<EditOutlined />} onClick={onUpdate} />
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={onDelete}
+            />
+          </Space>
+        }
+      >
+        <Descriptions column={1}>{renderDetails()}</Descriptions>
+      </Card>
+    </Spin>
   );
 };
 

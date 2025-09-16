@@ -133,7 +133,107 @@ export const getObExceptionals = (key: string) => {
 export const capitalize=(str:string)=> {
   if (!str) return '';
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
+export enum securityTypes {
+  BANK_GUARANTEE = "BANK GUARANTEE",
+  VEHICLE = "VEHICLE",
+  MACHINERY_AND_EQUIPMENT = "MACHINERY AND EQUIPMENT",
+  PROPERTY_MORTGAGE = "PROPERTY MORTGAGE",
+  LAND_STOCKS = "LAND STOCKS",
+  FIXED_DEPOSITS_AND_SAVINGS = "FIXED DEPOSITS AND SAVINGS",
+  LEASE = "LEASE",
 }
 
+export const getTypeFieldName = (key: string) => {
+  switch (key) {
+    case securityTypes.BANK_GUARANTEE:
+      return "bankGuaranteeType";
+    case securityTypes.VEHICLE:
+      return "vehicleType";
+    case securityTypes.MACHINERY_AND_EQUIPMENT:
+      return "machineryType";
+    case securityTypes.PROPERTY_MORTGAGE:
+      return "propertyType";
+    case securityTypes.LAND_STOCKS:
+      return "landStockType";
+    case securityTypes.FIXED_DEPOSITS_AND_SAVINGS:
+      return "savingsType";
+    case securityTypes.LEASE:
+      return "leaseVehicleType";
+    default:
+      "";
+  }
+};
+export const getSubTypeFieldName = (key: string) => {
+  switch (key) {
+    case securityTypes.PROPERTY_MORTGAGE:
+      return "propertySubType";
+    case securityTypes.LAND_STOCKS:
+      return "landStockSubType";
+    case securityTypes.FIXED_DEPOSITS_AND_SAVINGS:
+      return "savingsSubType";
+
+    default:
+      "";
+  }
+};
+export const getOwnershipFieldName = (key: string) => {
+  switch (key) {
+    case securityTypes.BANK_GUARANTEE:
+      return "bankGuaranteeOwnership";
+    case securityTypes.VEHICLE:
+      return "vehicleOwnership";
+    case securityTypes.MACHINERY_AND_EQUIPMENT:
+      return "machineryOwnership";
+    case securityTypes.PROPERTY_MORTGAGE:
+      return "propertyOwnership";
+    case securityTypes.LAND_STOCKS:
+      return "landStockOwnership";
+    case securityTypes.FIXED_DEPOSITS_AND_SAVINGS:
+      return "savingsOwnership";
+    default:
+      "";
+  }
+};
+
+export const getConditionFieldName = (key: string) => {
+  switch (key) {
+    case securityTypes.VEHICLE:
+      return "vehicleCondition";
+    case securityTypes.MACHINERY_AND_EQUIPMENT:
+      return "machineryCondition";
+     case securityTypes.LEASE:
+      return "leaseCondition";
+    default:
+      "";
+  }
+};
+
+export const getVehicleCategoryFieldName = (key: string) => {
+  switch (key) {
+    case securityTypes.VEHICLE:
+      return "vehicleCategory";
+     case securityTypes.LEASE:
+      return "leaseCategory";
+    default:
+      "";
+  }
+};
+
+export const categoryMap: Record<string, string> = {
+  B: "bankGuarantees",
+  M: "machineryTypes",
+  R: "propertyTypes",
+  L: "landStockTypes",
+  F: "savingsTypes",
+  V: "vehicleTypes",
  
+};
+
+export const subCategoryMap: Record<string, string[]> = {
+  R: ["propertyTypes"],
+  F: ["savingsTypes", "landStockTypes"], // now supports multiple
+
+};
 
