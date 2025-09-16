@@ -513,6 +513,9 @@ interface ICreditState {
   trailCalulationDetailsByAppIdLoading: boolean;
   trailCalulationDetailsByAppIdError: string | null;
 
+  activeStep:string 
+  setActiveStep: (key: string) => void; 
+
   fetachGoldLoanAppDetails: (appId: string) => Promise<void>;
   addGoldLoanAppDetails: (data: IGoldLoanAppDetails) => Promise<void>;
   updateGoldLoanAppDetails: (
@@ -739,6 +742,8 @@ const useCreditStore = create<ICreditState>((set) => ({
   trailCalulationDetailsByAppId: null,
   trailCalulationDetailsByAppIdLoading: false,
   trailCalulationDetailsByAppIdError: null,
+
+  activeStep:"customer-biometric",
 
   fetachGoldLoanAppDetails: async (appId: string) => {
     set({ goldLoanAppDetailsLoading: true });
@@ -1750,6 +1755,15 @@ const useCreditStore = create<ICreditState>((set) => ({
       trailCalulationLoading: false,
       trailCalulationError: null,
     })),
+
+
+       setActiveStep: (key) => set({ activeStep: key }),
+
+   
+
+    
 }));
+
+ 
 
 export default useCreditStore;

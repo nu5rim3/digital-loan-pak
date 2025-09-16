@@ -51,19 +51,21 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
         facilityPurpose, facilityPurposeLoading, fetchFacilityPurpose, fetchBusinessOwnership,
         fetchRepeatCustomers, fetchNatureOfBusiness } = useCommonStore()
 
-    const { saveBusinessIncome, resetBusinessIncomeList, updateBusinessIncome } = useCreditStore()
+    const { saveBusinessIncome, resetBusinessIncomeList, updateBusinessIncome, setActiveStep } = useCreditStore()
 
     const onSubmit = (data: IBusinessIncome) => {
         if (mode === 'save') {
             saveBusinessIncome(appId ?? '', data).finally(() => {
                 resetSourceOfIncome()
+                setActiveStep("loan-application")
                 navigate(-1)
             })
         } else if (mode === 'update') {
             const _data = { ...updateData, ...data }
             updateBusinessIncome(updateData?.idx ?? '', _data).finally(() => {
                 resetSourceOfIncome()
-                navigate(-1)
+                 setActiveStep("loan-application")
+                 navigate(-1)
             })
         }
     }
@@ -323,7 +325,12 @@ const BusinessIncome: React.FC<IBusinessIncomeProps> = ({ resetSourceOfIncome, s
 
                         </div>
                         <div className='flex'>
-                            <Button type='default' icon={<CaretLeftOutlined />} onClick={() => navigate(-1)} className='mr-2'>
+                            <Button type='default' icon={<CaretLeftOutlined />} onClick={() =>{
+                                setActiveStep("loan-application")
+                                  navigate(-1)
+                            }
+                                 
+                                 } className='mr-2'>
                                 Back
                             </Button>
                             <Button type='primary' icon={<SaveOutlined />} htmlType='submit'>
