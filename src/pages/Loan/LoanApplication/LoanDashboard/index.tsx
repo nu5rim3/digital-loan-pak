@@ -178,7 +178,8 @@ const LoanDaashboard: React.FC = () => {
         disabled: rule.status !== 'A',
     }));
 
-    const tabItems = applicationValidates
+    const tabItems = applicationValidates && applicationValidates.length > 0 ?
+        applicationValidates
         ?.filter(rule => rule.isVisible === "1")
         .map((rule) => ({
             key: `${rule.section}`,
@@ -193,7 +194,7 @@ const LoanDaashboard: React.FC = () => {
             ),
             children: getComponentByName(rule.section, scrollRef),
             disabled: getOnlyStatusByName(rule.section, applicationValidates) !== 'A'
-        }));
+        })) :[];
 
     useEffect(() => {
         if (stakeholders.length === 0) {
