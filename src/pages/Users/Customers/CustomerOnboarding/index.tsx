@@ -15,6 +15,7 @@ import FormDetails from '../../../../components/common/verification/FormDetails'
 import ViewDetails from '../../../../components/common/verification/ViewDetails';
 import { getStatusByName, TRule } from '../../../../utils/MSASActionFunctions';
 import { mainURL } from '../../../../App';
+import useCreditStore from '../../../../store/creditStore';
 
 const CustomerOnboarding: React.FC = () => {
     const { customer } = useCustomerStore()
@@ -26,6 +27,7 @@ const CustomerOnboarding: React.FC = () => {
     const [otpVerification, setOtpVerification] = useState('P');
     const [msasTrigger, setMsasTrigger] = useState(0);
     const [ruleStatus, setRuleStatus] = useState<TRule[]>([]);
+    const { setActiveStep } = useCreditStore()
     // const [NADRAStatus, setNADRAStatus] = useState<string | null>();
     // const [OtpStatus, setOtpStatus] = useState<string | null>();
 
@@ -91,6 +93,7 @@ const CustomerOnboarding: React.FC = () => {
                             <Button type="primary" loading={false} onClick={approval} icon={<CheckCircleOutlined />} hidden={otpVerification === 'Y'}>Verify Contact</Button>
                             <Button type='primary' onClick={() => {
                                 navigate(`${mainURL}/loan/application/${loan?.idx ?? ''}`)
+                                setActiveStep("customer")
                             }} icon={<QrcodeOutlined />} hidden={otpVerification === 'P'}>Calculate TC</Button>
                             <Button type='default' onClick={() => setNadraModalOpen(true)} icon={<QrcodeOutlined />} >Customer QR</Button>
                         </div>

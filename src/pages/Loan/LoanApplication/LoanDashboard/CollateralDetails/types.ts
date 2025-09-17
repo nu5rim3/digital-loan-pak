@@ -228,26 +228,28 @@ export const createValidationSchema = () => {
     }),
     vehicleEngineNo: yup.string().when(["securityType", "vehicleCondition"], {
       is: (securityType: string, condition: string) =>
-        securityType === VEHICLE_CODE && condition && condition !== "NEW",
+        securityType === VEHICLE_CODE && condition && condition !== "1",
       then: (schema) =>
-        schema.required("Engine No is required when condition is not NEW"),
+        schema.required("Engine No is required"),
+       otherwise: (schema) => schema.optional(),
     }),
     vehicleChassisNo: yup.string().when(["securityType", "vehicleCondition"], {
       is: (securityType: string, condition: string) =>
-        securityType === VEHICLE_CODE && condition && condition !== "NEW",
+        securityType === VEHICLE_CODE && condition && condition !== "1",
       then: (schema) =>
-        schema.required("Chassis No is required when condition is not NEW"),
+        schema.required("Chassis No is required"),
+       otherwise: (schema) => schema.optional(),
     }),
-    vehicleDateOfFirstReg: yup
-      .date()
-      .when(["securityType", "vehicleCondition"], {
-        is: (securityType: string, condition: string) =>
-          securityType === VEHICLE_CODE && condition && condition !== "NEW",
-        then: (schema) =>
-          schema.required(
-            "Date of 1st Reg is required when condition is not NEW"
-          ),
-      }),
+    // vehicleDateOfFirstReg: yup
+    //   .date()
+    //   .when(["securityType", "vehicleCondition"], {
+    //     is: (securityType: string, condition: string) =>
+    //       securityType === VEHICLE_CODE && condition && condition !== "NEW",
+    //     then: (schema) =>
+    //       schema.required(
+    //         "Date of 1st Reg is required when condition"
+    //       ),
+    //   }),
 
     // Machinery fields
     machineryType: yup.string().when("securityType", {
@@ -610,22 +612,24 @@ export const validationSchema = yup.object().shape({
   }),
   vehicleEngineNo: yup.string().when(["securityType", "vehicleCondition"], {
     is: (securityType: string, condition: string) =>
-      securityType === "VEHICLE" && condition && condition !== "NEW",
+      securityType === "VEHICLE" && condition && condition !== "1",
     then: (schema) =>
-      schema.required("Engine No is required when condition is not NEW"),
+      schema.required("Engine No is required"),
+     otherwise: (schema) => schema.optional(),
   }),
   vehicleChassisNo: yup.string().when(["securityType", "vehicleCondition"], {
     is: (securityType: string, condition: string) =>
-      securityType === "VEHICLE" && condition && condition !== "NEW",
+      securityType === "VEHICLE" && condition && condition !== "1",
     then: (schema) =>
-      schema.required("Chassis No is required when condition is not NEW"),
+      schema.required("Chassis No is required"),
+     otherwise: (schema) => schema.optional(),
   }),
-  vehicleDateOfFirstReg: yup.date().when(["securityType", "vehicleCondition"], {
-    is: (securityType: string, condition: string) =>
-      securityType === "VEHICLE" && condition && condition !== "NEW",
-    then: (schema) =>
-      schema.required("Date of 1st Reg is required when condition is not NEW"),
-  }),
+  // vehicleDateOfFirstReg: yup.date().when(["securityType", "vehicleCondition"], {
+  //   is: (securityType: string, condition: string) =>
+  //     securityType === "VEHICLE" && condition && condition !== "NEW",
+  //   then: (schema) =>
+  //     schema.required("Date of 1st Reg is required"),
+  // }),
 
   // Machinery fields
   machineryType: yup.string().when("securityType", {

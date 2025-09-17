@@ -371,7 +371,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
 
           <Form.Item
             label="Engine No"
-            required={!!(vehicleCondition && vehicleCondition !== "NEW")}
+            required={!!(vehicleCondition && vehicleCondition !== "1")}
             validateStatus={errors.vehicleEngineNo ? "error" : ""}
             help={errors.vehicleEngineNo?.message}
             labelCol={{ span: 24 }}
@@ -388,7 +388,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
 
           <Form.Item
             label="Chassis No"
-            required={!!(vehicleCondition && vehicleCondition !== "NEW")}
+            required={!!(vehicleCondition && vehicleCondition !== "1")}
             validateStatus={errors.vehicleChassisNo ? "error" : ""}
             help={errors.vehicleChassisNo?.message}
             labelCol={{ span: 24 }}
@@ -523,7 +523,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
 
           <Form.Item
             label="Date of 1st Reg"
-            required={!!(vehicleCondition && vehicleCondition !== "NEW")}
+            required={!!(vehicleCondition && vehicleCondition !== "1")}
             validateStatus={errors.vehicleDateOfFirstReg ? "error" : ""}
             help={errors.vehicleDateOfFirstReg?.message}
             labelCol={{ span: 24 }}

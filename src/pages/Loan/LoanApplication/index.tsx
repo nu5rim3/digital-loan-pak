@@ -20,7 +20,7 @@ const LoanApplication: React.FC = () => {
     const { pageableLoans, pageableLoading, loading, addLoan, fetchPageableLoans } = useLoanStore();
     const { setActiveStep} = useCreditStore()
     const { resetAllTrailCalucationData } = useCreditStore()
-    const { resetCustomer } = useCustomerStore()
+    const { resetCustomer,fetchCustomerByAppId } = useCustomerStore()
     const [activeTab, setActiveTab] = useState('PENDING');
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(7)
@@ -90,6 +90,7 @@ const LoanApplication: React.FC = () => {
                         resetAllTrailCalucationData();
                         navigate(`${item.appIdx}`);
                           setActiveStep("customer-biometric")
+                           fetchCustomerByAppId(item.appIdx?? '')
                        
                     }}
     />

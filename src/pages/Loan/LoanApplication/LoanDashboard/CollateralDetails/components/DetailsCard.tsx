@@ -189,7 +189,10 @@ useEffect(() => {
   if (ownershipFieldName && ownershipCode) {
     fetchOwnershipByCode(ownershipFieldName, ownershipCode);
   }
-}, [data.landStockSecCategory,data.vehicleCategory ]);
+}, [ 
+ securityType, data
+
+   ]);
 
   useEffect(() => {
      //below structure used to find the selected security type's code based on description
@@ -197,7 +200,7 @@ useEffect(() => {
   if (!securityTypes.length) return;
 
   const selectedSecurityTypeCode =  
-securityType === "LEASE"? "V":
+    securityType === "LEASE"? "V":
     securityTypes.find((item: any) => item.description === securityType)?.code ?? "";
 
   if (!selectedSecurityTypeCode) return;
