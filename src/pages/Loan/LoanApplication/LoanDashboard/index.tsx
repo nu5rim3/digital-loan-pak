@@ -32,7 +32,7 @@ function hasAllMandatoryCompleted(validations: any[] = []) {
         return false;
     }
     return !validations.some(
-        v => v.isMandatory === "1" && v.completed === "0"
+        v => v.isMandatory === "1" && v.completed === "0" && v.isVisible ==="1"
     );
 }
 
@@ -212,8 +212,9 @@ const LoanDaashboard: React.FC = () => {
         fetchApplicationValidationsByAppId(appId ?? '')
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [appId])
-
+console.log('applicationValidates',applicationValidates)
     const isAllMandatoryCompleted = hasAllMandatoryCompleted(applicationValidates);
+    console.log('sssss',isAllMandatoryCompleted)
 
     if (applicationValidationLoading) {
         return (
