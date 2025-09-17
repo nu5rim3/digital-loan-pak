@@ -259,7 +259,7 @@ const LoanDaashboard: React.FC = () => {
             <div ref={scrollRef2} style={{ height: '70vh', overflowY: 'auto' }}>
                 <Tabs
                     tabPosition='left'
-                    activeKey={activeStep}
+                    activeKey={tabItems.length === 0 ? "customer":activeStep}
                     onChange={onTabChange}
                     items={tabItems.length === 0 ? _tabItems : tabItems}
                 />
