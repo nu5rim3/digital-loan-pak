@@ -50,6 +50,7 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
         // TODO:  After deleting, we can refetch the witnesses to update the list
         setTimeout(() => {
             fetchStackholderByAppId(appId ?? '')
+             setSelectedIndex(undefined)
         }, 3000);
     }
 

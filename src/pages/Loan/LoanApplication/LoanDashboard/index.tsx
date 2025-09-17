@@ -212,9 +212,9 @@ const LoanDaashboard: React.FC = () => {
         fetchApplicationValidationsByAppId(appId ?? '')
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [appId])
-console.log('applicationValidates',applicationValidates)
+
     const isAllMandatoryCompleted = hasAllMandatoryCompleted(applicationValidates);
-    console.log('sssss',isAllMandatoryCompleted)
+  
 
     if (applicationValidationLoading) {
         return (
