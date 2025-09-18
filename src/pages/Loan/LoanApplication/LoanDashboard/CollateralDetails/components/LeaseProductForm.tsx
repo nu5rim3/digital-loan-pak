@@ -104,7 +104,6 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
   control,
   errors,
   setValue,
-  resetLeaseForm
 }) => {
     const { appId } = useParams()
   const {
