@@ -48,6 +48,7 @@ const LoanFormApplication: React.FC = () => {
                 <Form className='w-1/4' layout='vertical'>
                     <Form.Item label="Add a Source of Income">
                         <Select
+                        disabled={mode ==="update"}
                             className='w-1/4'
                             placeholder="Select Income Source"
                             value={sourceOfIncome}

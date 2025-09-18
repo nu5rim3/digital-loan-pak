@@ -78,8 +78,11 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
 
     useEffect(() => {
         fetchGuarantorByAppId(appId ?? '')
-        fetchRelationaShipGaurantor(selectedProductCode ?? '')
+        if(selectedProductCode){
+         fetchRelationaShipGaurantor(selectedProductCode ?? '')
         fetchModeOfSecurity(selectedProductCode ?? '')
+        }
+      
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
