@@ -162,7 +162,10 @@ const DetailsCard: React.FC<DetailsCardProps> = ({
     typesData,
     fetchVehicleCategoryByCode,
     vehicleCategoryData,
-    vehicleCategoryLoading
+    vehicleCategoryLoading,
+    fetchSupplierByCode,
+    supplierData,
+    supplierDataLoading
   } = useCollateralStore();
 
 
@@ -170,6 +173,12 @@ useEffect(() => {
   if (data?.landStockSecCategory) {
     fetchSecurityCategoryByCode(data.landStockSecCategory);
   }
+
+   if (data?.machinerySupplier) {
+    fetchSupplierByCode(data.machinerySupplier);
+  }
+
+
   const categoryFieldName = getVehicleCategoryFieldName(securityType);
   const categoryCode = categoryFieldName ? data?.[categoryFieldName] : null
 
@@ -266,6 +275,7 @@ useEffect(() => {
       propertySubType: getDescription(subTypesData, "propertySubType"),
       landStockSubType: getDescription(subTypesData, "landStockSubType"),
       savingsSubType: getDescription(subTypesData, "savingsSubType"),
+      machinerySupplier:supplierData?.supplierName ?? "-",
 };
 
     const config =
@@ -290,7 +300,8 @@ useEffect(() => {
         securityCategoryDataLoading ||
         typeByCodeLoading ||
         subTypeByCodeLoading ||
-        vehicleCategoryLoading
+        vehicleCategoryLoading ||
+        supplierDataLoading
       }
     >
       <Card

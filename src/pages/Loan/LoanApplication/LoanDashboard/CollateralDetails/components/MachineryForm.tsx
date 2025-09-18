@@ -208,7 +208,7 @@ const MachineryForm: React.FC<MachineryFormProps> = ({ control, errors, security
                   showSearch
                   placeholder="Select Supplier"
                   loading={machinerySuppliersLoading}
-                  options={getOptions(machinerySuppliers, "supplierName", "supplierName")}
+                  options={getOptions(machinerySuppliers, "supplierName", "code")}
                 />
               )}
             />

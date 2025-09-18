@@ -13,6 +13,7 @@ import { useParams } from "react-router-dom";
 import useCollateralStore from "../../../../../store/collateralStore";
 import useCommonStore from "../../../../../store/commonStore";
 import { securityTypes } from "../../../../../utils/Common";
+import useCreditStore from "../../../../../store/creditStore";
 
 interface CollateralDetailsComponentProps { }
 
@@ -216,19 +217,21 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
 const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
   const { appId } = useParams();
   const initialFetchDone = useRef(false);
-  const { trialCalculationData } = useCommonStore();
+  const {trialCalculationData } = useCommonStore();
+  const {  fetchTrailCalulationDetailsByAppId ,trailCalulationDetailsByAppId} = useCreditStore()
+
 
   const appraisalId = appId;
 
   // Memoize the product category to prevent unnecessary re-renders
   const productCategory = useMemo(() => {
-    if (trialCalculationData?.productCategory === "A") {
+    if (trialCalculationData?.productCategory === "A" || trailCalulationDetailsByAppId?.prodCat === "A") {
       return "Lease";
-    } else if (trialCalculationData?.productCategory === "C") {
+    } else if (trialCalculationData?.productCategory === "C" ||  trailCalulationDetailsByAppId?.prodCat === "C") {
       return "Loan";
     }
     return null;
-  }, [trialCalculationData?.productCategory]);
+  }, [trialCalculationData?.productCategory,trailCalulationDetailsByAppId?.prodCat]);
 
   const [isEditing, setIsEditing] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -260,6 +263,14 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
     securityTypes
   } = useCollateralStore();
 
+  useEffect(() => {
+    //if user is not visit tial calculation section and come directly to collateral section
+    if (appId)
+      fetchTrailCalulationDetailsByAppId(appId ?? "");
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appId]);
+  
   useEffect(() => {
     const loadCollaterals = async () => {
       if (appraisalId && !initialFetchDone.current) {
@@ -346,8 +357,8 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             vehicleCategory: detailedData.category,
             vehicleMake: detailedData.make,
             vehicleModel: detailedData.model,
-            vehicleEngineNo: detailedData.enginNo,
-            vehicleChassisNo: detailedData.chasisNo,
+            vehicleEngineNo: detailedData.enginNo ?? "",
+            vehicleChassisNo: detailedData.chasisNo ?? "",
             vehicleRegistrationNo: detailedData.regNo,
             vehicleDescription: detailedData.desc,
             vehicleMV: detailedData.marketValue?.toString(),
@@ -523,17 +534,17 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             machineryOwnership: detailedData.ownership,
             machinerySupplier: detailedData.supplier,
             machineryCondition: detailedData.condition,
-            machineryDescription: detailedData.description,
+            machineryDescription: detailedData.description ?? "",
             machineryMV: detailedData.marketValue?.toString(),
             machineryFSV: detailedData.fsv?.toString(),
-            machineryModel: detailedData.model,
-            machineryEngineNo: detailedData.engineNo,
-            machinerySerialNo: detailedData.serialChasisNo,
-            machineryBondNo: detailedData.bondNo,
-            machineryBondValue: detailedData.bondValue,
-            machineryValuedBy: detailedData.valuedBy,
-            machineryInsuranceCompany: detailedData.insuCompany,
-            machineryReferenceNo: detailedData.refNo,
+            machineryModel: detailedData.model ?? "",
+            machineryEngineNo: detailedData.engineNo ?? "",
+            machinerySerialNo: detailedData.serialChasisNo ?? "",
+            machineryBondNo: detailedData.bondNo ?? "",
+            machineryBondValue: detailedData.bondValue ?? "",
+            machineryValuedBy: detailedData.valuedBy ?? "",
+            machineryInsuranceCompany: detailedData.insuCompany ?? "",
+            machineryReferenceNo: detailedData.refNo ?? "",
           };
 
           setEditingId(detailedData.machineryEquipIdx || data.id);
@@ -709,8 +720,8 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
             leaseModel: detailedData.leaseVehiModel,
             leaseEngineCapacityCC: detailedData.leaseEnginCapacityCC,
             leaseEngineCapacityHP: detailedData.leaseEnginCapacityHP,
-            leaseEngineNo: detailedData.enginNo,
-            leaseChassisNo: detailedData.chasisNo,
+            leaseEngineNo: detailedData.enginNo ?? "",
+            leaseChassisNo: detailedData.chasisNo ?? "",
             leaseDuplicateKey: detailedData.duplicateKey,
             leaseVehicleNo: detailedData.leaseVehiNo,
             leaseRegistrationBookNo: detailedData.leaseRegBookNo,

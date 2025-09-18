@@ -523,7 +523,7 @@ const VehicleForm: React.FC<VehicleFormProps> = ({
 
           <Form.Item
             label="Date of 1st Reg"
-            required={!!(vehicleCondition && vehicleCondition !== "1")}
+           // required={!!(vehicleCondition && vehicleCondition !== "1")}
             validateStatus={errors.vehicleDateOfFirstReg ? "error" : ""}
             help={errors.vehicleDateOfFirstReg?.message}
             labelCol={{ span: 24 }}

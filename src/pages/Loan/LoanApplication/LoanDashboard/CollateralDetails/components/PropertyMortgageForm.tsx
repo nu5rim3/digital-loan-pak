@@ -173,14 +173,14 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
   ]);
 
   useEffect(() => {
-    if (propertyPOA !== "yes" && setValue) {
+    if (propertyPOA !== "1" && setValue) {
       setValue("propertyPOANumber", "");
       setValue("propertyCompany", "");
     }
   }, [propertyPOA, setValue]);
 
   useEffect(() => {
-    if (propertyInsuranceOfBuilding !== "yes" && setValue) {
+    if (propertyInsuranceOfBuilding !== "1" && setValue) {
       setValue("propertyInsuranceValue", "");
     }
   }, [propertyInsuranceOfBuilding, setValue]);
@@ -454,14 +454,14 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
               control={control}
               render={({ field }) => (
                 <Select {...field} showSearch placeholder="Select POA">
-                  <Select.Option value="yes">Yes</Select.Option>
-                  <Select.Option value="no">No</Select.Option>
+                  <Select.Option value="1">Yes</Select.Option>
+                  <Select.Option value="0">No</Select.Option>
                 </Select>
               )}
             />
           </Form.Item>
 
-          {propertyPOA === "yes" && (
+          {propertyPOA === "1" && (
             <Form.Item
               label="POA Number"
               required
@@ -480,7 +480,7 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
             </Form.Item>
           )}
 
-          {propertyPOA === "yes" && (
+          {propertyPOA === "1" && (
             <Form.Item
               label="Company"
               required
@@ -539,8 +539,8 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
                   showSearch
                   placeholder="Select Title Insurance"
                 >
-                  <Select.Option value="yes">Yes</Select.Option>
-                  <Select.Option value="no">No</Select.Option>
+                  <Select.Option value="Y">Yes</Select.Option>
+                  <Select.Option value="N">No</Select.Option>
                 </Select>
               )}
             />
@@ -563,8 +563,8 @@ const PropertyMortgageForm: React.FC<PropertyMortgageFormProps> = ({
                   showSearch
                   placeholder="Select Insurance of Building"
                 >
-                  <Select.Option value="yes">Yes</Select.Option>
-                  <Select.Option value="no">No</Select.Option>
+                  <Select.Option value="1">Yes</Select.Option>
+                  <Select.Option value="0">No</Select.Option>
                 </Select>
               )}
             />
