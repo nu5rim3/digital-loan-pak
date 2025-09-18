@@ -110,8 +110,11 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
         // fetchHealthCondition()
         fetchGuarantorByAppId(appId ?? '')
         fetchStackholderByAppId(appId ?? '')
+        if(selectedProductCode){
         fetchModeOfSecurity(selectedProductCode ?? '')
         fetchRelationaShipGaurantor(selectedProductCode ?? '')
+        }
+      
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 

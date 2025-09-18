@@ -238,7 +238,8 @@ const BusinessDetailsCard: React.FC<{ detail: IBusinessIncome; onEdit: () => voi
                 okText="Yes"
                 cancelText="No"
             >
-                <Button type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
+                {/* due to not integrated apis hidden this as shalini/ shabira */}
+                <Button hidden type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
             </Popconfirm>
         </div>
         <Descriptions column={1}>
@@ -262,7 +263,7 @@ const AgriDetailsCard: React.FC<{ detail: IAgricultureIncome; onEdit: () => void
                 okText="Yes"
                 cancelText="No"
             >
-                <Button type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
+                <Button hidden type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
             </Popconfirm>
         </div>
         <Descriptions column={1} colon>
@@ -285,7 +286,7 @@ const SalaryDetailsCard: React.FC<{ detail: ISalaryIncome; onEdit: () => void; o
                 okText="Yes"
                 cancelText="No"
             >
-                <Button type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
+                <Button hidden type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
             </Popconfirm>
         </div>
         <Descriptions column={1} colon>
@@ -308,7 +309,7 @@ const LiveStockDetailsCard: React.FC<{ detail: ILiveStockIncome; onEdit: () => v
                 okText="Yes"
                 cancelText="No"
             >
-                <Button type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
+                <Button  hidden type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
             </Popconfirm>
         </div>
         <Descriptions column={1} colon>
@@ -332,7 +333,7 @@ const OtherDetailsCard: React.FC<{ detail: IOtherIncome; onEdit: () => void; onR
                 okText="Yes"
                 cancelText="No"
             >
-                <Button type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
+                <Button hidden type="default" size="small" icon={<DeleteOutlined />} onClick={onRemove} danger />
             </Popconfirm>
         </div>
         <Descriptions column={1} colon>

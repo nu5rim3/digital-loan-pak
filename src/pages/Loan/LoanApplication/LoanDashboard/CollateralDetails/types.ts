@@ -969,25 +969,25 @@ export const leaseProductValidationSchema = yup.object().shape({
 
   // Conditional fields based on condition
   engineNo: yup.string().when("condition", {
-    is: (val: string) => val && val !== "1",
+    is: (val: string) => val && val === "S" ,
     then: (schema) =>
       schema.required("Engine No is required"),
     otherwise: (schema) => schema.optional(),
   }),
   chassisNo: yup.string().when("condition", {
-    is: (val: string) => val && val !== "1",
+    is: (val: string) => val && val === "S",
     then: (schema) =>
       schema.required("Chassis No is required"),
     otherwise: (schema) => schema.optional(),
   }),
   vehicleNo: yup.string().when("condition", {
-    is: (val: string) => val && val !== "1",
+    is: (val: string) => val && val === "S",
     then: (schema) =>
       schema.required("Vehicle No is required"),
     otherwise: (schema) => schema.optional(),
   }),
   registrationDate: yup.date().when("condition", {
-    is: (val: string) => val && val !== "1",
+    is: (val: string) => val && val === "S",
     then: (schema) =>
       schema.required(
         "Registration Date is required"
