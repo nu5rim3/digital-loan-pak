@@ -12,7 +12,7 @@ interface IECIBDetails {
 
 const ECIBDetails: React.FC<IECIBDetails> = ({ cnic }) => {
 
-    const { ecribreportLoading, ecribreport, fetchECIBReportById } = useVerificationStore()
+    const { ecribreportLoading, ecribreport, fetchECIBReportById,} = useVerificationStore()
     const { ecibReportUrl, fetchECIBReport } = useCommonStore()
     const [openModal, setOpenModal] = useState(false);
 
@@ -25,10 +25,10 @@ const ECIBDetails: React.FC<IECIBDetails> = ({ cnic }) => {
     const onRefresh = () => {
         fetchECIBReportById(cnic)
     }
-
+//as per Shalini changed the label as  External CRIB Details
     if (ecribreport === null) {
         return (
-            <Card title={'Extrenal CIB Details'} loading={ecribreportLoading} extra={
+            <Card title={'External CRIB Details'} loading={ecribreportLoading} extra={
                 <Button type="text" icon={<ReloadOutlined />} onClick={onRefresh} />
             }>
                 <Empty description={<span><b>No data found</b></span>} />
@@ -38,7 +38,7 @@ const ECIBDetails: React.FC<IECIBDetails> = ({ cnic }) => {
 
     return (
         <>
-            <Card title={'Extrenal CIB Details'} loading={ecribreportLoading} extra={
+            <Card title={'External CRIB Details'} loading={ecribreportLoading} extra={
                 <>
                     <Button type="text" icon={<EyeOutlined />} onClick={() => setOpenModal(true)} disabled={ecribreport?.hasEcib === 'N'}>View Report</Button>
                     <Button type="text" icon={<ReloadOutlined />} onClick={onRefresh} />
