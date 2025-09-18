@@ -187,7 +187,8 @@ const GuarantorDetailsView: React.FC<IGuarantorDetailsView> = ({ formDetails }) 
                             setSelectedIndex(index + 1);
                             selectedGuarantor(item.identificationNumber ?? '');
                         }}>
-                            {`Guarantor ${index + 1} - ${item.sequence}`}
+                            {/* {`Guarantor ${index + 1} - ${item.sequence}`} */}
+                              {`Guarantor ${index + 1}`}
                         </Button>
                     ))}
                 </div>

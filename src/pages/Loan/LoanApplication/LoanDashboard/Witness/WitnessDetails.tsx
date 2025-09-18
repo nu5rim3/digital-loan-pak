@@ -85,7 +85,9 @@ const WitnessDetails: React.FC<IWitnessDetails> = ({ formDetails }) => {
                                          
                                             setSelectedIdx(item.idx ?? '')
                                         }}>
-                                        Witness {index + 1} -  {item.stkSequence}
+
+                                        {/* Witness {index + 1} -  {item.stkSequence} */}
+                                         Witness {index + 1}
                                     </Button>
                                 ))
                             }
