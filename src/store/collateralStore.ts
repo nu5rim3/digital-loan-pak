@@ -7,6 +7,7 @@ interface IBaseItem {
   code: string;
   description: string;
   status?: string;
+  supplierName:string;
 }
 interface ownerShipData {
   bankGuaranteeOwnership?: IBaseItem;
@@ -248,6 +249,7 @@ interface ICollateralState {
   securityTypeData: any;
   subTypesData: subTypesData;
   vehicleCategoryData: categoryData;
+  supplierData:IBaseItem;
 
 
   // Loading states
@@ -298,6 +300,7 @@ interface ICollateralState {
   conditionByCodeLoading: boolean;
   securityCategoryDataLoading: boolean;
   vehicleCategoryLoading: boolean;
+  supplierDataLoading: boolean;
 
 
   // Error states
@@ -407,6 +410,7 @@ interface ICollateralState {
   fetchSecurityCategoryByCode: (code: string) => Promise<void>;
   fetchConditionByCode: (field: string, code: string) => Promise<void>;
   fetchVehicleCategoryByCode: (field: string,code: string) => Promise<void>;
+  fetchSupplierByCode(code: string): Promise<void>;
 
 }
 
@@ -438,6 +442,7 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   securityCategoryData: {} as IBaseItem,
   securityTypeData: {},
   vehicleCategoryData: {} as categoryData,
+  supplierData: {} as IBaseItem,
 
 
   // Initialize loading states
@@ -488,6 +493,7 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   conditionByCodeLoading: false,
   securityCategoryDataLoading: false,
   vehicleCategoryLoading: false,
+  supplierDataLoading:false,
 
 
   // Initialize error states
@@ -1351,7 +1357,7 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
           machineryOwnership: item.ownership,
           machinerySupplier: item.supplier,
           machineryCondition: item.condition,
-          machineryModel: item.model,
+          machineryModel: item.model ?? "",
           machineryEngineNo: item.engineNo,
           machinerySerialNo: item.serialChasisNo,
           machineryDescription: item.description,
@@ -1628,6 +1634,19 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       console.error("Error fetching vehicle type by code", error);
     } finally {
       set({ vehicleCategoryLoading: false });
+    }
+  },
+    fetchSupplierByCode: async (code: string) => {
+    set({ supplierDataLoading: true });
+    try {
+      const response = await API.get(
+        `/mobixCamsCommon/v1/suppliers/${code}`
+      );
+      set({ supplierData: response.data });
+    } catch (error) {
+      console.error("Error fetching supplier by code:", error);
+    } finally {
+      set({ supplierDataLoading: false });
     }
   },
 
