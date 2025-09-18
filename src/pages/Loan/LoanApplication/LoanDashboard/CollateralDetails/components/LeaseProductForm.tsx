@@ -112,8 +112,6 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
     suppliersLoading,
     insuranceCompanies,
     insuranceCompaniesLoading,
-    conditions,
-    conditionsLoading,
     vehicleCategories,
     vehicleCategoriesLoading,
     depreciationRates,
@@ -132,6 +130,9 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
     fetchTypes,
     fetchMakes,
     fetchModels,
+    fetchLeaseConditions,
+    leaseConditions,
+    leaseConditionLoading
   } = useCollateralStore();
   const {trailCalulationDetailsByAppIdLoading, trailCalulationDetailsByAppId, fetchTrailCalulationDetailsByAppId } =
     useCreditStore();
@@ -203,6 +204,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
       fetchInsuranceCompanies();
       fetchTypes("V");
       fetchMakes();
+      fetchLeaseConditions();
       dataFetched.current = true;
     }
   }, [
@@ -262,7 +264,7 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
     name: "condition",
   });
 //mapped with condition's code
-  const isNotNew = Boolean(condition && condition !== "1");
+  const isNotNew = Boolean(condition && condition === "S");
 
   const getOptions = (
     arr: any[],
@@ -401,8 +403,9 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
                   {...field}
                   showSearch
                   placeholder="Select Condition"
-                  loading={conditionsLoading}
-                  options={getOptions(conditions, "description", "code")}
+                  loading={leaseConditionLoading}
+                  options={getOptions(leaseConditions, "description", "code")}
+               
                 />
               )}
             />

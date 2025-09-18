@@ -105,7 +105,7 @@ const mapCollateralToFormValues = (collateral: any): FormValues => {
       formValues.machinerySerialNo = collateral.machinerySerialNo;
       formValues.machineryCondition = collateral.machineryCondition;
       formValues.machineryBondNo = collateral.machineryBondNo;
-      formValues.machineryBondValue = collateral.machineryBondValue;
+      formValues.machineryBondValue = collateral.machineryBondValue ?? "";
       formValues.machineryValuedBy = collateral.machineryValuedBy;
       formValues.machineryInsuranceCompany =
         collateral.machineryInsuranceCompany;
@@ -798,6 +798,7 @@ const CollateralDetails: React.FC<CollateralDetailsComponentProps> = () => {
   };
 
   const handleUpdate = (index: number) => {
+    console.log('ggooo',formData)
     const dataToEdit = formData[index];
     openModal("update", dataToEdit);
   };

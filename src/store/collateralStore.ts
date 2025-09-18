@@ -7,7 +7,7 @@ interface IBaseItem {
   code: string;
   description: string;
   status?: string;
-  supplierName:string;
+  supplierName?:string;
 }
 interface ownerShipData {
   bankGuaranteeOwnership?: IBaseItem;
@@ -250,6 +250,8 @@ interface ICollateralState {
   subTypesData: subTypesData;
   vehicleCategoryData: categoryData;
   supplierData:IBaseItem;
+  leaseConditionData: IBaseItem;
+  leaseConditions: IBaseItem[];
 
 
   // Loading states
@@ -301,6 +303,8 @@ interface ICollateralState {
   securityCategoryDataLoading: boolean;
   vehicleCategoryLoading: boolean;
   supplierDataLoading: boolean;
+  leaseConditionDataLoading: boolean;
+  leaseConditionLoading: boolean;
 
 
   // Error states
@@ -411,6 +415,8 @@ interface ICollateralState {
   fetchConditionByCode: (field: string, code: string) => Promise<void>;
   fetchVehicleCategoryByCode: (field: string,code: string) => Promise<void>;
   fetchSupplierByCode(code: string): Promise<void>;
+  fetchLeaseConditionByCode(code: string): Promise<void>;
+  fetchLeaseConditions: () => Promise<void>;
 
 }
 
@@ -443,6 +449,8 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   securityTypeData: {},
   vehicleCategoryData: {} as categoryData,
   supplierData: {} as IBaseItem,
+  leaseConditionData:{} as IBaseItem,
+  leaseConditions:[],
 
 
   // Initialize loading states
@@ -494,6 +502,8 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
   securityCategoryDataLoading: false,
   vehicleCategoryLoading: false,
   supplierDataLoading:false,
+  leaseConditionDataLoading:false,
+  leaseConditionLoading:false,
 
 
   // Initialize error states
@@ -1362,7 +1372,7 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
           machinerySerialNo: item.serialChasisNo,
           machineryDescription: item.description,
           machineryBondNo: item.bondNo,
-          machineryBondValue: item.bondValue,
+          machineryBondValue: item.bondValue ?? "",
           machineryMV: item.marketValue,
           machineryFSV: item.fsv,
           machineryValuedBy: item.valuedBy,
@@ -1647,6 +1657,32 @@ const useCollateralStore = create<ICollateralState>((set, get) => ({
       console.error("Error fetching supplier by code:", error);
     } finally {
       set({ supplierDataLoading: false });
+    }
+  },
+    fetchLeaseConditions: async () => {
+    set({ leaseConditionLoading: true });
+    try {
+      const response = await API.get(
+        "/mobixCamsCommon/v1/conditions/lease-equipment"
+      );
+      set({ leaseConditions: response.data });
+    } catch (error) {
+      console.error("Error fetching Vehicle Categories:", error);
+    } finally {
+      set({ leaseConditionLoading: false });
+    }
+  },
+   fetchLeaseConditionByCode: async (code: string) => {
+    set({ leaseConditionDataLoading: true });
+    try {
+      const response = await API.get(
+        `/mobixCamsCommon/v1/conditions/lease-equipment/${code}`
+      );
+      set({ leaseConditionData: response.data });
+    } catch (error) {
+      console.error("Error fetching lease condition by code:", error);
+    } finally {
+      set({ leaseConditionDataLoading: false });
     }
   },
 

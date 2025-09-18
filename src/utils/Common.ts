@@ -203,8 +203,6 @@ export const getConditionFieldName = (key: string) => {
       return "vehicleCondition";
     case securityTypes.MACHINERY_AND_EQUIPMENT:
       return "machineryCondition";
-     case securityTypes.LEASE:
-      return "leaseCondition";
     default:
       "";
   }
