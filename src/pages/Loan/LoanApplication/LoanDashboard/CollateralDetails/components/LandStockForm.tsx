@@ -307,6 +307,7 @@ const LandStockForm: React.FC<LandStockFormProps> = ({
               help={errors.landStockSecurityDate?.message}
               labelCol={{ span: 24 }}
               wrapperCol={{ span: 24 }}
+              required         
             >
               <Controller
                 name="landStockSecurityDate"
