@@ -104,7 +104,6 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
   control,
   errors,
   setValue,
-  resetLeaseForm
 }) => {
     const { appId } = useParams()
   const {
@@ -146,13 +145,13 @@ export const LeaseProductForm: React.FC<LeaseProductFormProps> = ({
 
   const [getTrialData, setIsGetTrialData] = useState<boolean>(false)
  // Restore saved trial calculation data when component mounts
-      useEffect(() => {
-          if (trialCalculationData && resetLeaseForm) {
-             resetLeaseForm?.({ equipmentType: "",equipmentCost: "" });
+      // useEffect(() => {
+      //     if (trialCalculationData && resetLeaseForm) {
+      //        resetLeaseForm?.({ equipmentType: "",equipmentCost: "" });
 
-          }
-          // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, []);
+      //     }
+      //     // eslint-disable-next-line react-hooks/exhaustive-deps
+      // }, []);
   useEffect(() => {
     //if user is not visit tial calculation section and come directly to collateral section
     if (appId)
