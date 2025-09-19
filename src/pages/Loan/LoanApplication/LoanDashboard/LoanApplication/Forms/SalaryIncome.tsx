@@ -68,8 +68,7 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
             })
         }
     }
-
-    useEffect(() => {
+        useEffect(() => {
 
         fetchFacilityPurpose()
         setValue('sourceOfIncome', sourceOfIncome)
@@ -77,19 +76,27 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
         fetchNatureOfBusiness()
         fetchNatureOfEmployment()
         fetchJobs()
+     
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [appId])
+    useEffect(() => {
         const productCode = product?.pTrhdLType ?? ''
+        if(!productCode){
+            return;
+        }
         if (productCode !== '') {
             fetchDistanceForResidenceOrWork(productCode)
             fetchSalary(productCode)
-            fetchRepeatCustomersWithProdCode(productCode)
-        } else {
-            notification.error({
-                message: 'Error',
-                description: 'Product code is not available. Please select a product first.',
-            });
-        }
+            fetchRepeatCustomersWithProdCode("IE")
+        } 
+        // else {
+        //     notification.error({
+        //         message: 'Error',
+        //         description: 'Product code is not available. Please select a product first.',
+        //     });
+        // }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [product?.pTrhdLType])
 
     const onRestFrom = () => {
         reset()

@@ -152,11 +152,14 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
         fetchFacilityPurpose()
         fetchProduct(appId ?? '')
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [appId])
 
     useEffect(() => {
         setValue('sourceOfIncome', sourceOfIncome)
         const productCode = product?.pTrhdLType ?? ''
+        if(!productCode){
+            return;
+        }
         if (productCode !== '') {
             fetchOwnership(productCode)
             fetchIrrigation(productCode)
@@ -165,15 +168,16 @@ const AgricultureIncome: React.FC<IAgricultureIncomeForm> = ({ sourceOfIncome, r
             fetchAgriMethods(productCode)
             fetchCultLoanPurposes(productCode)
             fetchMarketCheck(productCode)
-            fetchRepeatCustomersWithProdCode(productCode)
-        } else {
-            notification.error({
-                message: 'Error',
-                description: 'Product code not found. Please check the product details.',
-            });
-        }
+            fetchRepeatCustomersWithProdCode("IE")
+        } 
+        // else {
+        //     notification.error({
+        //         message: 'Error',
+        //         description: 'Product code not found. Please check the product details.',
+        //     });
+        // }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [product?.pTrhdLType])
 
     const onReset = () => {
         reset()
