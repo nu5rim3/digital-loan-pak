@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import * as yup from 'yup'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Card, Form, Input, Select, Checkbox, notification } from 'antd';
+import { Button, Card, Form, Input, Select, Checkbox } from 'antd';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { formatName, formatSentence, getDistrict } from '../../../../../../utils/formatterFunctions';
 import useCommonStore from '../../../../../../store/commonStore';
