@@ -12,6 +12,7 @@ import {
   Space,
   Collapse,
   Modal,
+  UploadFile,
 } from "antd";
 import { useEffect, useState } from "react";
 // import ButtonContainer from '../../../../components/Buttons/Button';
@@ -36,6 +37,8 @@ import {
 } from "@ant-design/icons";
 import { getObExceptionals } from "../../../../utils/Common";
 import { assets } from "../../../../utils/ui-assetsColor";
+import ImageUpload from "../../../../components/common/image/ImageUpload";
+import fileToBase64Async from "../../../../utils/fileToBase64Async";
 
 // import { genarateStepAction, genarateStepStatus } from '../../../../utils/setpsGenaration';
 // import fileToBase64Async from '../../../../utils/fileToBase64Async';
@@ -129,6 +132,7 @@ export default function Approval({
   //const [verticalObActiveTab, setVerticalObActiveTab] = useState(0);
   const [verticalCaActiveTab, setVerticalCaActiveTab] = useState(0);
   const navigate = useNavigate();
+   const [fileList, setFileList] = useState<UploadFile[]>([])
 
   const [form] = Form.useForm();
   const columns: ColumnsType<any> = [
@@ -277,43 +281,35 @@ export default function Approval({
           documents: [],
         };
 
-        // const processedFiles = [];
-        // if (
-        //   selectedRole === "CA" ||
-        //   selectedRole === "BM" ||
-        //   selectedRole === "CSA" ||
-        //   selectedRole === "AM" ||
-        //   selectedRole === "RM" ||
-        //   selectedRole === "DIR" ||
-        //   selectedRole === "BOD1" ||
-        //   selectedRole === "BOD2" ||
-        //   selectedRole === "BOD3"
-        // ) {
-        //   for (const file of fileList) {
-        //     // let base64
-        //     // = file.preview
-        //     // if(!base64){
-        //     // const base64 = await fileToBase64Async(file.originFileObj);
-        //     // }
+        const processedFiles = [];
+        if (
+          currentRole?.code === "BM"
+        ) {
+          for (const file of fileList) {
+            let base64
+            = file.preview
+            if(!base64){
+            const base64 = await fileToBase64Async(file.originFileObj);
+            }
 
-        //     const processedFile = {
-        //       stkIdx: customerData.data.cusIdx,
-        //       cltIdx: customerData.data.cltIdx,
-        //       centerIdx: customerData.data.centerIdx,
-        //       appraisalIdx: customerData.data.appraisalId,
-        //       imgMasterCategory: "APPROVAL_FLOW",
-        //       imgSubCategory: selectedRole === "CA" ? "CA_LEVEL" : "BM_LEVEL",
-        //       imgOriginalName: file.name,
-        //       imgContentType: file.type,
-        //       // image: base64,
-        //     };
+            const processedFile = {
+              // stkIdx: '',
+              // cltIdx: '',
+              // centerIdx: '',
+              // appraisalIdx: '',
+              imgMasterCategory: "APPROVAL_FLOW",
+              imgSubCategory: "BM_LEVEL",
+              imgOriginalName: file.name,
+              imgContentType: file.type,
+              // image: base64,
+            };
 
-        //     processedFiles.push(processedFile);
-        //   }
-        // }
+            processedFiles.push(processedFile);
+          }
+        }
         const newData = {
           ...data,
-          // documents: processedFiles,
+          documents: processedFiles,
         };
 
         if (flow === "firstFlow") {
@@ -992,13 +988,28 @@ export default function Approval({
         </Panel>
       </Collapse>
 
-      {flowHistory?.ibuWf1ApprovalSteps?.find(
+      {/* {
+      flowHistory?.ibuWf1ApprovalSteps?.find(
         (row: any) => row?.stepAction === "PENDING"
       )?.roleCode === currentRole?.code ||
       flowHistory?.ibuWf2ApprovalSteps?.find(
         (row: any) => row?.stepAction === "PENDING"
-      )?.roleCode === currentRole?.code ? (
+      )?.roleCode === currentRole?.code ? 
+      ( */}
       <>
+         {
+            currentRole?.code === 'ADMIN'?
+             <Collapse accordion>
+              <Panel header="IMAGE/DOCUMENT UPLOAD" key="2">
+                <div className="my-5 ml-3">
+                    <ImageUpload setFileList={setFileList} fileList={fileList}/>
+                </div>
+              </Panel>
+
+             </Collapse>
+            :
+                null
+        }
         <Form
           form={form}
           labelCol={{ span: 4 }}
@@ -1140,7 +1151,7 @@ export default function Approval({
         </Form>
         <Divider />
       </>
-      ) : null}
+      {/* ) : null} */}
       {flowHistory?.ibuWf1ApprovalSteps?.length > 0 && (
         <div className="mt-5">
           <Title level={5}>Application First Flow History</Title>
