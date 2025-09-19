@@ -28,7 +28,7 @@ const Category: React.FC<{ groups: ImageGroup[] }> = ({ groups }) => {
     <>
       {images.map((group, index) => (
         <div key={index} style={{ marginBottom: 32 }}>
-          <Title level={5}>{removeUnderscore(group.imgMasterCategory)}</Title>
+          <Title level={5}> {group.imgMasterCategory === "IBU_FLOW_2_APPROVAL" ? "Uploaded by Branch Manger" :removeUnderscore(group.imgMasterCategory)}</Title>
           <Divider style={{ margin: '12px 0' }} />
        <Row gutter={[16, 16]}>
   {group.images.map((img: any, idx) => (

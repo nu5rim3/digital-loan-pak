@@ -12,6 +12,7 @@ import {
   Space,
   Collapse,
   Modal,
+  UploadFile,
 } from "antd";
 import { useEffect, useState } from "react";
 // import ButtonContainer from '../../../../components/Buttons/Button';
@@ -36,6 +37,8 @@ import {
 } from "@ant-design/icons";
 import { getObExceptionals } from "../../../../utils/Common";
 import { assets } from "../../../../utils/ui-assetsColor";
+import fileToBase64Async from "../../../../utils/fileToBase64Async";
+import ImageUpload from "../../../../components/common/image/ImageUpload";
 
 // import { genarateStepAction, genarateStepStatus } from '../../../../utils/setpsGenaration';
 // import fileToBase64Async from '../../../../utils/fileToBase64Async';
@@ -93,7 +96,7 @@ export default function Approval({
   const [caComments, setCaComments] = useState<Record<string, string>>({});
   const { Title, Text } = Typography;
   const { TabPane } = Tabs;
-  const { TextArea } = Input;
+  const { TextArea } = Input;console.log('cwce',currentRole)
   // useEffect(() => {
   //   if (selectedRole) {
   //     if (selectedRole === 'CSA') {
@@ -217,7 +220,7 @@ export default function Approval({
           : moment(lastModifiedDate).format("YYYY-MM-DD - hh:mm:ss A"),
     },
   ];
-
+   const [fileList, setFileList] = useState<UploadFile[]>([])
   const handleSubmit = (type: string) => {
     // if (financialDetailsSavePending) {
     //   return notification.warning({
@@ -277,7 +280,18 @@ export default function Approval({
           documents: [],
         };
 
-        // const processedFiles = [];
+        const processedFiles = [];
+        
+        if (
+          currentRole?.code === "BHO"
+        ) {
+          for (let i = 0; i < fileList.length; i++) {
+             const file = fileList[i];
+            let base64 :any
+            = file.preview
+            if(!base64){
+             base64 = await fileToBase64Async(file.originFileObj);
+            }
         // if (
         //   selectedRole === "CA" ||
         //   selectedRole === "BM" ||
@@ -295,25 +309,25 @@ export default function Approval({
         //     // if(!base64){
         //     // const base64 = await fileToBase64Async(file.originFileObj);
         //     // }
+            const processedFile = {
+             // stkIdx: customerData.data.cusIdx,
+             // cltIdx: customerData.data.cltIdx,
+             // centerIdx: customerData.data.centerIdx,
+             // appraisalIdx: customerData.data.appraisalId,
+              appraisalIdx: appraisalId,
+              imgMasterCategory: "IBU_FLOW_2_APPROVAL",
+              imgSubCategory: `BM_LEVEL_${i + 1}`,
+              imgOriginalName: file.name,
+              imgContentType: file.type,
+              image: base64,
+            };
 
-        //     const processedFile = {
-        //       stkIdx: customerData.data.cusIdx,
-        //       cltIdx: customerData.data.cltIdx,
-        //       centerIdx: customerData.data.centerIdx,
-        //       appraisalIdx: customerData.data.appraisalId,
-        //       imgMasterCategory: "APPROVAL_FLOW",
-        //       imgSubCategory: selectedRole === "CA" ? "CA_LEVEL" : "BM_LEVEL",
-        //       imgOriginalName: file.name,
-        //       imgContentType: file.type,
-        //       // image: base64,
-        //     };
-
-        //     processedFiles.push(processedFile);
-        //   }
-        // }
+            processedFiles.push(processedFile);
+          }
+        }
         const newData = {
           ...data,
-          // documents: processedFiles,
+           documents: flow === "firstFlow" ? []:processedFiles,
         };
 
         if (flow === "firstFlow") {
@@ -991,14 +1005,27 @@ export default function Approval({
           ) : null}
         </Panel>
       </Collapse>
-
-      {flowHistory?.ibuWf1ApprovalSteps?.find(
-        (row: any) => row?.stepAction === "PENDING"
-      )?.roleCode === currentRole?.code ||
-      flowHistory?.ibuWf2ApprovalSteps?.find(
-        (row: any) => row?.stepAction === "PENDING"
-      )?.roleCode === currentRole?.code ? (
+     
+        {flowHistory?.ibuWf1ApprovalSteps?.find(
+          (row: any) => row?.stepAction === "PENDING"
+        )?.roleCode === currentRole?.code ||
+        flowHistory?.ibuWf2ApprovalSteps?.find(
+          (row: any) => row?.stepAction === "PENDING"
+        )?.roleCode === currentRole?.code ? (
       <>
+           {
+              flow !== "firstFlow" && currentRole?.code === "BHO"?
+             <Collapse accordion>
+              <Panel header="IMAGE/DOCUMENT UPLOAD" key="2">
+                <div className="my-5 ml-3">
+                    <ImageUpload setFileList={setFileList} fileList={fileList}/>
+                </div>
+              </Panel>
+
+             </Collapse>
+            :
+                null
+           }
         <Form
           form={form}
           labelCol={{ span: 4 }}
@@ -1141,6 +1168,8 @@ export default function Approval({
         <Divider />
       </>
       ) : null}
+
+
       {flowHistory?.ibuWf1ApprovalSteps?.length > 0 && (
         <div className="mt-5">
           <Title level={5}>Application First Flow History</Title>

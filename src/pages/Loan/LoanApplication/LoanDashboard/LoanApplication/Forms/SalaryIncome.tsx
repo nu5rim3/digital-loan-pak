@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import * as yup from 'yup'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Card, Form, Input, notification, Select } from 'antd';
+import { Button, Card, Form, Input, Select } from 'antd';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { formatName, formatSentence } from '../../../../../../utils/formatterFunctions';
 import useCommonStore from '../../../../../../store/commonStore';
@@ -68,8 +68,7 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
             })
         }
     }
-
-    useEffect(() => {
+        useEffect(() => {
 
         fetchFacilityPurpose()
         setValue('sourceOfIncome', sourceOfIncome)
@@ -77,19 +76,27 @@ const SalaryIncome: React.FC<ISalaryIncomeForm> = ({ sourceOfIncome, resetSource
         fetchNatureOfBusiness()
         fetchNatureOfEmployment()
         fetchJobs()
+     
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [appId])
+    useEffect(() => {
         const productCode = product?.pTrhdLType ?? ''
+        if(!productCode){
+            return;
+        }
         if (productCode !== '') {
             fetchDistanceForResidenceOrWork(productCode)
             fetchSalary(productCode)
-            fetchRepeatCustomersWithProdCode(productCode)
-        } else {
-            notification.error({
-                message: 'Error',
-                description: 'Product code is not available. Please select a product first.',
-            });
-        }
+            fetchRepeatCustomersWithProdCode("IE")
+        } 
+        // else {
+        //     notification.error({
+        //         message: 'Error',
+        //         description: 'Product code is not available. Please select a product first.',
+        //     });
+        // }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [product?.pTrhdLType])
 
     const onRestFrom = () => {
         reset()

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import * as yup from 'yup'
 import { Controller, useForm } from 'react-hook-form'
-import { Button, Card, Form, Input, Select, Checkbox, notification } from 'antd';
+import { Button, Card, Form, Input, Select, Checkbox } from 'antd';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { formatName, formatSentence, getDistrict } from '../../../../../../utils/formatterFunctions';
 import useCommonStore from '../../../../../../store/commonStore';
@@ -104,6 +104,9 @@ const LiveStockIncome: React.FC<ILiveStockIncomeProps> = ({ sourceOfIncome, rese
         fetchFacilityPurpose()
         fetchProduct(appId ?? '')
         const productCode = product?.pTrhdLType ?? ''
+        if(!productCode){
+            return;
+        }
         if (productCode !== '') {
             fetchOwnership(productCode)
             fetchIrrigation(productCode)
@@ -111,15 +114,16 @@ const LiveStockIncome: React.FC<ILiveStockIncomeProps> = ({ sourceOfIncome, rese
             fetchProofOfCultivation(productCode)
             fetchAgriMethods(productCode)
             fetchMarketCheck(productCode)
-            fetchRepeatCustomersWithProdCode(productCode)
-        } else {
-            notification.error({
-                message: 'Error',
-                description: 'Product code is not available. Please check the product details.',
-            });
-        }
+            fetchRepeatCustomersWithProdCode("IE")
+        } 
+        // else {
+        //     notification.error({
+        //         message: 'Error',
+        //         description: 'Product code is not available. Please check the product details.',
+        //     });
+        // }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [appId])
+    }, [appId,product?.pTrhdLType])
 
     const isAgriSecured = watch('isAgriSecured');
 

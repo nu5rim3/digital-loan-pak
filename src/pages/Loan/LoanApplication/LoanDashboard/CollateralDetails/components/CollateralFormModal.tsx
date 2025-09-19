@@ -211,7 +211,7 @@ const { trialCalculationData } = useCommonStore();
         if (productCategory === "Lease" && initialData) {
           const leaseFormData: LeaseProductFormValues = {
             id: initialData.id,
-            equipmentType: initialData.leaseEquipType || "",
+            equipmentType: initialData.leaseEquipType === "V" ? "Vehicle" : "Equipment",//need revisit
             equipmentCost: initialData.leaseCost || "",
             supplierCode: initialData.leaseSupplierCode || "",
             equipmentName: initialData.leaseEquipName || "",
