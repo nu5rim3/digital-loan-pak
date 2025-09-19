@@ -84,7 +84,7 @@ export const getRoleName = (role: string) => {
     case "ADMIN":
       return "Administrator";
     case "BHO":
-      return "Branch Head Officer";
+      return "Branch Manager";
     case "CRO":
       return "Customer Relationship Officer";
     case "CO":
