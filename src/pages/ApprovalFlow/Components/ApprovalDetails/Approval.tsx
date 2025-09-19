@@ -285,7 +285,8 @@ export default function Approval({
         if (
           currentRole?.code === "BHO"
         ) {
-          for (const file of fileList) {
+          for (let i = 0; i < fileList.length; i++) {
+             const file = fileList[i];
             let base64 :any
             = file.preview
             if(!base64){
@@ -315,7 +316,7 @@ export default function Approval({
              // appraisalIdx: customerData.data.appraisalId,
               appraisalIdx: appraisalId,
               imgMasterCategory: "IBU_FLOW_2_APPROVAL",
-              imgSubCategory:  "BM_LEVEL",
+              imgSubCategory: `BM_LEVEL_${i + 1}`,
               imgOriginalName: file.name,
               imgContentType: file.type,
               image: base64,
@@ -1005,9 +1006,15 @@ export default function Approval({
         </Panel>
       </Collapse>
      
-       
-             {
-             currentRole?.code === "BHO"?
+        {flowHistory?.ibuWf1ApprovalSteps?.find(
+          (row: any) => row?.stepAction === "PENDING"
+        )?.roleCode === currentRole?.code ||
+        flowHistory?.ibuWf2ApprovalSteps?.find(
+          (row: any) => row?.stepAction === "PENDING"
+        )?.roleCode === currentRole?.code ? (
+      <>
+           {
+              flow !== "firstFlow" && currentRole?.code === "BHO"?
              <Collapse accordion>
               <Panel header="IMAGE/DOCUMENT UPLOAD" key="2">
                 <div className="my-5 ml-3">
@@ -1018,16 +1025,7 @@ export default function Approval({
              </Collapse>
             :
                 null
-        }
-           
-
-      {flowHistory?.ibuWf1ApprovalSteps?.find(
-        (row: any) => row?.stepAction === "PENDING"
-      )?.roleCode === currentRole?.code ||
-      flowHistory?.ibuWf2ApprovalSteps?.find(
-        (row: any) => row?.stepAction === "PENDING"
-      )?.roleCode === currentRole?.code ? (
-      <>
+           }
         <Form
           form={form}
           labelCol={{ span: 4 }}
