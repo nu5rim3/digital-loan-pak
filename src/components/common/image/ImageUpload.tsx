@@ -67,7 +67,8 @@ export default function ImageUpload({
   };
 
   const captureImage = async (image: any,originalFile: File) => {
-     const originalName = originalFile.name; // Use original file name
+
+     const originalName = originalFile ? originalFile.name: ""; // Use original file name
     const name = `${uuidv4()}.jpeg`
     const blob = dataURLtoBlob(image);
 
@@ -78,7 +79,7 @@ export default function ImageUpload({
 
     const imageGen = {
       uid: uuidv4(),
-      name: originalName,
+      name: originalName ?? name,
       type: "image/jpeg",
       originFileObj: file,
       url: pdfUrl,
@@ -100,9 +101,9 @@ export default function ImageUpload({
     }>
       <div>
         <div className=''>
-          <WebcamCapture open={openCamera} setOpen={setOpenCamera} onCapture={captureImage} />
-          <Button className='w-60 mb-2' icon={<CameraOutlined />} onClick={() => setOpenCamera(true)}>Capture Image</Button>
-          <ImageSelector onCapture={captureImage} />
+          <WebcamCapture open={openCamera} setOpen={setOpenCamera}  onCapture={captureImage} />
+          <Button className='w-60 mb-2' icon={<CameraOutlined />} disabled={fileList?.length >= 2} onClick={() => setOpenCamera(true)}>Capture Image</Button>
+          <ImageSelector onCapture={captureImage}  fileList={fileList}/>
         </div>
       </div>
 
