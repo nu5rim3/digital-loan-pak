@@ -60,7 +60,7 @@ export const submitLease = async (
     const payload = {
       appraisalId,
       leaseEquipType: equipmentTypeCode || "E",
-      leaseCost: equipmentCost || "0",
+      leaseCost: equipmentCost ?? "0",
       leaseSupplierCode: supplierCode || "",
       leaseEquipName: equipmentName || "",
       leaseCondition: condition || "",

@@ -316,7 +316,7 @@ export default function Approval({
              // appraisalIdx: customerData.data.appraisalId,
               appraisalIdx: appraisalId,
               imgMasterCategory: "IBU_FLOW_2_APPROVAL",
-              imgSubCategory: `BM_LEVEL_${i + 1}`,
+              imgSubCategory: `BM_LEVEL_IMAGE_${i + 1}`,
               imgOriginalName: file.name,
               imgContentType: file.type,
               image: base64,
@@ -1017,7 +1017,7 @@ export default function Approval({
               flow !== "firstFlow" && currentRole?.code === "BHO"?
              <Collapse accordion>
               <Panel header="IMAGE/DOCUMENT UPLOAD" key="2">
-                <div className="my-5 ml-3">
+                <div className="my-5 ml-3" >
                     <ImageUpload setFileList={setFileList} fileList={fileList}/>
                 </div>
               </Panel>
@@ -1101,6 +1101,7 @@ export default function Approval({
               //  className="mr-2"
               icon={<RollbackOutlined />}
               onClick={() => {
+                   if (fileList?.length >0){
                 form.validateFields(["comment"]).then(async () => {
                   Modal.confirm({
                     title: <span>Are you sure that you want to return?</span>,
@@ -1120,6 +1121,9 @@ export default function Approval({
                     },
                   });
                 });
+                }else{
+                    notification.error({ message: "Images upload is required!" });
+                  }
               }}
             >
               Return
@@ -1138,7 +1142,8 @@ export default function Approval({
               //size="large"
               onClick={() => {
                 form.validateFields(["comment"]).then(async () => {
-                  Modal.confirm({
+                  if (fileList?.length >0){
+                    Modal.confirm({
                     title: <span>Are you sure that you want to approve?</span>,
                     icon: (
                       <ExclamationCircleOutlined
@@ -1157,6 +1162,10 @@ export default function Approval({
                       handleSubmit("PROCEED");
                     },
                   });
+                  }else{
+                    notification.error({ message: "Images upload is required!" });
+                  }
+                  
                 });
               }}
               // shape="round"

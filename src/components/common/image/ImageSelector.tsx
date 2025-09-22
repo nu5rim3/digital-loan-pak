@@ -4,10 +4,11 @@ import React, {  ChangeEvent } from 'react';
 import { PictureOutlined } from '@ant-design/icons'
 
 interface IImageSelector {
-    onCapture: Function
+    onCapture: Function;
+    fileList:any
 }
 
-const ImageSelector: React.FC<IImageSelector> = ({ onCapture }) => {
+const ImageSelector: React.FC<IImageSelector> = ({ onCapture ,fileList}) => {
 
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -29,7 +30,7 @@ const ImageSelector: React.FC<IImageSelector> = ({ onCapture }) => {
     return (
         <div>
             <input id="fileInput" type="file" accept="image/*" onChange={handleImageChange} className='hidden' />
-            <Button onClick={handleButtonClick} type='primary' icon={<PictureOutlined />} className='w-60'>Upload from Gallary</Button>
+            <Button disabled={fileList?.length >= 2} onClick={handleButtonClick} type='primary' icon={<PictureOutlined />} className='w-60'>Upload from Gallary</Button>
         </div>
     );
 };

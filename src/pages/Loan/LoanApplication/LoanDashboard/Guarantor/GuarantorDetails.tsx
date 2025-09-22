@@ -306,7 +306,8 @@ const GuarantorDetails: React.FC<IGuarantorDetails> = () => {
                                     // Ensure the issued date is not earlier than the date of birth
                                     min={watch('stkDob') ? moment(watch('stkDob')).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD")}
                                     // cannot be in the feture
-                                    max={moment().format("YYYY-MM-DD")}
+                                   // max={moment().format("YYYY-MM-DD")}
+                                   max={moment().subtract(1, "day").format("YYYY-MM-DD")}
                                 />}
                             />
                         </Form.Item>
