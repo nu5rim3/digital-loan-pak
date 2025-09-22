@@ -125,7 +125,7 @@ const LoanDaashboard: React.FC = () => {
                         <LoanApplication />
                     </div>);
             case 'cash-flow':
-                return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><CashFlow /></div>);
+                return (<div ref={ref} style={{ height: '150vh', overflowY: 'auto' }}><CashFlow /></div>);
             case 'credit-scoring':
                 return (<div ref={ref} style={{ height: '100vh', overflowY: 'auto' }}><CreditScoringPage appraisalId={appId ?? ''} /></div>);
             case 'customer-risk-profiling':

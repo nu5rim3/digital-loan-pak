@@ -159,7 +159,7 @@ const BnsOrAgriExpenses: React.FC = () => {
     );
 
     const options = [
-        { value: 'Agri Expenses', label: 'Agri Expenses' },
+        { value: 'Agriculture', label: 'Agri Expenses' },
         { value: 'Business 1', label: 'Business 1' },
         { value: 'Business 2', label: 'Business 2' },
         { value: 'Lev Expenses', label: 'Lev Expenses' },
@@ -203,7 +203,7 @@ const BnsOrAgriExpenses: React.FC = () => {
                                             <Empty description={"No Business or Agriculture Expenses found"} />
                                         </div>
                                     ) : (
-                                        <div className='grid grid-cols-5 gap-4'>
+                                        <div className='grid grid-cols-4 gap-4'>
                                             {
                                                 bnsOrAgriExpenses.map((detail, index) => (
                                                     <DetailsCard
