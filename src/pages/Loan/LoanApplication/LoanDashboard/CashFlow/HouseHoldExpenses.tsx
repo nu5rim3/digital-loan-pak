@@ -208,7 +208,7 @@ const HouseHoldExpenses: React.FC = () => {
                                             <Empty description={"No Household Expenses Found"} />
                                         </div>
                                     ) : (
-                                        <div className='grid grid-cols-5 gap-4'>
+                                        <div className='grid grid-cols-4 gap-4'>
                                             {
                                                 houseHoldExpenses.map((detail, index) => (
                                                     <DetailsCard

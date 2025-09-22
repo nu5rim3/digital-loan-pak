@@ -15,7 +15,9 @@ const IncomeExpensesDetails: React.FC = () => {
     applicantRevenue: [],
     houseHoldContribution: [],
     houseHoldExpenses: [],
-    bnsOrAgriExpenses: []
+    bnsOrAgriExpenses: [],
+    otherExpense:{},
+    rentalExpense:{}
   });
 
   useEffect(() => {
@@ -35,7 +37,13 @@ const IncomeExpensesDetails: React.FC = () => {
             applicantRevenue: income?.data?.applicantRevenue || [],
             houseHoldContribution: income?.data?.houseHoldContribution || [],
             houseHoldExpenses: income?.data?.houseHoldExpenses || [],
-            bnsOrAgriExpenses: income?.data?.bnsOrAgriExpenses || []
+            bnsOrAgriExpenses: income?.data?.bnsOrAgriExpenses || [],
+            otherExpense:income?.data?.bnsOrAgriExpenses && income?.data?.bnsOrAgriExpenses?.length > 0?
+             income?.data?.bnsOrAgriExpenses?.find((item:any) => item.key === "Other"):{},
+            rentalExpense:income?.data?.bnsOrAgriExpenses && income?.data?.bnsOrAgriExpenses?.length > 0?
+             income?.data?.bnsOrAgriExpenses?.find((item:any) => item.key === "Rental"):{},
+             agriExpense:income?.data?.bnsOrAgriExpenses && income?.data?.bnsOrAgriExpenses?.length > 0?
+             income?.data?.bnsOrAgriExpenses?.find((item:any) => item.key === "Agriculture"):{}
           });
         } catch (e) {
           message.error("Failed to fetch income and expenses data.");
@@ -138,8 +146,10 @@ const IncomeExpensesDetails: React.FC = () => {
     return renderTableSection("FINAL SUMMARY", finalData, columnsRevenueSummary);
   };
 
-  const { applicantRevenue, houseHoldContribution, houseHoldExpenses, bnsOrAgriExpenses, incomeExpenses } = data;
-
+  const { applicantRevenue, houseHoldContribution, houseHoldExpenses, bnsOrAgriExpenses, incomeExpenses ,otherExpense,rentalExpense} = data;
+const total =
+  Number(incomeExpenses?.totBusinessExpense || 0) +
+  Number(data?.agriExpense?.monthly || 0)
   return (
     <Card>
       <Spin spinning={loading} tip="Loading...">
@@ -150,10 +160,10 @@ const IncomeExpensesDetails: React.FC = () => {
           {houseHoldExpenses.length > 0 && renderTableSection("HOUSEHOLD EXPENSES", houseHoldExpenses, columnsWithPeriods)}
           {bnsOrAgriExpenses.length > 0 && renderTableSection("BUSINESS/AGRI EXPENSES", bnsOrAgriExpenses, columnsWithPeriods)}
           {renderTableSection("EXPENSES SUMMARY", [
-            { label: "Total Business/Agri Expenses", value: incomeExpenses?.totBusinessExpense },
+            { label: "Total Business/Agri Expenses", value: total },
             { label: "Total Household Expenses", value: incomeExpenses?.totHouseholdExpense },
-            { label: "Rental Expenses", value: '-' },
-            { label: "Other Expenses", value: '-' },
+             { label: "Rental Expenses", value: rentalExpense ? rentalExpense?.monthly:"-" },
+             { label: "Other Expenses", value: otherExpense? otherExpense?.monthly:"-" ,},
             { label: "Total Expenses", value: incomeExpenses?.totExpense },
           ], columnsRevenueSummary)}
           {renderFinalSummary()}

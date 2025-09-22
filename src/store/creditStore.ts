@@ -1071,7 +1071,7 @@ const useCreditStore = create<ICreditState>((set) => ({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const filteredItem: any = useCreditStore
       .getState()
-      .houseHoldExpenses.find((item) => item.key === key);
+      .bnsOrAgriExpenses.find((item) => item.key === key);
 
     return filteredItem ? Number(filteredItem.monthly) : 0;
   },
@@ -1085,11 +1085,16 @@ const useCreditStore = create<ICreditState>((set) => ({
   },
 
   calculateTotalBusinessExpense: () => {
-    set((state) => ({
-      totBusinessExpense: state.bnsOrAgriExpenses.reduce((acc, item) => {
-        return acc + Number(item.monthly ?? 0);
-      }, 0),
+     set((state) => ({
+      totBusinessExpense:
+        state.getMonthValueBasedOnKeyExpenses("Business 1") +
+        state.getMonthValueBasedOnKeyExpenses("Business 2"),
     }));
+    // set((state) => ({
+    //   totBusinessExpense: state.bnsOrAgriExpenses.reduce((acc, item) => {
+    //     return acc + Number(item.monthly ?? 0);
+    //   }, 0),
+    // }));
   },
 
   calculateTotalExpense: () => {

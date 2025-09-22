@@ -194,7 +194,7 @@ const HouseHoldContribution: React.FC = () => {
                                             <Empty description={"No Revenue Details Found"} />
                                         </div>
                                     ) : (
-                                        <div className='grid grid-cols-5 gap-4'>
+                                        <div className='grid grid-cols-4 gap-4'>
                                             {
                                                 houseHoldContribution.map((detail, index) => (
                                                     <DetailsCard
