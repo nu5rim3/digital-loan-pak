@@ -1,15 +1,17 @@
 import { useForm, Controller } from "react-hook-form";
-import { Input, Button, Form, Select, Card, Space } from "antd";
+import { Input, Button, Form, Select, Card, Space, notification } from "antd";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useEffect, useState } from "react";
-import { CloseCircleOutlined, SaveOutlined, UndoOutlined } from "@ant-design/icons";
+import { CloseCircleOutlined, SafetyCertificateOutlined, SaveOutlined, UndoOutlined ,VerifiedOutlined} from "@ant-design/icons";
 import useCommonStore from "../../../store/commonStore";
 import useCustomerStore from "../../../store/customerStore";
 import useLoanStore from "../../../store/loanStore";
 import { formatCNIC, splitInitialAndSurname } from "../../../utils/formatterFunctions";
 import useGuarantorStore from "../../../store/guarantorStore";
 import ContactInput from "../inputs/ContactInput";
+import {  DualNumberVerificationModal } from "../../../utils/DualNumberVerificationModal";
+import useVerificationStore from "../../../store/verificationStore";
 // import { useNavigate } from "react-router-dom";
 const { Search } = Input;
 
@@ -38,10 +40,12 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
     });
 
     const [searchValue, setSearchValue] = useState('');
-
+    const [modalOpen, setModalOpen] = useState(false);
+    const [isDualNumberChecked, setIsDualNumberChecked] = useState(false)
     const { selectedCustomer, customerLoading, addCustomer, fetchCustomerByCNIC, resetCustomer } = useCustomerStore();
     const { selectedGuarantor, guarantorLoading, addGuarantor, fetchGuarantorByCNIC } = useGuarantorStore()
     const { operatorLoading, operators, fetchOperators } = useCommonStore();
+     const {   dualNumberCheckError,dualNumberCheckLoading, dualNumberCheckData ,dualNumberCheck,resetDualNumberDetails} = useVerificationStore();
     const { loan } = useLoanStore();
     // const navigate = useNavigate();
 
@@ -128,18 +132,51 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
     }, [selectedGuarantor])
 
     const fullName = watch('name')
+    const contactNumber = watch("contactNumber")
+    const identificationNumber = watch("identificationNumber")
 
-
-    useEffect(() => {
-        if (fullName !== undefined && fullName !== '') {
-            const { initial, surname } = splitInitialAndSurname(fullName?.toString());
-            setValue("initals", initial);
-            setValue("surname", surname);
+        // Disable Save and Verify whenever user edits identification/contact number
+        useEffect(() => {
+        if (contactNumber || identificationNumber) {
+            setIsDualNumberChecked(false)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fullName])
+        }, [contactNumber, identificationNumber])
+        useEffect(() => {
+            if (fullName !== undefined && fullName !== '') {
+                const { initial, surname } = splitInitialAndSurname(fullName?.toString());
+                setValue("initals", initial);
+                setValue("surname", surname);
+            }
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, [fullName])
 
-
+        useEffect(() => {
+        
+                if (dualNumberCheckData) {
+                    const userMsg = dualNumberCheckData?.object?.userMsg;
+                    if (userMsg && userMsg.includes("?")) {
+                        setModalOpen(true);
+                        setIsDualNumberChecked(true);
+                    
+                    }else if(userMsg && userMsg ==="Onboarded can be done"){
+                        notification.success({
+                            message: userMsg,
+                        });
+                        setIsDualNumberChecked(true);
+                        resetDualNumberDetails();
+                    }
+                    
+                    else{
+                        notification.error({
+                            message: userMsg,
+                        });
+                        setIsDualNumberChecked(true);
+                        
+                    }
+                
+                }
+                // eslint-disable-next-line react-hooks/exhaustive-deps
+            }, [dualNumberCheckData])
     return (
         <Card title={`${type === 'C' ? 'Customer' : 'Guarantor'} Onboarding`}>
             <Form layout="vertical">
@@ -226,6 +263,7 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                                 }
                             />
                         </Form.Item>
+                        
                         <Form.Item label="Identification Type" validateStatus={errors.identificationType ? "error" : ""} help={errors.identificationType?.message} required>
                             <Controller
                                 name="identificationType"
@@ -256,14 +294,66 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                     </div>
                 </div>
                 <div className="flex gap-3 mt-5">
-                    <Button type="primary" htmlType="submit" loading={customerLoading || guarantorLoading} icon={<SaveOutlined />}>
+                    <Button type="primary"
+                        onClick={async () => {
+                                const contactNumber = watch("contactNumber")
+                                const identificationNumber = watch("identificationNumber")
+                           
+                            //const number = getValues("contactNumber") // get from form
+                            if (!contactNumber || !identificationNumber) {
+                                notification.error({
+                                        message: "Please enter a Contact number and Identification Number first.",
+                                    });
+                                return;
+                            }
+                              try {
+                               await  dualNumberCheck({
+                                   cnicNo: identificationNumber,
+                                   telNo: contactNumber
+                               })
+                                
+                              } catch (err) {
+                                console.log('ERR',dualNumberCheckError)
+                                 
+                                
+                              }
+                            }}
+                       loading={dualNumberCheckLoading} icon={<SafetyCertificateOutlined  />}>
+                        Verify
+                    </Button>
+                    <Button type="primary" htmlType="submit"
+                    disabled={!isDualNumberChecked}
+                    loading={customerLoading || guarantorLoading} icon={<SaveOutlined />}>
                         Save and Verify
                     </Button>
                     <Button type="default" onClick={formRest} danger icon={<UndoOutlined />}>
                         Reset
                     </Button>
                 </div>
-            </Form>
+                      </Form>
+                        <DualNumberVerificationModal
+                        open={modalOpen}
+                        title = {"Verification"}
+                        okText="Yes"
+                        cancelText="No"
+                   
+                       content={
+                            <div>
+                                {dualNumberCheckData?.object?.userMsg
+                                ?.split(".")
+                                .filter(Boolean) // remove empty strings
+                                .map((sentence:any, idx:any) => (
+                                    <p key={idx}>{sentence.trim()}.</p>
+                                ))}
+                            </div>
+                            }
+                        onOk={() => setModalOpen(false)}
+                        onCancel={() =>{
+                        
+                        setModalOpen(false)
+                        setIsDualNumberChecked(false);
+                        } }
+                    />
         </Card>
     );
 };
