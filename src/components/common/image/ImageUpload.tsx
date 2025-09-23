@@ -79,14 +79,14 @@ export default function ImageUpload({
 
     const imageGen = {
       uid: uuidv4(),
-      name: originalName ?? name,
+      name: originalName !== "" ? originalName: name,
       type: "image/jpeg",
       originFileObj: file,
       url: pdfUrl,
       // preview: image,
       thumbUrl: image
     }
-
+console.log('imageGen',imageGen)
     return setFileList((pre: any) => ([...pre, imageGen]));
   }
 
