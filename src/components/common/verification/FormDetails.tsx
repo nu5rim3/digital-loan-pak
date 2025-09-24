@@ -3,7 +3,7 @@ import { Input, Button, Form, Select, Card, Space, notification } from "antd";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useEffect, useState } from "react";
-import { CloseCircleOutlined, SafetyCertificateOutlined, SaveOutlined, UndoOutlined ,VerifiedOutlined} from "@ant-design/icons";
+import { CloseCircleOutlined, SafetyCertificateOutlined, SaveOutlined, UndoOutlined } from "@ant-design/icons";
 import useCommonStore from "../../../store/commonStore";
 import useCustomerStore from "../../../store/customerStore";
 import useLoanStore from "../../../store/loanStore";
