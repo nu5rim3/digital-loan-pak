@@ -32,18 +32,18 @@ const IncomeExpensesDetails: React.FC = () => {
             // API.mobixCamsCredit.getTcDetails(appraisalId),
             API.mobixCamsCredit.getIncomeExpenses(appraisalId)
           ]);
+          const getByKey = (arr: any[] | undefined, key: string) =>
+          arr?.find((item: any) => item.key === key) || {};
           setData({
             incomeExpenses: income?.data,
+           agriIncome: getByKey(income?.data?.applicantRevenue, "Agriculture"),
             applicantRevenue: income?.data?.applicantRevenue || [],
             houseHoldContribution: income?.data?.houseHoldContribution || [],
             houseHoldExpenses: income?.data?.houseHoldExpenses || [],
             bnsOrAgriExpenses: income?.data?.bnsOrAgriExpenses || [],
-            otherExpense:income?.data?.bnsOrAgriExpenses && income?.data?.bnsOrAgriExpenses?.length > 0?
-             income?.data?.bnsOrAgriExpenses?.find((item:any) => item.key === "Other"):{},
-            rentalExpense:income?.data?.bnsOrAgriExpenses && income?.data?.bnsOrAgriExpenses?.length > 0?
-             income?.data?.bnsOrAgriExpenses?.find((item:any) => item.key === "Rental"):{},
-             agriExpense:income?.data?.bnsOrAgriExpenses && income?.data?.bnsOrAgriExpenses?.length > 0?
-             income?.data?.bnsOrAgriExpenses?.find((item:any) => item.key === "Agriculture"):{}
+             otherExpense: getByKey(income?.data?.bnsOrAgriExpenses, "Other"),
+            rentalExpense: getByKey(income?.data?.bnsOrAgriExpenses, "Rental"),
+            agriExpense: getByKey(income?.data?.bnsOrAgriExpenses, "Agriculture"),
           });
         } catch (e) {
           message.error("Failed to fetch income and expenses data.");
@@ -120,9 +120,13 @@ const IncomeExpensesDetails: React.FC = () => {
 
   const renderRevenueSummary = () => {
     const { incomeExpenses } = data;
+    const totalAgriAndBusiness =
+  Number(incomeExpenses?.totBusinessIncome || 0) +
+  Number(data?.agriIncome?.monthly || 0)
+
     const summaryData = [
       { label: "Gross Salary/Pension Income", value: incomeExpenses?.grossSalaryIncome },
-      { label: "Total Business/Agri Income", value: incomeExpenses?.totBusinessIncome },
+      { label: "Total Business/Agri Income", value: totalAgriAndBusiness },
       { label: "Total Household Contribution", value: incomeExpenses?.totHouseholdIncome },
       { label: "Total Revenue", value: incomeExpenses?.totRevenue }
     ];

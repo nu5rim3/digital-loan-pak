@@ -48,8 +48,9 @@ const ApplicantRevenue: React.FC = () => {
     const { cashFlows, cashFlowsLoading, applicantRevenue, addApplicantRevenue, updateApplicantRevenue, fetchApplicantRevenue,
         removeApplicantRevenue, calculateTotalHouseRevenue, calculateTotalRevenue, calculateApplicantRevenue, calulateGrossSalary, calculateNetMonthlyDisposable,
         calculateAnnualDisposable, calculateAnnualHousehold, calculateAnnualRevenue, calculateMaxDebtBurden, checkAlegibleFroLoan, calucalteMaxLoanValue,
-        calculateTaxableAmount, fetchCashFlows } = useCreditStore()
+        calculateTaxableAmount, fetchCashFlows,getTotalBusinessRevenue } = useCreditStore()
 
+    
     const openModal = (mode: 'save' | 'update' | 'remove', details: IFinancialEntry | null = null) => {
         setMode(mode);
         setSelectedDetail(details);
@@ -94,6 +95,7 @@ const ApplicantRevenue: React.FC = () => {
         calucalteMaxLoanValue()
         checkAlegibleFroLoan()
         calculateTaxableAmount()
+        getTotalBusinessRevenue()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [addApplicantRevenue, applicantRevenue])
 
@@ -202,7 +204,7 @@ const ApplicantRevenue: React.FC = () => {
                                             <Empty description={"No Revenue Details Found"} />
                                         </div>
                                     ) : (
-                                        <div className='grid grid-cols-5 gap-4'>
+                                     <div className="grid grid-cols-1  md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
                                             {
                                                 applicantRevenue.map((detail, index) => (
                                                     <DetailsCard
