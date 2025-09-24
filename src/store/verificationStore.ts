@@ -69,6 +69,10 @@ interface IVerificationECIBResponse {
 interface IfetchECIBReportByIdResponse {
   hasEcib: "Y" | "N";
 }
+interface IDualNumberCheck {
+  cnicNo?: string;
+  telNo?:string;
+}
 
 interface IVerificationState {
   blacklistDetails: IVerificationBlacklistResponse | null;
@@ -84,12 +88,19 @@ interface IVerificationState {
   ecribreportLoading: boolean;
   ecribreportError: string | null;
 
+  dualNumberCheckError:string | null;
+  dualNumberCheckLoading: boolean;
+  dualNumberCheckData: any;
+
   fetchBlacklistByCnic: (cnic: string) => Promise<void>;
   fetchMSASByIdx: (cnic: string) => Promise<void>;
   fetchCRIBByCnic: (cnic: string) => Promise<void>;
   fetchECIBById: (cnic: string) => Promise<void>;
   fetchECIBReportById: (cnic: string) => Promise<void>;
   resetCRIBDetails: () => void;
+  dualNumberCheck: (checkNumber: IDualNumberCheck) => Promise<void>;
+  resetDualNumberDetails: () => void;
+
 
   resetAll: () => void;
 }
@@ -107,6 +118,9 @@ const useVerificationStore = create<IVerificationState>((set) => ({
   ecribreport: null,
   ecribreportLoading: false,
   ecribreportError: null,
+  dualNumberCheckError:null,
+  dualNumberCheckLoading:false,
+  dualNumberCheckData:null,    
 
   fetchBlacklistByCnic: async (cnic: string) => {
     set({ blLoading: true, error: null });
@@ -187,10 +201,25 @@ const useVerificationStore = create<IVerificationState>((set) => ({
       set({ error: error.message, ecibLoading: false });
     }
   },
+  
+    dualNumberCheck: async (data: IDualNumberCheck) => {
+        set({ dualNumberCheckLoading: true });
+        try {
+           const response = await APIAuth.post(
+        "/mobixCamsClientele/v1/clienteles/dual-number-verifications",
+        data
+      );
+         set({ dualNumberCheckData: response.data, dualNumberCheckLoading: false });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+          set({ dualNumberCheckError: error.message, dualNumberCheckLoading: false });
+        }
+      },
 
   resetCRIBDetails: () =>
     set({ cribDetails: null, cribLoading: false, error: null }),
-
+ resetDualNumberDetails: () =>
+    set({ dualNumberCheckData: null, dualNumberCheckLoading: false, dualNumberCheckError: null }),
   resetAll: () =>
     set(() => ({
       blacklistDetails: null,
