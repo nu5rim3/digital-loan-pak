@@ -412,11 +412,11 @@ const { trialCalculationData } = useCommonStore();
       }
 
       setSubmitting(true);
-
       const leaseData = {
         ...data,
         id: isEdit && initialData?.id ? initialData.id : data.id,
-        equipmentTypeCode:trialCalculationData?.insuranceVE
+        equipmentTypeCode:trialCalculationData?.insuranceVE,
+        equipmentCost:data?.equipmentCost ?? trialCalculationData?.cost
       };
 
       const response = await submitLease(leaseData, validAppraisalId, isEdit);
