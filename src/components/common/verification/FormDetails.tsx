@@ -157,6 +157,7 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                     if (userMsg && userMsg.includes("?")) {
                         setModalOpen(true);
                         setIsDualNumberChecked(true);
+                        
                     
                     }else if(userMsg && userMsg ==="Onboarded can be done"){
                         notification.success({
@@ -164,13 +165,14 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                         });
                         setIsDualNumberChecked(true);
                         resetDualNumberDetails();
-                    }
-                    
-                    else{
+                    } else{
                         notification.error({
                             message: userMsg,
                         });
-                        setIsDualNumberChecked(true);
+                        //need to block proceed when error
+                        setIsDualNumberChecked(false);
+                        resetDualNumberDetails();
+                        
                         
                     }
                 
@@ -319,7 +321,7 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                               }
                             }}
                        loading={dualNumberCheckLoading} icon={<SafetyCertificateOutlined  />}>
-                        Verify
+                        Verify Dual Numbers
                     </Button>
                     <Button type="primary" htmlType="submit"
                     disabled={!isDualNumberChecked}
@@ -347,11 +349,15 @@ const FormDetails: React.FC<IFormDetails> = ({ type, appId, setIdx, setCNIC, set
                                 ))}
                             </div>
                             }
-                        onOk={() => setModalOpen(false)}
+                        onOk={() =>{
+                            setModalOpen(false)
+                             resetDualNumberDetails();
+                        } }
                         onCancel={() =>{
-                        
                         setModalOpen(false)
+                        //need to block proceed when user given NO option
                         setIsDualNumberChecked(false);
+                        resetDualNumberDetails();
                         } }
                     />
         </Card>
