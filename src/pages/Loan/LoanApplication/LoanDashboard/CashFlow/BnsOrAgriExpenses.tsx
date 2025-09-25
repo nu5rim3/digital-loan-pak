@@ -203,7 +203,7 @@ const BnsOrAgriExpenses: React.FC = () => {
                                             <Empty description={"No Business or Agriculture Expenses found"} />
                                         </div>
                                     ) : (
-                                        <div className='grid grid-cols-4 gap-4'>
+                                        <div className="grid grid-cols-1  md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
                                             {
                                                 bnsOrAgriExpenses.map((detail, index) => (
                                                     <DetailsCard
